@@ -9,10 +9,30 @@ ext.jettyVersion = "9.1.1.v20140108"
 ext.jacksonVersion = "2.5.3"
 ext.jerseyVersion = "2.22.1"
 
+ext.log4jVersion = "1.2.17"
+ext.lombookVersion = "1.16.6"
+
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testCompile "junit:junit:4.12"
+allprojects {
+    apply plugin: 'java'
+    compileJava.options.encoding = 'UTF-8'
+    group = 'uk.dsxt'
+    version = '0.1-SNAPSHOT'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile "junit:junit:4.12"
+
+        compile "log4j:log4j:$log4jVersion"
+        compile "log4j:apache-log4j-extras:$log4jVersion"
+        compile "org.projectlombok:lombok:$lombookVersion"
+    }
 }
