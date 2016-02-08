@@ -1,0 +1,4 @@
+rootProject.name = 'e-voting'
+
+include 'e-voting-server'
+include 'e-voting-client'
