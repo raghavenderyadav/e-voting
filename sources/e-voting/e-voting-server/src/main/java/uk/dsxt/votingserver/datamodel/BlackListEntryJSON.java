@@ -19,28 +19,22 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.votingserver;
+package uk.dsxt.votingserver.datamodel;
 
-import uk.dsxt.votingserver.datamodel.BlackListEntryJSON;
-import uk.dsxt.votingserver.datamodel.VoterJSON;
-import uk.dsxt.votingserver.datamodel.VotingJSON;
-import uk.dsxt.votingserver.datamodel.VotingRightJSON;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-public class VotingServerManager {
+import java.math.BigDecimal;
 
-    public VotingRightJSON[] getVotingRights() {
-        return null;
-    }
+@Value
+public class BlackListEntryJSON {
+    String voterId;
+    BigDecimal amount;
 
-    public VoterJSON[] getVoters() {
-        return null;
-    }
-
-    public VotingJSON getVoting() {
-        return null;
-    }
-
-    public BlackListEntryJSON[] getBlackList() {
-        return null;
+    @JsonCreator
+    public BlackListEntryJSON(@JsonProperty("voterId") String voterId, @JsonProperty("amount") BigDecimal amount) {
+        this.voterId = voterId;
+        this.amount = amount;
     }
 }

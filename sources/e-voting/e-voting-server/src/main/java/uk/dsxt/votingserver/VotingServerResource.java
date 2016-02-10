@@ -22,11 +22,12 @@
 package uk.dsxt.votingserver;
 
 import lombok.extern.log4j.Log4j;
+import uk.dsxt.votingserver.datamodel.BlackListEntryJSON;
 import uk.dsxt.votingserver.datamodel.VoterJSON;
 import uk.dsxt.votingserver.datamodel.VotingJSON;
 import uk.dsxt.votingserver.datamodel.VotingRightJSON;
 
-import javax.ws.rs.POST;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
@@ -39,24 +40,31 @@ public class VotingServerResource {
         this.manager = manager;
     }
 
-    @POST
+    @GET
     @Path("/votingRights")
     @Produces("application/json")
     public VotingRightJSON[] getVotingRights() {
         return manager.getVotingRights();
     }
 
-    @POST
+    @GET
     @Path("/voters")
     @Produces("application/json")
     public VoterJSON[] getVoters() {
         return manager.getVoters();
     }
 
-    @POST
+    @GET
     @Path("/voting")
     @Produces("application/json")
     public VotingJSON getVoting() {
         return manager.getVoting();
+    }
+
+    @GET
+    @Path("/blackList")
+    @Produces("application/json")
+    public BlackListEntryJSON[] getBlackList() {
+        return manager.getBlackList();
     }
 }

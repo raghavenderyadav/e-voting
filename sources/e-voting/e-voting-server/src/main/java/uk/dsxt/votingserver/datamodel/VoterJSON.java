@@ -27,12 +27,12 @@ import lombok.Value;
 
 @Value
 public class VoterJSON {
-    Integer id;
+    String id;
     String name;
     String publicKey;
 
     @JsonCreator
-    public VoterJSON(@JsonProperty("id") Integer id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
+    public VoterJSON(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
         this.id = id;
         this.name = name;
         this.publicKey = publicKey;

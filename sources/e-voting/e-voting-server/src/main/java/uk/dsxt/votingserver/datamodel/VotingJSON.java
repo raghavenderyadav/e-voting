@@ -27,14 +27,14 @@ import lombok.Value;
 
 @Value
 public class VotingJSON {
-    Integer id;
+    String id;
     String name;
     Long startTimestamp;
     Long endTimestamp;
     QuestionJSON[] questions;
 
     @JsonCreator
-    public VotingJSON(@JsonProperty("id") Integer id, @JsonProperty("name") String name, @JsonProperty("startTimestamp") Long startTimestamp, @JsonProperty("endTimestamp") Long endTimestamp,
+    public VotingJSON(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("startTimestamp") Long startTimestamp, @JsonProperty("endTimestamp") Long endTimestamp,
                       @JsonProperty("questions") QuestionJSON[] questions) {
         this.id = id;
         this.name = name;

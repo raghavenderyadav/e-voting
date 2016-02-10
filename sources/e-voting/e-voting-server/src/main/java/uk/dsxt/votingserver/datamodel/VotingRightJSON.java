@@ -1,22 +1,22 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
 package uk.dsxt.votingserver.datamodel;
@@ -29,17 +29,15 @@ import java.math.BigDecimal;
 
 @Value
 public class VotingRightJSON {
-    Integer voterId;
+    String voterId;
     BigDecimal votesAmount;
-    Boolean blocked;
     Integer representativeId;
 
     @JsonCreator
-    public VotingRightJSON(@JsonProperty("voterId") Integer voterId, @JsonProperty("votesAmount") BigDecimal votesAmount, @JsonProperty("blocked") Boolean blocked,
+    public VotingRightJSON(@JsonProperty("voterId") String voterId, @JsonProperty("votesAmount") BigDecimal votesAmount,
                            @JsonProperty("representativeId") Integer representativeId) {
         this.voterId = voterId;
         this.votesAmount = votesAmount;
-        this.blocked = blocked;
         this.representativeId = representativeId;
     }
 }

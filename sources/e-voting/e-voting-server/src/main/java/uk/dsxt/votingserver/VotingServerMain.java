@@ -21,10 +21,20 @@
 
 package uk.dsxt.votingserver;
 
+import lombok.extern.log4j.Log4j;
+import uk.dsxt.votingserver.utils.JettyRunner;
+import uk.dsxt.votingserver.utils.PropertiesHelper;
+
+import java.util.Properties;
+
+@Log4j
 public class VotingServerMain {
 
     public static void main(String[] args) {
-
+        Properties properties = PropertiesHelper.loadProperties(VotingServerApplication.MODULE_NAME);
+        VotingServerApplication application = new VotingServerApplication(properties);
+        JettyRunner.run(application, properties, "voting.server.web.port");
     }
+
 
 }
