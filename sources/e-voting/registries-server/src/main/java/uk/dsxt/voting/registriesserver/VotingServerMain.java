@@ -19,22 +19,23 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.registriesserver.datamodel;
+package uk.dsxt.voting.registriesserver;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
+import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.registriesserver.utils.JettyRunner;
+import uk.dsxt.voting.registriesserver.utils.PropertiesHelper;
 
-@Value
-public class VoterJSON {
-    String id;
-    String name;
-    String publicKey;
+import java.util.Properties;
 
-    @JsonCreator
-    public VoterJSON(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
-        this.id = id;
-        this.name = name;
-        this.publicKey = publicKey;
+@Log4j2
+public class VotingServerMain {
+
+    public static void main(String[] args) {
+        log.debug("Starting e-voting server...");
+        Properties properties = PropertiesHelper.loadProperties(VotingServerApplication.MODULE_NAME);
+        VotingServerApplication application = new VotingServerApplication(properties);
+        JettyRunner.run(application, properties, "voting.server.web.port");
     }
+
+
 }

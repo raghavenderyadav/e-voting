@@ -19,52 +19,15 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.registriesserver;
+package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.registriesserver.datamodel.BlackListEntryJSON;
-import uk.dsxt.registriesserver.datamodel.VoterJSON;
-import uk.dsxt.registriesserver.datamodel.VotingJSON;
-import uk.dsxt.registriesserver.datamodel.VotingRightJSON;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 
 @Log4j2
-@Path("/voting-api")
-public class VotingServerResource {
-    private final VotingServerManager manager;
+public class VotingMasterClientMain {
 
-    public VotingServerResource(VotingServerManager manager) {
-        this.manager = manager;
+    public static void main(String[] args) {
+        log.debug("Starting e-voting master client...");
     }
 
-    @GET
-    @Path("/votingRights")
-    @Produces("application/json")
-    public VotingRightJSON[] getVotingRights() {
-        return manager.getVotingRights();
-    }
-
-    @GET
-    @Path("/voters")
-    @Produces("application/json")
-    public VoterJSON[] getVoters() {
-        return manager.getVoters();
-    }
-
-    @GET
-    @Path("/voting")
-    @Produces("application/json")
-    public VotingJSON getVoting() {
-        return manager.getVoting();
-    }
-
-    @GET
-    @Path("/blackList")
-    @Produces("application/json")
-    public BlackListEntryJSON[] getBlackList() {
-        return manager.getBlackList();
-    }
 }

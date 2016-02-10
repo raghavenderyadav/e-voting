@@ -19,23 +19,35 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.registriesserver;
+package uk.dsxt.voting.registriesserver.utils;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.registriesserver.utils.JettyRunner;
-import uk.dsxt.registriesserver.utils.PropertiesHelper;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 @Log4j2
-public class VotingServerMain {
+public class PropertiesHelper {
+    public static Properties loadProperties(String moduleName) {
+        Properties properties = new Properties();
+        URL propertiesURL = getResource(String.format("%s.properties", moduleName));
 
-    public static void main(String[] args) {
-        log.debug("Starting e-voting server...");
-        Properties properties = PropertiesHelper.loadProperties(VotingServerApplication.MODULE_NAME);
-        VotingServerApplication application = new VotingServerApplication(properties);
-        JettyRunner.run(application, properties, "voting.server.web.port");
+        if (propertiesURL != null) {
+            try (InputStream resourceStream = propertiesURL.openStream()) {
+                properties.load(resourceStream);
+                log.info(String.format("Loading %s properties from file: %s", moduleName.toUpperCase(), propertiesURL));
+            } catch (Exception e) {
+                log.error(String.format("Couldn't load %s properties from file: %s", moduleName.toUpperCase(), propertiesURL), e);
+            }
+        } else {
+            log.info(String.format("Couldn't find %s properties file", moduleName.toUpperCase()));
+        }
+        return properties;
     }
 
-
+    private static URL getResource(String fileName) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return loader.getResource(fileName);
+    }
 }

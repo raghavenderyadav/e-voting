@@ -19,28 +19,52 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.registriesserver;
+package uk.dsxt.voting.registriesserver;
 
-import uk.dsxt.registriesserver.datamodel.BlackListEntryJSON;
-import uk.dsxt.registriesserver.datamodel.VoterJSON;
-import uk.dsxt.registriesserver.datamodel.VotingJSON;
-import uk.dsxt.registriesserver.datamodel.VotingRightJSON;
+import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.registriesserver.datamodel.BlackListEntryJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VoterJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VotingJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VotingRightJSON;
 
-public class VotingServerManager {
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
+@Log4j2
+@Path("/voting-api")
+public class VotingServerResource {
+    private final VotingServerManager manager;
+
+    public VotingServerResource(VotingServerManager manager) {
+        this.manager = manager;
+    }
+
+    @GET
+    @Path("/votingRights")
+    @Produces("application/json")
     public VotingRightJSON[] getVotingRights() {
-        return null;
+        return manager.getVotingRights();
     }
 
+    @GET
+    @Path("/voters")
+    @Produces("application/json")
     public VoterJSON[] getVoters() {
-        return null;
+        return manager.getVoters();
     }
 
+    @GET
+    @Path("/voting")
+    @Produces("application/json")
     public VotingJSON getVoting() {
-        return null;
+        return manager.getVoting();
     }
 
+    @GET
+    @Path("/blackList")
+    @Produces("application/json")
     public BlackListEntryJSON[] getBlackList() {
-        return null;
+        return manager.getBlackList();
     }
 }

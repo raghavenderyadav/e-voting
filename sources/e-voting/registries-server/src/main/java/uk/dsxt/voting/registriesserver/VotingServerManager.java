@@ -19,35 +19,28 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.registriesserver.utils;
+package uk.dsxt.voting.registriesserver;
 
-import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.registriesserver.datamodel.BlackListEntryJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VoterJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VotingJSON;
+import uk.dsxt.voting.registriesserver.datamodel.VotingRightJSON;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
+public class VotingServerManager {
 
-@Log4j2
-public class PropertiesHelper {
-    public static Properties loadProperties(String moduleName) {
-        Properties properties = new Properties();
-        URL propertiesURL = getResource(String.format("%s.properties", moduleName));
-
-        if (propertiesURL != null) {
-            try (InputStream resourceStream = propertiesURL.openStream()) {
-                properties.load(resourceStream);
-                log.info(String.format("Loading %s properties from file: %s", moduleName.toUpperCase(), propertiesURL));
-            } catch (Exception e) {
-                log.error(String.format("Couldn't load %s properties from file: %s", moduleName.toUpperCase(), propertiesURL), e);
-            }
-        } else {
-            log.info(String.format("Couldn't find %s properties file", moduleName.toUpperCase()));
-        }
-        return properties;
+    public VotingRightJSON[] getVotingRights() {
+        return null;
     }
 
-    private static URL getResource(String fileName) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        return loader.getResource(fileName);
+    public VoterJSON[] getVoters() {
+        return null;
+    }
+
+    public VotingJSON getVoting() {
+        return null;
+    }
+
+    public BlackListEntryJSON[] getBlackList() {
+        return null;
     }
 }

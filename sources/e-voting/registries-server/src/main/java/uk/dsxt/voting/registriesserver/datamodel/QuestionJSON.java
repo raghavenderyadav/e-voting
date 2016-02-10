@@ -19,15 +19,22 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.masterclient;
+package uk.dsxt.voting.registriesserver.datamodel;
 
-import lombok.extern.log4j.Log4j2;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-@Log4j2
-public class VotingMasterClientMain {
+@Value
+public class QuestionJSON {
+    Integer id;
+    String question;
+    AnswerJSON[] answers;
 
-    public static void main(String[] args) {
-        log.debug("Starting e-voting master client...");
+    @JsonCreator
+    public QuestionJSON(@JsonProperty("id") Integer id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerJSON[] answers) {
+        this.id = id;
+        this.question = question;
+        this.answers = answers;
     }
-
 }
