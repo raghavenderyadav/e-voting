@@ -19,56 +19,15 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.networking;
 
-import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlackListEntry;
-import uk.dsxt.voting.common.datamodel.Voter;
-import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.datamodel.VotingRight;
+import lombok.Value;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+@Value
+public class Message {
 
-@Log4j2
-@Path("/voting-api")
-public class RegistriesServerResource implements uk.dsxt.voting.common.networking.RegistriesServer {
-    private final RegistriesServerManager manager;
+    String id;
 
-    public RegistriesServerResource(RegistriesServerManager manager) {
-        this.manager = manager;
-    }
+    byte[] body;
 
-    @Override
-    @GET
-    @Path("/votingRights")
-    @Produces("application/json")
-    public VotingRight[] getVotingRights() {
-        return manager.getVotingRights();
-    }
-
-    @Override
-    @GET
-    @Path("/voters")
-    @Produces("application/json")
-    public Voter[] getVoters() {
-        return manager.getVoters();
-    }
-
-    @Override
-    @GET
-    @Path("/voting")
-    @Produces("application/json")
-    public Voting getVoting() {
-        return manager.getVoting();
-    }
-
-    @Override
-    @GET
-    @Path("/blackList")
-    @Produces("application/json")
-    public BlackListEntry[] getBlackList() {
-        return manager.getBlackList();
-    }
 }
