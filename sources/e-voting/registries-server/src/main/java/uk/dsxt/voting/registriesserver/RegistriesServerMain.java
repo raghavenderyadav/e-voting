@@ -29,7 +29,7 @@ import java.util.Properties;
 
 @Log4j2
 public class RegistriesServerMain {
-    public static final String MODULE_NAME = "registries-server";
+    private static final String MODULE_NAME = "registries-server";
 
     public static void main(String[] args) {
         try {

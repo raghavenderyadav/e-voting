@@ -34,7 +34,7 @@ public class RegistriesServerManager {
 
     Participant[] participants;
     Holding[] holdings;
-    Voting voting;
+    Voting[] votings;
     BlockedPacket[] blackList;
 
     public Holding[] getHoldings() {
@@ -45,8 +45,8 @@ public class RegistriesServerManager {
         return participants;
     }
 
-    public Voting getVoting() {
-        return voting;
+    public Voting[] getVotings() {
+        return votings;
     }
 
     public BlockedPacket[] getBlackList() {

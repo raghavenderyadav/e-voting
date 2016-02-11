@@ -58,10 +58,10 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
 
     @Override
     @GET
-    @Path("/voting")
+    @Path("/votings")
     @Produces("application/json")
-    public Voting getVoting() {
-        return manager.getVoting();
+    public Voting[] getVotings() {
+        return manager.getVotings();
     }
 
     @Override

@@ -19,23 +19,43 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.client;
 
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
-import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
+import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.datamodel.*;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface RegistriesServer {
-    Holding[] getHoldings();
+@Log4j2
+public class VoteAggregation {
 
-    Participant[] getParticipants();
+    private Map<String, VoteAggregator> aggregatorsByVotingId = new HashMap<>();
 
-    Voting[] getVotings();
+    public VoteAggregation(Voting[] votings, Holding[] holdings, BlockedPacket[] blackList) {
+        for(Voting voting : votings) {
+            aggregatorsByVotingId.put(voting.getId(), new VoteAggregator(voting, holdings, blackList));
+        }
+    }
 
-    BlockedPacket[] getBlackList();
+    public void addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
+        VoteAggregator aggregator = aggregatorsByVotingId.get(voteResult.getVotingId());
+        if (aggregator == null) {
+            log.warn("Can not add vote of holder {} to voting {}: voting not found",
+                    voteResult.getHolderId(), voteResult.getVotingId());
+        } else {
+            aggregator.addVote(voteResult, timestamp, signAuthorId);
+        }
+    }
+
+    public VoteResult getResult(String votingId) {
+        VoteAggregator aggregator = aggregatorsByVotingId.get(votingId);
+        if (aggregator == null) {
+            log.warn("Can not get voting {} results: voting not found", votingId);
+            return null;
+        } else {
+            return aggregator.getResult();
+        }
+    }
+
 }

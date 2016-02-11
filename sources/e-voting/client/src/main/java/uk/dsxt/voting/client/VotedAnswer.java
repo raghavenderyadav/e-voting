@@ -19,23 +19,49 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.client;
 
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
-import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
+import lombok.Getter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.math.BigDecimal;
 
-public interface RegistriesServer {
-    Holding[] getHoldings();
+public class VotedAnswer {
 
-    Participant[] getParticipants();
+    @Getter
+    private final int questionId;
 
-    Voting[] getVotings();
+    @Getter
+    private final int answerId;
 
-    BlockedPacket[] getBlackList();
+    @Getter
+    private final BigDecimal voteAmount;
+
+    @Getter
+    private final String key;
+
+    @Override
+    public String toString() {
+        return String.format("%d %d %s", questionId, answerId, voteAmount);
+    }
+
+    public VotedAnswer(String s) {
+        if (s == null)
+            throw new IllegalArgumentException("VotedAnswer can not be created from null string");
+        String[] terms = s.split(" ");
+        if (terms.length != 3)
+            throw new IllegalArgumentException(String.format("VotedAnswer can not be created from string with %d terms (%s)", terms.length, s));
+        questionId = Integer.parseInt(terms[0]);
+        answerId = Integer.parseInt(terms[1]);
+        voteAmount = new BigDecimal(terms[2]);
+        key = String.format("%d-%d", questionId, answerId);
+    }
+
+
+    public VotedAnswer(int questionId, int answerId, BigDecimal voteAmount) {
+        this.questionId = questionId;
+        this.answerId = answerId;
+        this.voteAmount = voteAmount;
+        key = String.format("%d-%d", questionId, answerId);
+    }
+
 }

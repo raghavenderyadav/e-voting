@@ -50,7 +50,7 @@ public class RegistriesServerApplication extends ResourceConfig {
         String blackListJson = PropertiesHelper.getResourceString(properties.getProperty("blacklist.filepath"));
         BlockedPacket[] blackList = mapper.readValue(blackListJson, BlockedPacket[].class);
         //initialization
-        RegistriesServerManager manager = new RegistriesServerManager(participants, holdings, voting, blackList);
+        RegistriesServerManager manager = new RegistriesServerManager(participants, holdings, new Voting[] {voting}, blackList);
         JettyRunner.configureMapper(this);
         this.registerInstances(new RegistriesServerResource(manager));
     }
