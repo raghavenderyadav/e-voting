@@ -19,22 +19,27 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver.datamodel;
+package uk.dsxt.voting.common.datamodel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class QuestionJSON {
-    Integer id;
-    String question;
-    AnswerJSON[] answers;
+public class VotingJSON {
+    String id;
+    String name;
+    Long startTimestamp;
+    Long endTimestamp;
+    QuestionJSON[] questions;
 
     @JsonCreator
-    public QuestionJSON(@JsonProperty("id") Integer id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerJSON[] answers) {
+    public VotingJSON(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("startTimestamp") Long startTimestamp, @JsonProperty("endTimestamp") Long endTimestamp,
+                      @JsonProperty("questions") QuestionJSON[] questions) {
         this.id = id;
-        this.question = question;
-        this.answers = answers;
+        this.name = name;
+        this.startTimestamp = startTimestamp;
+        this.endTimestamp = endTimestamp;
+        this.questions = questions;
     }
 }

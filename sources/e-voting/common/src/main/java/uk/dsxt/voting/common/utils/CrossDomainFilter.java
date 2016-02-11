@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver.utils;
+package uk.dsxt.voting.common.utils;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;

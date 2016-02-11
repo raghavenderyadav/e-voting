@@ -21,10 +21,10 @@
 
 package uk.dsxt.voting.registriesserver;
 
-import uk.dsxt.voting.registriesserver.datamodel.BlackListEntryJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VoterJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VotingJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VotingRightJSON;
+import uk.dsxt.voting.common.datamodel.BlackListEntryJSON;
+import uk.dsxt.voting.common.datamodel.VoterJSON;
+import uk.dsxt.voting.common.datamodel.VotingJSON;
+import uk.dsxt.voting.common.datamodel.VotingRightJSON;
 
 public class VotingServerManager {
 

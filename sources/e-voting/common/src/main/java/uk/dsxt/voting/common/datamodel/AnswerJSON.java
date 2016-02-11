@@ -19,22 +19,20 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver.datamodel;
+package uk.dsxt.voting.common.datamodel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
-import java.math.BigDecimal;
-
 @Value
-public class BlackListEntryJSON {
-    String voterId;
-    BigDecimal amount;
+public class AnswerJSON {
+    Integer id;
+    String name;
 
     @JsonCreator
-    public BlackListEntryJSON(@JsonProperty("voterId") String voterId, @JsonProperty("amount") BigDecimal amount) {
-        this.voterId = voterId;
-        this.amount = amount;
+    public AnswerJSON(@JsonProperty("id") Integer id, @JsonProperty("name") String name) {
+        this.id = id;
+        this.name = name;
     }
 }

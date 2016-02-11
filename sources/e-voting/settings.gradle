@@ -1,5 +1,6 @@
 rootProject.name = 'e-voting'
 
+include 'common'
 include 'registries-server'
 include 'client'
 include 'master-client'

@@ -22,10 +22,10 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.registriesserver.datamodel.BlackListEntryJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VoterJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VotingJSON;
-import uk.dsxt.voting.registriesserver.datamodel.VotingRightJSON;
+import uk.dsxt.voting.common.datamodel.BlackListEntryJSON;
+import uk.dsxt.voting.common.datamodel.VoterJSON;
+import uk.dsxt.voting.common.datamodel.VotingJSON;
+import uk.dsxt.voting.common.datamodel.VotingRightJSON;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
