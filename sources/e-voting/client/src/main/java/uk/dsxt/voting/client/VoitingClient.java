@@ -23,21 +23,15 @@ package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.networking.Message;
 import uk.dsxt.voting.common.networking.MessageContent;
+import uk.dsxt.voting.common.networking.MessageHandler;
 import uk.dsxt.voting.common.networking.WalletManager;
-import uk.dsxt.voting.common.utils.CryptoHelper;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.*;
 
 @Log4j2
-public class VoitingClient {
-
-    private final WalletManager walletManager;
+public class VoitingClient extends MessageHandler {
 
     private final VoteAggregation voteAggregation;
 
@@ -47,45 +41,15 @@ public class VoitingClient {
 
     private final List<VoteResult> sentVoteResults = new ArrayList<>();
 
-    private final Map<String, PublicKey> publicKeysById = new HashMap<>();
-
-    private long lastnewMessagesRequestTime;
-
     public VoitingClient(WalletManager walletManager, VoteAggregation voteAggregation, String ownerId, PrivateKey ownerPrivateKey, Participant[] participants) {
-        this.walletManager = walletManager;
+        super(walletManager, participants);
         this.voteAggregation = voteAggregation;
         this.ownerId = ownerId;
         this.ownerPrivateKey = ownerPrivateKey;
-        for(Participant participant : participants) {
-            if (participant.getPublicKey() != null) {
-                try {
-                    PublicKey key = CryptoHelper.loadPublicKey(participant.getPublicKey());
-                    publicKeysById.put(participant.getId(), key);
-                } catch (GeneralSecurityException e) {
-                    log.error("Can not extract public key for participant {}({})", participant.getName(), participant.getId());
-                }
-            }
-        }
 
-        walletManager.runWallet();
         if (walletManager.getBalance().signum() == 0) {
             sendInitialMoneyRequest();
         }
-    }
-
-    public void run(long newMessagesRequestInterval) {
-        Thread messagesHandler = new Thread(() -> {
-            while (!Thread.interrupted()) {
-                try {
-                    Thread.sleep(newMessagesRequestInterval);
-                } catch (InterruptedException ignored) {
-                    return;
-                }
-                checkNewMessages();
-            }
-        }, "messagesHandler");
-        messagesHandler.start();
-        log.info("VoitingClient runs");
     }
 
     private void sendInitialMoneyRequest() {
@@ -111,31 +75,10 @@ public class VoitingClient {
         }
     }
 
-    private void checkNewMessages() {
-        List<Message> newMessages = walletManager.getNewMessages(lastnewMessagesRequestTime);
-        lastnewMessagesRequestTime = System.currentTimeMillis()-1;
-        for(Message message : newMessages) {
-            try {
-                handleNewMessage(message);
-            } catch (Exception e) {
-                log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
-            }
-        }
-    }
-
-    private void handleNewMessage(Message message) throws GeneralSecurityException, UnsupportedEncodingException {
-        MessageContent messageContent = new MessageContent(message.getBody());
-        PublicKey authorKey = publicKeysById.get(messageContent.getAuthor());
-        if (authorKey == null) {
-            log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
-            return;
-        }
-        if (messageContent.checkSign(authorKey)) {
-            log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
-            return;
-        }
+    @Override
+    protected void handleNewMessage(MessageContent messageContent, String messageId) {
         if (MessageContent.TYPE_VOTE_RESULT.equals(messageContent.getType())) {
-            log.info("Message {} contains vote result", message.getId());
+            log.info("Message {} contains vote result", messageId);
             VoteResult result = new VoteResult(messageContent.getField(MessageContent.FIELD_VOTE_RESULT));
             voteAggregation.addVote(result, messageContent.getFieldTimestamp(), messageContent.getAuthor());
         }
