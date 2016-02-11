@@ -51,7 +51,7 @@ public class VotingMasterClientMain {
     }
 
     private static void init(RegistriesServer registriesServer, WalletManager walletManager, BigDecimal moneyToNode, long newMessagesRequestInterval) {
-        Participant[] participants = registriesServer.getParticipants();
+        Participant[] participants = registriesServer.getParticipants().getValues();
         MoneyDistributer distributer = new MoneyDistributer(walletManager, participants, moneyToNode);
 
         distributer.run(newMessagesRequestInterval);
