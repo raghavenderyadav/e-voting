@@ -19,23 +19,22 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.datamodel;
 
-import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.utils.JettyRunner;
-import uk.dsxt.voting.common.utils.PropertiesHelper;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-import java.util.Properties;
+import java.math.BigDecimal;
 
-@Log4j2
-public class VotingServerMain {
+@Value
+public class BlackListEntry {
+    String voterId;
+    BigDecimal amount;
 
-    public static void main(String[] args) {
-        log.debug("Starting e-voting server...");
-        Properties properties = PropertiesHelper.loadProperties(VotingServerApplication.MODULE_NAME);
-        VotingServerApplication application = new VotingServerApplication(properties);
-        JettyRunner.run(application, properties, "voting.server.web.port");
+    @JsonCreator
+    public BlackListEntry(@JsonProperty("voterId") String voterId, @JsonProperty("amount") BigDecimal amount) {
+        this.voterId = voterId;
+        this.amount = amount;
     }
-
-
 }

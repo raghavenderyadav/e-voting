@@ -19,52 +19,22 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.datamodel;
 
-import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlackListEntryJSON;
-import uk.dsxt.voting.common.datamodel.VoterJSON;
-import uk.dsxt.voting.common.datamodel.VotingJSON;
-import uk.dsxt.voting.common.datamodel.VotingRightJSON;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+@Value
+public class Question {
+    int id;
+    String question;
+    Answer[] answers;
 
-@Log4j2
-@Path("/voting-api")
-public class VotingServerResource {
-    private final VotingServerManager manager;
-
-    public VotingServerResource(VotingServerManager manager) {
-        this.manager = manager;
-    }
-
-    @GET
-    @Path("/votingRights")
-    @Produces("application/json")
-    public VotingRightJSON[] getVotingRights() {
-        return manager.getVotingRights();
-    }
-
-    @GET
-    @Path("/voters")
-    @Produces("application/json")
-    public VoterJSON[] getVoters() {
-        return manager.getVoters();
-    }
-
-    @GET
-    @Path("/voting")
-    @Produces("application/json")
-    public VotingJSON getVoting() {
-        return manager.getVoting();
-    }
-
-    @GET
-    @Path("/blackList")
-    @Produces("application/json")
-    public BlackListEntryJSON[] getBlackList() {
-        return manager.getBlackList();
+    @JsonCreator
+    public Question(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers) {
+        this.id = id;
+        this.question = question;
+        this.answers = answers;
     }
 }

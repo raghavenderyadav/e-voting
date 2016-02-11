@@ -26,15 +26,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class QuestionJSON {
-    Integer id;
-    String question;
-    AnswerJSON[] answers;
+public class Voter {
+    String id;
+    String name;
+    String publicKey;
 
     @JsonCreator
-    public QuestionJSON(@JsonProperty("id") Integer id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerJSON[] answers) {
+    public Voter(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
         this.id = id;
-        this.question = question;
-        this.answers = answers;
+        this.name = name;
+        this.publicKey = publicKey;
     }
 }

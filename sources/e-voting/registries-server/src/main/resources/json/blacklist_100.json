@@ -1,0 +1,82 @@
+[
+  {
+    "voterId": "5",
+    "amount": 30
+  },
+  {
+    "voterId": "10",
+    "amount": 16
+  },
+  {
+    "voterId": "15",
+    "amount": 22
+  },
+  {
+    "voterId": "20",
+    "amount": 5
+  },
+  {
+    "voterId": "25",
+    "amount": 30
+  },
+  {
+    "voterId": "30",
+    "amount": 7
+  },
+  {
+    "voterId": "35",
+    "amount": 30
+  },
+  {
+    "voterId": "40",
+    "amount": 30
+  },
+  {
+    "voterId": "45",
+    "amount": 19
+  },
+  {
+    "voterId": "50",
+    "amount": 30
+  },
+  {
+    "voterId": "55",
+    "amount": 30
+  },
+  {
+    "voterId": "60",
+    "amount": 24
+  },
+  {
+    "voterId": "65",
+    "amount": 30
+  },
+  {
+    "voterId": "70",
+    "amount": 30
+  },
+  {
+    "voterId": "75",
+    "amount": 18
+  },
+  {
+    "voterId": "80",
+    "amount": 30
+  },
+  {
+    "voterId": "85",
+    "amount": 25
+  },
+  {
+    "voterId": "90",
+    "amount": 20
+  },
+  {
+    "voterId": "95",
+    "amount": 30
+  },
+  {
+    "voterId": "100",
+    "amount": 30
+  }
+]

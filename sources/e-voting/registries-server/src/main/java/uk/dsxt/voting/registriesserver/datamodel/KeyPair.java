@@ -19,22 +19,20 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.registriesserver.datamodel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class VoterJSON {
-    String id;
-    String name;
+public class KeyPair {
     String publicKey;
+    String privateKey;
 
     @JsonCreator
-    public VoterJSON(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
-        this.id = id;
-        this.name = name;
+    public KeyPair(@JsonProperty("publicKey") String publicKey, @JsonProperty("privateKey") String privateKey) {
         this.publicKey = publicKey;
+        this.privateKey = privateKey;
     }
 }

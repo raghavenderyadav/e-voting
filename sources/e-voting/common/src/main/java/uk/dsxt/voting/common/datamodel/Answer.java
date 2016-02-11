@@ -19,28 +19,20 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.datamodel;
 
-import uk.dsxt.voting.common.datamodel.BlackListEntryJSON;
-import uk.dsxt.voting.common.datamodel.VoterJSON;
-import uk.dsxt.voting.common.datamodel.VotingJSON;
-import uk.dsxt.voting.common.datamodel.VotingRightJSON;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-public class VotingServerManager {
+@Value
+public class Answer {
+    int id;
+    String name;
 
-    public VotingRightJSON[] getVotingRights() {
-        return null;
-    }
-
-    public VoterJSON[] getVoters() {
-        return null;
-    }
-
-    public VotingJSON getVoting() {
-        return null;
-    }
-
-    public BlackListEntryJSON[] getBlackList() {
-        return null;
+    @JsonCreator
+    public Answer(@JsonProperty("id") int id, @JsonProperty("name") String name) {
+        this.id = id;
+        this.name = name;
     }
 }
