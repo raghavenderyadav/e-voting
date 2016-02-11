@@ -23,33 +23,33 @@ package uk.dsxt.voting.registriesserver;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import uk.dsxt.voting.common.datamodel.BlackListEntry;
-import uk.dsxt.voting.common.datamodel.Voter;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.datamodel.VotingRight;
+import uk.dsxt.voting.common.datamodel.Holding;
 
 @Value
 @AllArgsConstructor
 public class RegistriesServerManager {
 
-    Voter[] voters;
-    VotingRight[] votingRights;
+    Participant[] participants;
+    Holding[] holdings;
     Voting voting;
-    BlackListEntry[] blackList;
+    BlockedPacket[] blackList;
 
-    public VotingRight[] getVotingRights() {
-        return votingRights;
+    public Holding[] getHoldings() {
+        return holdings;
     }
 
-    public Voter[] getVoters() {
-        return voters;
+    public Participant[] getParticipants() {
+        return participants;
     }
 
     public Voting getVoting() {
         return voting;
     }
 
-    public BlackListEntry[] getBlackList() {
+    public BlockedPacket[] getBlackList() {
         return blackList;
     }
 }

@@ -28,13 +28,13 @@ import lombok.Value;
 import java.math.BigDecimal;
 
 @Value
-public class BlackListEntry {
-    String voterId;
-    BigDecimal amount;
+public class BlockedPacket {
+    String holderId;
+    BigDecimal packetSize;
 
     @JsonCreator
-    public BlackListEntry(@JsonProperty("voterId") String voterId, @JsonProperty("amount") BigDecimal amount) {
-        this.voterId = voterId;
-        this.amount = amount;
+    public BlockedPacket(@JsonProperty("holderId") String voterId, @JsonProperty("packetSize") BigDecimal packetSize) {
+        this.holderId = voterId;
+        this.packetSize = packetSize;
     }
 }

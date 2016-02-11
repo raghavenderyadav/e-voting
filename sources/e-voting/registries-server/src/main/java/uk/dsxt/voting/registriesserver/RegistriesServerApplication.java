@@ -24,10 +24,10 @@ package uk.dsxt.voting.registriesserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
-import uk.dsxt.voting.common.datamodel.BlackListEntry;
-import uk.dsxt.voting.common.datamodel.Voter;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.datamodel.VotingRight;
 import uk.dsxt.voting.common.utils.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -41,16 +41,16 @@ public class RegistriesServerApplication extends ResourceConfig {
     public RegistriesServerApplication(Properties properties) throws Exception {
         //loading properties
         ObjectMapper mapper = new ObjectMapper();
-        String votersJson = PropertiesHelper.getResourceString(properties.getProperty("voters.filepath"));
-        Voter[] voters = mapper.readValue(votersJson, Voter[].class);
-        String votingRightsJson = PropertiesHelper.getResourceString(properties.getProperty("voting.rights.filepath"));
-        VotingRight[] votingRights = mapper.readValue(votingRightsJson, VotingRight[].class);
+        String participantsJson = PropertiesHelper.getResourceString(properties.getProperty("participants.filepath"));
+        Participant[] participants = mapper.readValue(participantsJson, Participant[].class);
+        String holdingsJson = PropertiesHelper.getResourceString(properties.getProperty("holdings.filepath"));
+        Holding[] holdings = mapper.readValue(holdingsJson, Holding[].class);
         String votingJson = PropertiesHelper.getResourceString(properties.getProperty("voting.filepath"));
         Voting voting = mapper.readValue(votingJson, Voting.class);
         String blackListJson = PropertiesHelper.getResourceString(properties.getProperty("blacklist.filepath"));
-        BlackListEntry[] blackList = mapper.readValue(blackListJson, BlackListEntry[].class);
+        BlockedPacket[] blackList = mapper.readValue(blackListJson, BlockedPacket[].class);
         //initialization
-        RegistriesServerManager manager = new RegistriesServerManager(voters, votingRights, voting, blackList);
+        RegistriesServerManager manager = new RegistriesServerManager(participants, holdings, voting, blackList);
         JettyRunner.configureMapper(this);
         this.registerInstances(new RegistriesServerResource(manager));
     }

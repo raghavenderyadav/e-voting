@@ -22,10 +22,10 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlackListEntry;
-import uk.dsxt.voting.common.datamodel.Voter;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.datamodel.VotingRight;
+import uk.dsxt.voting.common.datamodel.Holding;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -42,18 +42,18 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
 
     @Override
     @GET
-    @Path("/votingRights")
+    @Path("/holdings")
     @Produces("application/json")
-    public VotingRight[] getVotingRights() {
-        return manager.getVotingRights();
+    public Holding[] getHoldings() {
+        return manager.getHoldings();
     }
 
     @Override
     @GET
-    @Path("/voters")
+    @Path("/participants")
     @Produces("application/json")
-    public Voter[] getVoters() {
-        return manager.getVoters();
+    public Participant[] getParticipants() {
+        return manager.getParticipants();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
     @GET
     @Path("/blackList")
     @Produces("application/json")
-    public BlackListEntry[] getBlackList() {
+    public BlockedPacket[] getBlackList() {
         return manager.getBlackList();
     }
 }

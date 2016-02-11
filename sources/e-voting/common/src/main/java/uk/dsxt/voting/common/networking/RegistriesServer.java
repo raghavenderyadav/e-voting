@@ -21,10 +21,10 @@
 
 package uk.dsxt.voting.common.networking;
 
-import uk.dsxt.voting.common.datamodel.BlackListEntry;
-import uk.dsxt.voting.common.datamodel.Voter;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.datamodel.VotingRight;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,12 +34,12 @@ public interface RegistriesServer {
     @GET
     @Path("/votingRights")
     @Produces("application/json")
-    VotingRight[] getVotingRights();
+    Holding[] getHoldings();
 
     @GET
     @Path("/voters")
     @Produces("application/json")
-    Voter[] getVoters();
+    Participant[] getParticipants();
 
     @GET
     @Path("/voting")
@@ -49,5 +49,5 @@ public interface RegistriesServer {
     @GET
     @Path("/blackList")
     @Produces("application/json")
-    BlackListEntry[] getBlackList();
+    BlockedPacket[] getBlackList();
 }
