@@ -1,502 +1,502 @@
 [
   {
-    "voterId": "1",
-    "votesAmount": 84,
-    "representativeId": null
+    "holderId": "1",
+    "packetSize": 84,
+    "nominalHolderId": null
   },
   {
-    "voterId": "2",
-    "votesAmount": 54,
-    "representativeId": null
+    "holderId": "2",
+    "packetSize": 54,
+    "nominalHolderId": null
   },
   {
-    "voterId": "3",
-    "votesAmount": 75,
-    "representativeId": null
+    "holderId": "3",
+    "packetSize": 75,
+    "nominalHolderId": null
   },
   {
-    "voterId": "4",
-    "votesAmount": 76,
-    "representativeId": null
+    "holderId": "4",
+    "packetSize": 76,
+    "nominalHolderId": null
   },
   {
-    "voterId": "5",
-    "votesAmount": 89,
-    "representativeId": null
+    "holderId": "5",
+    "packetSize": 89,
+    "nominalHolderId": null
   },
   {
-    "voterId": "6",
-    "votesAmount": 30,
-    "representativeId": null
+    "holderId": "6",
+    "packetSize": 30,
+    "nominalHolderId": null
   },
   {
-    "voterId": "7",
-    "votesAmount": 14,
-    "representativeId": null
+    "holderId": "7",
+    "packetSize": 14,
+    "nominalHolderId": null
   },
   {
-    "voterId": "8",
-    "votesAmount": 92,
-    "representativeId": null
+    "holderId": "8",
+    "packetSize": 92,
+    "nominalHolderId": null
   },
   {
-    "voterId": "9",
-    "votesAmount": 28,
-    "representativeId": null
+    "holderId": "9",
+    "packetSize": 28,
+    "nominalHolderId": null
   },
   {
-    "voterId": "10",
-    "votesAmount": 16,
-    "representativeId": "10"
+    "holderId": "10",
+    "packetSize": 16,
+    "nominalHolderId": "10"
   },
   {
-    "voterId": "11",
-    "votesAmount": 72,
-    "representativeId": null
+    "holderId": "11",
+    "packetSize": 72,
+    "nominalHolderId": null
   },
   {
-    "voterId": "12",
-    "votesAmount": 38,
-    "representativeId": null
+    "holderId": "12",
+    "packetSize": 38,
+    "nominalHolderId": null
   },
   {
-    "voterId": "13",
-    "votesAmount": 15,
-    "representativeId": null
+    "holderId": "13",
+    "packetSize": 15,
+    "nominalHolderId": null
   },
   {
-    "voterId": "14",
-    "votesAmount": 2,
-    "representativeId": null
+    "holderId": "14",
+    "packetSize": 2,
+    "nominalHolderId": null
   },
   {
-    "voterId": "15",
-    "votesAmount": 22,
-    "representativeId": null
+    "holderId": "15",
+    "packetSize": 22,
+    "nominalHolderId": null
   },
   {
-    "voterId": "16",
-    "votesAmount": 76,
-    "representativeId": null
+    "holderId": "16",
+    "packetSize": 76,
+    "nominalHolderId": null
   },
   {
-    "voterId": "17",
-    "votesAmount": 56,
-    "representativeId": null
+    "holderId": "17",
+    "packetSize": 56,
+    "nominalHolderId": null
   },
   {
-    "voterId": "18",
-    "votesAmount": 87,
-    "representativeId": null
+    "holderId": "18",
+    "packetSize": 87,
+    "nominalHolderId": null
   },
   {
-    "voterId": "19",
-    "votesAmount": 89,
-    "representativeId": null
+    "holderId": "19",
+    "packetSize": 89,
+    "nominalHolderId": null
   },
   {
-    "voterId": "20",
-    "votesAmount": 5,
-    "representativeId": "20"
+    "holderId": "20",
+    "packetSize": 5,
+    "nominalHolderId": "20"
   },
   {
-    "voterId": "21",
-    "votesAmount": 33,
-    "representativeId": null
+    "holderId": "21",
+    "packetSize": 33,
+    "nominalHolderId": null
   },
   {
-    "voterId": "22",
-    "votesAmount": 1,
-    "representativeId": null
+    "holderId": "22",
+    "packetSize": 1,
+    "nominalHolderId": null
   },
   {
-    "voterId": "23",
-    "votesAmount": 41,
-    "representativeId": null
+    "holderId": "23",
+    "packetSize": 41,
+    "nominalHolderId": null
   },
   {
-    "voterId": "24",
-    "votesAmount": 78,
-    "representativeId": null
+    "holderId": "24",
+    "packetSize": 78,
+    "nominalHolderId": null
   },
   {
-    "voterId": "25",
-    "votesAmount": 38,
-    "representativeId": null
+    "holderId": "25",
+    "packetSize": 38,
+    "nominalHolderId": null
   },
   {
-    "voterId": "26",
-    "votesAmount": 26,
-    "representativeId": null
+    "holderId": "26",
+    "packetSize": 26,
+    "nominalHolderId": null
   },
   {
-    "voterId": "27",
-    "votesAmount": 80,
-    "representativeId": null
+    "holderId": "27",
+    "packetSize": 80,
+    "nominalHolderId": null
   },
   {
-    "voterId": "28",
-    "votesAmount": 25,
-    "representativeId": null
+    "holderId": "28",
+    "packetSize": 25,
+    "nominalHolderId": null
   },
   {
-    "voterId": "29",
-    "votesAmount": 66,
-    "representativeId": null
+    "holderId": "29",
+    "packetSize": 66,
+    "nominalHolderId": null
   },
   {
-    "voterId": "30",
-    "votesAmount": 7,
-    "representativeId": "30"
+    "holderId": "30",
+    "packetSize": 7,
+    "nominalHolderId": "30"
   },
   {
-    "voterId": "31",
-    "votesAmount": 23,
-    "representativeId": null
+    "holderId": "31",
+    "packetSize": 23,
+    "nominalHolderId": null
   },
   {
-    "voterId": "32",
-    "votesAmount": 95,
-    "representativeId": null
+    "holderId": "32",
+    "packetSize": 95,
+    "nominalHolderId": null
   },
   {
-    "voterId": "33",
-    "votesAmount": 79,
-    "representativeId": null
+    "holderId": "33",
+    "packetSize": 79,
+    "nominalHolderId": null
   },
   {
-    "voterId": "34",
-    "votesAmount": 83,
-    "representativeId": null
+    "holderId": "34",
+    "packetSize": 83,
+    "nominalHolderId": null
   },
   {
-    "voterId": "35",
-    "votesAmount": 51,
-    "representativeId": null
+    "holderId": "35",
+    "packetSize": 51,
+    "nominalHolderId": null
   },
   {
-    "voterId": "36",
-    "votesAmount": 51,
-    "representativeId": null
+    "holderId": "36",
+    "packetSize": 51,
+    "nominalHolderId": null
   },
   {
-    "voterId": "37",
-    "votesAmount": 97,
-    "representativeId": null
+    "holderId": "37",
+    "packetSize": 97,
+    "nominalHolderId": null
   },
   {
-    "voterId": "38",
-    "votesAmount": 62,
-    "representativeId": null
+    "holderId": "38",
+    "packetSize": 62,
+    "nominalHolderId": null
   },
   {
-    "voterId": "39",
-    "votesAmount": 77,
-    "representativeId": null
+    "holderId": "39",
+    "packetSize": 77,
+    "nominalHolderId": null
   },
   {
-    "voterId": "40",
-    "votesAmount": 90,
-    "representativeId": "40"
+    "holderId": "40",
+    "packetSize": 90,
+    "nominalHolderId": "40"
   },
   {
-    "voterId": "41",
-    "votesAmount": 86,
-    "representativeId": null
+    "holderId": "41",
+    "packetSize": 86,
+    "nominalHolderId": null
   },
   {
-    "voterId": "42",
-    "votesAmount": 47,
-    "representativeId": null
+    "holderId": "42",
+    "packetSize": 47,
+    "nominalHolderId": null
   },
   {
-    "voterId": "43",
-    "votesAmount": 31,
-    "representativeId": null
+    "holderId": "43",
+    "packetSize": 31,
+    "nominalHolderId": null
   },
   {
-    "voterId": "44",
-    "votesAmount": 23,
-    "representativeId": null
+    "holderId": "44",
+    "packetSize": 23,
+    "nominalHolderId": null
   },
   {
-    "voterId": "45",
-    "votesAmount": 19,
-    "representativeId": null
+    "holderId": "45",
+    "packetSize": 19,
+    "nominalHolderId": null
   },
   {
-    "voterId": "46",
-    "votesAmount": 51,
-    "representativeId": null
+    "holderId": "46",
+    "packetSize": 51,
+    "nominalHolderId": null
   },
   {
-    "voterId": "47",
-    "votesAmount": 92,
-    "representativeId": null
+    "holderId": "47",
+    "packetSize": 92,
+    "nominalHolderId": null
   },
   {
-    "voterId": "48",
-    "votesAmount": 21,
-    "representativeId": null
+    "holderId": "48",
+    "packetSize": 21,
+    "nominalHolderId": null
   },
   {
-    "voterId": "49",
-    "votesAmount": 3,
-    "representativeId": null
+    "holderId": "49",
+    "packetSize": 3,
+    "nominalHolderId": null
   },
   {
-    "voterId": "50",
-    "votesAmount": 39,
-    "representativeId": "50"
+    "holderId": "50",
+    "packetSize": 39,
+    "nominalHolderId": "50"
   },
   {
-    "voterId": "51",
-    "votesAmount": 68,
-    "representativeId": null
+    "holderId": "51",
+    "packetSize": 68,
+    "nominalHolderId": null
   },
   {
-    "voterId": "52",
-    "votesAmount": 35,
-    "representativeId": null
+    "holderId": "52",
+    "packetSize": 35,
+    "nominalHolderId": null
   },
   {
-    "voterId": "53",
-    "votesAmount": 64,
-    "representativeId": null
+    "holderId": "53",
+    "packetSize": 64,
+    "nominalHolderId": null
   },
   {
-    "voterId": "54",
-    "votesAmount": 8,
-    "representativeId": null
+    "holderId": "54",
+    "packetSize": 8,
+    "nominalHolderId": null
   },
   {
-    "voterId": "55",
-    "votesAmount": 97,
-    "representativeId": null
+    "holderId": "55",
+    "packetSize": 97,
+    "nominalHolderId": null
   },
   {
-    "voterId": "56",
-    "votesAmount": 76,
-    "representativeId": null
+    "holderId": "56",
+    "packetSize": 76,
+    "nominalHolderId": null
   },
   {
-    "voterId": "57",
-    "votesAmount": 83,
-    "representativeId": null
+    "holderId": "57",
+    "packetSize": 83,
+    "nominalHolderId": null
   },
   {
-    "voterId": "58",
-    "votesAmount": 99,
-    "representativeId": null
+    "holderId": "58",
+    "packetSize": 99,
+    "nominalHolderId": null
   },
   {
-    "voterId": "59",
-    "votesAmount": 10,
-    "representativeId": null
+    "holderId": "59",
+    "packetSize": 10,
+    "nominalHolderId": null
   },
   {
-    "voterId": "60",
-    "votesAmount": 24,
-    "representativeId": "60"
+    "holderId": "60",
+    "packetSize": 24,
+    "nominalHolderId": "60"
   },
   {
-    "voterId": "61",
-    "votesAmount": 34,
-    "representativeId": null
+    "holderId": "61",
+    "packetSize": 34,
+    "nominalHolderId": null
   },
   {
-    "voterId": "62",
-    "votesAmount": 49,
-    "representativeId": null
+    "holderId": "62",
+    "packetSize": 49,
+    "nominalHolderId": null
   },
   {
-    "voterId": "63",
-    "votesAmount": 5,
-    "representativeId": null
+    "holderId": "63",
+    "packetSize": 5,
+    "nominalHolderId": null
   },
   {
-    "voterId": "64",
-    "votesAmount": 47,
-    "representativeId": null
+    "holderId": "64",
+    "packetSize": 47,
+    "nominalHolderId": null
   },
   {
-    "voterId": "65",
-    "votesAmount": 78,
-    "representativeId": null
+    "holderId": "65",
+    "packetSize": 78,
+    "nominalHolderId": null
   },
   {
-    "voterId": "66",
-    "votesAmount": 65,
-    "representativeId": null
+    "holderId": "66",
+    "packetSize": 65,
+    "nominalHolderId": null
   },
   {
-    "voterId": "67",
-    "votesAmount": 17,
-    "representativeId": null
+    "holderId": "67",
+    "packetSize": 17,
+    "nominalHolderId": null
   },
   {
-    "voterId": "68",
-    "votesAmount": 97,
-    "representativeId": null
+    "holderId": "68",
+    "packetSize": 97,
+    "nominalHolderId": null
   },
   {
-    "voterId": "69",
-    "votesAmount": 8,
-    "representativeId": null
+    "holderId": "69",
+    "packetSize": 8,
+    "nominalHolderId": null
   },
   {
-    "voterId": "70",
-    "votesAmount": 30,
-    "representativeId": "70"
+    "holderId": "70",
+    "packetSize": 30,
+    "nominalHolderId": "70"
   },
   {
-    "voterId": "71",
-    "votesAmount": 71,
-    "representativeId": null
+    "holderId": "71",
+    "packetSize": 71,
+    "nominalHolderId": null
   },
   {
-    "voterId": "72",
-    "votesAmount": 62,
-    "representativeId": null
+    "holderId": "72",
+    "packetSize": 62,
+    "nominalHolderId": null
   },
   {
-    "voterId": "73",
-    "votesAmount": 20,
-    "representativeId": null
+    "holderId": "73",
+    "packetSize": 20,
+    "nominalHolderId": null
   },
   {
-    "voterId": "74",
-    "votesAmount": 83,
-    "representativeId": null
+    "holderId": "74",
+    "packetSize": 83,
+    "nominalHolderId": null
   },
   {
-    "voterId": "75",
-    "votesAmount": 18,
-    "representativeId": null
+    "holderId": "75",
+    "packetSize": 18,
+    "nominalHolderId": null
   },
   {
-    "voterId": "76",
-    "votesAmount": 21,
-    "representativeId": null
+    "holderId": "76",
+    "packetSize": 21,
+    "nominalHolderId": null
   },
   {
-    "voterId": "77",
-    "votesAmount": 72,
-    "representativeId": null
+    "holderId": "77",
+    "packetSize": 72,
+    "nominalHolderId": null
   },
   {
-    "voterId": "78",
-    "votesAmount": 56,
-    "representativeId": null
+    "holderId": "78",
+    "packetSize": 56,
+    "nominalHolderId": null
   },
   {
-    "voterId": "79",
-    "votesAmount": 17,
-    "representativeId": null
+    "holderId": "79",
+    "packetSize": 17,
+    "nominalHolderId": null
   },
   {
-    "voterId": "80",
-    "votesAmount": 48,
-    "representativeId": "80"
+    "holderId": "80",
+    "packetSize": 48,
+    "nominalHolderId": "80"
   },
   {
-    "voterId": "81",
-    "votesAmount": 95,
-    "representativeId": null
+    "holderId": "81",
+    "packetSize": 95,
+    "nominalHolderId": null
   },
   {
-    "voterId": "82",
-    "votesAmount": 79,
-    "representativeId": null
+    "holderId": "82",
+    "packetSize": 79,
+    "nominalHolderId": null
   },
   {
-    "voterId": "83",
-    "votesAmount": 15,
-    "representativeId": null
+    "holderId": "83",
+    "packetSize": 15,
+    "nominalHolderId": null
   },
   {
-    "voterId": "84",
-    "votesAmount": 11,
-    "representativeId": null
+    "holderId": "84",
+    "packetSize": 11,
+    "nominalHolderId": null
   },
   {
-    "voterId": "85",
-    "votesAmount": 25,
-    "representativeId": null
+    "holderId": "85",
+    "packetSize": 25,
+    "nominalHolderId": null
   },
   {
-    "voterId": "86",
-    "votesAmount": 9,
-    "representativeId": null
+    "holderId": "86",
+    "packetSize": 9,
+    "nominalHolderId": null
   },
   {
-    "voterId": "87",
-    "votesAmount": 18,
-    "representativeId": null
+    "holderId": "87",
+    "packetSize": 18,
+    "nominalHolderId": null
   },
   {
-    "voterId": "88",
-    "votesAmount": 10,
-    "representativeId": null
+    "holderId": "88",
+    "packetSize": 10,
+    "nominalHolderId": null
   },
   {
-    "voterId": "89",
-    "votesAmount": 84,
-    "representativeId": null
+    "holderId": "89",
+    "packetSize": 84,
+    "nominalHolderId": null
   },
   {
-    "voterId": "90",
-    "votesAmount": 20,
-    "representativeId": "90"
+    "holderId": "90",
+    "packetSize": 20,
+    "nominalHolderId": "90"
   },
   {
-    "voterId": "91",
-    "votesAmount": 34,
-    "representativeId": null
+    "holderId": "91",
+    "packetSize": 34,
+    "nominalHolderId": null
   },
   {
-    "voterId": "92",
-    "votesAmount": 21,
-    "representativeId": null
+    "holderId": "92",
+    "packetSize": 21,
+    "nominalHolderId": null
   },
   {
-    "voterId": "93",
-    "votesAmount": 37,
-    "representativeId": null
+    "holderId": "93",
+    "packetSize": 37,
+    "nominalHolderId": null
   },
   {
-    "voterId": "94",
-    "votesAmount": 30,
-    "representativeId": null
+    "holderId": "94",
+    "packetSize": 30,
+    "nominalHolderId": null
   },
   {
-    "voterId": "95",
-    "votesAmount": 38,
-    "representativeId": null
+    "holderId": "95",
+    "packetSize": 38,
+    "nominalHolderId": null
   },
   {
-    "voterId": "96",
-    "votesAmount": 79,
-    "representativeId": null
+    "holderId": "96",
+    "packetSize": 79,
+    "nominalHolderId": null
   },
   {
-    "voterId": "97",
-    "votesAmount": 25,
-    "representativeId": null
+    "holderId": "97",
+    "packetSize": 25,
+    "nominalHolderId": null
   },
   {
-    "voterId": "98",
-    "votesAmount": 76,
-    "representativeId": null
+    "holderId": "98",
+    "packetSize": 76,
+    "nominalHolderId": null
   },
   {
-    "voterId": "99",
-    "votesAmount": 10,
-    "representativeId": null
+    "holderId": "99",
+    "packetSize": 10,
+    "nominalHolderId": null
   },
   {
-    "voterId": "100",
-    "votesAmount": 39,
-    "representativeId": "100"
+    "holderId": "100",
+    "packetSize": 39,
+    "nominalHolderId": "100"
   }
 ]
