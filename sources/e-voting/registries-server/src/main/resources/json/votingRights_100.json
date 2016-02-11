@@ -47,7 +47,7 @@
   {
     "holderId": "10",
     "packetSize": 16,
-    "nominalHolderId": "10"
+    "nominalHolderId": "9"
   },
   {
     "holderId": "11",
@@ -97,7 +97,7 @@
   {
     "holderId": "20",
     "packetSize": 5,
-    "nominalHolderId": "20"
+    "nominalHolderId": "19"
   },
   {
     "holderId": "21",
@@ -147,7 +147,7 @@
   {
     "holderId": "30",
     "packetSize": 7,
-    "nominalHolderId": "30"
+    "nominalHolderId": "29"
   },
   {
     "holderId": "31",
@@ -197,7 +197,7 @@
   {
     "holderId": "40",
     "packetSize": 90,
-    "nominalHolderId": "40"
+    "nominalHolderId": "39"
   },
   {
     "holderId": "41",
@@ -247,7 +247,7 @@
   {
     "holderId": "50",
     "packetSize": 39,
-    "nominalHolderId": "50"
+    "nominalHolderId": "49"
   },
   {
     "holderId": "51",
@@ -297,7 +297,7 @@
   {
     "holderId": "60",
     "packetSize": 24,
-    "nominalHolderId": "60"
+    "nominalHolderId": "59"
   },
   {
     "holderId": "61",
@@ -347,7 +347,7 @@
   {
     "holderId": "70",
     "packetSize": 30,
-    "nominalHolderId": "70"
+    "nominalHolderId": "69"
   },
   {
     "holderId": "71",
@@ -397,7 +397,7 @@
   {
     "holderId": "80",
     "packetSize": 48,
-    "nominalHolderId": "80"
+    "nominalHolderId": "79"
   },
   {
     "holderId": "81",
@@ -447,7 +447,7 @@
   {
     "holderId": "90",
     "packetSize": 20,
-    "nominalHolderId": "90"
+    "nominalHolderId": "89"
   },
   {
     "holderId": "91",
@@ -497,6 +497,6 @@
   {
     "holderId": "100",
     "packetSize": 39,
-    "nominalHolderId": "100"
+    "nominalHolderId": "99"
   }
 ]

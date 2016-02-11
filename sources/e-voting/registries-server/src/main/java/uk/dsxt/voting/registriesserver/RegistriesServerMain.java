@@ -22,6 +22,7 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.datamodel.InternalLogicException;
 import uk.dsxt.voting.common.utils.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -38,6 +39,8 @@ public class RegistriesServerMain {
             RegistriesServerApplication application = new RegistriesServerApplication(properties);
             JettyRunner.run(application, properties, "registries.server.web.port");
             log.info(String.format("%s module is successfully started", MODULE_NAME));
+        } catch (InternalLogicException e) {
+            log.error(String.format("Logic exception in module %s. Reason: %s", MODULE_NAME, e.getMessage()));
         } catch (Exception e) {
             log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
         }

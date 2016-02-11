@@ -1,34 +1,39 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.datamodel;
 
-import uk.dsxt.voting.common.datamodel.*;
+import lombok.Getter;
 
-public interface RegistriesServer {
-    RequestResult<Holding> getHoldings();
+public class InternalLogicException extends Exception {
 
-    RequestResult<Participant> getParticipants();
+    @Getter
+    private final Object returnValue; // Unfortunately, generic class can not inherit Exception, so returnValue has not concrete type.
 
-    RequestResult<Voting> getVotings();
+    public InternalLogicException(String message) {
+        this(null, message);
+    }
 
-    RequestResult<BlockedPacket> getBlackList();
+    public InternalLogicException(Object returnValue, String message) {
+        super(message);
+        this.returnValue = returnValue;
+    }
 }

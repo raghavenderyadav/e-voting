@@ -1,62 +1,64 @@
-{
-  "id": "1",
-  "name": "The annual voting of shareholders of OJSC 'Blockchain Company'",
-  "startTimestamp": 1454233211600,
-  "endTimestamp": 1454233211633,
-  "questions": [
-    {
-      "id": 1,
-      "question": "Do you approve the results of work?",
-      "answers": [
-        {
-          "id": 1,
-          "name": "Yes"
-        },
-        {
-          "id": 2,
-          "name": "No"
-        },
-        {
-          "id": 3,
-          "name": "Abstained"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "question": "Will you elect a new chairman?",
-      "answers": [
-        {
-          "id": 1,
-          "name": "Yes"
-        },
-        {
-          "id": 2,
-          "name": "No"
-        },
-        {
-          "id": 3,
-          "name": "Abstained"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "question": "New chairman",
-      "answers": [
-        {
-          "id": 1,
-          "name": "Ivanov"
-        },
-        {
-          "id": 2,
-          "name": "Petrov"
-        },
-        {
-          "id": 3,
-          "name": "Sidorov"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "id": "1",
+    "name": "The annual voting of shareholders of OJSC 'Blockchain Company'",
+    "startTimestamp": 1454233211600,
+    "endTimestamp": 1454233211633,
+    "questions": [
+      {
+        "id": 1,
+        "question": "Do you approve the results of work?",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Yes"
+          },
+          {
+            "id": 2,
+            "name": "No"
+          },
+          {
+            "id": 3,
+            "name": "Abstained"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "question": "Will you elect a new chairman?",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Yes"
+          },
+          {
+            "id": 2,
+            "name": "No"
+          },
+          {
+            "id": 3,
+            "name": "Abstained"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "question": "New chairman",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Ivanov"
+          },
+          {
+            "id": 2,
+            "name": "Petrov"
+          },
+          {
+            "id": 3,
+            "name": "Sidorov"
+          }
+        ]
+      }
+    ]
+  }
+]

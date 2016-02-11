@@ -57,10 +57,11 @@ public class VotingClientMain {
     }
 
     private static void init(RegistriesServer registriesServer, WalletManager walletManager, String ownerId, PrivateKey ownerPrivateKey, String messagesFileContent, long newMessagesRequestInterval) {
-        BlockedPacket[] blackList = registriesServer.getBlackList();
-        Holding[] holdings = registriesServer.getHoldings();
-        Participant[] participants = registriesServer.getParticipants();
-        Voting[] votings = registriesServer.getVotings();
+        //TODO: validate for errors
+        BlockedPacket[] blackList = registriesServer.getBlackList().getValues();
+        Holding[] holdings = registriesServer.getHoldings().getValues();
+        Participant[] participants = registriesServer.getParticipants().getValues();
+        Voting[] votings = registriesServer.getVotings().getValues();
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
         VoitingClient client = new VoitingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);

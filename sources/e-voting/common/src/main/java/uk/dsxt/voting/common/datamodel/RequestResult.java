@@ -19,16 +19,40 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.datamodel;
 
-import uk.dsxt.voting.common.datamodel.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Value;
 
-public interface RegistriesServer {
-    RequestResult<Holding> getHoldings();
+@Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class RequestResult<T> {
+    @Getter
+    @JsonProperty("values")
+    T[] values;
 
-    RequestResult<Participant> getParticipants();
+    @Getter
+    @JsonProperty("error")
+    String error;
 
-    RequestResult<Voting> getVotings();
+    @JsonCreator
+    public RequestResult(@JsonProperty("values") T[] values, @JsonProperty("error") String error) {
+        this.values = values;
+        this.error = error;
+    }
 
-    RequestResult<BlockedPacket> getBlackList();
+    public RequestResult(T[] values) {
+        this(values, null);
+    }
+
+    public RequestResult(String error) {
+        this(null, error);
+    }
+
+    public boolean isSuccessful() {
+        return error == null;
+    }
 }
