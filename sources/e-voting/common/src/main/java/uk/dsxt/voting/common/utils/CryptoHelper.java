@@ -50,7 +50,7 @@ public class CryptoHelper {
     }
 
     public static String createSignature(String originalText, PrivateKey privateKey)
-            throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException, SignatureException {
+            throws GeneralSecurityException, UnsupportedEncodingException {
         byte[] data = originalText.getBytes(ENCODING);
         Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
         sig.initSign(privateKey);
@@ -60,7 +60,7 @@ public class CryptoHelper {
     }
 
     public static boolean verifySignature(String originalText, String signature, PublicKey publicKey)
-            throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException, SignatureException {
+            throws GeneralSecurityException, UnsupportedEncodingException {
         byte[] data = originalText.getBytes(ENCODING);
         Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
         sig.initVerify(publicKey);
