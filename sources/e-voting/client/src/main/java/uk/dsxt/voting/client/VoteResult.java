@@ -99,7 +99,7 @@ public class VoteResult {
         for(VotedAnswer otherAnswer: other.getAnswers()) {
             VotedAnswer answer = answersByQuestionId.get(otherAnswer.getKey());
             if (answer == null) {
-                answersByQuestionId.put(otherAnswer.getKey(), answer);
+                answersByQuestionId.put(otherAnswer.getKey(), otherAnswer);
             } else {
                 answersByQuestionId.put(otherAnswer.getKey(), new VotedAnswer(answer.getQuestionId(), answer.getAnswerId(), answer.getVoteAmount().add(otherAnswer.getVoteAmount())));
             }
@@ -107,6 +107,6 @@ public class VoteResult {
     }
 
     public BigDecimal getSumQuestionAmount(int questionId) {
-        return answersByQuestionId.values().stream().filter(a -> a.getQuestionId() == questionId).map(a -> a.getVoteAmount()).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+        return answersByQuestionId.values().stream().filter(a -> a.getQuestionId() == questionId).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 }
