@@ -79,7 +79,7 @@ public class VoteScheduler {
 
     public void run() {
         Thread scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
-        scheduler.run();
+        scheduler.start();
         log.info("VoteScheduler runs");
     }
 
