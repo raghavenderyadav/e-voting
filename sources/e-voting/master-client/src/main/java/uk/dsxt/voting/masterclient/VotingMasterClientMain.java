@@ -26,6 +26,7 @@ import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
+import uk.dsxt.voting.common.networking.BaseWalletManager;
 
 import java.math.BigDecimal;
 import java.util.Properties;
@@ -41,7 +42,8 @@ public class VotingMasterClientMain {
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
-            WalletManager walletManager = null; //TODO
+            WalletManager walletManager = new BaseWalletManager(properties);
+            walletManager.runWallet();
             RegistriesServer registriesServer = null; //TODO
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);
             log.info(String.format("%s module is successfully started", MODULE_NAME));
