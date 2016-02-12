@@ -21,14 +21,17 @@
 
 package uk.dsxt.voting.common.networking;
 
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Participant;
+import uk.dsxt.voting.common.datamodel.Voting;
 
 public interface RegistriesServer {
-    RequestResult<Holding> getHoldings();
+    Holding[] getHoldings();
 
-    RequestResult<Participant> getParticipants();
+    Participant[] getParticipants();
 
-    RequestResult<Voting> getVotings();
+    Voting[] getVotings();
 
-    RequestResult<BlockedPacket> getBlackList();
+    BlockedPacket[] getBlackList();
 }

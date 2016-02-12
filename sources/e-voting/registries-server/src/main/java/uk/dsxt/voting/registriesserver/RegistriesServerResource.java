@@ -22,7 +22,10 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Participant;
+import uk.dsxt.voting.common.datamodel.Voting;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,8 +34,6 @@ import javax.ws.rs.Produces;
 @Log4j2
 @Path("/voting-api")
 public class RegistriesServerResource implements uk.dsxt.voting.common.networking.RegistriesServer {
-    public static final String ERROR = "Unable to obtain data";
-
     private final RegistriesServerManager manager;
 
     public RegistriesServerResource(RegistriesServerManager manager) {
@@ -44,12 +45,13 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
         T[] get();
     }
 
-    private <T> RequestResult<T> execute(String name, Request<T> request) {
+    private <T> T[] execute(String name, Request<T> request) {
         try {
-            return new RequestResult<>(request.get());
+            return request.get();
         } catch (Exception ex) {
             log.error(String.format("%s failed", name), ex);
-            return new RequestResult<>(ERROR);
+            manager.stop();
+            return null;
         }
     }
 
@@ -57,7 +59,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
     @GET
     @Path("/holdings")
     @Produces("application/json")
-    public RequestResult<Holding> getHoldings() {
+    public Holding[] getHoldings() {
         return execute("getHoldings", manager::getHoldings);
     }
 
@@ -65,7 +67,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
     @GET
     @Path("/participants")
     @Produces("application/json")
-    public RequestResult<Participant> getParticipants() {
+    public Participant[] getParticipants() {
         return execute("getParticipants", manager::getParticipants);
     }
 
@@ -73,7 +75,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
     @GET
     @Path("/votings")
     @Produces("application/json")
-    public RequestResult<Voting> getVotings() {
+    public Voting[] getVotings() {
         return execute("getVotings", manager::getVotings);
     }
 
@@ -81,7 +83,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
     @GET
     @Path("/blackList")
     @Produces("application/json")
-    public RequestResult<BlockedPacket> getBlackList() {
+    public BlockedPacket[] getBlackList() {
         return execute("getBlackList", manager::getBlackList);
     }
 }

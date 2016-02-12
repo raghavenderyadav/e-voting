@@ -32,12 +32,14 @@ import java.util.Properties;
 public class RegistriesServerMain {
     private static final String MODULE_NAME = "registries-server";
 
+    private static org.eclipse.jetty.server.Server jettyServer;
+
     public static void main(String[] args) {
         try {
             log.info(String.format("Starting module %s...", MODULE_NAME.toUpperCase()));
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             RegistriesServerApplication application = new RegistriesServerApplication(properties);
-            JettyRunner.run(application, properties, "registries.server.web.port");
+            jettyServer = JettyRunner.run(application, properties, "registries.server.web.port");
             log.info(String.format("%s module is successfully started", MODULE_NAME));
         } catch (InternalLogicException e) {
             log.error(String.format("Logic exception in module %s. Reason: %s", MODULE_NAME, e.getMessage()));
@@ -46,5 +48,12 @@ public class RegistriesServerMain {
         }
     }
 
+    public static void shutdown() throws Exception {
+        if (jettyServer != null) {
+            jettyServer.stop();
+            jettyServer.destroy();
+            jettyServer = null;
+        }
+    }
 
 }

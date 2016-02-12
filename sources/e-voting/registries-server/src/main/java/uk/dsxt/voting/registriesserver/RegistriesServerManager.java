@@ -22,11 +22,13 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.Value;
+import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+@Log4j2
 @Value
 public class RegistriesServerManager {
 
@@ -170,6 +172,15 @@ public class RegistriesServerManager {
             if (originalPacketSize.compareTo(bp.getPacketSize()) < 0)
                 throw new InternalLogicException(String.format("validateBlackList failed. Blocked packet size %s is greater than original %s for id %s. index=%d",
                         originalPacketSize, bp.getPacketSize(), bp.getHolderId(), i));
+        }
+    }
+
+    public void stop() {
+        try {
+            log.warn("stop called.");
+            RegistriesServerMain.shutdown();
+        } catch (Exception e) {
+            log.error("stop failed. unable to stop module.", e);
         }
     }
 }

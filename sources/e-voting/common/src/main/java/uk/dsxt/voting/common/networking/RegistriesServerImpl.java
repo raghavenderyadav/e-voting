@@ -21,14 +21,11 @@
 
 package uk.dsxt.voting.common.networking;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
-
-import java.io.IOException;
 
 @Log4j2
 @Value
@@ -64,45 +61,45 @@ public class RegistriesServerImpl implements RegistriesServer {
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
     }
 
-    @FunctionalInterface
-    public interface Result<T> {
-        RequestResult<T> get(String text) throws IOException;
-    }
-
-    private <T> RequestResult<T> execute(String name, String url, Result<T> request) {
+    private <T> T execute(String name, String url, Class<T> clazz) {
         try {
-            String result = httpHelper.request(url, null, RequestType.GET);
-            if (result.isEmpty()) {
-                log.error(String.format("%s failed. server answer is empty for url %s", name, url));
-                return new RequestResult<>(EMPTY_ERROR);
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    String answer = httpHelper.request(url, null, RequestType.GET);
+                    T value = mapper.readValue(answer, clazz);
+                    if (value != null)
+                        return value;
+                    log.error(String.format("%s failed. value is null. url=%s", name, url));
+                } catch (InternalLogicException e) {
+                    log.error(String.format("%s failed. Logic exception. url=%s. Reason: %s", name, url, e.getMessage()));
+                } catch (Exception ex) {
+                    log.error(String.format("%s failed. url=%s", name, url), ex);
+                }
+                Thread.sleep(1000);
             }
-            return request.get(result);
-        } catch (InternalLogicException e) {
-            log.error(String.format("%s failed. Logic exception. url=%s. Reason: %s", name,url, e.getMessage()));
-            return new RequestResult<>(INTERNAL_LOGIC_ERROR);
-        } catch (Exception ex) {
-            log.error(String.format("%s failed. url=%s", name, url), ex);
-            return new RequestResult<>(UNKNOWN_ERROR);
+        } catch (InterruptedException e) {
+            log.error(String.format("%s failed. InterruptedException. url=%s", name, url), e);
         }
+        return null;
     }
 
     @Override
-    public RequestResult<Holding> getHoldings() {
-        return execute("getHoldings", holdingsUrl, (answer) -> mapper.readValue(answer, new TypeReference<RequestResult<Holding>>() {}));
+    public Holding[] getHoldings() {
+        return execute("getHoldings", holdingsUrl, Holding[].class);
     }
 
     @Override
-    public RequestResult<Participant> getParticipants() {
-        return execute("getParticipants", participantUrl, (answer) -> mapper.readValue(answer, new TypeReference<RequestResult<Participant>>() {}));
+    public Participant[] getParticipants() {
+        return execute("getParticipants", participantUrl, Participant[].class);
     }
 
     @Override
-    public RequestResult<Voting> getVotings() {
-        return execute("getVotings", votingsUrl, (answer) -> mapper.readValue(answer, new TypeReference<RequestResult<Voting>>() {}));
+    public Voting[] getVotings() {
+        return execute("getVotings", votingsUrl, Voting[].class);
     }
 
     @Override
-    public RequestResult<BlockedPacket> getBlackList() {
-        return execute("getBlackList", blacklistUrl, (answer) -> mapper.readValue(answer, new TypeReference<RequestResult<BlockedPacket>>() {}));
+    public BlockedPacket[] getBlackList() {
+        return execute("getBlackList", blacklistUrl, BlockedPacket[].class);
     }
 }
