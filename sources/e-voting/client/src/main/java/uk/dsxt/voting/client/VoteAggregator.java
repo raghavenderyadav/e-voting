@@ -65,15 +65,14 @@ public class VoteAggregator {
         for(Holding holding : holdings) {
             results.put(holding.getHolderId(), new HolderRecord(holding.getHolderId(), null, new ArrayList<>(), new ArrayList<>(), null, holding.getPacketSize()));
         }
-        rootRecord = new HolderRecord(null, null, new ArrayList<>(), new ArrayList<>(), null, null);
+        rootRecord = new HolderRecord(null, new VoteResult(voting.getId(), null), new ArrayList<>(), new ArrayList<>(), null, BigDecimal.ZERO);
         for(Holding holding : holdings) {
             HolderRecord record = results.get(holding.getHolderId());
             record.setParent(holding.getNominalHolderId() == null ? rootRecord : results.get(holding.getNominalHolderId()));
             record.getParent().getChildren().add(record);
         }
         for(BlockedPacket blockedPacket : blackList) {
-            HolderRecord record = results.get(blockedPacket.getHolderId());
-            if (record != null) {
+            for(HolderRecord record = results.get(blockedPacket.getHolderId()); record != null; record = record.getParent()) {
                 record.setNonBlockedAmount(record.getNonBlockedAmount().subtract(blockedPacket.getPacketSize()));
             }
         }
@@ -153,7 +152,7 @@ public class VoteAggregator {
                     voteResult.getHolderId(), voting.getName());
             return false;
         }
-        for(; record != null; record = record.getParent()) {
+        for(; record != rootRecord; record = record.getParent()) {
             if (record.getHolderId().equals(signAuthorId))
                 return true;
         }
