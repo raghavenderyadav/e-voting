@@ -36,5 +36,5 @@ public interface WalletManager {
     
     String getSelfAddress();
 
-    List<uk.dsxt.voting.common.networking.Message> getNewMessages(long timestamp);
+    List<Message> getNewMessages(long timestamp);
 }

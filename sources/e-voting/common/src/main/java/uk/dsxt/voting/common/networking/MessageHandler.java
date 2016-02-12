@@ -58,32 +58,34 @@ public abstract class MessageHandler {
     public void run(long newMessagesRequestInterval) {
         Thread messagesHandler = new Thread(() -> {
             while (!Thread.interrupted()) {
+                checkNewMessages();
                 try {
                     Thread.sleep(newMessagesRequestInterval);
                 } catch (InterruptedException ignored) {
                     return;
                 }
-                checkNewMessages();
             }
         }, "messagesHandler");
         messagesHandler.start();
-        log.info("VoitingClient runs");
+        log.info("MessageHandler runs");
     }
 
     private void checkNewMessages() {
         List<Message> newMessages = walletManager.getNewMessages(lastNewMessagesRequestTime);
         lastNewMessagesRequestTime = System.currentTimeMillis()-1;
+        if (newMessages == null)
+            return;
         for(Message message : newMessages) {
             try {
                 MessageContent messageContent = new MessageContent(message.getBody());
                 PublicKey authorKey = publicKeysById.get(messageContent.getAuthor());
                 if (authorKey == null) {
                     log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
-                    return;
+                    continue;
                 }
-                if (messageContent.checkSign(authorKey)) {
+                if (!messageContent.checkSign(authorKey)) {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
-                    return;
+                    continue;
                 }
                 handleNewMessage(messageContent, message.getId());
             } catch (Exception e) {
