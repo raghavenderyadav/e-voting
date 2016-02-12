@@ -19,10 +19,10 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver.utils;
+package uk.dsxt.voting.common.utils;
 
-import uk.dsxt.voting.common.utils.CryptoHelper;
-import uk.dsxt.voting.registriesserver.datamodel.KeyPair;
+
+import uk.dsxt.voting.common.datamodel.KeyPair;
 
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;

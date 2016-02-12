@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver.datamodel;
+package uk.dsxt.voting.common.datamodel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

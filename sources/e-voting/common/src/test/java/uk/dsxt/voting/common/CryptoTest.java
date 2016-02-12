@@ -19,11 +19,11 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common;
 
 import org.junit.Test;
 import uk.dsxt.voting.common.utils.CryptoHelper;
-import uk.dsxt.voting.registriesserver.utils.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
