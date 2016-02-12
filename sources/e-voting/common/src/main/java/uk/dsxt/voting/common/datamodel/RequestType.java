@@ -21,40 +21,7 @@
 
 package uk.dsxt.voting.common.datamodel;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Value;
-
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class RequestResult<T> {
-    @Getter
-    @JsonProperty("values")
-    T[] values;
-
-    @Getter
-    @JsonProperty("error")
-    String error;
-
-    @JsonCreator
-    public RequestResult(@JsonProperty("values") T[] values, @JsonProperty("error") String error) {
-        this.values = values;
-        this.error = error;
-    }
-
-    public RequestResult(T[] values) {
-        this(values, null);
-    }
-
-    public RequestResult(String error) {
-        this(null, error);
-    }
-
-    @JsonIgnore
-    public boolean isSuccessful() {
-        return error == null;
-    }
+public enum RequestType {
+    POST,
+    GET
 }

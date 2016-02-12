@@ -27,6 +27,7 @@ import uk.dsxt.voting.common.datamodel.Holding;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.RegistriesServer;
+import uk.dsxt.voting.common.networking.RegistriesServerImpl;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -47,8 +48,12 @@ public class VotingClientMain {
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(properties.getProperty("owner.private_key"));
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             String messagesFileContent = PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path"));
+            String registriesServerUrl=properties.getProperty("register.server.url");
+            int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
+            int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
+
             WalletManager walletManager = null; //TODO
-            RegistriesServer registriesServer = null; //TODO
+            RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval);
             log.info(String.format("%s module is successfully started", MODULE_NAME));
         } catch (Exception e) {
