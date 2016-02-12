@@ -50,7 +50,7 @@ public class VoteResult {
         if (terms.length < 2)
             throw new IllegalArgumentException(String.format("VoteResult can not be created from string with %d terms (%s)", terms.length, s));
         votingId = terms[0];
-        holderId = terms[1];
+        holderId = terms[1].length() == 0 ? null : terms[1];
         for(int i = 2; i < terms.length; i++) {
             VotedAnswer answer = new VotedAnswer(terms[i]);
             answersByQuestionId.put(answer.getKey(), answer);
@@ -66,7 +66,9 @@ public class VoteResult {
         StringBuilder sb = new StringBuilder();
         sb.append(votingId);
         sb.append(',');
-        sb.append(holderId);
+        if (holderId != null) {
+            sb.append(holderId);
+        }
         for(VotedAnswer answer : answersByQuestionId.values()) {
             sb.append(',');
             sb.append(answer);
@@ -81,7 +83,7 @@ public class VoteResult {
         VoteResult other = (VoteResult)otherObject;
         if (!votingId.equals(other.getVotingId()))
             return false;
-        if (!holderId.equals(other.getHolderId()))
+        if ((holderId == null) != (other.getHolderId() == null) || holderId != null && !holderId.equals(other.getHolderId()))
             return false;
         if (answersByQuestionId.size() != other.getAnswers().size())
             return false;

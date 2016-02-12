@@ -30,6 +30,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class VoteResultTest {
 
@@ -57,6 +58,10 @@ public class VoteResultTest {
         assertBigDecimal("0.8", answers.get(0).getVoteAmount());
 
         assertTrue(result.equals(new VoteResult(result.toString())));
+
+        VoteResult resultNoHolder = new VoteResult("1,,3 4 5,6 7 0.8");
+        assertEquals("1", resultNoHolder.getVotingId());
+        assertNull(resultNoHolder.getHolderId());
     }
 
     @Test
@@ -72,6 +77,9 @@ public class VoteResultTest {
         assertFalse(result.equals(new VoteResult("1,2,3 4 5,6 7 0")));
         assertFalse(result.equals(new VoteResult("1,2,3 4 5")));
         assertFalse(result.equals(new VoteResult("1,2,3 4 5,6 7 0.8,0 0 0")));
+        assertFalse(result.equals(new VoteResult("1,,3 4 5,6 7 0.8")));
+        assertFalse(new VoteResult("1,,3 4 5,6 7 0.8").equals(result));
+        assertTrue(new VoteResult("1,,3 4 5,6 7 0.8").equals(new VoteResult("1,,3 4 5,6 7 0.8")));
     }
 
     @Test
