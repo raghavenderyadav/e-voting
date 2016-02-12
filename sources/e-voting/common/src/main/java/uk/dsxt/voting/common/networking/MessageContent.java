@@ -89,7 +89,7 @@ public class MessageContent {
 
     public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, Map<String, String> content)
             throws GeneralSecurityException, UnsupportedEncodingException {
-        Map<String, String> fields = new HashMap<>(content);
+        Map<String, String> fields = content == null ? new HashMap<>() : new HashMap<>(content);
         fields.put(FIELD_TYPE, type);
         fields.put(FIELD_AUTHOR, authorId);
         fields.put(FIELD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
@@ -109,13 +109,14 @@ public class MessageContent {
     private static String escapeValue(String value) {
         if (value == null)
             return "";
-        return value.replaceAll("|", "|o").replaceAll("=", "|e").replaceAll(";", "|p");
+        value = value.replaceAll("!", "!o").replaceAll("=", "!e").replaceAll(";", "!p");
+        return value;
     }
 
     private static String descapeValue(String value) {
         if (value == null)
             return "";
-        return value.replaceAll("|e", "=").replaceAll("|p", ";").replaceAll("|o", "|");
+        return value.replaceAll("!e", "=").replaceAll("!p", ";").replaceAll("!o", "!");
     }
 
 }
