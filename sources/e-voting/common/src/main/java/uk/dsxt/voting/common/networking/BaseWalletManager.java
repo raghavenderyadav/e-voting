@@ -156,6 +156,7 @@ public class BaseWalletManager implements WalletManager {
 
     @Override
     public String getSelfAddress() {
+        waitInitialize();
         return selfAccount;
     }
 
