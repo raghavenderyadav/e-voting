@@ -94,7 +94,7 @@ public class BaseWalletManager implements WalletManager {
             try {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
-                log.error(String.format("Can't parse response: %s", response), e);
+                log.error("Can't parse response: {}", response, e);
             }
             return result;
         } catch (Exception e) {
