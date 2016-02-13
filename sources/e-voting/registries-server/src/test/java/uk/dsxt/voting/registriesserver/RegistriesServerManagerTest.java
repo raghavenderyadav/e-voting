@@ -5,10 +5,10 @@ import org.junit.Test;
 import uk.dsxt.voting.common.datamodel.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RegistriesServerManagerTest {
 
@@ -235,5 +235,97 @@ public class RegistriesServerManagerTest {
         participants[0] = new Participant("id", "name1", "key1");
         participants[1] = new Participant("id", "name2", "key2");
         manager.validateAndMapParticipants(participants);
+    }
+
+    @Test
+    public void testValidateAndMapHoldings() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(holdings, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsNull() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        manager.validateAndMapHoldings(null, participantsMap);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsEmpty() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        manager.validateAndMapHoldings(new Holding[0], participantsMap);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsHolderIdNull() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] holdings = new Holding[1];
+//        holdings[0] = new Holding("holder_id", BigDecimal.ONE, "nominal_holder_id");
+        holdings[0] = new Holding(null, BigDecimal.ONE, "nominal_holder_id");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(holdings, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsHolderIdEmpty() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] holdings = new Holding[1];
+        holdings[0] = new Holding("", BigDecimal.ONE, "nominal_holder_id");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(holdings, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsHolderPacketSize() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] holdings = new Holding[1];
+        holdings[0] = new Holding("id", BigDecimal.valueOf(-1), "nominal_holder_id");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(holdings, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsHolderSameId() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] h = new Holding[1];
+        h[0] = new Holding("id1", BigDecimal.ONE, "nominal_holder_id");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(h, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsHolderNoParticipant() throws Exception {
+        final Holding[] h = new Holding[1];
+        h[0] = new Holding("id", BigDecimal.ONE, "nominal_holder_id");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(h, new HashMap<>());
+        assertNotNull(map);
+    }
+
+    @Test
+    public void testValidateAndMapHoldingsNullNominalHolder() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] h = new Holding[1];
+        h[0] = new Holding("id", BigDecimal.ONE, null);
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(h, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsEmptyNominalHolder() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] h = new Holding[1];
+        h[0] = new Holding("id", BigDecimal.ONE, "");
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(h, participantsMap);
+        assertNotNull(map);
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateAndMapHoldingsSameHolder() throws Exception {
+        final Map<String, Participant> participantsMap = manager.validateAndMapParticipants(participants);
+        final Holding[] h = new Holding[2];
+        h[0] = new Holding("id", BigDecimal.ONE, null);
+        h[1] = new Holding("id", BigDecimal.TEN, null);
+        final Map<String, BigDecimal> map = manager.validateAndMapHoldings(h, participantsMap);
+        assertNotNull(map);
     }
 }

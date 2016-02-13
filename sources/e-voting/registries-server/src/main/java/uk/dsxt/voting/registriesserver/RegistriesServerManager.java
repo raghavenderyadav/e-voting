@@ -112,14 +112,14 @@ public class RegistriesServerManager {
         return participantsById;
     }
 
-    private Map<String, BigDecimal> validateAndMapHoldings(Holding[] holdings, Map<String, Participant> participantsById) throws InternalLogicException {
+    Map<String, BigDecimal> validateAndMapHoldings(Holding[] holdings, Map<String, Participant> participantsById) throws InternalLogicException {
         Map<String, BigDecimal> holdersPacketSizeByHolderId = new HashMap<>();
         Map<String, String> nominalHoldersByHolderId = new HashMap<>();
         if (holdings == null || holdings.length == 0)
             throw new InternalLogicException("validateAndMapHoldings failed. holdings are null or empty.");
         for (int i = 0; i < holdings.length; i++) {
             Holding h = holdings[i];
-            if (h.getHolderId() == null || h.getPacketSize() == null || h.getPacketSize().compareTo(BigDecimal.ZERO) <= 0)
+            if (h == null || h.getHolderId() == null || h.getHolderId().isEmpty() || h.getPacketSize() == null || h.getPacketSize().compareTo(BigDecimal.ZERO) <= 0)
                 throw new InternalLogicException(String.format("validateAndMapHoldings failed. One of the holding fields are incorrect. index=%d", i));
             if (holdersPacketSizeByHolderId.containsKey(h.getHolderId()))
                 throw new InternalLogicException(String.format("validateAndMapHoldings failed. Holding with holder id %s is represented twice.", h.getHolderId()));
