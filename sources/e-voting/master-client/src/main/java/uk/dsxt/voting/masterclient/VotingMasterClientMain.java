@@ -23,10 +23,11 @@ package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
+import uk.dsxt.voting.common.networking.BaseWalletManager;
 import uk.dsxt.voting.common.networking.RegistriesServer;
+import uk.dsxt.voting.common.networking.RegistriesServerImpl;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
-import uk.dsxt.voting.common.networking.BaseWalletManager;
 
 import java.math.BigDecimal;
 import java.util.Properties;
@@ -34,17 +35,21 @@ import java.util.Properties;
 @Log4j2
 public class VotingMasterClientMain {
 
-    private static final String MODULE_NAME = "master-client";
+    public static final String MODULE_NAME = "master-client";
 
     public static void main(String[] args) {
         try {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
+
+            String registriesServerUrl=properties.getProperty("register.server.url");
+            int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
+            int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
+
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
             WalletManager walletManager = new BaseWalletManager(properties);
-            walletManager.runWallet();
-            RegistriesServer registriesServer = null; //TODO
+            RegistriesServer registriesServer= new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

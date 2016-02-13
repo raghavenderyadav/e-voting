@@ -30,7 +30,7 @@ import java.util.Properties;
 
 @Log4j2
 public class RegistriesServerMain {
-    private static final String MODULE_NAME = "registries-server";
+    public static final String MODULE_NAME = "registries-server";
 
     private static org.eclipse.jetty.server.Server jettyServer;
 
@@ -38,7 +38,7 @@ public class RegistriesServerMain {
         try {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
-            RegistriesServerApplication application = new RegistriesServerApplication(properties);
+            RegistriesServerApplication application = new RegistriesServerApplication(properties, args);
             jettyServer = JettyRunner.run(application, properties, "registries.server.web.port");
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (InternalLogicException e) {

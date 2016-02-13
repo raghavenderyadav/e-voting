@@ -1,0 +1,82 @@
+[
+  {
+    "holderId": "5",
+    "packetSize": 9
+  },
+  {
+    "holderId": "10",
+    "packetSize": 30
+  },
+  {
+    "holderId": "15",
+    "packetSize": 30
+  },
+  {
+    "holderId": "20",
+    "packetSize": 30
+  },
+  {
+    "holderId": "25",
+    "packetSize": 30
+  },
+  {
+    "holderId": "30",
+    "packetSize": 30
+  },
+  {
+    "holderId": "35",
+    "packetSize": 30
+  },
+  {
+    "holderId": "40",
+    "packetSize": 30
+  },
+  {
+    "holderId": "45",
+    "packetSize": 30
+  },
+  {
+    "holderId": "50",
+    "packetSize": 30
+  },
+  {
+    "holderId": "55",
+    "packetSize": 4
+  },
+  {
+    "holderId": "60",
+    "packetSize": 30
+  },
+  {
+    "holderId": "65",
+    "packetSize": 8
+  },
+  {
+    "holderId": "70",
+    "packetSize": 30
+  },
+  {
+    "holderId": "75",
+    "packetSize": 30
+  },
+  {
+    "holderId": "80",
+    "packetSize": 30
+  },
+  {
+    "holderId": "85",
+    "packetSize": 30
+  },
+  {
+    "holderId": "90",
+    "packetSize": 30
+  },
+  {
+    "holderId": "95",
+    "packetSize": 19
+  },
+  {
+    "holderId": "100",
+    "packetSize": 30
+  }
+]

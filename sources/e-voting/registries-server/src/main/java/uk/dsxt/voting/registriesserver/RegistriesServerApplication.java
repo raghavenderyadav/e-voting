@@ -24,6 +24,7 @@ package uk.dsxt.voting.registriesserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.utils.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -37,20 +38,35 @@ public class RegistriesServerApplication extends ResourceConfig {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public RegistriesServerApplication(Properties properties) throws InternalLogicException {
+    public RegistriesServerApplication(Properties properties, String[] args) throws InternalLogicException {
         //loading properties
-        Participant[] participants = loadResource(properties,"participants.filepath", Participant[].class);
-        Holding[] holdings = loadResource(properties,"holdings.filepath", Holding[].class);
-        Voting[] votings = loadResource(properties,"votings.filepath", Voting[].class);
-        BlockedPacket[] blackList = loadResource(properties,"blacklist.filepath", BlockedPacket[].class);
+        String subdirectory = null;
+        Integer votingDuration = null;
+        if (args != null && args.length > 1) {
+            subdirectory = args[0];
+            votingDuration = Integer.valueOf(args[1]);
+            log.info(String.format("Testing mode. subdirectory: '%s'. votingDuration: %s", subdirectory, votingDuration));
+        }
+        Participant[] participants = loadResource(properties, subdirectory, "participants.filepath", Participant[].class);
+        Holding[] holdings = loadResource(properties, subdirectory, "holdings.filepath", Holding[].class);
+        Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
+        BlockedPacket[] blackList = loadResource(properties, subdirectory, "blacklist.filepath", BlockedPacket[].class);
+
+        if (votingDuration != null) {
+            long now = Instant.now().getMillis();
+            for (int i = 0; i < votings.length; i++) {
+                votings[i] = new Voting(votings[i].getId(), votings[i].getName(), now, now + votingDuration * 1000, votings[i].getQuestions());
+            }
+        }
         //initialization
         RegistriesServerManager manager = new RegistriesServerManager(participants, holdings, votings, blackList);
         JettyRunner.configureMapper(this);
         this.registerInstances(new RegistriesServerResource(manager));
     }
 
-    private <T> T loadResource(Properties properties, String propertyName, Class<T> clazz) throws InternalLogicException {
+    private <T> T loadResource(Properties properties, String subdirectory, String propertyName, Class<T> clazz) throws InternalLogicException {
         String path = properties.getProperty(propertyName);
+        path = String.format(path, subdirectory == null ? "" : subdirectory);
         String resourceJson = PropertiesHelper.getResourceString(path);
         if (resourceJson.isEmpty())
             throw new InternalLogicException(String.format("Couldn't find file for %s property with value '%s'.", propertyName, path));

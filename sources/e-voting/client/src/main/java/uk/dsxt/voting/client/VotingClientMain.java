@@ -36,7 +36,7 @@ import java.util.Properties;
 @Log4j2
 public class VotingClientMain {
 
-    private static final String MODULE_NAME = "client";
+    public static final String MODULE_NAME = "client";
 
     public static void main(String[] args) {
         try {

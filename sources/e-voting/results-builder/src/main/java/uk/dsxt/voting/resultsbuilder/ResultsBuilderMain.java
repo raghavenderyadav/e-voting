@@ -32,8 +32,7 @@ import java.util.TimerTask;
 
 @Log4j2
 public class ResultsBuilderMain {
-
-    private static final String MODULE_NAME = "results-builder";
+    public static final String MODULE_NAME = "results-builder";
 
     private static org.eclipse.jetty.server.Server jettyServer;
 

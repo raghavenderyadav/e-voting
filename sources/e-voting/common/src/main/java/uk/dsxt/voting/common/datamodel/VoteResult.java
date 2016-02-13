@@ -36,6 +36,7 @@ public class VoteResult {
     @Getter
     private final String holderId;
 
+    @Getter
     private final Map<String, VotedAnswer> answersByQuestionId = new HashMap<>();
 
     public VoteResult(String votingId, String holderId) {
