@@ -42,7 +42,7 @@ public class VotingClientMain {
 
     public static void main(String[] args) {
         try {
-            log.info(String.format("Starting module %s...", MODULE_NAME.toUpperCase()));
+            log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             String ownerId = properties.getProperty("owner.id");
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(properties.getProperty("owner.private_key"));
@@ -55,7 +55,7 @@ public class VotingClientMain {
             WalletManager walletManager = null; //TODO
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval);
-            log.info(String.format("%s module is successfully started", MODULE_NAME));
+            log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
         }
@@ -68,7 +68,7 @@ public class VotingClientMain {
         Voting[] votings = registriesServer.getVotings();
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
-        VoitingClient client = new VoitingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);
+        VotingClient client = new VotingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);
         VoteScheduler scheduler = new VoteScheduler(client, votings, messagesFileContent);
 
         client.run(newMessagesRequestInterval);

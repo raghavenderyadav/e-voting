@@ -48,6 +48,7 @@ public class VoteAggregation {
         }
     }
 
+    @SuppressWarnings("unused")
     public VoteResult getResult(String votingId) {
         VoteAggregator aggregator = aggregatorsByVotingId.get(votingId);
         if (aggregator == null) {

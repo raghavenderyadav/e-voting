@@ -31,7 +31,7 @@ import java.security.PrivateKey;
 import java.util.*;
 
 @Log4j2
-public class VoitingClient extends MessageHandler {
+public class VotingClient extends MessageHandler {
 
     private final VoteAggregation voteAggregation;
 
@@ -41,7 +41,7 @@ public class VoitingClient extends MessageHandler {
 
     private final List<VoteResult> sentVoteResults = new ArrayList<>();
 
-    public VoitingClient(WalletManager walletManager, VoteAggregation voteAggregation, String ownerId, PrivateKey ownerPrivateKey, Participant[] participants) {
+    public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, String ownerId, PrivateKey ownerPrivateKey, Participant[] participants) {
         super(walletManager, participants);
         this.voteAggregation = voteAggregation;
         this.ownerId = ownerId;

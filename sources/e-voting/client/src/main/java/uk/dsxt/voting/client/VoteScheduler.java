@@ -38,13 +38,13 @@ public class VoteScheduler {
         VoteResult voteResult;
     }
 
-    private VoitingClient voitingClient;
+    private VotingClient votingClient;
 
     private List<VoteRecord> recordsByTime = new ArrayList<>();
     private int currentRecordIdx = 0;
 
-    public VoteScheduler(VoitingClient voitingClient, Voting[] votings, String messagesFileContent) {
-        this.voitingClient = voitingClient;
+    public VoteScheduler(VotingClient votingClient, Voting[] votings, String messagesFileContent) {
+        this.votingClient = votingClient;
 
         if (messagesFileContent == null) {
             log.info("messagesFile not found");
@@ -88,7 +88,7 @@ public class VoteScheduler {
             for(; currentRecordIdx < recordsByTime.size() && recordsByTime.get(currentRecordIdx).getSendTimestamp() < System.currentTimeMillis() + 1000; currentRecordIdx++) {
                 VoteResult voteResult = recordsByTime.get(currentRecordIdx).getVoteResult();
                 log.info("Sending vote record {}", voteResult);
-                voitingClient.sendVoteResult(voteResult);
+                votingClient.sendVoteResult(voteResult);
             }
             if (currentRecordIdx < recordsByTime.size()) {
                 try {

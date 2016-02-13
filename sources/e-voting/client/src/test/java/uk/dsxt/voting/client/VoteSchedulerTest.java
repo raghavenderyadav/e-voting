@@ -24,13 +24,10 @@ package uk.dsxt.voting.client;
 import org.junit.Test;
 import uk.dsxt.voting.common.datamodel.Voting;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -48,7 +45,7 @@ public class VoteSchedulerTest {
         String messages="0:0,1,1 1 1\r\n10:1,2,2 2 2\r\n #\r\n2:0,3,3 3 3\r\n01:1,4,4 4 4\n20:1,5,5 5 5\n";
 
         List<VoteResult> sentResults = new ArrayList<>();
-        VoitingClient client = mock(VoitingClient.class);
+        VotingClient client = mock(VotingClient.class);
         doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
             return null;
