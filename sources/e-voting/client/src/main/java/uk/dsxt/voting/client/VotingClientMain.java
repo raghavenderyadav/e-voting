@@ -26,9 +26,7 @@ import uk.dsxt.voting.common.datamodel.BlockedPacket;
 import uk.dsxt.voting.common.datamodel.Holding;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.networking.RegistriesServer;
-import uk.dsxt.voting.common.networking.RegistriesServerImpl;
-import uk.dsxt.voting.common.networking.WalletManager;
+import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -48,20 +46,24 @@ public class VotingClientMain {
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(properties.getProperty("owner.private_key"));
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             String messagesFileContent = PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path"));
+            long resultsAggregationPeriod = Integer.parseInt(properties.getProperty("results.aggregation.period")) * 60000;
             String registriesServerUrl=properties.getProperty("register.server.url");
+            String resultsBuilderUrl=properties.getProperty("results.builder.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
             WalletManager walletManager = null; //TODO
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
-            init(registriesServer, walletManager, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval);
+            ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
+            init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, resultsAggregationPeriod);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
         }
     }
 
-    private static void init(RegistriesServer registriesServer, WalletManager walletManager, String ownerId, PrivateKey ownerPrivateKey, String messagesFileContent, long newMessagesRequestInterval) {
+    private static void init(RegistriesServer registriesServer, WalletManager walletManager, ResultsBuilder resultsBuilder, String ownerId, PrivateKey ownerPrivateKey,
+                             String messagesFileContent, long newMessagesRequestInterval, long resultsAggregationPeriod) {
         BlockedPacket[] blackList = registriesServer.getBlackList();
         Holding[] holdings = registriesServer.getHoldings();
         Participant[] participants = registriesServer.getParticipants();
@@ -69,7 +71,7 @@ public class VotingClientMain {
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
         VotingClient client = new VotingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);
-        VoteScheduler scheduler = new VoteScheduler(client, votings, messagesFileContent);
+        VoteScheduler scheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, resultsAggregationPeriod, ownerId);
 
         client.run(newMessagesRequestInterval);
         scheduler.run();

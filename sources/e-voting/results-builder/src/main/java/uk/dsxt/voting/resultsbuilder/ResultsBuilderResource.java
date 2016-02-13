@@ -19,49 +19,43 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.resultsbuilder;
 
-import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.networking.ResultsBuilder;
 
-import java.math.BigDecimal;
+import javax.ws.rs.*;
 
-public class VotedAnswer {
+@Log4j2
+@Path("results-api")
+public class ResultsBuilderResource implements ResultsBuilder {
 
-    @Getter
-    private final int questionId;
+    private final ResultsManager manager;
 
-    @Getter
-    private final int answerId;
+    public ResultsBuilderResource(ResultsManager manager) {
+        this.manager = manager;
+    }
 
-    @Getter
-    private final BigDecimal voteAmount;
-
-    @Getter
-    private final String key;
+    private void execute(String name, Runnable action) {
+        try {
+            log.debug("{} called", name);
+            action.run();
+        } catch (Exception ex) {
+            log.error("{} failed", name, ex);
+        }
+    }
 
     @Override
-    public String toString() {
-        return String.format("%d %d %s", questionId, answerId, voteAmount);
+    @POST
+    @Path("/addResult")
+    public void addResult(@FormParam("holderId") String holderId, @FormParam("voteResult") String voteResult) {
+        execute(String.format("addResult holderId=%s voteResult=%s", holderId, voteResult), () -> manager.addResult(holderId, voteResult));
     }
 
-    public VotedAnswer(String s) {
-        if (s == null)
-            throw new IllegalArgumentException("VotedAnswer can not be created from null string");
-        String[] terms = s.split(" ");
-        if (terms.length != 3)
-            throw new IllegalArgumentException(String.format("VotedAnswer can not be created from string with %d terms (%s)", terms.length, s));
-        questionId = Integer.parseInt(terms[0]);
-        answerId = Integer.parseInt(terms[1]);
-        voteAmount = new BigDecimal(terms[2]);
-        key = String.format("%d-%d", questionId, answerId);
+    @Override
+    @POST
+    @Path("/addVote")
+    public void addVote(@FormParam("voteResult") String voteResult) {
+        execute(String.format("addVote voteResult=%s", voteResult), () -> manager.addVote(voteResult));
     }
-
-
-    public VotedAnswer(int questionId, int answerId, BigDecimal voteAmount) {
-        this.questionId = questionId;
-        this.answerId = answerId;
-        this.voteAmount = voteAmount;
-        key = String.format("%d-%d", questionId, answerId);
-    }
-
 }

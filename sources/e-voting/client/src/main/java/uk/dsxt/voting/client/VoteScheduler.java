@@ -24,6 +24,7 @@ package uk.dsxt.voting.client;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.networking.ResultsBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,16 +36,24 @@ public class VoteScheduler {
     @Value
     private static class VoteRecord {
         long sendTimestamp;
+        boolean sendToResult;
         VoteResult voteResult;
     }
 
-    private VotingClient votingClient;
+    private final VotingClient votingClient;
+    private final ResultsBuilder resultsBuilder;
+    private final VoteAggregation aggregation;
 
-    private List<VoteRecord> recordsByTime = new ArrayList<>();
+    private final List<VoteRecord> recordsByTime = new ArrayList<>();
+    private final String holderId;
     private int currentRecordIdx = 0;
 
-    public VoteScheduler(VotingClient votingClient, Voting[] votings, String messagesFileContent) {
+    public VoteScheduler(VotingClient votingClient, ResultsBuilder resultsBuilder, VoteAggregation aggregation, Voting[] votings,
+                         String messagesFileContent, long resultsAggregationPeriod, String holderId) {
         this.votingClient = votingClient;
+        this.resultsBuilder = resultsBuilder;
+        this.aggregation = aggregation;
+        this.holderId = holderId;
 
         if (messagesFileContent == null) {
             log.info("messagesFile not found");
@@ -54,15 +63,16 @@ public class VoteScheduler {
         HashMap<String, Voting> votingsById = new HashMap<>();
         for(Voting voting : votings) {
             votingsById.put(voting.getId(), voting);
+            recordsByTime.add(new VoteRecord(voting.getEndTimestamp() + resultsAggregationPeriod, true, new VoteResult(voting.getId(), null)));
         }
 
         String[] lines = messagesFileContent.split("\\r?\\n");
         for(String line : lines) {
             line = line.trim();
-            if (line.startsWith("#"))
+            if (line.isEmpty() || line.startsWith("#"))
                 continue;
             String[] terms = line.split(":");
-            if (terms.length != 2)
+            if (terms.length < 2 || terms.length > 3)
                 throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
             VoteResult voteResult = new VoteResult(terms[1]);
             Voting voting = votingsById.get(voteResult.getVotingId());
@@ -71,7 +81,8 @@ public class VoteScheduler {
                 continue;
             }
             long sendTimestamp = voting.getStartTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
-            recordsByTime.add(new VoteRecord(sendTimestamp, voteResult));
+            boolean sendToResult = terms.length < 3 || !terms[2].equals("-");
+            recordsByTime.add(new VoteRecord(sendTimestamp, sendToResult, voteResult));
         }
         recordsByTime.sort((x, y) -> Long.compare(x.getSendTimestamp(), y.getSendTimestamp()));
         log.info("{} vote records loaded", recordsByTime.size());
@@ -87,8 +98,19 @@ public class VoteScheduler {
         while (currentRecordIdx < recordsByTime.size()) {
             for(; currentRecordIdx < recordsByTime.size() && recordsByTime.get(currentRecordIdx).getSendTimestamp() < System.currentTimeMillis() + 1000; currentRecordIdx++) {
                 VoteResult voteResult = recordsByTime.get(currentRecordIdx).getVoteResult();
-                log.info("Sending vote record {}", voteResult);
-                votingClient.sendVoteResult(voteResult);
+                if (voteResult.getHolderId() != null) {
+                    log.info("Sending vote record {}", voteResult);
+                    votingClient.sendVoteResult(voteResult);
+                    if (recordsByTime.get(currentRecordIdx).isSendToResult()) {
+                        resultsBuilder.addVote(voteResult.toString());
+                    }
+                } else {
+                    VoteResult result = aggregation.getResult(voteResult.getVotingId());
+                    if (result == null) {
+                        result = new VoteResult(voteResult.getVotingId(), null);
+                    }
+                    resultsBuilder.addResult(holderId, result.toString());
+                }
             }
             if (currentRecordIdx < recordsByTime.size()) {
                 try {

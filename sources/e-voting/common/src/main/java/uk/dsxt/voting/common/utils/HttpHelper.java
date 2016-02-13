@@ -27,18 +27,21 @@ import uk.dsxt.voting.common.datamodel.InternalLogicException;
 import uk.dsxt.voting.common.datamodel.RequestType;
 
 import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Map;
 
 @Value
 @AllArgsConstructor
 public class HttpHelper {
     int connectionTimeout;
     int readTimeout;
+
+    public String request(String urlString, RequestType type) throws IOException, InternalLogicException {
+        return request(urlString, (String)null, type);
+    }
 
     public String request(String urlString, String content, RequestType type) throws IOException, InternalLogicException {
         URL url = new URL(urlString);
@@ -68,5 +71,26 @@ public class HttpHelper {
         }
         in.close();
         return response.toString();
+    }
+
+    public String request(String urlString, Map<String, String> parameters, RequestType type) throws IOException, InternalLogicException {
+        return request(urlString, buildContent(parameters), type);
+    }
+
+    private String buildContent(Map<String, String> parameters) throws UnsupportedEncodingException {
+        if (parameters == null)
+            return "";
+
+        StringBuilder paramString = new StringBuilder();
+        for (Map.Entry<String, String> param : parameters.entrySet()) {
+            if (param.getValue() == null)
+                continue;
+            if (paramString.length() > 0)
+                paramString.append('&');
+            paramString.append(param.getKey());
+            paramString.append('=');
+            paramString.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+        }
+        return paramString.toString();
     }
 }

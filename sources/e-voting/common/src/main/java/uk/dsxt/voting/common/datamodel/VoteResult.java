@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.common.datamodel;
 
 import lombok.Getter;
 
@@ -47,7 +47,11 @@ public class VoteResult {
         if (s == null)
             throw new IllegalArgumentException("VoteResult can not be created from null string");
         String[] terms = s.split(",");
-        if (terms.length < 2)
+        if (terms.length == 1 && s.endsWith(",")) {
+            votingId = terms[0];
+            holderId = null;
+            return;
+        } else if (terms.length < 2)
             throw new IllegalArgumentException(String.format("VoteResult can not be created from string with %d terms (%s)", terms.length, s));
         votingId = terms[0];
         holderId = terms[1].length() == 0 ? null : terms[1];

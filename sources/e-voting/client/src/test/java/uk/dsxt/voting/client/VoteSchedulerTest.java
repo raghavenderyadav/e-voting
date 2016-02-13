@@ -22,27 +22,33 @@
 package uk.dsxt.voting.client;
 
 import org.junit.Test;
+import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.networking.ResultsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class VoteSchedulerTest {
 
     @Test
     public void testLoad() throws Exception {
 
-        Voting[] votings = new Voting[2];
+        Voting[] votings = new Voting[3];
         long now = System.currentTimeMillis();
         votings[0] = new Voting("0", "name0", now + 600000, now + 700000, null);
-        votings[1] = new Voting("1", "name1", now-600000, now + 700000, null);
+        votings[1] = new Voting("1", "name1", now - 600000, now + 700000, null);
+        votings[2] = new Voting("2", "name2", now - 600000, now - 100000, null);
 
-        String messages="0:0,1,1 1 1\r\n10:1,2,2 2 2\r\n #\r\n2:0,3,3 3 3\r\n01:1,4,4 4 4\n20:1,5,5 5 5\n";
+        String messages="0:0,1,1 1 1\r\n10:1,2,2 2 2\r\n #\r\n2:0,3,3 3 3\r\n01:1,4,4 4 4:-\n20:1,5,5 5 5\n";
 
         List<VoteResult> sentResults = new ArrayList<>();
         VotingClient client = mock(VotingClient.class);
@@ -51,11 +57,32 @@ public class VoteSchedulerTest {
             return null;
         }).when(client).sendVoteResult(anyObject());
 
-        VoteScheduler scheduler = new VoteScheduler(client, votings, messages);
+        List<String> sentToBuilderResults = new ArrayList<>();
+        List<String> sentAggregatedResults = new ArrayList<>();
+        ResultsBuilder builder = mock(ResultsBuilder.class);
+        doAnswer(invocation -> {
+            sentToBuilderResults.add((String) invocation.getArguments()[0]);
+            return null;
+        }).when(builder).addVote(anyString());
+        doAnswer(invocation -> {
+            sentAggregatedResults.add((String) invocation.getArguments()[1]);
+            return null;
+        }).when(builder).addResult(anyString(), anyString());
+
+        VoteAggregation aggregation = mock(VoteAggregation.class);
+        when(aggregation.getResult("2")).thenReturn(new VoteResult("22", null));
+
+        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, 1000, "001");
         scheduler.run();
         Thread.sleep(100);
+
         assertEquals(2, sentResults.size());
         assertEquals("4", sentResults.get(0).getHolderId());
         assertEquals("2", sentResults.get(1).getHolderId());
+        assertEquals(1, sentToBuilderResults.size());
+        assertEquals("2", new VoteResult(sentToBuilderResults.get(0)).getHolderId());
+        assertEquals(1, sentAggregatedResults.size());
+        assertEquals(null, new VoteResult(sentAggregatedResults.get(0)).getHolderId());
+        assertEquals("22", new VoteResult(sentAggregatedResults.get(0)).getVotingId());
     }
 }

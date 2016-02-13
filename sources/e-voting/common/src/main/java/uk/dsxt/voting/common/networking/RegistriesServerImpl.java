@@ -65,7 +65,7 @@ public class RegistriesServerImpl implements RegistriesServer {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    String answer = httpHelper.request(url, null, RequestType.GET);
+                    String answer = httpHelper.request(url, RequestType.GET);
                     T value = mapper.readValue(answer, clazz);
                     if (value != null)
                         return value;

@@ -22,6 +22,8 @@
 package uk.dsxt.voting.client;
 
 import org.junit.Test;
+import uk.dsxt.voting.common.datamodel.VoteResult;
+import uk.dsxt.voting.common.datamodel.VotedAnswer;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

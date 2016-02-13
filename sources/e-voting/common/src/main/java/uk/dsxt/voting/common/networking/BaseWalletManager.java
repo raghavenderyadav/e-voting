@@ -89,7 +89,7 @@ public class BaseWalletManager implements WalletManager {
             }
             if (url.lastIndexOf("&") == url.length() - 1)
                 url.replace(url.length() - 1, url.length(), "");
-            String response = httpHelper.request(url.toString(), null, RequestType.POST);
+            String response = httpHelper.request(url.toString(), RequestType.POST);
             T result = null;
             try {
                 result = mapper.readValue(response, tClass);
