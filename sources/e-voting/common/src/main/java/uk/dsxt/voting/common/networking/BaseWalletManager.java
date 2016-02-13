@@ -80,7 +80,7 @@ public class BaseWalletManager implements WalletManager {
             StringBuilder url = new StringBuilder();
             url.append("http://localhost:");
             url.append(port);
-            url.append("?");
+            url.append("/nxt?");
             for (Map.Entry<String, String> keyToValue : arguments.entrySet()) {
                 url.append(keyToValue.getKey());
                 url.append("=");
@@ -94,7 +94,7 @@ public class BaseWalletManager implements WalletManager {
             try {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
-                log.error("Can't parse response: %s", response);
+                log.error(String.format("Can't parse response: %s", response), e);
             }
             return result;
         } catch (Exception e) {

@@ -28,6 +28,7 @@ public class BlockResponse extends BaseWalletResponse {
     String block;
     int height;
     long timestamp;
+    int cumulativeDifficulty;
 
     @JsonCreator
     public BlockResponse(@JsonProperty("previousBlockHash") String previousBlockHash, @JsonProperty("payloadLength") int payloadLength,
@@ -39,9 +40,11 @@ public class BlockResponse extends BaseWalletResponse {
                          @JsonProperty("blockSignature") String blockSignature, @JsonProperty("transactions") String[] transactions,
                          @JsonProperty("version") int version, @JsonProperty("totalFeeNQT") long totalFeeNQT,
                          @JsonProperty("previousBlock") String previousBlock, @JsonProperty("block") String block,
-                         @JsonProperty("height") int height, @JsonProperty("timestamp") long timestamp) {
+                         @JsonProperty("height") int height, @JsonProperty("timestamp") long timestamp,
+                         @JsonProperty("cumulativeDifficulty") int cumulativeDifficulty) {
         this.previousBlockHash = previousBlockHash;
         this.payloadLength = payloadLength;
+        this.cumulativeDifficulty = cumulativeDifficulty;
         this.totalAmount = longToBigDecimal(totalAmountNQT);
         this.generationSignature = generationSignature;
         this.generator = generator;

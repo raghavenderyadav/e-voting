@@ -8,6 +8,6 @@ import java.math.RoundingMode;
 
 public class BaseWalletResponse {
     protected BigDecimal longToBigDecimal(long value) {
-        return new BigDecimal(value, MathContext.DECIMAL32).divide(new BigDecimal(Constants.ONE_NXT), RoundingMode.DOWN);
+        return new BigDecimal(value, MathContext.DECIMAL64).divide(new BigDecimal(Constants.ONE_NXT), RoundingMode.DOWN);
     }
 }
