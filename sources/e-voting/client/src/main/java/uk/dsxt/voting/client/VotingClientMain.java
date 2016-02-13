@@ -57,7 +57,7 @@ public class VotingClientMain {
             init(registriesServer, walletManager, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
-            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
+            log.error("Error occurred in module {}", MODULE_NAME, e);
         }
     }
 
