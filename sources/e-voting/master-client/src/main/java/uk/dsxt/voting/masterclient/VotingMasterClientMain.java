@@ -38,7 +38,7 @@ public class VotingMasterClientMain {
 
     public static void main(String[] args) {
         try {
-            log.info(String.format("Starting module %s...", MODULE_NAME.toUpperCase()));
+            log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
@@ -46,17 +46,17 @@ public class VotingMasterClientMain {
             walletManager.runWallet();
             RegistriesServer registriesServer = null; //TODO
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);
-            log.info(String.format("%s module is successfully started", MODULE_NAME));
+            log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
-            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
+            log.error("Error occurred in module {}", MODULE_NAME, e);
         }
     }
 
     private static void init(RegistriesServer registriesServer, WalletManager walletManager, BigDecimal moneyToNode, long newMessagesRequestInterval) {
         Participant[] participants = registriesServer.getParticipants();
-        MoneyDistributer distributer = new MoneyDistributer(walletManager, participants, moneyToNode);
+        MoneyDistributor distributor = new MoneyDistributor(walletManager, participants, moneyToNode);
 
-        distributer.run(newMessagesRequestInterval);
+        distributor.run(newMessagesRequestInterval);
     }
 
 }

@@ -31,13 +31,13 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Log4j2
-public class MoneyDistributer extends MessageHandler {
+public class MoneyDistributor extends MessageHandler {
 
     private final BigDecimal moneyToNode;
 
     private final Set<String> sentIds = new HashSet<>();
 
-    public MoneyDistributer(WalletManager walletManager, Participant[] participants, BigDecimal moneyToNode) {
+    public MoneyDistributor(WalletManager walletManager, Participant[] participants, BigDecimal moneyToNode) {
         super(walletManager, participants);
         this.moneyToNode = moneyToNode;
     }
