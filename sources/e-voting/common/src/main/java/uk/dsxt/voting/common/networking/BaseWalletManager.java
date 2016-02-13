@@ -98,7 +98,7 @@ public class BaseWalletManager implements WalletManager {
             }
             return result;
         } catch (Exception e) {
-            log.error(String.format("Method %s failed.", type), e);
+            log.error("Method {} failed.", type, e);
             return null;
         }
     }
@@ -187,7 +187,7 @@ public class BaseWalletManager implements WalletManager {
                 return new Message(transactionId, readedMessage.getBytes(StandardCharsets.UTF_8));
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            log.error(String.format("getNewMessages[%d] failed. Message: %s", timestamp, e.getMessage()));
+            log.error("getNewMessages[{}] failed. Message: {}", timestamp, e.getMessage());
             return null;
         }
     }
@@ -243,7 +243,7 @@ public class BaseWalletManager implements WalletManager {
             } catch (InterruptedException ie) {
                 return;
             } catch (Exception e) {
-                log.error(String.format("waitInitialize. Error: %s", e.getMessage()));
+                log.error("waitInitialize. Error: {}", e.getMessage());
             }
         }
     }

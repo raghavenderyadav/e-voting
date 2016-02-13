@@ -69,16 +69,16 @@ public class RegistriesServerImpl implements RegistriesServer {
                     T value = mapper.readValue(answer, clazz);
                     if (value != null)
                         return value;
-                    log.error(String.format("%s failed. value is null. url=%s", name, url));
+                    log.error("{} failed. value is null. url={}", name, url);
                 } catch (InternalLogicException e) {
-                    log.error(String.format("%s failed. Logic exception. url=%s. Reason: %s", name, url, e.getMessage()));
+                    log.error("{} failed. Logic exception. url={}. Reason: {}", name, url, e.getMessage());
                 } catch (Exception ex) {
-                    log.error(String.format("%s failed. url=%s", name, url), ex);
+                    log.error("{} failed. url={}", name, url, ex);
                 }
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            log.error(String.format("%s failed. InterruptedException. url=%s", name, url), e);
+            log.error("{} failed. InterruptedException. url={}", name, url, e);
         }
         return null;
     }

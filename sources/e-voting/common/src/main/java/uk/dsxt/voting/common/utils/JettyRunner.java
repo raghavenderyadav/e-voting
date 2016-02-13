@@ -56,13 +56,13 @@ public class JettyRunner {
             HttpConfiguration config = new HttpConfiguration();
 
             if (keystoreFile != null) {
-                log.info(String.format("Jetty runner %s. SSL enabled.", application.getClass()));
+                log.info("Jetty runner {}. SSL enabled.", application.getClass());
                 SslContextFactory sslFactory = new SslContextFactory();
                 sslFactory.setCertAlias(aliasName);
 
                 String path = keystoreFile.getAbsolutePath();
                 if (!keystoreFile.exists()) {
-                    log.error(String.format("Couldn't load keystore file: %s", path));
+                    log.error("Couldn't load keystore file: {}", path);
                     return null;
                 }
                 sslFactory.setKeyStorePath(path);
@@ -98,10 +98,10 @@ public class JettyRunner {
             while (!server.isStarted()) {
                 Thread.sleep(50);
             }
-            log.info(String.format("Jetty server started %s on port %d", application.getClass(), port));
+            log.info("Jetty server started {} on port {}", application.getClass(), port);
             return server;
         } catch (Exception e) {
-            log.error(String.format("Jetty start failed %s.", application.getClass()), e);
+            log.error("Jetty start failed {}.", application.getClass(), e);
             return null;
         }
     }

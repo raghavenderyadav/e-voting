@@ -55,13 +55,13 @@ class CrossDomainFilter implements Handler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (log.isTraceEnabled())
-            log.trace(String.format("handle target=%s", target));
+            log.trace("handle target={}", target);
         String origin = request.getHeader(ORIGIN_HEADER);
         if ("*".equals(filter) || origin != null && origin.equals(filter)) {
             response.addHeader(ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, origin);
             response.addHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS_HEADER, "true");
         } else {
-            log.warn(String.format("Origin '%s' does not match filter '%s'", origin, filter));
+            log.warn("Origin '{}' does not match filter '{}'", origin, filter);
         }
 
         if (target.endsWith("/cspReport")) {
@@ -71,8 +71,8 @@ class CrossDomainFilter implements Handler {
                 String line;
                 while ((line = reader.readLine()) != null)
                     jb.append(line);
-                cspLog.info(String.format("handle. cspReport. remoteAddr='%s' X-Forwarded-For='%s' userAgent='%s'  content=%s",
-                        request.getRemoteAddr(), request.getHeader("X-Forwarded-For"), request.getHeader("User-Agent"), jb.toString()));
+                cspLog.info("handle. cspReport. remoteAddr='{}' X-Forwarded-For='{}' userAgent='{}'  content={}",
+                        request.getRemoteAddr(), request.getHeader("X-Forwarded-For"), request.getHeader("User-Agent"), jb.toString());
             } catch (Exception e) {
                 log.error("handle. can not read cspReport content", e);
             }
@@ -88,9 +88,9 @@ class CrossDomainFilter implements Handler {
             long start = System.currentTimeMillis();
             handler.handle(target, baseRequest, request, response);
             if (log.isTraceEnabled())
-                log.trace(String.format("handled target=%s status=%d in %d ms", target, response.getStatus(), System.currentTimeMillis() - start));
+                log.trace("handled target={} status={} in {} ms", target, response.getStatus(), System.currentTimeMillis() - start);
         } catch (Exception e) {
-            log.error(String.format("handle failed. target=%s remoteAddr=%s", target, request.getRemoteAddr() == null ? "null" : request.getRemoteAddr()), e);
+            log.error("handle failed. target={} remoteAddr={}", target, request.getRemoteAddr() == null ? "null" : request.getRemoteAddr(), e);
         }
     }
 

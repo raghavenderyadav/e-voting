@@ -41,12 +41,12 @@ public class PropertiesHelper {
         if (propertiesURL != null) {
             try (InputStream resourceStream = propertiesURL.openStream()) {
                 properties.load(resourceStream);
-                log.info(String.format("Loading %s properties from file: %s", moduleName.toUpperCase(), propertiesURL));
+                log.info("Loading {} properties from file: {}", moduleName.toUpperCase(), propertiesURL);
             } catch (Exception e) {
-                log.error(String.format("Couldn't load %s properties from file: %s", moduleName.toUpperCase(), propertiesURL), e);
+                log.error("Couldn't load {} properties from file: {}", moduleName.toUpperCase(), propertiesURL, e);
             }
         } else {
-            log.info(String.format("Couldn't find %s properties file", moduleName.toUpperCase()));
+            log.info("Couldn't find {} properties file", moduleName.toUpperCase());
         }
         return properties;
     }
@@ -62,17 +62,17 @@ public class PropertiesHelper {
             if (resourceFile.exists()) {
                 try {
                     byte[] encoded = Files.readAllBytes(Paths.get(resourceFile.getPath()));
-                    log.debug(String.format("getResourceString. Resource (%s) found: %s", name, resourceFile.getAbsolutePath()));
+                    log.debug("getResourceString. Resource ({}) found: {}", name, resourceFile.getAbsolutePath());
                     return new String(encoded);
                 } catch (IOException e) {
-                    log.warn(String.format("getResourceString. Couldn't read resource from file: %s. error=%s", resourceFile.getAbsolutePath(), e.getMessage()));
+                    log.warn("getResourceString. Couldn't read resource from file: {}. error={}", resourceFile.getAbsolutePath(), e.getMessage());
                 }
             }
 
-            log.info(String.format("getResourceString. Loading resource from jar: %s", name));
+            log.info("getResourceString. Loading resource from jar: {}", name);
             final URL resource = getResource(name);
             if (resource == null) {
-                log.warn(String.format("getResourceString. Couldn't load resource from jar file: %s.", name));
+                log.warn("getResourceString. Couldn't load resource from jar file: {}.", name);
                 return "";
             }
             return IOUtils.toString(resource.openStream());
