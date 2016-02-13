@@ -45,22 +45,22 @@ public class CryptoKeysGenerator {
         keyGen.initialize(512);
         final java.security.KeyPair pair = keyGen.generateKeyPair();
         String pubKey = savePublicKey(pair.getPublic());
-        String privKey = savePrivateKey(pair.getPrivate());
-        return new KeyPair(pubKey, privKey);
+        String privateKey = savePrivateKey(pair.getPrivate());
+        return new KeyPair(pubKey, privateKey);
     }
 
-    public static String savePrivateKey(PrivateKey priv) throws GeneralSecurityException {
+    public static String savePrivateKey(PrivateKey privateKey) throws GeneralSecurityException {
         KeyFactory fact = KeyFactory.getInstance(CryptoHelper.ALGORITHM);
-        PKCS8EncodedKeySpec spec = fact.getKeySpec(priv, PKCS8EncodedKeySpec.class);
+        PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey, PKCS8EncodedKeySpec.class);
         byte[] packed = spec.getEncoded();
         String key64 = Base64.getEncoder().encodeToString(packed);
         Arrays.fill(packed, (byte) 0);
         return key64;
     }
 
-    public static String savePublicKey(PublicKey publ) throws GeneralSecurityException {
+    public static String savePublicKey(PublicKey publicKey) throws GeneralSecurityException {
         KeyFactory fact = KeyFactory.getInstance(CryptoHelper.ALGORITHM);
-        X509EncodedKeySpec spec = fact.getKeySpec(publ, X509EncodedKeySpec.class);
+        X509EncodedKeySpec spec = fact.getKeySpec(publicKey, X509EncodedKeySpec.class);
         return Base64.getEncoder().encodeToString(spec.getEncoded());
     }
 }

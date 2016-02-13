@@ -49,7 +49,7 @@ public class RegistriesServerResource implements uk.dsxt.voting.common.networkin
         try {
             return request.get();
         } catch (Exception ex) {
-            log.error(String.format("%s failed", name), ex);
+            log.error("{} failed", name, ex);
             manager.stop();
             return null;
         }

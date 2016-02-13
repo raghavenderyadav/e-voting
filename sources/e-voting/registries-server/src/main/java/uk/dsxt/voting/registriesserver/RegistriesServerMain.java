@@ -36,15 +36,15 @@ public class RegistriesServerMain {
 
     public static void main(String[] args) {
         try {
-            log.info(String.format("Starting module %s...", MODULE_NAME.toUpperCase()));
+            log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             RegistriesServerApplication application = new RegistriesServerApplication(properties);
             jettyServer = JettyRunner.run(application, properties, "registries.server.web.port");
-            log.info(String.format("%s module is successfully started", MODULE_NAME));
+            log.info("{} module is successfully started", MODULE_NAME);
         } catch (InternalLogicException e) {
-            log.error(String.format("Logic exception in module %s. Reason: %s", MODULE_NAME, e.getMessage()));
+            log.error("Logic exception in module {}. Reason: {}", MODULE_NAME, e.getMessage());
         } catch (Exception e) {
-            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
+            log.error("Error occurred in module {}", MODULE_NAME, e);
         }
     }
 

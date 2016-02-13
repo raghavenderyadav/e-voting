@@ -27,10 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class VoteResultTest {
 
@@ -67,19 +64,19 @@ public class VoteResultTest {
     @Test
     public void testEquals() throws Exception {
         VoteResult result = new VoteResult("1,2,3 4 5,6 7 0.8");
-        assertTrue(result.equals(result));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 5,6 7 0.8")));
-        assertTrue(result.equals(new VoteResult("1,2,6 7 0.8,3 4 5")));
-        assertFalse(result.equals(new VoteResult("1,0,3 4 5,6 7 0.8")));
-        assertFalse(result.equals(new VoteResult("0,1,3 4 5,6 7 0.8")));
-        assertFalse(result.equals(new VoteResult("1,2,3 4 5,0 7 0.8")));
-        assertFalse(result.equals(new VoteResult("1,2,3 4 5,6 0 0.8")));
-        assertFalse(result.equals(new VoteResult("1,2,3 4 5,6 7 0")));
-        assertFalse(result.equals(new VoteResult("1,2,3 4 5")));
-        assertFalse(result.equals(new VoteResult("1,2,3 4 5,6 7 0.8,0 0 0")));
-        assertFalse(result.equals(new VoteResult("1,,3 4 5,6 7 0.8")));
-        assertFalse(new VoteResult("1,,3 4 5,6 7 0.8").equals(result));
-        assertTrue(new VoteResult("1,,3 4 5,6 7 0.8").equals(new VoteResult("1,,3 4 5,6 7 0.8")));
+        assertEquals(result, result);
+        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
+        assertEquals(result, new VoteResult("1,2,6 7 0.8,3 4 5"));
+        assertNotEquals(result, new VoteResult("1,0,3 4 5,6 7 0.8"));
+        assertNotEquals(result, new VoteResult("0,1,3 4 5,6 7 0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3 4 5,0 7 0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 0 0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 7 0"));
+        assertNotEquals(result, new VoteResult("1,2,3 4 5"));
+        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8,0 0 0"));
+        assertNotEquals(result, new VoteResult("1,,3 4 5,6 7 0.8"));
+        assertNotEquals(new VoteResult("1,,3 4 5,6 7 0.8"), result);
+        assertEquals(new VoteResult("1,,3 4 5,6 7 0.8"), new VoteResult("1,,3 4 5,6 7 0.8"));
     }
 
     @Test
@@ -87,19 +84,19 @@ public class VoteResultTest {
         VoteResult result = new VoteResult("1,2,3 4 5,6 7 0.8");
 
         result.add(new VoteResult("1,2"));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 5,6 7 0.8")));
+        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
 
         result.add(new VoteResult("1,2,3 4 0"));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 5,6 7 0.8")));
+        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
 
         result.add(new VoteResult("1,2,3 4 10"));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 15,6 7 0.8")));
+        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 0.8"));
 
         result.add(new VoteResult("1,2,3 4 0,6 7 10"));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 15,6 7 10.8")));
+        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 10.8"));
 
         result.add(new VoteResult("1,2,3 9 0,10 7 11"));
-        assertTrue(result.equals(new VoteResult("1,2,3 4 15,6 7 10.8,3 9 0,10 7 11")));
+        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 10.8,3 9 0,10 7 11"));
     }
 
 }

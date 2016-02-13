@@ -26,10 +26,8 @@ import org.junit.Test;
 import uk.dsxt.voting.common.datamodel.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class VoteAggregatorTest {
 
