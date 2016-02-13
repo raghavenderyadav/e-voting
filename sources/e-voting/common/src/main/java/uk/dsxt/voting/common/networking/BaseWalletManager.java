@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j2;
 import nxt.Constants;
 import nxt.Nxt;
+import uk.dsxt.voting.common.datamodel.RequestType;
 import uk.dsxt.voting.common.datamodel.walletapi.*;
+import uk.dsxt.voting.common.utils.HttpHelper;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +26,8 @@ public class BaseWalletManager implements WalletManager {
     private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
     private final String mainAddress;
+    private final String port;
+    private final HttpHelper httpHelper;
 
     private String passphrase;
     private String accountId;
@@ -35,15 +39,17 @@ public class BaseWalletManager implements WalletManager {
         nxtPropertiesPath = properties.getProperty("nxt.properties.path");
         mainAddress = properties.getProperty("nxt.main.address");
         passphrase = properties.getProperty("nxt.account.passphrase");
+        httpHelper = new HttpHelper(5000, 5000);
 
         mapper = new ObjectMapper();
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
+        port = properties.getProperty("nxt.apiServerPort");
         Properties nxtProperties = new Properties();
         Nxt.loadProperties(nxtProperties, nxtPropertiesPath, true);
         nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
-        nxtProperties.setProperty("nxt.apiServerPort", properties.getProperty("nxt.apiServerPort"));
+        nxtProperties.setProperty("nxt.apiServerPort", port);
         nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
         nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
         try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
@@ -65,19 +71,36 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private <T> T sendApiRequest(WalletRequestType type, Consumer<Map<String, String>> argumentsBuilder, Class<T> tClass) {
-        if (type != WalletRequestType.GET_ACCOUNT_ID)
-            waitInitialize();
-        Map<String, String> arguments = new LinkedHashMap<>();
-        arguments.put("requestType", type.toString());
-        argumentsBuilder.accept(arguments);
-        String response = null;//TODO
-        T result = null;
         try {
-            result = mapper.readValue(response, tClass);
-        } catch (IOException e) {
-            log.error("Can't parse response: %s", response);
+            if (type != WalletRequestType.GET_ACCOUNT_ID)
+                waitInitialize();
+            Map<String, String> arguments = new LinkedHashMap<>();
+            arguments.put("requestType", type.toString());
+            argumentsBuilder.accept(arguments);
+            StringBuilder url = new StringBuilder();
+            url.append("http://localhost:");
+            url.append(port);
+            url.append("?");
+            for (Map.Entry<String, String> keyToValue : arguments.entrySet()) {
+                url.append(keyToValue.getKey());
+                url.append("=");
+                url.append(keyToValue.getValue());
+                url.append("&");
+            }
+            if (url.lastIndexOf("&") == url.length() - 1)
+                url.replace(url.length() - 1, url.length(), "");
+            String response = httpHelper.request(url.toString(), null, RequestType.POST);
+            T result = null;
+            try {
+                result = mapper.readValue(response, tClass);
+            } catch (IOException e) {
+                log.error("Can't parse response: %s", response);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error(String.format("Method %s failed.", type), e);
+            return null;
         }
-        return result;
     }
 
     @Override
