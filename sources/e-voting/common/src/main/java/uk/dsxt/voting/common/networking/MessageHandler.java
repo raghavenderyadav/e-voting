@@ -25,10 +25,11 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 
-import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Log4j2
 public abstract class MessageHandler {

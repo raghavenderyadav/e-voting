@@ -65,7 +65,7 @@ class CrossDomainFilter implements Handler {
         }
 
         if (target.endsWith("/cspReport")) {
-            StringBuffer jb = new StringBuffer();
+            StringBuilder jb = new StringBuilder();
             try {
                 BufferedReader reader = request.getReader();
                 String line;

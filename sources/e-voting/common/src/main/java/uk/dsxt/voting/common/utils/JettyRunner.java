@@ -51,7 +51,7 @@ public class JettyRunner {
                     Integer.valueOf(properties.getProperty("jetty.maxThreads")),
                     Integer.valueOf(properties.getProperty("jetty.minThreads")),
                     Integer.valueOf(properties.getProperty("jetty.idleTimeout")),
-                    new ArrayBlockingQueue(Integer.valueOf(properties.getProperty("jetty.maxQueueSize"))));
+                    new ArrayBlockingQueue<>(Integer.valueOf(properties.getProperty("jetty.maxQueueSize"))));
             Server server = new Server(threadPool);
             HttpConfiguration config = new HttpConfiguration();
 
