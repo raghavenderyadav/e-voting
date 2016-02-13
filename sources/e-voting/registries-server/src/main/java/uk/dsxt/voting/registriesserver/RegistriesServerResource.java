@@ -26,26 +26,23 @@ import uk.dsxt.voting.common.datamodel.BlockedPacket;
 import uk.dsxt.voting.common.datamodel.Holding;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.networking.RegistriesServer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.function.Supplier;
 
 @Log4j2
 @Path("/voting-api")
-public class RegistriesServerResource implements uk.dsxt.voting.common.networking.RegistriesServer {
+public class RegistriesServerResource implements RegistriesServer {
     private final RegistriesServerManager manager;
 
     public RegistriesServerResource(RegistriesServerManager manager) {
         this.manager = manager;
     }
 
-    @FunctionalInterface
-    public interface Request<T> {
-        T[] get();
-    }
-
-    private <T> T[] execute(String name, Request<T> request) {
+    private <T> T execute(String name, Supplier<T> request) {
         try {
             return request.get();
         } catch (Exception ex) {
