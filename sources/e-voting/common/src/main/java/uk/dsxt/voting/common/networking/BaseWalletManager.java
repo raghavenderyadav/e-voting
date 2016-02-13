@@ -62,9 +62,9 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private <T> T sendApiRequest(WalletRequestType type, String secretPhrase, Consumer<Map<String, String>> argumentsBuilder, Class<T> tClass) {
-        if (type != WalletRequestType.GET_ACCOUNT_ID)
+        if (type != WalletRequestType.GET_ACCOUNT_ID && type != WalletRequestType.GET_BLOCK)
             waitInitialize();
-        return sendApiRequest(type, secretPhrase, keyToValue -> {
+        return sendApiRequest(type, keyToValue -> {
             keyToValue.put("secretPhrase", secretPhrase);
             argumentsBuilder.accept(keyToValue);
         }, tClass);
@@ -72,7 +72,7 @@ public class BaseWalletManager implements WalletManager {
 
     private <T> T sendApiRequest(WalletRequestType type, Consumer<Map<String, String>> argumentsBuilder, Class<T> tClass) {
         try {
-            if (type != WalletRequestType.GET_ACCOUNT_ID)
+            if (type != WalletRequestType.GET_ACCOUNT_ID && type != WalletRequestType.GET_BLOCK)
                 waitInitialize();
             Map<String, String> arguments = new LinkedHashMap<>();
             arguments.put("requestType", type.toString());
@@ -204,7 +204,7 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private String getReadMessage(String transactionId) {
-        ReadMessage result = sendApiRequest(WalletRequestType.GET_PRUNABLE_MESSAGES, passphrase,
+        ReadMessage result = sendApiRequest(WalletRequestType.READ_MESSAGE, passphrase,
                 keyToValue -> keyToValue.put("transaction", transactionId), ReadMessage.class);
         if (result == null)
             return null;
@@ -231,7 +231,7 @@ public class BaseWalletManager implements WalletManager {
     private void waitInitialize() {
         while (selfAccount == null || passphrase == null || firstBlockTime == null) {
             try {
-                AccountResponse account = sendApiRequest(WalletRequestType.READ_MESSAGE, passphrase, keyToValue -> {}, AccountResponse.class);
+                AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {}, AccountResponse.class);
                 if (account != null) {
                     accountId = account.getAccountId();
                     selfAccount = account.getAddress();
