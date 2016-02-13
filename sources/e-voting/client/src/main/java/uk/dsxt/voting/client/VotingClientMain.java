@@ -47,12 +47,12 @@ public class VotingClientMain {
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             String messagesFileContent = PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path"));
             long resultsAggregationPeriod = Integer.parseInt(properties.getProperty("results.aggregation.period")) * 60000;
-            String registriesServerUrl=properties.getProperty("register.server.url");
-            String resultsBuilderUrl=properties.getProperty("results.builder.url");
+            String registriesServerUrl = properties.getProperty("register.server.url");
+            String resultsBuilderUrl = properties.getProperty("results.builder.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
-            WalletManager walletManager = null; //TODO
+            WalletManager walletManager = new BaseWalletManager(properties);
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, resultsAggregationPeriod);

@@ -43,13 +43,13 @@ public class VotingMasterClientMain {
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
 
-            String registriesServerUrl=properties.getProperty("register.server.url");
+            String registriesServerUrl = properties.getProperty("register.server.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
             WalletManager walletManager = new BaseWalletManager(properties);
-            RegistriesServer registriesServer= new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
+            RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
