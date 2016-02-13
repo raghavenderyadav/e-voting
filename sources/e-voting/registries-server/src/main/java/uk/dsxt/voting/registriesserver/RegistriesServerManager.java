@@ -74,36 +74,36 @@ public class RegistriesServerManager {
         validateBlackList(blackList, participantsById, holdersPacketSizeByHolderId);
     }
 
-    private void validateVotings(Voting[] votings) throws InternalLogicException {
+    void validateVotings(Voting[] votings) throws InternalLogicException {
         if (votings == null || votings.length == 0)
             throw new InternalLogicException("validateVotings failed. votings are null or empty.");
         for (int i = 0; i < votings.length; i++) {
             Voting v = votings[i];
-            if (v.getId() == null || v.getName() == null || v.getQuestions() == null || v.getQuestions().length == 0)
+            if (v == null || v.getId() == null || v.getId().isEmpty() || v.getName() == null || v.getName().isEmpty() || v.getQuestions() == null || v.getQuestions().length == 0)
                 throw new InternalLogicException(String.format("validateVotings failed. One of the voting fields are incorrect. index=%d", i));
 
             for (int j = 0; j < v.getQuestions().length; j++) {
                 Question q = v.getQuestions()[j];
-                if (q.getId() == 0 || q.getQuestion() == null || q.getAnswers() == null || q.getAnswers().length == 0)
+                if (q == null || q.getId() <= 0 || q.getQuestion() == null || q.getAnswers() == null || q.getAnswers().length == 0)
                     throw new InternalLogicException(String.format("validateVotings failed. One of the question fields are incorrect. voting index=%d, question index=%d", i, j));
 
                 for (int k = 0; k < q.getAnswers().length; k++) {
                     Answer a = q.getAnswers()[k];
-                    if (a.getId() == 0 || a.getName() == null)
+                    if (a == null || a.getId() <= 0 || a.getName() == null)
                         throw new InternalLogicException(String.format("validateVotings failed. One of the answer fields. voting index=%d, question index=%d, answer index=%d", i, j, k));
                 }
             }
         }
     }
 
-    private Map<String, Participant> validateAndMapParticipants(Participant[] participants) throws InternalLogicException {
+    Map<String, Participant> validateAndMapParticipants(Participant[] participants) throws InternalLogicException {
         Map<String, Participant> participantsById = new HashMap<>();
         //participant validation
         if (participants == null || participants.length == 0)
             throw new InternalLogicException("validateAndMapParticipants failed. participants are null or empty.");
         for (int i = 0; i < participants.length; i++) {
             Participant p = participants[i];
-            if (p.getId() == null || p.getName() == null || p.getPublicKey() == null)
+            if (p == null || p.getId() == null || p.getId().isEmpty() || p.getName() == null || p.getName().isEmpty() || p.getPublicKey() == null || p.getPublicKey().isEmpty())
                 throw new InternalLogicException(String.format("validateAndMapParticipants failed. One of the participant fields are incorrect. index=%d", i));
             if (participantsById.containsKey(p.getId()))
                 throw new InternalLogicException(String.format("validateAndMapParticipants failed. Participant with id %s is represented twice.", p.getId()));
