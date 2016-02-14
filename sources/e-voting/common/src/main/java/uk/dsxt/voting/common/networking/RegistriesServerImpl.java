@@ -27,6 +27,8 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
 
+import java.net.ConnectException;
+
 @Log4j2
 @Value
 public class RegistriesServerImpl implements RegistriesServer {
@@ -72,6 +74,8 @@ public class RegistriesServerImpl implements RegistriesServer {
                     log.error("{} failed. value is null. url={}", name, url);
                 } catch (InternalLogicException e) {
                     log.error("{} failed. Logic exception. url={}. Reason: {}", name, url, e.getMessage());
+                } catch (ConnectException connEx) {
+                    log.error("{} failed. Couldn't establish connection. url={}. Reason: {}", name, url, connEx.getMessage());
                 } catch (Exception ex) {
                     log.error("{} failed. url={}", name, url, ex);
                 }
