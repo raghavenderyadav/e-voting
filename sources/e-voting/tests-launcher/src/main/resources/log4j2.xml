@@ -23,7 +23,7 @@
 <Configuration status="info" name="MyApp" packages="">
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%m%n"/>
+            <PatternLayout pattern="%d [%p] %m%n"/>
         </Console>
 
         <File name="File" fileName="logs/e-voting-tests-launcher.log">
