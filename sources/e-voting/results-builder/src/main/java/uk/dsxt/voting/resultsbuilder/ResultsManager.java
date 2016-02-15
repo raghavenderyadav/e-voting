@@ -23,10 +23,13 @@ package uk.dsxt.voting.resultsbuilder;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.VoteResult;
+import uk.dsxt.voting.common.datamodel.VotedAnswer;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class ResultsManager implements ResultsBuilder {
@@ -64,25 +67,47 @@ public class ResultsManager implements ResultsBuilder {
             VoteResult referenceResult = referenceResultsByVotingId.get(votingId);
             if (referenceResult == null) {
                 referenceResult = new VoteResult(votingId, null);
-                log.info("Empty result on voting {}", votingId);
+                log.info("Empty result on voting #{}", votingId);
             } else {
-                log.info("Result on voting {} : {}", votingId, referenceResult);
+                log.info("Results on voting #{} : {}", votingId, printVotingResult(referenceResult));
             }
 
             synchronized (resultsByHolderIdAndVotingId) {
                 Map<String, VoteResult> votingResults = resultsByHolderIdAndVotingId.get(votingId);
                 if (votingResults == null) {
-                    log.info("  No node results received on voting {}", votingId);
+                    log.info("  No node results received on voting #{}", votingId);
                 } else {
-                    log.info("  Received {} node results on voting {}", votingResults.size(), votingId);
-                    for(Map.Entry<String, VoteResult> holderRecord : votingResults.entrySet()) {
+                    log.info("  Received {} node results on voting #{}", votingResults.size(), votingId);
+                    for (Map.Entry<String, VoteResult> holderRecord : votingResults.entrySet()) {
                         if (!referenceResult.equals(holderRecord.getValue())) {
-                            log.info("    Node result of holder {} on voting {} is not equal reference result: {}", holderRecord.getKey(), votingId, holderRecord.getValue());
+                            log.info("    Node result of holder {} on voting #{} is not equal reference result: {}",
+                                    holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
                         }
                     }
                 }
             }
         }
+    }
 
+    private String printVotingResult(VoteResult result) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(System.lineSeparator());
+        List<String> keys = result.getAnswersByQuestionId().keySet().stream().sorted().collect(Collectors.toList());
+        int prevQuestionId = -1;
+        for (String key : keys) {
+            String[] answerAndQuestion = key.split("-");
+            int questionId = Integer.valueOf(answerAndQuestion[0]);
+            if (questionId != prevQuestionId) {
+                builder.append(String.format("  Votes on question #%s are as follows:", questionId));
+                builder.append(System.lineSeparator());
+                prevQuestionId = questionId;
+            }
+            VotedAnswer answer = result.getAnswersByQuestionId().get(key);
+            builder.append(String.format("      Answer #%s - [%s] votes", answer.getAnswerId(), answer.getVoteAmount()));
+            builder.append(System.lineSeparator());
+        }
+        builder.append("End of results.");
+        builder.append(System.lineSeparator());
+        return builder.toString();
     }
 }
