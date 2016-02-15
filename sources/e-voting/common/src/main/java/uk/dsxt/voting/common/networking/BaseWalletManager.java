@@ -27,6 +27,7 @@ public class BaseWalletManager implements WalletManager {
     private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
     private final String mainAddress;
+    private final String passwordForRegister;
     private final String port;
     private final HttpHelper httpHelper;
 
@@ -42,6 +43,7 @@ public class BaseWalletManager implements WalletManager {
         jarPath = properties.getProperty("nxt.jar.path");
         nxtPropertiesPath = properties.getProperty("nxt.properties.path");
         mainAddress = properties.getProperty("nxt.main.address");
+        passwordForRegister = properties.getProperty("nxt.register.password");
         passphrase = properties.getProperty("nxt.account.passphrase");
         httpHelper = new HttpHelper(5000, 5000);
 
@@ -57,6 +59,7 @@ public class BaseWalletManager implements WalletManager {
         nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
         nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
         nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
+        nxtProperties.setProperty("nxt.defaultTestnetPeers", properties.getProperty("nxt.defaultTestnetPeers"));
         nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
         nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
         nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
@@ -158,8 +161,8 @@ public class BaseWalletManager implements WalletManager {
     public void sendMoneyToAddressBalance(BigDecimal money, String address) {
         sendApiRequest(WalletRequestType.SEND_MONEY, passphrase, keyToValue -> {
             keyToValue.put("recipient", address);
-            keyToValue.put("fee", "0");
-            keyToValue.put("amount", Long.toString(money.multiply(new BigDecimal(Constants.ONE_NXT)).longValue()));
+            keyToValue.put("feeNQT", "0");
+            keyToValue.put("amountNQT", Long.toString(money.multiply(new BigDecimal(Constants.ONE_NXT)).longValue()));
             keyToValue.put("deadline", "60");
         }, SendTransactionResponse.class);
     }
@@ -169,10 +172,14 @@ public class BaseWalletManager implements WalletManager {
         return sendMessage(mainAddress, body);
     }
 
-    private String sendMessage(String recipient, byte[] body) {
-        SendTransactionResponse transaction = sendApiRequest(WalletRequestType.SEND_MESSAGE, passphrase, keyToValue -> {
+    public String sendMessage(String recipient, byte[] body) {
+        return sendMessage(recipient, body, passphrase);
+    }
+
+    public String sendMessage(String recipient, byte[] body, String senderPassword) {
+        SendTransactionResponse transaction = sendApiRequest(WalletRequestType.SEND_MESSAGE, senderPassword, keyToValue -> {
             keyToValue.put("recipient", recipient);
-            keyToValue.put("fee", "0");
+            keyToValue.put("feeNQT", "0");
             keyToValue.put("message", new String(body, StandardCharsets.UTF_8));
             keyToValue.put("deadline", "60");
         }, SendTransactionResponse.class);
@@ -232,7 +239,7 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private String getReadMessage(String transactionId) {
-        ReadMessage result = sendApiRequest(WalletRequestType.READ_MESSAGE, passphrase,
+        ReadMessage result = sendApiRequest(WalletRequestType.GET_TRANSACTION, passphrase,
                 keyToValue -> keyToValue.put("transaction", transactionId), ReadMessage.class);
         if (result == null)
             return null;
@@ -264,6 +271,7 @@ public class BaseWalletManager implements WalletManager {
     private void waitInitialize() {
         if (selfAccount != null && passphrase != null & firstBlockTime != null)
             return;
+        log.info("Start wallet initialization...");
         while (selfAccount == null || passphrase == null || firstBlockTime == null) {
             try {
                 if (accountId == null || selfAccount == null) {
@@ -273,6 +281,7 @@ public class BaseWalletManager implements WalletManager {
                         selfAccount = account.getAddress();
                     }
                 }
+                //TODO remove it:
                 if (firstBlockTime == null) {
                     BlockResponse block = getBlock(0);
                     if (block != null)
@@ -285,11 +294,42 @@ public class BaseWalletManager implements WalletManager {
                 log.error("waitInitialize. Error: {}", e.getMessage());
             }
         }
+        log.info("Wallet initialization finished. selfAccount={} firstBlockTime={}", selfAccount, firstBlockTime);
         if (!selfAccount.equals(mainAddress)) {
-            //TODO add this check sendApiRequest(WalletRequestType.GET_ACCOUNT_PUBLIC_KEY, passphrase, keyToValue -> keyToValue.put("account", accountId), AccountResponse.class);
-            sendMessage(selfAccount, String.format("Initialize account %s", selfAccount).getBytes(StandardCharsets.UTF_8));
+            TransactionsResponse transactions = null;
+            while (transactions == null) {
+                transactions = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> keyToValue.put("account", selfAccount), TransactionsResponse.class);
+                sleep(100);
+            }
+
+            String initializeMessageId = null;
+            if (transactions.getErrorCode() == 5) {
+                log.info("Account isn't registered yet.");
+                while (initializeMessageId == null) {
+                    initializeMessageId = sendMessage(selfAccount,
+                            String.format("Initialize transactions %s", selfAccount).getBytes(StandardCharsets.UTF_8), passwordForRegister);
+                    sleep(100);
+                }
+                log.info("Account registration message was successfully sent. Id={}", initializeMessageId);
+            }
+            if (initializeMessageId != null) {
+                String readMessage = null;
+                while (readMessage == null) {
+                    readMessage = getReadMessage(initializeMessageId);
+                    sleep(1000);
+                }
+            }
+            log.info("Account public key was successfully registered.");
         }
         while (!isForgeNow)
             isForgeNow = startForging();
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw  new RuntimeException(e);
+        }
     }
 }

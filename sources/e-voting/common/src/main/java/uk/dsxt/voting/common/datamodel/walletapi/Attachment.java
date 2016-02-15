@@ -15,6 +15,7 @@ public class Attachment {
     int versionOrdinaryPayment;
     int phasingVotingModel;
     int versionMessage;
+    int versionArbitraryMessage;
     boolean messageIsText;
     String message;
 
@@ -23,7 +24,8 @@ public class Attachment {
                       @JsonProperty("phasingQuorum") int phasingQuorum, @JsonProperty("version.Phasing") int version,
                       @JsonProperty("phasingMinBalance") int phasingMinBalance, @JsonProperty("phasingMinBalanceModel") int phasingMinBalanceModel,
                       @JsonProperty("version.OrdinaryPayment") int versionOrdinaryPayment, @JsonProperty("phasingVotingModel") int phasingVotingModel,
-                      @JsonProperty("version.Message") int versionMessage, @JsonProperty("messageIsText") boolean messageIsText, @JsonProperty("message") String message) {
+                      @JsonProperty("version.Message") int versionMessage, @JsonProperty("version.ArbitraryMessage") int versionArbitraryMessage,
+                      @JsonProperty("messageIsText") boolean messageIsText, @JsonProperty("message") String message) {
         this.phasingFinishHeight = phasingFinishHeight;
         this.phasingHolding = phasingHolding;
         this.phasingQuorum = phasingQuorum;
@@ -33,6 +35,7 @@ public class Attachment {
         this.versionOrdinaryPayment = versionOrdinaryPayment;
         this.phasingVotingModel = phasingVotingModel;
         this.versionMessage = versionMessage;
+        this.versionArbitraryMessage = versionArbitraryMessage;
         this.messageIsText = messageIsText;
         this.message = message;
     }

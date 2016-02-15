@@ -16,7 +16,6 @@ public class BalanceResponse extends BaseWalletResponse {
     private final BigDecimal effectiveBalance;
     private final BigDecimal forgedBalance;
     private final BigDecimal balance;
-    private final long requestProcessingTime;
 
     @JsonCreator
     public BalanceResponse(@JsonProperty("unconfirmedBalanceNQT") long unconfirmedBalanceNQT,
@@ -24,12 +23,14 @@ public class BalanceResponse extends BaseWalletResponse {
                            @JsonProperty("effectiveBalanceNXT") long effectiveBalanceNXT,
                            @JsonProperty("forgedBalanceNQT") long forgedBalanceNQT,
                            @JsonProperty("balanceNQT") long balanceNQT,
-                           @JsonProperty("requestProcessingTime") long requestProcessingTime) {
+                           @JsonProperty("errorDescription") String errorDescription,
+                           @JsonProperty("errorCode") int errorCode,
+                           @JsonProperty("requestProcessingTime") int requestProcessingTime) {
+        super(errorDescription, errorCode, requestProcessingTime);
         this.unconfirmedBalance = longToBigDecimal(unconfirmedBalanceNQT);
         this.guaranteedBalance = longToBigDecimal(guaranteedBalanceNQT);
         this.effectiveBalance = longToBigDecimal(effectiveBalanceNXT);
         this.forgedBalance = longToBigDecimal(forgedBalanceNQT);
         this.balance = longToBigDecimal(balanceNQT);
-        this.requestProcessingTime = requestProcessingTime;
     }
 }

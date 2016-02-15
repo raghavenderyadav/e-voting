@@ -4,11 +4,11 @@ public enum WalletRequestType {
 
     GET_BALANCE ("getBalance"),
     GET_ACCOUNT_ID ("getAccountId"),
-    GET_ACCOUNT_PUBLIC_KEY ("getAccountPublicKey"),
+    GET_BLOCKCHAIN_TRANSACTIONS ("getBlockchainTransactions"),
     SEND_MESSAGE("sendMessage"),
     SEND_MONEY("sendMoney"),
     GET_PRUNABLE_MESSAGES("getPrunableMessages"),
-    READ_MESSAGE("readMessage"),
+    GET_TRANSACTION("getTransaction"),
     START_FORGING("startForging"),
     GET_BLOCK("getBlock");
 

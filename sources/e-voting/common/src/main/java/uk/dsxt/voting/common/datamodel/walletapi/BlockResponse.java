@@ -38,12 +38,15 @@ public class BlockResponse extends BaseWalletResponse {
                          @JsonProperty("generator") String generator, @JsonProperty("generatorPublicKey") String generatorPublicKey,
                          @JsonProperty("baseTarget") String baseTarget, @JsonProperty("payloadHash") String payloadHash,
                          @JsonProperty("generatorRS") String generatorRS, @JsonProperty("nextBlock") String nextBlock,
-                         @JsonProperty("requestProcessingTime") int requestProcessingTime, @JsonProperty("numberOfTransactions") int numberOfTransactions,
+                         @JsonProperty("numberOfTransactions") int numberOfTransactions,
                          @JsonProperty("blockSignature") String blockSignature, @JsonProperty("transactions") String[] transactions,
                          @JsonProperty("version") int version, @JsonProperty("totalFeeNQT") long totalFeeNQT,
                          @JsonProperty("previousBlock") String previousBlock, @JsonProperty("block") String block,
                          @JsonProperty("height") int height, @JsonProperty("timestamp") long timestamp,
-                         @JsonProperty("cumulativeDifficulty") int cumulativeDifficulty) {
+                         @JsonProperty("cumulativeDifficulty") int cumulativeDifficulty,
+                         @JsonProperty("errorDescription") String errorDescription, @JsonProperty("errorCode") int errorCode,
+                         @JsonProperty("requestProcessingTime") int requestProcessingTime) {
+        super(errorDescription, errorCode, requestProcessingTime);
         this.previousBlockHash = previousBlockHash;
         this.payloadLength = payloadLength;
         this.cumulativeDifficulty = cumulativeDifficulty;

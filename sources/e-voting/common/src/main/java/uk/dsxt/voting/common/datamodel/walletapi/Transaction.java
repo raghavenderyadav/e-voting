@@ -41,7 +41,10 @@ public class Transaction extends BaseWalletResponse {
                        @JsonProperty("sender") String sender, @JsonProperty("recipientRS") String recipientRS,
                        @JsonProperty("recipient") String recipient, @JsonProperty("ecBlockHeight") int ecBlockHeight,
                        @JsonProperty("deadline") int deadline, @JsonProperty("transaction") String transaction,
-                       @JsonProperty("timestamp") int timestamp, @JsonProperty("height") int height) {
+                       @JsonProperty("timestamp") int timestamp, @JsonProperty("height") int height,
+                       @JsonProperty("errorDescription") String errorDescription, @JsonProperty("errorCode") int errorCode,
+                       @JsonProperty("requestProcessingTime") int requestProcessingTime) {
+        super(errorDescription, errorCode, requestProcessingTime);
         this.senderPublicKey = senderPublicKey;
         this.signature = signature;
         this.fee = longToBigDecimal(feeNQT);
