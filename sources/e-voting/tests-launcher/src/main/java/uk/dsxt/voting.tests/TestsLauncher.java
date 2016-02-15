@@ -94,6 +94,8 @@ public class TestsLauncher {
             //stop jetty servers
             RegistriesServerMain.shutdown();
             ResultsBuilderMain.shutdown();
+            //stop other modules
+            VotingMasterClientMain.shutdown();
 
             log.info("Testing finished");
         } catch (Exception e) {

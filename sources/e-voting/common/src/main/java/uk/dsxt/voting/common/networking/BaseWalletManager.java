@@ -136,6 +136,7 @@ public class BaseWalletManager implements WalletManager {
         }
     }
 
+    @Override
     public void stopWallet() {
         try {
             if (nxtProcess.isAlive())

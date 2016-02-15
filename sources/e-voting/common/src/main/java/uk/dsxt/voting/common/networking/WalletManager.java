@@ -28,6 +28,8 @@ public interface WalletManager {
 
     void runWallet();
 
+    void stopWallet();
+
     BigDecimal getBalance();
 
     void sendMoneyToAddressBalance(BigDecimal money, String address);

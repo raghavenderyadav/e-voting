@@ -40,6 +40,8 @@ public abstract class MessageHandler {
 
     private long lastNewMessagesRequestTime;
 
+    protected Thread messagesHandler;
+
     protected MessageHandler(WalletManager walletManager, Participant[] participants) {
         this.walletManager = walletManager;
         for(Participant participant : participants) {
@@ -57,7 +59,7 @@ public abstract class MessageHandler {
     }
 
     public void run(long newMessagesRequestInterval) {
-        Thread messagesHandler = new Thread(() -> {
+        messagesHandler = new Thread(() -> {
             while (!Thread.interrupted()) {
                 checkNewMessages();
                 try {
@@ -69,6 +71,11 @@ public abstract class MessageHandler {
         }, "messagesHandler");
         messagesHandler.start();
         log.info("MessageHandler runs");
+    }
+
+    public void stop() {
+        messagesHandler.interrupt();
+        log.info("MessageHandler stopped");
     }
 
     private void checkNewMessages() {

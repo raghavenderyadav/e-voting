@@ -10,6 +10,11 @@ public class MockWalletManager implements WalletManager {
     }
 
     @Override
+    public void stopWallet() {
+
+    }
+
+    @Override
     public BigDecimal getBalance() {
         return BigDecimal.ZERO;
     }
