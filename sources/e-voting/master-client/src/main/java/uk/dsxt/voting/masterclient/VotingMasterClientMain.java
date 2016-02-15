@@ -23,10 +23,7 @@ package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.networking.BaseWalletManager;
-import uk.dsxt.voting.common.networking.RegistriesServer;
-import uk.dsxt.voting.common.networking.RegistriesServerImpl;
-import uk.dsxt.voting.common.networking.WalletManager;
+import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.math.BigDecimal;
@@ -46,9 +43,11 @@ public class VotingMasterClientMain {
             String registriesServerUrl = properties.getProperty("register.server.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
-
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
-            WalletManager walletManager = new BaseWalletManager(properties);
+
+            final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
+            WalletManager walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties);
+
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
