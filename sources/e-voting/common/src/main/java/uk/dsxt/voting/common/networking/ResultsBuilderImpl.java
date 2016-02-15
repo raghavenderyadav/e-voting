@@ -22,7 +22,8 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.datamodel.InternalLogicException;
+import uk.dsxt.voting.common.datamodel.RequestType;
 import uk.dsxt.voting.common.utils.HttpHelper;
 
 import java.io.IOException;
@@ -31,8 +32,8 @@ import java.util.Map;
 
 @Log4j2
 public class ResultsBuilderImpl implements ResultsBuilder {
-    private final String ADD_RESULT_URL_PART = "/holdings";
-    private final String ADD_VOTE_URL_PART = "/participants";
+    private final String ADD_RESULT_URL_PART = "/addResult";
+    private final String ADD_VOTE_URL_PART = "/addVote";
 
     private final HttpHelper httpHelper;
 
