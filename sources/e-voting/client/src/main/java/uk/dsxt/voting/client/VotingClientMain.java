@@ -40,7 +40,7 @@ public class VotingClientMain {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
 
-            if (args != null && args.length < 4)
+            if (args != null && args.length < 3)
                 throw new InternalLogicException("Wrong arguments");
             String ownerId = args == null ? properties.getProperty("owner.id") : args[0];
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[1]);

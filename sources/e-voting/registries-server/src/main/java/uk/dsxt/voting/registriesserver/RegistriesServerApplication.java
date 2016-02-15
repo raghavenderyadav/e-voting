@@ -45,7 +45,7 @@ public class RegistriesServerApplication extends ResourceConfig {
         if (args != null && args.length > 1) {
             subdirectory = args[0];
             votingDuration = Integer.valueOf(args[1]);
-            log.info(String.format("Testing mode. subdirectory: '%s'. votingDuration: %s", subdirectory, votingDuration));
+            log.info(String.format("Testing mode. subdirectory: '%s'. votingDuration: %s minutes", subdirectory, votingDuration));
         }
         Participant[] participants = loadResource(properties, subdirectory, "participants.filepath", Participant[].class);
         Holding[] holdings = loadResource(properties, subdirectory, "holdings.filepath", Holding[].class);
@@ -55,7 +55,7 @@ public class RegistriesServerApplication extends ResourceConfig {
         if (votingDuration != null) {
             long now = Instant.now().getMillis();
             for (int i = 0; i < votings.length; i++) {
-                votings[i] = new Voting(votings[i].getId(), votings[i].getName(), now, now + votingDuration * 1000, votings[i].getQuestions());
+                votings[i] = new Voting(votings[i].getId(), votings[i].getName(), now, now + votingDuration * 60000, votings[i].getQuestions());
             }
         }
         //initialization

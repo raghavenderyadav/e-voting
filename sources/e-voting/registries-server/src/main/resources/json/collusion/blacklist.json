@@ -1,0 +1,34 @@
+[
+  {
+    "holderId": "5",
+    "packetSize": 18
+  },
+  {
+    "holderId": "10",
+    "packetSize": 30
+  },
+  {
+    "holderId": "15",
+    "packetSize": 30
+  },
+  {
+    "holderId": "20",
+    "packetSize": 30
+  },
+  {
+    "holderId": "25",
+    "packetSize": 13
+  },
+  {
+    "holderId": "30",
+    "packetSize": 30
+  },
+  {
+    "holderId": "35",
+    "packetSize": 30
+  },
+  {
+    "holderId": "40",
+    "packetSize": 22
+  }
+]

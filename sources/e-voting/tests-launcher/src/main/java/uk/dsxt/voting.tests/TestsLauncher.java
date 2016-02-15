@@ -37,7 +37,7 @@ import java.util.Properties;
 
 @Log4j2
 public class TestsLauncher {
-    private static final String MODULE_NAME = "tests-launcher";
+    public static final String MODULE_NAME = "tests-launcher";
 
     @FunctionalInterface
     public interface SimpleRequest {
@@ -73,7 +73,7 @@ public class TestsLauncher {
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
             for (int i = 0; i < configurations.length; i++) {
                 ClientConfiguration conf = configurations[i];
-                VotingClientMain.main(new String[] {conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), String.valueOf(conf.isHonestParticipant())});
+                VotingClientMain.main(new String[] {conf.getHolderId(), conf.getPrivateKey(), conf.getVote()});
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
 

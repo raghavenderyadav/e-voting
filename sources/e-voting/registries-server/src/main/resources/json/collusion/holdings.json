@@ -1,0 +1,202 @@
+[
+  {
+    "holderId": "1",
+    "packetSize": 79,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "2",
+    "packetSize": 97,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "3",
+    "packetSize": 36,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "4",
+    "packetSize": 97,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "5",
+    "packetSize": 18,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "6",
+    "packetSize": 84,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "7",
+    "packetSize": 1,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "8",
+    "packetSize": 71,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "9",
+    "packetSize": 99,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "10",
+    "packetSize": 84,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "11",
+    "packetSize": 6,
+    "nominalHolderId": "10"
+  },
+  {
+    "holderId": "12",
+    "packetSize": 70,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "13",
+    "packetSize": 28,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "14",
+    "packetSize": 1,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "15",
+    "packetSize": 60,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "16",
+    "packetSize": 100,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "17",
+    "packetSize": 41,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "18",
+    "packetSize": 87,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "19",
+    "packetSize": 3,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "20",
+    "packetSize": 128,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "21",
+    "packetSize": 90,
+    "nominalHolderId": "20"
+  },
+  {
+    "holderId": "22",
+    "packetSize": 86,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "23",
+    "packetSize": 31,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "24",
+    "packetSize": 39,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "25",
+    "packetSize": 13,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "26",
+    "packetSize": 6,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "27",
+    "packetSize": 8,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "28",
+    "packetSize": 5,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "29",
+    "packetSize": 2,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "30",
+    "packetSize": 174,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "31",
+    "packetSize": 77,
+    "nominalHolderId": "30"
+  },
+  {
+    "holderId": "32",
+    "packetSize": 31,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "33",
+    "packetSize": 37,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "34",
+    "packetSize": 4,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "35",
+    "packetSize": 67,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "36",
+    "packetSize": 54,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "37",
+    "packetSize": 6,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "38",
+    "packetSize": 13,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "39",
+    "packetSize": 53,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "40",
+    "packetSize": 22,
+    "nominalHolderId": null
+  }
+]
