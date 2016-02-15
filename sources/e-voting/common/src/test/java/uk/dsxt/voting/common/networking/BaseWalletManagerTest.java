@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 public class BaseWalletManagerTest {
 
