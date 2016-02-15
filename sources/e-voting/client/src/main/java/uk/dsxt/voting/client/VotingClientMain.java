@@ -1,31 +1,28 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
-import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -42,11 +39,16 @@ public class VotingClientMain {
         try {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
-            String ownerId = properties.getProperty("owner.id");
-            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(properties.getProperty("owner.private_key"));
+
+            if (args != null && args.length < 4)
+                throw new InternalLogicException("Wrong arguments");
+            String ownerId = args == null ? properties.getProperty("owner.id") : args[0];
+            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[1]);
+            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[2];
+
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
-            String messagesFileContent = PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path"));
             long resultsAggregationPeriod = Integer.parseInt(properties.getProperty("results.aggregation.period")) * 60000;
+
             String registriesServerUrl = properties.getProperty("register.server.url");
             String resultsBuilderUrl = properties.getProperty("results.builder.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));

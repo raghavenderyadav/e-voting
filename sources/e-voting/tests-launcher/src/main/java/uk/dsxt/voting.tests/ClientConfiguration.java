@@ -31,7 +31,7 @@ import lombok.experimental.NonFinal;
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientConfiguration {
-    String publicKey;
+    String holderId;
     String privateKey;
     @NonFinal
     @Setter
@@ -41,10 +41,10 @@ public class ClientConfiguration {
     Integer disconnectDuration;
 
     @JsonCreator
-    public ClientConfiguration(@JsonProperty("publicKey") String publicKey, @JsonProperty("privateKey") String privateKey,
+    public ClientConfiguration(@JsonProperty("holderId") String holderId, @JsonProperty("privateKey") String privateKey,
                                @JsonProperty("isHonestParticipant") boolean isHonestParticipant, @JsonProperty("vote") String vote,
                                @JsonProperty("disconnectAmount") Integer disconnectAmount, @JsonProperty("disconnectDuration") Integer disconnectDuration) {
-        this.publicKey = publicKey;
+        this.holderId = holderId;
         this.privateKey = privateKey;
         this.isHonestParticipant = isHonestParticipant;
         this.vote = vote;

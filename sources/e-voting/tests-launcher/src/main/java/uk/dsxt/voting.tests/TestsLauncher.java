@@ -73,7 +73,7 @@ public class TestsLauncher {
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
             for (int i = 0; i < configurations.length; i++) {
                 ClientConfiguration conf = configurations[i];
-                VotingClientMain.main(new String[] {conf.getPublicKey(), conf.getPrivateKey(), conf.getVote(), String.valueOf(conf.isHonestParticipant())});
+                VotingClientMain.main(new String[] {conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), String.valueOf(conf.isHonestParticipant())});
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
 
@@ -81,7 +81,7 @@ public class TestsLauncher {
             RegistriesServer regServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             Voting[] votings = regServer.getVotings();
             if (votings.length > 1) {
-                log.error("There is more than one voting. Stopping launcher");
+                log.error("There is more than one voting. Stopping {}", MODULE_NAME);
                 return;
             }
             Voting currentVoting = regServer.getVotings()[0];
@@ -89,9 +89,7 @@ public class TestsLauncher {
             log.info("Waiting {} seconds while voting ends", sleepPeriod / 1000);
             Thread.sleep(sleepPeriod);
 
-            //TODO: start to ask results builder for voting results
-
-            //TODO: after receiving results print them
+            //TODO: check that results builder has finished calculating results
 
             //stop jetty servers
             RegistriesServerMain.shutdown();

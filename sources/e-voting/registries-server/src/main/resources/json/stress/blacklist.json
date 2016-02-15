@@ -1,7 +1,7 @@
 [
   {
     "holderId": "5",
-    "packetSize": 9
+    "packetSize": 12
   },
   {
     "holderId": "10",
@@ -25,7 +25,7 @@
   },
   {
     "holderId": "35",
-    "packetSize": 30
+    "packetSize": 5
   },
   {
     "holderId": "40",
@@ -33,7 +33,7 @@
   },
   {
     "holderId": "45",
-    "packetSize": 30
+    "packetSize": 4
   },
   {
     "holderId": "50",
@@ -41,7 +41,7 @@
   },
   {
     "holderId": "55",
-    "packetSize": 4
+    "packetSize": 30
   },
   {
     "holderId": "60",
@@ -49,7 +49,7 @@
   },
   {
     "holderId": "65",
-    "packetSize": 8
+    "packetSize": 30
   },
   {
     "holderId": "70",
@@ -57,7 +57,7 @@
   },
   {
     "holderId": "75",
-    "packetSize": 30
+    "packetSize": 19
   },
   {
     "holderId": "80",
@@ -73,7 +73,7 @@
   },
   {
     "holderId": "95",
-    "packetSize": 19
+    "packetSize": 30
   },
   {
     "holderId": "100",
