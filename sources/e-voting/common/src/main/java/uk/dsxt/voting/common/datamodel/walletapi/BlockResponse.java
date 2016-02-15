@@ -2,11 +2,13 @@ package uk.dsxt.voting.common.datamodel.walletapi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.math.BigDecimal;
 
 @Value
+@EqualsAndHashCode(callSuper=false)
 public class BlockResponse extends BaseWalletResponse {
     String previousBlockHash;
     int payloadLength;
