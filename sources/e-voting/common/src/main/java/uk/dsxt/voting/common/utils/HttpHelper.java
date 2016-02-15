@@ -47,11 +47,11 @@ public class HttpHelper {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(type.toString());
-        connection.setRequestProperty("Content-type", "application/json");
         connection.setConnectTimeout(connectionTimeout);
         connection.setReadTimeout(readTimeout);
 
         if (content != null && type == RequestType.POST) {
+            connection.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
             connection.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(content);
@@ -60,7 +60,7 @@ public class HttpHelper {
         }
 
         int code = connection.getResponseCode();
-        if (code != Response.Status.OK.getStatusCode())
+        if (code != Response.Status.OK.getStatusCode() && code != Response.Status.NO_CONTENT.getStatusCode())
             throw new InternalLogicException(String.format("request failed. code %s for url %s", code, urlString));
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
