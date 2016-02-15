@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
@@ -34,6 +35,9 @@ public class BaseWalletManager implements WalletManager {
     private String selfAccount;
     private Long firstBlockTime;
 
+    private Process nxtProcess;
+    private boolean isForgeNow = false;
+
     public BaseWalletManager(Properties properties) {
         jarPath = properties.getProperty("nxt.jar.path");
         nxtPropertiesPath = properties.getProperty("nxt.properties.path");
@@ -51,7 +55,11 @@ public class BaseWalletManager implements WalletManager {
         nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
         nxtProperties.setProperty("nxt.apiServerPort", port);
         nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
+        nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
         nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
+        nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
+        nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
+        nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
         try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
             nxtProperties.store(fos, "");
         } catch (Exception e) {
@@ -84,7 +92,7 @@ public class BaseWalletManager implements WalletManager {
             for (Map.Entry<String, String> keyToValue : arguments.entrySet()) {
                 url.append(keyToValue.getKey());
                 url.append("=");
-                url.append(keyToValue.getValue());
+                url.append(URLEncoder.encode(keyToValue.getValue(), StandardCharsets.UTF_8.toString()));
                 url.append("&");
             }
             if (url.lastIndexOf("&") == url.length() - 1)
@@ -113,13 +121,27 @@ public class BaseWalletManager implements WalletManager {
             cmd.add(nxtPropertiesPath);
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.command(cmd);
-            Process start = processBuilder.start();
-            inheritIO(start.getInputStream(), false);
-            inheritIO(start.getErrorStream(), true);
+            nxtProcess = processBuilder.start();
+            inheritIO(nxtProcess.getInputStream(), false);
+            inheritIO(nxtProcess.getErrorStream(), true);
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    stopWallet();
+                }
+            });
         } catch (Exception e) {
             String errorMessage = String.format("Can't run wallet. Error: %s", e.getMessage());
             log.error(errorMessage, e);
             throw new RuntimeException(errorMessage);
+        }
+    }
+
+    public void stopWallet() {
+        try {
+            if (nxtProcess.isAlive())
+                nxtProcess.destroyForcibly();
+        } catch (Exception e) {
+            log.error("stopWallet method failed", e);
         }
     }
 
@@ -143,8 +165,12 @@ public class BaseWalletManager implements WalletManager {
 
     @Override
     public String sendMessage(byte[] body) {
+        return sendMessage(mainAddress, body);
+    }
+
+    private String sendMessage(String recipient, byte[] body) {
         SendTransactionResponse transaction = sendApiRequest(WalletRequestType.SEND_MESSAGE, passphrase, keyToValue -> {
-            keyToValue.put("recipient", mainAddress);
+            keyToValue.put("recipient", recipient);
             keyToValue.put("fee", "0");
             keyToValue.put("message", new String(body, StandardCharsets.UTF_8));
             keyToValue.put("deadline", "60");
@@ -216,6 +242,11 @@ public class BaseWalletManager implements WalletManager {
         return sendApiRequest(WalletRequestType.GET_BLOCK, passphrase, keyToValue -> keyToValue.put("height", Integer.toString(height)), BlockResponse.class);
     }
 
+    private boolean startForging() {
+        StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {}, StartForgingResponse.class);
+        return response != null;
+    }
+
     private void inheritIO(final InputStream src, final boolean isError) {
         new Thread(() -> {
             Scanner sc = new Scanner(src);
@@ -230,16 +261,22 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private void waitInitialize() {
+        if (selfAccount != null && passphrase != null & firstBlockTime != null)
+            return;
         while (selfAccount == null || passphrase == null || firstBlockTime == null) {
             try {
-                AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {}, AccountResponse.class);
-                if (account != null) {
-                    accountId = account.getAccountId();
-                    selfAccount = account.getAddress();
+                if (accountId == null || selfAccount == null) {
+                    AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {}, AccountResponse.class);
+                    if (account != null) {
+                        accountId = account.getAccountId();
+                        selfAccount = account.getAddress();
+                    }
                 }
-                BlockResponse block = getBlock(0);
-                if (block != null)
-                    firstBlockTime = block.getTimestamp();
+                if (firstBlockTime == null) {
+                    BlockResponse block = getBlock(0);
+                    if (block != null)
+                        firstBlockTime = block.getTimestamp();
+                }
                 Thread.sleep(1000);
             } catch (InterruptedException ie) {
                 return;
@@ -247,5 +284,11 @@ public class BaseWalletManager implements WalletManager {
                 log.error("waitInitialize. Error: {}", e.getMessage());
             }
         }
+        if (!selfAccount.equals(mainAddress)) {
+            //TODO add this check sendApiRequest(WalletRequestType.GET_ACCOUNT_PUBLIC_KEY, passphrase, keyToValue -> keyToValue.put("account", accountId), AccountResponse.class);
+            sendMessage(selfAccount, String.format("Initialize account %s", selfAccount).getBytes(StandardCharsets.UTF_8));
+        }
+        while (!isForgeNow)
+            isForgeNow = startForging();
     }
 }
