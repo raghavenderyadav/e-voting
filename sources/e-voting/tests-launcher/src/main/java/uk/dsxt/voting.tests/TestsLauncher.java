@@ -40,7 +40,7 @@ import java.util.Properties;
 public class TestsLauncher {
     public static final String MODULE_NAME = "tests-launcher";
 
-    private static final String MASTER_NAME = "nxt-master";
+    private static final String MASTER_NAME = "nxt";
     private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
 
     @FunctionalInterface
@@ -50,8 +50,6 @@ public class TestsLauncher {
 
     public static void main(String[] args) {
         try {
-            Properties nxtProperties = PropertiesHelper.loadProperties("nxt-default");
-
             log.debug("Starting module {}...", MODULE_NAME);
             ObjectMapper mapper = new ObjectMapper();
             //read configuration
@@ -73,29 +71,19 @@ public class TestsLauncher {
             //load properties and set master node to offline mode
             final String propertiesPath = String.format("conf/%s.properties", MASTER_NAME);
 
+            Properties nxtProperties = PropertiesHelper.loadProperties("nxt-default");
             nxtProperties.setProperty("nxt.peerServerPort", "7873");
             nxtProperties.setProperty("nxt.apiServerPort", "7872");
-            nxtProperties.setProperty("nxt.testDbDir", "./nxt-master-db");
+            nxtProperties.setProperty("nxt.testDbDir", "./nxt");
             nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
             nxtProperties.setProperty("nxt.isOffline", "true");
-            nxtProperties.setProperty("nxt.isTestnet", "true");
-            nxtProperties.setProperty("nxt.timeMultiplier", "1000");
-
-            //run with offline mode
-            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
-            //TODO: check that blocks generated
-            Thread.sleep(10 * 1000);
-            //stop master client
-            VotingMasterClientMain.shutdown();
-            Thread.sleep(1000);
-            //run master client with online mode
-            nxtProperties.setProperty("nxt.isOffline", "false");
+            nxtProperties.setProperty("nxt.isTestnet", "false");
             saveProperties(propertiesPath, nxtProperties);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
             //starting clients
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
-            int startPort = 8000;
+            int startPort = 9000;
             final String[] propertiesPathArray = new String[1];
             for (int i = 0; i < configurations.length; i++) {
                 ClientConfiguration conf = configurations[i];
