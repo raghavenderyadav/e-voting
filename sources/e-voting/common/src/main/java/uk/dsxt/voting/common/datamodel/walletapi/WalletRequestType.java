@@ -6,8 +6,7 @@ public enum WalletRequestType {
     GET_ACCOUNT_ID ("getAccountId"),
     GET_BLOCKCHAIN_TRANSACTIONS ("getBlockchainTransactions"),
     SEND_MESSAGE("sendMessage"),
-    SEND_MONEY("sendMoney"),
-    GET_PRUNABLE_MESSAGES("getPrunableMessages"),
+    SEND_MONEY("sendTransaction"),
     GET_TRANSACTION("getTransaction"),
     START_FORGING("startForging"),
     GET_BLOCK("getBlock");

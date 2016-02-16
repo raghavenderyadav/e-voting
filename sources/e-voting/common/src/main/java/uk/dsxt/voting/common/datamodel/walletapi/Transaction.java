@@ -13,6 +13,7 @@ public class Transaction extends BaseWalletResponse {
     String senderPublicKey;
     String signature;
     BigDecimal fee;
+    int transactionIndex;
     int type;
     String fullHash;
     int version;
@@ -26,11 +27,14 @@ public class Transaction extends BaseWalletResponse {
     String sender;
     String recipientRS;
     String recipient;
+    String block;
+    int blockTimestamp;
     int ecBlockHeight;
     int deadline;
     String transaction;
     int timestamp;
     int height;
+    int confirmations;
 
     @JsonCreator
     public Transaction(@JsonProperty("senderPublicKey") String senderPublicKey, @JsonProperty("signature") String signature,
@@ -43,7 +47,10 @@ public class Transaction extends BaseWalletResponse {
                        @JsonProperty("deadline") int deadline, @JsonProperty("transaction") String transaction,
                        @JsonProperty("timestamp") int timestamp, @JsonProperty("height") int height,
                        @JsonProperty("errorDescription") String errorDescription, @JsonProperty("errorCode") int errorCode,
-                       @JsonProperty("requestProcessingTime") int requestProcessingTime) {
+                       @JsonProperty("requestProcessingTime") int requestProcessingTime,
+                       @JsonProperty("transactionIndex") int transactionIndex, @JsonProperty("block") String block,
+                       @JsonProperty("blockTimestamp") int blockTimestamp, @JsonProperty("confirmations") int confirmations) {
+
         super(errorDescription, errorCode, requestProcessingTime);
         this.senderPublicKey = senderPublicKey;
         this.signature = signature;
@@ -66,5 +73,9 @@ public class Transaction extends BaseWalletResponse {
         this.transaction = transaction;
         this.timestamp = timestamp;
         this.height = height;
+        this.transactionIndex = transactionIndex;
+        this.block = block;
+        this.blockTimestamp = blockTimestamp;
+        this.confirmations = confirmations;
     }
 }
