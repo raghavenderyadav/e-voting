@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,9 +35,10 @@ import java.util.Properties;
 
 @Log4j2
 public class PropertiesHelper {
+
     public static Properties loadProperties(String moduleName) {
         Properties properties = new Properties();
-        URL propertiesURL = getResource(String.format("%s.properties", moduleName));
+        URL propertiesURL = getConfOrResourceFile(String.format("%s.properties", moduleName));
 
         if (propertiesURL != null) {
             try (InputStream resourceStream = propertiesURL.openStream()) {
@@ -91,4 +93,16 @@ public class PropertiesHelper {
         return new File(cls.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
     }
 
+    public static URL getConfOrResourceFile(String fileName) {
+        File confFile = getConfFile(fileName);
+        log.debug("Configuration path: {}", confFile.getAbsolutePath());
+        if (confFile.exists()) {
+            try {
+                return confFile.toURI().toURL();
+            } catch (MalformedURLException e) {
+                log.error("Couldn't get URL from file: {}", confFile, e);
+            }
+        }
+        return getResource(fileName);
+    }
 }
