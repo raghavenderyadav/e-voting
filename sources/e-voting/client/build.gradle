@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "uk.dsxt.voting.client.VotingClientMain"
 
 repositories {
     mavenCentral()
@@ -6,5 +9,4 @@ repositories {
 
 dependencies {
     compile(project(":common"))
-
 }

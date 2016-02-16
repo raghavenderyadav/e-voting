@@ -1,4 +1,7 @@
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "uk.dsxt.voting.resultsbuilder.ResultsBuilderMain"
 
 repositories {
     mavenCentral()
