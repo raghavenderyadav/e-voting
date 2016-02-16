@@ -3,6 +3,7 @@ package uk.dsxt.voting.common.networking;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
@@ -66,9 +67,10 @@ public class BaseWalletManagerTest {
         List<Message> newMessages = null;
         while (newMessages == null || newMessages.size() == 0) {
             newMessages = wm1.getNewMessages(0);
-            Thread.sleep(10000);
+            Thread.sleep(1000);
         }
         System.out.println(newMessages);
+        wm1.sendMoneyToAddressBalance(BigDecimal.ONE, wm2.getSelfAddress());
         while (true)
             Thread.sleep(1000);
     }
