@@ -39,9 +39,9 @@ public class BaseWalletManager implements WalletManager {
     private Process nxtProcess;
     private boolean isForgeNow = false;
 
-    public BaseWalletManager(Properties properties) {
+    public BaseWalletManager(Properties properties, String[] args) {
         jarPath = properties.getProperty("nxt.jar.path");
-        nxtPropertiesPath = properties.getProperty("nxt.properties.path");
+
         mainAddress = properties.getProperty("nxt.main.address");
         passwordForRegister = properties.getProperty("nxt.register.password");
         passphrase = properties.getProperty("nxt.account.passphrase");
@@ -51,24 +51,31 @@ public class BaseWalletManager implements WalletManager {
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        port = properties.getProperty("nxt.apiServerPort");
         Properties nxtProperties = new Properties();
-        Nxt.loadProperties(nxtProperties, nxtPropertiesPath, true);
-        nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
-        nxtProperties.setProperty("nxt.apiServerPort", port);
-        nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
-        nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
-        nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
-        nxtProperties.setProperty("nxt.defaultTestnetPeers", properties.getProperty("nxt.defaultTestnetPeers"));
-        nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
-        nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
-        nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
-        try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
-            nxtProperties.store(fos, "");
-        } catch (Exception e) {
-            String errorMessage = String.format("Can't save wallet. Error: %s", e.getMessage());
-            log.error(errorMessage, e);
-            throw new RuntimeException(errorMessage);
+        if (args != null && args.length > 0) {
+            Nxt.loadProperties(nxtProperties, args[args.length-1], true);
+            port = nxtProperties.getProperty("nxt.apiServerPort");
+            nxtPropertiesPath = args[args.length-1];
+        } else {
+            nxtPropertiesPath = properties.getProperty("nxt.properties.path");
+            port = properties.getProperty("nxt.apiServerPort");
+            Nxt.loadProperties(nxtProperties, nxtPropertiesPath, true);
+            nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
+            nxtProperties.setProperty("nxt.apiServerPort", port);
+            nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
+            nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
+            nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
+            nxtProperties.setProperty("nxt.defaultTestnetPeers", properties.getProperty("nxt.defaultTestnetPeers"));
+            nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
+            nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
+            nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
+            try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
+                nxtProperties.store(fos, "");
+            } catch (Exception e) {
+                String errorMessage = String.format("Can't save wallet. Error: %s", e.getMessage());
+                log.error(errorMessage, e);
+                throw new RuntimeException(errorMessage);
+            }
         }
     }
 
@@ -299,7 +306,7 @@ public class BaseWalletManager implements WalletManager {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 }

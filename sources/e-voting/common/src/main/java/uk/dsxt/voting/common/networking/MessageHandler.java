@@ -78,6 +78,11 @@ public abstract class MessageHandler {
         log.info("MessageHandler stopped");
     }
 
+    public void resume() {
+        messagesHandler.start();
+        log.info("MessageHandler resumed");
+    }
+
     private void checkNewMessages() {
         List<Message> newMessages = walletManager.getNewMessages(lastNewMessagesRequestTime);
         lastNewMessagesRequestTime = System.currentTimeMillis()-1;

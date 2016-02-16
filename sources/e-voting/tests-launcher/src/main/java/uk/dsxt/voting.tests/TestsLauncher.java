@@ -33,11 +33,15 @@ import uk.dsxt.voting.masterclient.VotingMasterClientMain;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
+import java.io.FileOutputStream;
 import java.util.Properties;
 
 @Log4j2
 public class TestsLauncher {
     public static final String MODULE_NAME = "tests-launcher";
+
+    private static final String MASTER_NAME = "nxt-master";
+    private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
 
     @FunctionalInterface
     public interface SimpleRequest {
@@ -46,15 +50,15 @@ public class TestsLauncher {
 
     public static void main(String[] args) {
         try {
+            Properties nxtProperties = PropertiesHelper.loadProperties("nxt-default");
+
             log.debug("Starting module {}...", MODULE_NAME);
             ObjectMapper mapper = new ObjectMapper();
             //read configuration
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             int votingDuration = Integer.valueOf(properties.getProperty("voting.duration.minutes"));
-
             String testingType = properties.getProperty("testing.type");
             log.info("Testing type is {}", testingType);
-
             String registriesServerUrl = properties.getProperty("register.server.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
@@ -64,19 +68,50 @@ public class TestsLauncher {
             ClientConfiguration[] configurations = mapper.readValue(resourceJson, ClientConfiguration[].class);
 
             //starting single modules
-            startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[] {testingType, String.valueOf(votingDuration)}));
+            startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
             startSingleModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(null));
-            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(null));
+            //load properties and set master node to offline mode
+            final String propertiesPath = String.format("conf/%s.properties", MASTER_NAME);
 
+            nxtProperties.setProperty("nxt.peerServerPort", "7873");
+            nxtProperties.setProperty("nxt.apiServerPort", "7872");
+            nxtProperties.setProperty("nxt.testDbDir", "./nxt-master-db");
+            nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
+            nxtProperties.setProperty("nxt.isOffline", "true");
+            nxtProperties.setProperty("nxt.isTestnet", "true");
+            nxtProperties.setProperty("nxt.timeMultiplier", "1000");
+
+            //run with offline mode
+            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
+            //TODO: check that blocks generated
+            Thread.sleep(10 * 1000);
+            //stop master client
+            VotingMasterClientMain.shutdown();
+            Thread.sleep(1000);
+            //run master client with online mode
+            nxtProperties.setProperty("nxt.isOffline", "false");
+            saveProperties(propertiesPath, nxtProperties);
+            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
             //starting clients
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
+            int startPort = 8000;
+            final String[] propertiesPathArray = new String[1];
             for (int i = 0; i < configurations.length; i++) {
                 ClientConfiguration conf = configurations[i];
-                VotingClientMain.main(new String[] {conf.getHolderId(), conf.getPrivateKey(), conf.getVote()});
+                String clientName = String.format("nxt-node-%s", conf.getHolderId());
+                propertiesPathArray[0] = String.format("conf/%s.properties", clientName);
+                String dbDir = String.format("./%s", clientName);
+                nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(startPort + 2 * i));
+                nxtProperties.setProperty("nxt.peerServerPort", String.valueOf(startPort + 2 * i + 1));
+                nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
+                nxtProperties.setProperty("nxt.isOffline", "false");
+                nxtProperties.setProperty("nxt.isTestnet", "true");
+                nxtProperties.setProperty("nxt.testDbDir", dbDir);
+                saveProperties(propertiesPathArray[0], nxtProperties);
+                VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), propertiesPathArray[0]});
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
-
             //need to wait until voting is complete
             RegistriesServer regServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             Voting[] votings = regServer.getVotings();
@@ -96,7 +131,7 @@ public class TestsLauncher {
             ResultsBuilderMain.shutdown();
             //stop other modules
             VotingMasterClientMain.shutdown();
-
+            //TODO: stop clients
             log.info("Testing finished");
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -110,4 +145,13 @@ public class TestsLauncher {
         log.info("{} started in {} ms", name, Instant.now().getMillis() - start);
     }
 
+    private static void saveProperties(String path, Properties properties) {
+        try (FileOutputStream fos = new FileOutputStream(path)) {
+            properties.store(fos, "");
+        } catch (Exception e) {
+            String errorMessage = String.format("Can't save property. Error: %s", e.getMessage());
+            log.error(errorMessage, e);
+            throw new RuntimeException(errorMessage);
+        }
+    }
 }

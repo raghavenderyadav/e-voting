@@ -23,7 +23,8 @@ package uk.dsxt.voting.client;
 
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.datamodel.VoteResult;
+import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
 
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ public class VoteScheduler {
     private final String holderId;
     private int currentRecordIdx = 0;
 
+    private Thread scheduler;
+
     public VoteScheduler(VotingClient votingClient, ResultsBuilder resultsBuilder, VoteAggregation aggregation, Voting[] votings,
                          String messagesFileContent, long resultsAggregationPeriod, String holderId) {
         this.votingClient = votingClient;
@@ -61,13 +64,13 @@ public class VoteScheduler {
         }
 
         HashMap<String, Voting> votingsById = new HashMap<>();
-        for(Voting voting : votings) {
+        for (Voting voting : votings) {
             votingsById.put(voting.getId(), voting);
             recordsByTime.add(new VoteRecord(voting.getEndTimestamp() + resultsAggregationPeriod, true, new VoteResult(voting.getId(), null)));
         }
 
         String[] lines = messagesFileContent.split("\\r?\\n");
-        for(String line : lines) {
+        for (String line : lines) {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
@@ -89,14 +92,26 @@ public class VoteScheduler {
     }
 
     public void run() {
-        Thread scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
+        scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
         scheduler.start();
-        log.info("VoteScheduler runs");
+        log.info("VoteScheduler #{} runs", holderId);
+    }
+
+    public void pause() {
+        scheduler.interrupt();
+        votingClient.stop();
+        log.info("VoteScheduler #{} paused", holderId);
+    }
+
+    public void resume() {
+        votingClient.resume();
+        scheduler.start();
+        log.info("VoteScheduler #{} resumed", holderId);
     }
 
     private void sendVotesOnTime() {
-        while (currentRecordIdx < recordsByTime.size()) {
-            for(; currentRecordIdx < recordsByTime.size() && recordsByTime.get(currentRecordIdx).getSendTimestamp() < System.currentTimeMillis() + 1000; currentRecordIdx++) {
+        while (!Thread.currentThread().isInterrupted() && currentRecordIdx < recordsByTime.size()) {
+            for (; currentRecordIdx < recordsByTime.size() && recordsByTime.get(currentRecordIdx).getSendTimestamp() < System.currentTimeMillis() + 1000; currentRecordIdx++) {
                 VoteResult voteResult = recordsByTime.get(currentRecordIdx).getVoteResult();
                 if (voteResult.getHolderId() != null) {
                     log.info("Sending vote record {}", voteResult);
@@ -121,7 +136,8 @@ public class VoteScheduler {
                 }
             }
         }
-        log.info("All vote records sent");
+        if (!Thread.currentThread().isInterrupted())
+            log.info("All vote records sent");
     }
 
 }
