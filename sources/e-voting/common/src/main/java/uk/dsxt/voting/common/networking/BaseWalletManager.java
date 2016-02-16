@@ -196,14 +196,16 @@ public class BaseWalletManager implements WalletManager {
 
     @Override
     public List<Message> getNewMessages(long timestamp) {
-        List<WalletMessage> result = new ArrayList<>();
+        List<Transaction> result = new ArrayList<>();
         for (int i = 0; ; i++) {
-            List<WalletMessage> messages = getMessages(i * 10, (i + 1) * 10);
+            List<Transaction> messages = getMessages(i * 10, (i + 1) * 10);
             if (messages == null)
                 return null;
+            if (messages.size() == 0)
+                break;
             boolean isFinished = false;
-            for (WalletMessage message : messages) {
-                if (message.getTransactionTimestamp() < timestamp) {
+            for (Transaction message : messages) {
+                if (message.getTimestamp() < timestamp) {
                     isFinished = true;
                     break;
                 }
@@ -227,15 +229,15 @@ public class BaseWalletManager implements WalletManager {
         }
     }
 
-    private List<WalletMessage> getMessages(int firstIndex, int lastIndex) {
-        PrunableMessages result = sendApiRequest(WalletRequestType.GET_PRUNABLE_MESSAGES, keyToValue -> {
+    private List<Transaction> getMessages(int firstIndex, int lastIndex) {
+        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
             keyToValue.put("account", selfAccount);
             keyToValue.put("firstIndex", Integer.toString(firstIndex));
             keyToValue.put("lastIndex", Integer.toString(lastIndex));
-        }, PrunableMessages.class);
+        }, TransactionsResponse.class);
         if (result == null)
             return null;
-        return Arrays.asList(result.getPrunableMessages());
+        return Arrays.asList(result.getTransactions());
     }
 
     private String getReadMessage(String transactionId) {
@@ -295,7 +297,7 @@ public class BaseWalletManager implements WalletManager {
             }
         }
         log.info("Wallet initialization finished. selfAccount={} firstBlockTime={}", selfAccount, firstBlockTime);
-        if (!selfAccount.equals(mainAddress)) {
+        /*if (!selfAccount.equals(mainAddress)) {
             TransactionsResponse transactions = null;
             while (transactions == null) {
                 transactions = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> keyToValue.put("account", selfAccount), TransactionsResponse.class);
@@ -320,7 +322,7 @@ public class BaseWalletManager implements WalletManager {
                 }
             }
             log.info("Account public key was successfully registered.");
-        }
+        }*/
         while (!isForgeNow)
             isForgeNow = startForging();
     }
