@@ -3,12 +3,11 @@ package uk.dsxt.voting.common.networking;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 public class BaseWalletManagerTest {
 
@@ -33,7 +32,7 @@ public class BaseWalletManagerTest {
         /*wm1.runWallet();
         Thread.sleep(1000);
         assertEquals(wm1.getBalance().compareTo(new BigDecimal(1000000000L)), 0);
-        Thread.sleep(10000);
+        Thread.sleep(60000);
         wm1.stopWallet();
         Thread.sleep(1000);*/
         properties.setProperty("nxt.isOffline", "false");
@@ -46,7 +45,7 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.peerServerPort", "7973");
         properties.setProperty("nxt.apiServerPort", "7972");
         properties.setProperty("nxt.dbDir", "./nxt-db-2");
-        properties.setProperty("nxt.account.passphrase", "client_5_password");
+        properties.setProperty("nxt.account.passphrase", "client_password");
         properties.setProperty("nxt.register.password", "master_password");
         properties.setProperty("nxt.defaultTestnetPeers", "127.0.0.1:7873;");
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
@@ -56,9 +55,15 @@ public class BaseWalletManagerTest {
         assertNotNull(selfAddress);
         System.out.println(selfAddress);
         Thread.sleep(1000);
-        String messageId = wm2.sendMessage("test".getBytes(StandardCharsets.UTF_8));
+        String messageId = null;
+        while (messageId == null) {
+            messageId = wm2.sendMessage("test".getBytes(StandardCharsets.UTF_8));
+            Thread.sleep(5000);
+        }
         assertNotNull(messageId);
         System.out.println(messageId);
+        List<Message> newMessages = wm1.getNewMessages(0);
+        System.out.println(newMessages);
         while (true)
             Thread.sleep(1000);
     }

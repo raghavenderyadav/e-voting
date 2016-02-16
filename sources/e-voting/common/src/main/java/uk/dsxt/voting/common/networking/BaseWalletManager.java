@@ -197,28 +197,21 @@ public class BaseWalletManager implements WalletManager {
     @Override
     public List<Message> getNewMessages(long timestamp) {
         List<Transaction> result = new ArrayList<>();
-        for (int i = 0; ; i++) {
-            List<Transaction> messages = getMessages(i * 10, (i + 1) * 10);
+            List<Transaction> messages = getMessages();
             if (messages == null)
                 return null;
-            if (messages.size() == 0)
-                break;
-            boolean isFinished = false;
             for (Transaction message : messages) {
                 if (message.getTimestamp() < timestamp) {
-                    isFinished = true;
                     break;
                 }
-                result.add(message);
+                if (message.getAttachment().isMessageIsText())
+                    result.add(message);
             }
-            if (isFinished)
-                break;
-        }
 
         try {
             return result.stream().map(pm -> {
                 String transactionId = pm.getTransaction();
-                String readedMessage = getReadMessage(transactionId);
+                String readedMessage = pm.getAttachment().getMessage();
                 if (readedMessage == null)
                     throw new RuntimeException(transactionId);
                 return new Message(transactionId, readedMessage.getBytes(StandardCharsets.UTF_8));
@@ -229,19 +222,18 @@ public class BaseWalletManager implements WalletManager {
         }
     }
 
-    private List<Transaction> getMessages(int firstIndex, int lastIndex) {
-        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
+    private List<Transaction> getMessages() {
+        //TODO get confirmed messages too
+        UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS, keyToValue -> {
             keyToValue.put("account", selfAccount);
-            keyToValue.put("firstIndex", Integer.toString(firstIndex));
-            keyToValue.put("lastIndex", Integer.toString(lastIndex));
-        }, TransactionsResponse.class);
+        }, UnconfirmedTransactionsResponse.class);
         if (result == null)
             return null;
-        return Arrays.asList(result.getTransactions());
+        return Arrays.asList(result.getUnconfirmedTransactions());
     }
 
     private String getReadMessage(String transactionId) {
-        ReadMessage result = sendApiRequest(WalletRequestType.GET_TRANSACTION, passphrase,
+        ReadMessage result = sendApiRequest(WalletRequestType.READ_MESSAGE, passphrase,
                 keyToValue -> keyToValue.put("transaction", transactionId), ReadMessage.class);
         if (result == null)
             return null;
@@ -297,34 +289,10 @@ public class BaseWalletManager implements WalletManager {
             }
         }
         log.info("Wallet initialization finished. selfAccount={} firstBlockTime={}", selfAccount, firstBlockTime);
-        /*if (!selfAccount.equals(mainAddress)) {
-            TransactionsResponse transactions = null;
-            while (transactions == null) {
-                transactions = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> keyToValue.put("account", selfAccount), TransactionsResponse.class);
-                sleep(100);
-            }
-
-            String initializeMessageId = null;
-            if (transactions.getErrorCode() == 5) {
-                log.info("Account isn't registered yet.");
-                while (initializeMessageId == null) {
-                    initializeMessageId = sendMessage(selfAccount,
-                            String.format("Initialize transactions %s", selfAccount).getBytes(StandardCharsets.UTF_8), passwordForRegister);
-                    sleep(100);
-                }
-                log.info("Account registration message was successfully sent. Id={}", initializeMessageId);
-            }
-            if (initializeMessageId != null) {
-                String readMessage = null;
-                while (readMessage == null) {
-                    readMessage = getReadMessage(initializeMessageId);
-                    sleep(1000);
-                }
-            }
-            log.info("Account public key was successfully registered.");
-        }*/
-        while (!isForgeNow)
+        while (!isForgeNow) {
             isForgeNow = startForging();
+            sleep(1000);
+        }
     }
 
     private void sleep(long millis) {
