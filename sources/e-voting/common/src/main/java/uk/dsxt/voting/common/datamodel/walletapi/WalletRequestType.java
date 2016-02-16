@@ -5,6 +5,7 @@ public enum WalletRequestType {
     GET_BALANCE ("getBalance"),
     GET_ACCOUNT_ID ("getAccountId"),
     GET_UNCONFIRMED_TRANSACTIONS("getUnconfirmedTransactions"),
+    GET_BLOCKCHAIN_TRANSACTIONS ("getBlockchainTransactions"),
     SEND_MESSAGE("sendMessage"),
     READ_MESSAGE("readMessage"),
     SEND_MONEY("sendTransaction"),

@@ -204,16 +204,24 @@ public class BaseWalletManager implements WalletManager {
     @Override
     public List<Message> getNewMessages(long timestamp) {
         List<Transaction> result = new ArrayList<>();
-            List<Transaction> messages = getMessages();
+        for (int i = 0; ; i++) {
+            List<Transaction> messages = getMessages(i * 10, (i + 1) * 10);
             if (messages == null)
                 return null;
+            if (messages.size() == 0)
+                break;
+            boolean isFinished = false;
             for (Transaction message : messages) {
                 if (message.getTimestamp() < timestamp) {
+                    isFinished = true;
                     break;
                 }
                 if (message.getAttachment().isMessageIsText())
                     result.add(message);
             }
+            if (isFinished)
+                break;
+        }
 
         try {
             return result.stream().map(pm -> {
@@ -229,22 +237,15 @@ public class BaseWalletManager implements WalletManager {
         }
     }
 
-    private List<Transaction> getMessages() {
-        //TODO get confirmed messages too
-        UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS, keyToValue -> {
+    private List<Transaction> getMessages(int firstIndex, int lastIndex) {
+        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
             keyToValue.put("account", selfAccount);
-        }, UnconfirmedTransactionsResponse.class);
+            keyToValue.put("firstIndex", Integer.toString(firstIndex));
+            keyToValue.put("lastIndex", Integer.toString(lastIndex));
+        }, TransactionsResponse.class);
         if (result == null)
             return null;
-        return Arrays.asList(result.getUnconfirmedTransactions());
-    }
-
-    private String getReadMessage(String transactionId) {
-        ReadMessage result = sendApiRequest(WalletRequestType.READ_MESSAGE, passphrase,
-                keyToValue -> keyToValue.put("transaction", transactionId), ReadMessage.class);
-        if (result == null)
-            return null;
-        return result.getMessage();
+        return Arrays.asList(result.getTransactions());
     }
 
     private BlockResponse getBlock(int height) {

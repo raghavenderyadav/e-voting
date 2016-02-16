@@ -28,6 +28,7 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.isOffline", "true");
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "1000");
+        properties.setProperty("nxt.minNeedBlocks", "1");
         BaseWalletManager wm1 = new BaseWalletManager(properties, null);
         /*wm1.runWallet();
         Thread.sleep(1000);
@@ -62,7 +63,11 @@ public class BaseWalletManagerTest {
         }
         assertNotNull(messageId);
         System.out.println(messageId);
-        List<Message> newMessages = wm1.getNewMessages(0);
+        List<Message> newMessages = null;
+        while (newMessages == null || newMessages.size() == 0) {
+            newMessages = wm1.getNewMessages(0);
+            Thread.sleep(10000);
+        }
         System.out.println(newMessages);
         while (true)
             Thread.sleep(1000);
