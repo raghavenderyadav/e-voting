@@ -23,8 +23,10 @@ package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.VotingClientMain;
+import uk.dsxt.voting.common.datamodel.InternalLogicException;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 import uk.dsxt.voting.common.networking.RegistriesServerImpl;
@@ -33,6 +35,7 @@ import uk.dsxt.voting.masterclient.VotingMasterClientMain;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
@@ -52,6 +55,8 @@ public class TestsLauncher {
         try {
             log.debug("Starting module {}...", MODULE_NAME);
             ObjectMapper mapper = new ObjectMapper();
+            //delete old files
+            deleteNxtFiles();
             //read configuration
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             int votingDuration = Integer.valueOf(properties.getProperty("voting.duration.minutes"));
@@ -76,8 +81,9 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.apiServerPort", "7872");
             nxtProperties.setProperty("nxt.testDbDir", "./nxt");
             nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
-            nxtProperties.setProperty("nxt.isOffline", "true");
+            nxtProperties.setProperty("nxt.isOffline", "false");
             nxtProperties.setProperty("nxt.isTestnet", "false");
+            nxtProperties.setProperty("nxt.minNeedBlocks", "1");
             saveProperties(propertiesPath, nxtProperties);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
             //starting clients
@@ -96,6 +102,7 @@ public class TestsLauncher {
                 nxtProperties.setProperty("nxt.isOffline", "false");
                 nxtProperties.setProperty("nxt.isTestnet", "true");
                 nxtProperties.setProperty("nxt.testDbDir", dbDir);
+                nxtProperties.setProperty("nxt.minNeedBlocks", "1");
                 saveProperties(propertiesPathArray[0], nxtProperties);
                 VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), propertiesPathArray[0]});
             }
@@ -140,6 +147,21 @@ public class TestsLauncher {
             String errorMessage = String.format("Can't save property. Error: %s", e.getMessage());
             log.error(errorMessage, e);
             throw new RuntimeException(errorMessage);
+        }
+    }
+
+    private static void deleteNxtFiles() throws Exception {
+        File file = new File(System.getProperty("user.dir"));
+           if (file.listFiles() == null)
+               throw new InternalLogicException("wrong path for deleting files");
+        for (File c : file.listFiles()) {
+            if (c.getName().contains("nxt")) {
+                System.out.println(c.getName());
+                if (c.isDirectory())
+                    FileUtils.deleteDirectory(c);
+                else
+                    c.delete();
+            }
         }
     }
 }
