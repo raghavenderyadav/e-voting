@@ -138,6 +138,7 @@ public class BaseWalletManager implements WalletManager {
                     stopWallet();
                 }
             });
+            waitInitialize();
         } catch (Exception e) {
             String errorMessage = String.format("Can't run wallet. Error: %s", e.getMessage());
             log.error(errorMessage, e);
@@ -228,7 +229,7 @@ public class BaseWalletManager implements WalletManager {
             Scanner sc = new Scanner(src);
             while (sc.hasNextLine()) {
                 String logStr = sc.nextLine();
-                if (logStr.contains("ERROR")) {
+                if (logStr.contains("ERROR") || logStr.contains("WARNING")) {
                     log.error(logStr);
                 } else {
                     log.info(logStr);
