@@ -37,7 +37,7 @@ import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Properties;
+import java.util.*;
 
 @Log4j2
 public class TestsLauncher {
@@ -45,6 +45,12 @@ public class TestsLauncher {
 
     private static final String MASTER_NAME = "nxt";
     private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
+
+    private static final String CLIENT_JAR_PATH = "client.jar";
+
+    private static Map<String, Process> processesByName = new HashMap<>();
+
+    private static final Timer clientsStartStopTimer = new Timer("clientsStartStopTimer");
 
     @FunctionalInterface
     public interface SimpleRequest {
@@ -90,11 +96,12 @@ public class TestsLauncher {
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
             int startPort = 9000;
-            final String[] propertiesPathArray = new String[1];
+            Random rnd = new Random();
             for (int i = 0; i < configurations.length; i++) {
+                final int ii = i;
                 ClientConfiguration conf = configurations[i];
                 String clientName = String.format("nxt-node-%s", conf.getHolderId());
-                propertiesPathArray[0] = String.format("conf/%s.properties", clientName);
+                String clientPropertiesPath = String.format("conf/%s.properties", clientName);
                 String dbDir = String.format("./%s", clientName);
                 nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(startPort + 2 * i));
                 nxtProperties.setProperty("nxt.peerServerPort", String.valueOf(startPort + 2 * i + 1));
@@ -103,8 +110,33 @@ public class TestsLauncher {
                 nxtProperties.setProperty("nxt.isTestnet", "true");
                 nxtProperties.setProperty("nxt.testDbDir", dbDir);
                 nxtProperties.setProperty("nxt.minNeedBlocks", "1");
-                saveProperties(propertiesPathArray[0], nxtProperties);
-                VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), propertiesPathArray[0]});
+                saveProperties(clientPropertiesPath, nxtProperties);
+                boolean doStart = true;
+                if (conf.getDisconnectAmount() != null && conf.getDisconnectAmount() > 0 && conf.getDisconnectDuration() != null && conf.getDisconnectDuration() > 0) {
+                    for(int j = 0; j < conf.getDisconnectAmount(); j++) {
+                        long disconnectDelay = (rnd.nextInt(votingDuration-conf.getDisconnectDuration())) * 60000;
+                        long reconnectDelay = disconnectDelay + conf.getDisconnectDuration() * 60000;
+                        if (disconnectDelay == 0) {
+                            doStart = false;
+                        } else {
+                            clientsStartStopTimer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    stopClient(ii);
+                                }
+                            }, disconnectDelay);
+                        }
+                        clientsStartStopTimer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                startClient(ii, configurations, clientPropertiesPath);
+                            }
+                        }, reconnectDelay);
+                    }
+                }
+                if (doStart) {
+                    startClient(ii, configurations, clientPropertiesPath);
+                }
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
@@ -121,6 +153,7 @@ public class TestsLauncher {
 
             //TODO: check that results builder has finished calculating results
 
+            stopAllProcesses();
             //stop jetty servers
             RegistriesServerMain.shutdown();
             ResultsBuilderMain.shutdown();
@@ -131,6 +164,17 @@ public class TestsLauncher {
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
         }
+    }
+
+    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath) {
+        ClientConfiguration conf = configurations[idx];
+        startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
+        //VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
+    }
+
+    private static void stopClient(int idx) {
+        stopProcess("Client" + idx);
+        //VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
     }
 
     private static void startSingleModule(String name, SimpleRequest request) {
@@ -163,5 +207,52 @@ public class TestsLauncher {
                     c.delete();
             }
         }
+    }
+
+    private static void startProcess(String name, String jarPath, String[] params) {
+        if (processesByName.containsKey(name)) {
+
+        }
+        try {
+            List<String> cmd = new ArrayList<>();
+            cmd.add("java");
+            cmd.add("-jar");
+            cmd.add(jarPath);
+            for(String param : params) {
+                cmd.add(param);
+            }
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.command(cmd);
+            Process process = processBuilder.start();
+            processesByName.put(name, process);
+            log.info("Process {} started", name);
+        } catch (Exception e) {
+            log.error("Can't run process {}. Error: {}", e.getMessage(), name, e);
+        }
+    }
+
+    private static void stopAllProcesses() {
+        for(Map.Entry<String, Process> processEntry : processesByName.entrySet()) {
+            try {
+                processEntry.getValue().destroy();
+                log.info("Process {} killed", processEntry.getKey());
+            } catch (Exception e) {
+                log.error("Can't kill process {}. Error: {}", e.getMessage(), processEntry.getKey(), e);
+            }
+        }
+    }
+
+    private static void stopProcess(String name) {
+        Process process = processesByName.get(name);
+        if (process == null) {
+            return;
+        }
+        try {
+            process.destroy();
+            log.info("Process {} killed", name);
+        } catch (Exception e) {
+            log.error("Can't kill process {}. Error: {}", e.getMessage(), name, e);
+        }
+        processesByName.remove(name);
     }
 }
