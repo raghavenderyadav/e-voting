@@ -50,6 +50,8 @@ public class TestsLauncher {
 
     private static Map<String, Process> processesByName = new HashMap<>();
 
+    private static boolean startClientsAsProcesses = true;
+
     @FunctionalInterface
     public interface SimpleRequest {
         void run();
@@ -73,6 +75,7 @@ public class TestsLauncher {
             String configFileName = properties.getProperty("client.config.file");
             String resourceJson = PropertiesHelper.getResourceString(String.format(configFileName, testingType));
             ClientConfiguration[] configurations = mapper.readValue(resourceJson, ClientConfiguration[].class);
+            startClientsAsProcesses = Boolean.parseBoolean(properties.getProperty("testing.clients_as_processes"));
 
             //starting single modules
             startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
@@ -152,9 +155,12 @@ public class TestsLauncher {
 
     private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule) {
         ClientConfiguration conf = configurations[idx];
-        startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{ conf.getHolderId(), conf.getPrivateKey(),
-                conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), clientPropertiesPath, walletOffSchedule});
-        //VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
+        if (startClientsAsProcesses) {
+            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{ conf.getHolderId(), conf.getPrivateKey(),
+                    conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), clientPropertiesPath, walletOffSchedule});
+        } else {
+            VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath, walletOffSchedule});
+        }
     }
 
     private static void startSingleModule(String name, SimpleRequest request) {
