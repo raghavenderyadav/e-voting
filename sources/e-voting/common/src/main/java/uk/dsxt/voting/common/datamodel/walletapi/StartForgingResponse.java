@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class StartForgingResponse {
-    int requestProcessingTime;
-    int deadline;
-    int hitTime;
+public class StartForgingResponse extends BaseWalletResponse {
+    long deadline;
+    long hitTime;
 
     @JsonCreator
     public StartForgingResponse(@JsonProperty("requestProcessingTime") int requestProcessingTime,
-                                @JsonProperty("deadline") int deadline, @JsonProperty("hitTime") int hitTime) {
-        this.requestProcessingTime = requestProcessingTime;
+                                @JsonProperty("deadline") long deadline, @JsonProperty("hitTime") long hitTime,
+                                @JsonProperty("errorDescription") String errorDescription, @JsonProperty("errorCode") int errorCode) {
+        super(errorDescription, errorCode, requestProcessingTime);
         this.deadline = deadline;
         this.hitTime = hitTime;
     }

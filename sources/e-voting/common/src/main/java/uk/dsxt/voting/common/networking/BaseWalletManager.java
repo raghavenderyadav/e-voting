@@ -34,7 +34,6 @@ public class BaseWalletManager implements WalletManager {
     private String passphrase;
     private String accountId;
     private String selfAccount;
-    private Long firstBlockTime;
 
     private Process nxtProcess;
     private boolean isForgeNow = false;
@@ -112,11 +111,11 @@ public class BaseWalletManager implements WalletManager {
             try {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
-                log.error("Can't parse response: {}", response, e);
+                log.error("Can't parse response: {}. Error message: {}", response, e.getMessage());
             }
             return result;
         } catch (Exception e) {
-            log.error("Method {} failed.", type, e);
+            log.error("Method {} failed. Error message {}", type, e.getMessage());
             return null;
         }
     }
@@ -248,10 +247,6 @@ public class BaseWalletManager implements WalletManager {
         return Arrays.asList(result.getTransactions());
     }
 
-    private BlockResponse getBlock(int height) {
-        return sendApiRequest(WalletRequestType.GET_BLOCK, passphrase, keyToValue -> keyToValue.put("height", Integer.toString(height)), BlockResponse.class);
-    }
-
     private boolean startForging() {
         StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {}, StartForgingResponse.class);
         return response != null;
@@ -271,10 +266,10 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private void waitInitialize() {
-        if (selfAccount != null && passphrase != null & firstBlockTime != null)
+        if (selfAccount != null && passphrase != null)
             return;
         log.info("Start wallet initialization...");
-        while (selfAccount == null || passphrase == null || firstBlockTime == null) {
+        while ((selfAccount == null || passphrase == null) && !Thread.currentThread().isInterrupted()) {
             try {
                 if (accountId == null || selfAccount == null) {
                     AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {}, AccountResponse.class);
@@ -283,23 +278,15 @@ public class BaseWalletManager implements WalletManager {
                         selfAccount = account.getAddress();
                     }
                 }
-                //TODO remove it:
-                if (firstBlockTime == null) {
-                    BlockResponse block = getBlock(0);
-                    if (block != null)
-                        firstBlockTime = block.getTimestamp();
-                }
-                Thread.sleep(1000);
-            } catch (InterruptedException ie) {
-                return;
+                sleep(100);
             } catch (Exception e) {
                 log.error("waitInitialize. Error: {}", e.getMessage());
             }
         }
-        log.info("Wallet initialization finished. selfAccount={} firstBlockTime={}", selfAccount, firstBlockTime);
-        while (!isForgeNow) {
+        log.info("Wallet initialization finished. selfAccount={}", selfAccount);
+        while (!isForgeNow && !Thread.currentThread().isInterrupted()) {
             isForgeNow = startForging();
-            sleep(1000);
+            sleep(100);
         }
     }
 
