@@ -15,6 +15,4 @@ dependencies {
 
     compile "org.glassfish.jersey.containers:jersey-container-jetty-servlet:$jerseyVersion"
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion"
-
-    compile files("../libs/nxt.jar")
 }

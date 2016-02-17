@@ -17,7 +17,7 @@ public class BaseWalletManagerTest {
     public void testNxtApi() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("nxt.jar.path", "../libs/nxt.jar");
-        properties.setProperty("nxt.properties.path", "conf/nxt-default.properties");
+        properties.setProperty("nxt.properties.path", "../conf/nxt-default.properties");
         properties.setProperty("nxt.peerServerPort", "7873");
         properties.setProperty("nxt.apiServerPort", "7872");
         properties.setProperty("nxt.dbDir", "./nxt-db-1");

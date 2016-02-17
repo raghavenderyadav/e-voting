@@ -36,10 +36,21 @@ import java.util.Properties;
 @Log4j2
 public class PropertiesHelper {
 
-    public static Properties loadProperties(String moduleName) {
-        Properties properties = new Properties();
-        URL propertiesURL = getConfOrResourceFile(String.format("%s.properties", moduleName));
+    public static Properties loadPropertiesFromPath(String nxtPropertiesPath) {
+        try {
+            return loadPropertiesFromPath(nxtPropertiesPath, new File(nxtPropertiesPath).toURI().toURL());
+        } catch (Exception e) {
+            return new Properties();
+        }
+    }
 
+    public static Properties loadProperties(String moduleName) {
+        URL propertiesURL = getConfOrResourceFile(String.format("%s.properties", moduleName));
+        return loadPropertiesFromPath(moduleName, propertiesURL);
+    }
+
+    private static Properties loadPropertiesFromPath(String moduleName, URL propertiesURL) {
+        Properties properties = new Properties();
         if (propertiesURL != null) {
             try (InputStream resourceStream = propertiesURL.openStream()) {
                 properties.load(resourceStream);

@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j2;
-import nxt.Constants;
-import nxt.Nxt;
 import uk.dsxt.voting.common.datamodel.RequestType;
 import uk.dsxt.voting.common.datamodel.walletapi.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
+import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,15 +49,12 @@ public class BaseWalletManager implements WalletManager {
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        Properties nxtProperties = new Properties();
+        nxtPropertiesPath = args != null && args.length > 0 ? args[args.length-1] : properties.getProperty("nxt.properties.path");
+        Properties nxtProperties = PropertiesHelper.loadPropertiesFromPath(nxtPropertiesPath);
         if (args != null && args.length > 0) {
-            Nxt.loadProperties(nxtProperties, args[args.length-1], true);
             port = nxtProperties.getProperty("nxt.apiServerPort");
-            nxtPropertiesPath = args[args.length-1];
         } else {
-            nxtPropertiesPath = properties.getProperty("nxt.properties.path");
             port = properties.getProperty("nxt.apiServerPort");
-            Nxt.loadProperties(nxtProperties, nxtPropertiesPath, true);
             nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
             nxtProperties.setProperty("nxt.apiServerPort", port);
             nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
@@ -169,7 +165,7 @@ public class BaseWalletManager implements WalletManager {
         sendApiRequest(WalletRequestType.SEND_MONEY, passphrase, keyToValue -> {
             keyToValue.put("recipient", address);
             keyToValue.put("feeNQT", "0");
-            keyToValue.put("amountNQT", Long.toString(money.multiply(new BigDecimal(Constants.ONE_NXT)).longValue()));
+            keyToValue.put("amountNQT", Long.toString(money.multiply(new BigDecimal(BaseWalletResponse.ONE_NXT)).longValue()));
             keyToValue.put("deadline", "60");
         }, SendTransactionResponse.class);
     }

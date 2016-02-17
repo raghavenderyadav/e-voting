@@ -3,7 +3,6 @@ package uk.dsxt.voting.common.datamodel.walletapi;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import nxt.Constants;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -18,6 +17,8 @@ public class BaseWalletResponse {
     @Getter
     private int requestProcessingTime;
 
+    public static final long ONE_NXT = 100000000L;
+
     @JsonCreator
     protected BaseWalletResponse(@JsonProperty("errorDescription") String errorDescription, @JsonProperty("errorCode") int errorCode,
                                  @JsonProperty("requestProcessingTime") int requestProcessingTime) {
@@ -27,6 +28,6 @@ public class BaseWalletResponse {
     }
 
     protected BigDecimal longToBigDecimal(long value) {
-        return new BigDecimal(value, MathContext.DECIMAL64).divide(new BigDecimal(Constants.ONE_NXT), RoundingMode.DOWN);
+        return new BigDecimal(value, MathContext.DECIMAL64).divide(new BigDecimal(ONE_NXT), RoundingMode.DOWN);
     }
 }
