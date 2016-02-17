@@ -74,18 +74,21 @@ public class VoteScheduler {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
-            String[] terms = line.split(":");
-            if (terms.length < 2 || terms.length > 3)
-                throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
-            VoteResult voteResult = new VoteResult(terms[1]);
-            Voting voting = votingsById.get(voteResult.getVotingId());
-            if (voting == null) {
-                log.error("Can not find voting with id {}", voteResult.getVotingId());
-                continue;
+            String[] votes = line.split(";");
+            for(String vote : votes) {
+                String[] terms = vote.split(":");
+                if (terms.length < 2 || terms.length > 3)
+                    throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
+                VoteResult voteResult = new VoteResult(terms[1]);
+                Voting voting = votingsById.get(voteResult.getVotingId());
+                if (voting == null) {
+                    log.error("Can not find voting with id {}", voteResult.getVotingId());
+                    continue;
+                }
+                long sendTimestamp = voting.getStartTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
+                boolean sendToResult = terms.length < 3 || !terms[2].equals("-");
+                recordsByTime.add(new VoteRecord(sendTimestamp, sendToResult, voteResult));
             }
-            long sendTimestamp = voting.getStartTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
-            boolean sendToResult = terms.length < 3 || !terms[2].equals("-");
-            recordsByTime.add(new VoteRecord(sendTimestamp, sendToResult, voteResult));
         }
         recordsByTime.sort((x, y) -> Long.compare(x.getSendTimestamp(), y.getSendTimestamp()));
         log.info("{} vote records loaded", recordsByTime.size());
