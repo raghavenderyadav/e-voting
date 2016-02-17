@@ -55,10 +55,10 @@ public class ResultsManager implements ResultsBuilder {
         synchronized (referenceResultsByVotingId) {
             VoteResult referenceResult = referenceResultsByVotingId.get(result.getVotingId());
             if (referenceResult == null) {
-                referenceResultsByVotingId.put(result.getVotingId(), result);
-            } else {
-                referenceResult.add(result);
+                referenceResult = new VoteResult(result.getVotingId(), null);
+                referenceResultsByVotingId.put(result.getVotingId(), referenceResult);
             }
+            referenceResult.add(result);
         }
     }
 

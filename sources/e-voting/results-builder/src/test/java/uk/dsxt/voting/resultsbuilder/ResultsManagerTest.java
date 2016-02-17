@@ -14,8 +14,8 @@ public class ResultsManagerTest {
         manager.checkVoting("2");
         manager.addVote("1,1,2 3 5,6 7 8");
         manager.checkVoting("1");
-        manager.addResult("2", "1,1,2 3 9,6 7 8");
-        manager.addResult("3", "1,1,2 3 9");
+        manager.addResult("2", "1,,2 3 9,6 7 8");
+        manager.addResult("3", "1,,2 3 9");
         manager.checkVoting("1");
     }
 
