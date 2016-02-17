@@ -55,41 +55,41 @@ public class VoteAggregatorTest {
         assertEquals(new VoteResult("1", null), aggregator.getResult());
 
         // unknown holder
-        aggregator.addVote(new VoteResult("1,0,1 2 1"), System.currentTimeMillis(), "0");
+        aggregator.addVote(new VoteResult("1,0,1-2-1"), System.currentTimeMillis(), "0");
         assertEquals(new VoteResult("1", null), aggregator.getResult());
 
         //illegal sign author
-        aggregator.addVote(new VoteResult("1,1,1 2 1"), System.currentTimeMillis(), "2");
+        aggregator.addVote(new VoteResult("1,1,1-2-1"), System.currentTimeMillis(), "2");
         assertEquals(new VoteResult("1", null), aggregator.getResult());
 
         //simple vote
-        aggregator.addVote(new VoteResult("1,1,1 2 1"), System.currentTimeMillis(), "1");
-        assertEquals(new VoteResult("1,,1 2 1"), aggregator.getResult());
+        aggregator.addVote(new VoteResult("1,1,1-2-1"), System.currentTimeMillis(), "1");
+        assertEquals(new VoteResult("1,,1-2-1"), aggregator.getResult());
 
         //repeating vote
-        aggregator.addVote(new VoteResult("1,1,1 2 1"), System.currentTimeMillis(), "1");
-        assertEquals(new VoteResult("1,,1 2 1"), aggregator.getResult());
+        aggregator.addVote(new VoteResult("1,1,1-2-1"), System.currentTimeMillis(), "1");
+        assertEquals(new VoteResult("1,,1-2-1"), aggregator.getResult());
 
         //double vote
-        aggregator.addVote(new VoteResult("1,1,1 2 1,2 1 1"), System.currentTimeMillis(), "1");
+        aggregator.addVote(new VoteResult("1,1,1-2-1,2-1-1"), System.currentTimeMillis(), "1");
         assertEquals(new VoteResult("1", null), aggregator.getResult());
 
         //black list
-        aggregator.addVote(new VoteResult("1,3,1 2 10"), System.currentTimeMillis(), "3");
+        aggregator.addVote(new VoteResult("1,3,1-2-10"), System.currentTimeMillis(), "3");
         assertEquals(new VoteResult("1", null), aggregator.getResult());
 
         //correct
-        aggregator.addVote(new VoteResult("1,2,1 2 5"), System.currentTimeMillis(), "2");
-        assertEquals(new VoteResult("1,,1 2 5"), aggregator.getResult());
+        aggregator.addVote(new VoteResult("1,2,1-2-5"), System.currentTimeMillis(), "2");
+        assertEquals(new VoteResult("1,,1-2-5"), aggregator.getResult());
 
         //correct
-        aggregator.addVote(new VoteResult("1,4,1 2 1,2 1 1"), System.currentTimeMillis(), "2");
-        assertEquals(new VoteResult("1,,1 2 6,2 1 1"), aggregator.getResult());
+        aggregator.addVote(new VoteResult("1,4,1-2-1,2-1-1"), System.currentTimeMillis(), "2");
+        assertEquals(new VoteResult("1,,1-2-6,2-1-1"), aggregator.getResult());
     }
 
     @Test
     public void testBlackListInTree() throws Exception {
-        aggregator.addVote(new VoteResult("1,2,1 2 20"), System.currentTimeMillis(), "2");
+        aggregator.addVote(new VoteResult("1,2,1-2-20"), System.currentTimeMillis(), "2");
         assertEquals(new VoteResult("1", null), aggregator.getResult());
     }
 }

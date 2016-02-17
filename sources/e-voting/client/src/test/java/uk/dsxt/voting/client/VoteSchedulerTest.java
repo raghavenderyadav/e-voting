@@ -45,7 +45,7 @@ public class VoteSchedulerTest {
         votings[1] = new Voting("1", "name1", now - 600000, now + 700000, null);
         votings[2] = new Voting("2", "name2", now - 600000, now - 100000, null);
 
-        String messages="0:0,1,1 1 1\r\n10:1,2,2 2 2\r\n #\r\n2:0,3,3 3 3\r\n01:1,4,4 4 4:-\n20:1,5,5 5 5\n";
+        String messages="0:0,1,1-1-1\r\n10:1,2,2-2-2\r\n #\r\n2:0,3,3-3-3\r\n01:1,4,4-4-4:-\n20:1,5,5-5-5\n";
 
         List<VoteResult> sentResults = new ArrayList<>();
         VotingClient client = mock(VotingClient.class);

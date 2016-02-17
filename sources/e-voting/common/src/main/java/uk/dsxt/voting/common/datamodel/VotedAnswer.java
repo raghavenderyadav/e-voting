@@ -41,13 +41,13 @@ public class VotedAnswer {
 
     @Override
     public String toString() {
-        return String.format("%d %d %s", questionId, answerId, voteAmount);
+        return String.format("%d-%d-%s", questionId, answerId, voteAmount);
     }
 
     public VotedAnswer(String s) {
         if (s == null)
             throw new IllegalArgumentException("VotedAnswer can not be created from null string");
-        String[] terms = s.split(" ");
+        String[] terms = s.split("-");
         if (terms.length != 3)
             throw new IllegalArgumentException(String.format("VotedAnswer can not be created from string with %d terms (%s)", terms.length, s));
         questionId = Integer.parseInt(terms[0]);

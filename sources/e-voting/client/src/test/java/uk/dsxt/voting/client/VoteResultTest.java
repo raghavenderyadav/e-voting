@@ -43,7 +43,7 @@ public class VoteResultTest {
 
     @Test
     public void testSerialization() throws Exception {
-        VoteResult result = new VoteResult("1,2,3 4 5,6 7 0.8");
+        VoteResult result = new VoteResult("1,2,3-4-5,6-7-0.8");
         assertEquals("1", result.getVotingId());
         assertEquals("2", result.getHolderId());
 
@@ -58,47 +58,47 @@ public class VoteResultTest {
 
         assertTrue(result.equals(new VoteResult(result.toString())));
 
-        VoteResult resultNoHolder = new VoteResult("1,,3 4 5,6 7 0.8");
+        VoteResult resultNoHolder = new VoteResult("1,,3-4-5,6-7-0.8");
         assertEquals("1", resultNoHolder.getVotingId());
         assertNull(resultNoHolder.getHolderId());
     }
 
     @Test
     public void testEquals() throws Exception {
-        VoteResult result = new VoteResult("1,2,3 4 5,6 7 0.8");
+        VoteResult result = new VoteResult("1,2,3-4-5,6-7-0.8");
         assertEquals(result, result);
-        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
-        assertEquals(result, new VoteResult("1,2,6 7 0.8,3 4 5"));
-        assertNotEquals(result, new VoteResult("1,0,3 4 5,6 7 0.8"));
-        assertNotEquals(result, new VoteResult("0,1,3 4 5,6 7 0.8"));
-        assertNotEquals(result, new VoteResult("1,2,3 4 5,0 7 0.8"));
-        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 0 0.8"));
-        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 7 0"));
-        assertNotEquals(result, new VoteResult("1,2,3 4 5"));
-        assertNotEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8,0 0 0"));
-        assertNotEquals(result, new VoteResult("1,,3 4 5,6 7 0.8"));
-        assertNotEquals(new VoteResult("1,,3 4 5,6 7 0.8"), result);
-        assertEquals(new VoteResult("1,,3 4 5,6 7 0.8"), new VoteResult("1,,3 4 5,6 7 0.8"));
+        assertEquals(result, new VoteResult("1,2,3-4-5,6-7-0.8"));
+        assertEquals(result, new VoteResult("1,2,6-7-0.8,3-4-5"));
+        assertNotEquals(result, new VoteResult("1,0,3-4-5,6-7-0.8"));
+        assertNotEquals(result, new VoteResult("0,1,3-4-5,6-7-0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3-4-5,0-7-0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3-4-5,6-0-0.8"));
+        assertNotEquals(result, new VoteResult("1,2,3-4-5,6-7-0"));
+        assertNotEquals(result, new VoteResult("1,2,3-4-5"));
+        assertNotEquals(result, new VoteResult("1,2,3-4-5,6-7-0.8,0-0-0"));
+        assertNotEquals(result, new VoteResult("1,,3-4-5,6-7-0.8"));
+        assertNotEquals(new VoteResult("1,,3-4-5,6-7-0.8"), result);
+        assertEquals(new VoteResult("1,,3-4-5,6-7-0.8"), new VoteResult("1,,3-4-5,6-7-0.8"));
     }
 
     @Test
     public void testSum() throws Exception {
-        VoteResult result = new VoteResult("1,2,3 4 5,6 7 0.8");
+        VoteResult result = new VoteResult("1,2,3-4-5,6-7-0.8");
 
         result.add(new VoteResult("1,2"));
-        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
+        assertEquals(result, new VoteResult("1,2,3-4-5,6-7-0.8"));
 
-        result.add(new VoteResult("1,2,3 4 0"));
-        assertEquals(result, new VoteResult("1,2,3 4 5,6 7 0.8"));
+        result.add(new VoteResult("1,2,3-4-0"));
+        assertEquals(result, new VoteResult("1,2,3-4-5,6-7-0.8"));
 
-        result.add(new VoteResult("1,2,3 4 10"));
-        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 0.8"));
+        result.add(new VoteResult("1,2,3-4-10"));
+        assertEquals(result, new VoteResult("1,2,3-4-15,6-7-0.8"));
 
-        result.add(new VoteResult("1,2,3 4 0,6 7 10"));
-        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 10.8"));
+        result.add(new VoteResult("1,2,3-4-0,6-7-10"));
+        assertEquals(result, new VoteResult("1,2,3-4-15,6-7-10.8"));
 
-        result.add(new VoteResult("1,2,3 9 0,10 7 11"));
-        assertEquals(result, new VoteResult("1,2,3 4 15,6 7 10.8,3 9 0,10 7 11"));
+        result.add(new VoteResult("1,2,3-9-0,10-7-11"));
+        assertEquals(result, new VoteResult("1,2,3-4-15,6-7-10.8,3-9-0,10-7-11"));
     }
 
 }
