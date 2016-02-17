@@ -50,8 +50,6 @@ public class TestsLauncher {
 
     private static Map<String, Process> processesByName = new HashMap<>();
 
-    private static final Timer clientsStartStopTimer = new Timer("clientsStartStopTimer");
-
     @FunctionalInterface
     public interface SimpleRequest {
         void run();
@@ -115,32 +113,14 @@ public class TestsLauncher {
                 nxtProperties.setProperty("nxt.testDbDir", dbDir);
                 nxtProperties.setProperty("nxt.minNeedBlocks", "1");
                 saveProperties(clientPropertiesPath, nxtProperties);
-                boolean doStart = true;
+                String walletOffSchedule = ";";
                 if (conf.getDisconnectAmount() != null && conf.getDisconnectAmount() > 0 && conf.getDisconnectDuration() != null && conf.getDisconnectDuration() > 0) {
                     for(int j = 0; j < conf.getDisconnectAmount(); j++) {
-                        long disconnectDelay = (rnd.nextInt(votingDuration-conf.getDisconnectDuration())) * 60000;
-                        long reconnectDelay = disconnectDelay + conf.getDisconnectDuration() * 60000;
-                        if (disconnectDelay == 0) {
-                            doStart = false;
-                        } else {
-                            clientsStartStopTimer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    stopClient(ii);
-                                }
-                            }, disconnectDelay);
-                        }
-                        clientsStartStopTimer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                startClient(ii, configurations, clientPropertiesPath);
-                            }
-                        }, reconnectDelay);
+                        int begin = rnd.nextInt(votingDuration-conf.getDisconnectDuration());
+                        walletOffSchedule += String.format("%d-%d;", begin, begin+conf.getDisconnectDuration());
                     }
                 }
-                if (doStart) {
-                    startClient(ii, configurations, clientPropertiesPath);
-                }
+                startClient(ii, configurations, clientPropertiesPath, walletOffSchedule);
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
@@ -170,14 +150,10 @@ public class TestsLauncher {
         }
     }
 
-    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath) {
+    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule) {
         ClientConfiguration conf = configurations[idx];
-        startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
-        //VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
-    }
-
-    private static void stopClient(int idx) {
-        stopProcess("Client" + idx);
+        startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{ conf.getHolderId(), conf.getPrivateKey(),
+                conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), clientPropertiesPath, walletOffSchedule});
         //VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath});
     }
 
