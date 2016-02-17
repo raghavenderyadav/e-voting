@@ -2,601 +2,601 @@
   {
     "holderId": "1",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEArmC6FCM7/IQ72LqWrV4ybsrZopPGu23T9RXUhNEtQZlPIaX9Lvjqhz7J96/TkEdk+XPyabRkkN1crQj2Quzm0QIDAQABAkEAqCIPiNcoQaPmaGQQYH0Qt47TJVTDK3kMA6XW0XE256WmupCKky3rZSFpv4b5J+aqSHAEPL3VdHM46pZlBvFJmQIhAOtkqnvUaljS8mFUSmgVVt8j3/dTrYgNDiDH2Yk4OlrXAiEAvaSpW2cMjagoVzrtVlp1B/b/9fIqJa4DT8WF9nSg/pcCIGygKLg6HtVcizN09V0ws8UHRhxZRhQpiiKAdxeGlg9DAiEAniPDPf8Ojsnc6fCvnUTNNpkYFIWd89HJ3Sl/bmcPIX0CIQDhAANCyrchZypGM3e+18WuSrDuekSL+H0Zniqju0hixg==",
-    "vote": "1:1,1,1 1 14,2 1 0,3 3 13",
+    "vote": "1:1,1,1-1-14,2-1-0,3-3-13",
     "honestParticipant": true
   },
   {
     "holderId": "2",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAntK++e2zD/EPDkjqDJIGbWYvxpq7sc5OUCWptVOrmyYZgv+9Tm98V6cOKbhsx6it5G5g0yVxKrpuUrTp6eB8mwIDAQABAkAOj/I0xkepyYeA3sye9HCkbT8qLZvSFMF3dcyWtKJCaljcnBvfodvk69cal5czZpUZ3HDZUebN5P8y+V0z2j3hAiEA/6XN8eQVlKXdb1HgrWd6/0u0iRnTZPOtGqdVIMkSDAsCIQCfCsfdEGKzjt1YMHgyyXWIEJZIHsSvu67UdXUqKwMbsQIhANSrItriag2BueccTvMSDaEJYoNXJ6Nojw2IPGoMuuWnAiAkXMqleIGYnClvaGWS9wywN1qk0qQVqcunN9O5+GuVgQIhAM3kpC28zT8n9OsMnS5Jnu7FuvXeoqf5QxEENOJkdoiU",
-    "vote": "2:1,2,1 3 27,2 1 1,3 1 46",
+    "vote": "2:1,2,1-3-27,2-1-1,3-1-46",
     "honestParticipant": true
   },
   {
     "holderId": "3",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA4CP0HB8jH0PHaCVIblYrSuVL423ixQUbHydaw8B8KEbfRVKF15vzTzsF5Pm38qAGUe10+mYdSXf3ERXcseKBZQIDAQABAkBzISSfWUMSKR+BGD13J12/b74mSOhFaRUAUJenmvRrPt2w5/U7FcM+gS3l/XvM7htaAWI3MQRyldkI3HPDiNxVAiEA/WzJBGToqzmfCoWuTOaIgyy6VMCbX+waEzH75Q2fQKcCIQDiav4pfaDiEl3PSTcJ9htrQ/KojWuHzqU7yPmz/VNDEwIgGhcH/t7QoUgWWoP2tM4LAc4qBK2rkU2CRbWgpC0p1wMCIQCA8oZFgvK5TdR3VS8vUSZUdKIiNEhlU97uqYrsYv2kWQIhAJS+OfqiRgAzfyJZkrN36mq5k99FFdkObFy2H2Eo7e5l",
-    "vote": "1:1,3,1 2 14,2 2 1,3 3 0",
+    "vote": "1:1,3,1-2-14,2-2-1,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "4",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAjeW7Kjw8BzYdtqRvFrxdYS3Rk1tGI4uj1V4yArzGQhPLQo7tZazSd5Bu6RCtN2hJ3HtvXDrzArjlDmzCNDlF1QIDAQABAkBlHDz5BIDVtqcHnTYXYlO7ynVa5iAddgRhJsTGFJPFQtDk/ZfoG8ZdyGmEXqR4U3aKtA9LqB1DYJnDg+3yEojhAiEA/Rp0LFMBp8EpipUkia7gVs1nXZEplJKk2zbx1IIMYR0CIQCPhXbfdJEBKXladXW8W70aUzAaobL1s/6WQT/9aaLSGQIgWsG9npc1JL4y8yp/q481imqlAfwneMsMqj6NgLIRVlECIAbg6aqaBp0cpMFOId9uMikB1athFpeqEciXxf5aQsB5AiAk2uDgiKlgByrQSfDO89MilWXjbQ60g0hmsuYDII/3xQ==",
-    "vote": "16:1,4,1 1 39,2 2 3,3 2 3",
+    "vote": "16:1,4,1-1-39,2-2-3,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "5",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA8RAqXzW7gyNRhKAS1RRhezksmedGVXV/xdmkzBWE2paeCp3k8q/gJuMAvItmNPUj1zA3GD4BEo6xpYsQx/D/8QIDAQABAkAUFViyXfOlVUfxWLS48927OmQw3kfJzuQ6Q4urRQ+wdjqERfrIGBESbsGXg4C4XrR+7CZ/9Pq1ow8fugNd6ogBAiEA/vg6AJ5srBizd8v0UU08P4lz3YVpPyjeGgIu6/YH3iECIQDyCY1iQz/13E56lHQv6u/9W8V5E4MMzvmzE6WESLnH0QIgZ/8BUX1M4AkXMpa66WpyV4wN+V3QJtXZeYxIbTAl12ECIBDXOU8s/rZMrek5ixwKbMhkKklSYjvx6s3bABlENikBAiEA9tSVx+zbo0J8vsvR4Jh0dPWQRPOaRCddsyGVrTTwt4w=",
-    "vote": "57:1,5,1 2 6,2 1 0,3 3 3",
+    "vote": "57:1,5,1-2-6,2-1-0,3-3-3",
     "honestParticipant": true
   },
   {
     "holderId": "6",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEApQFxVPvVjUAcnPd3gHB9c5G6Vz+lZkNjOjjqaaU2KcwWGcHPfRXodzia05WLWAbBYFXDBhS1hG/7dGxSRR4YwwIDAQABAkB6hrS6b3qnNblJkbVKSb3OSKM/UIKoilevjz36DvVGWRNSxeWKvhgTFZcsMxHzpLG5HFiBNvhWbLs/AOZcMVrxAiEA6R87vCc0plg6pZ36dzZdytGaMh6Atg6kh08RGOI3qrsCIQC1MujNVMxVSgpCvTQGijwEZhm+96rXVNEMGyZ5xhe9mQIgadIAtp8BWkUQkh9NE5I9LxTILtoDySCKdNViSG5foIMCIE2qu6S/czIfoVRH+xPOjrkn9mMnj3/q6AvzW0OZCDYJAiA2hlVX0ix0gj3UhM+68xuxC8M/w5OnFn7wkQGWvoShOQ==",
-    "vote": "25:1,6,1 1 43,2 3 5,3 2 3",
+    "vote": "25:1,6,1-1-43,2-3-5,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "7",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAsLXdWLEHrTriim+14PtsuEs5wxOhRH+JjUheAxzUKvgPyjRA5e/SuR7FeDl+OsbuUynwekYAOWdccZae2G7d8wIDAQABAkA4evhzh6nPeZm867WzYkk+onSk4FpUPXtml/HMhuNdlADBzdFNnFuJRV+NaTynxptXPZ+6XY7VH6iCE3/nW5jhAiEA8kUyg7/I+5dtsyBWtPeWC7qfn+pt6IlCrqKXwm3CJ9ECIQC6uYoKvKlTWoi+UwleOl0sfOJFnJmEVujPqjWTe0oegwIhAJBChAHPgW3OjZPL/dVkWARD7Cjc/vUoRnyWdKdhk+sBAiAn5kWtDatQ+GOH5850qBwIyZbAMTpMoRWWalSQcyPfaQIgZSrVxzPO7ONAG+U3MFEPqnwmjQ7Z3EotJ2HgvU6O9ls=",
-    "vote": "39:1,7,1 1 35,2 1 45,3 1 0",
+    "vote": "39:1,7,1-1-35,2-1-45,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "8",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA5mPip/zSiOZqtKtubiGMmSNhk9WcWXtEsfE6F+h+k2i+ldixSjM3glkz29EB5PtRHWKlwI99loIrqE9V/AoOEwIDAQABAkAka3XRCG5fpc0IcnEqh7MqIiWysPneS1Y4quF8FgysUH3H5kWNtOWUORNefVqP5AofYyyVQ5tTCjtwcnTZmhEBAiEA83Y1UF3oDZYqyDYCueGK7XSLe3j+uUmPnyixs6j/YkMCIQDyQVeH902nB0wVRVGEX/1JrabVETKnq4AgseEcZHbv8QIgKEMGMhI1i/mnfZChBshrxzUc1ACAb3fgzntWV9W81i0CIHnRJ63ESrTx821CxSH2jsxM2PaNRlaP48cNC3CWiERRAiEAtzJdL+H7AjOnaY9URr/UfAJxNrXkpTlkCbivGs3qL9U=",
-    "vote": "39:1,8,1 2 64,2 1 15,3 3 5",
+    "vote": "39:1,8,1-2-64,2-1-15,3-3-5",
     "honestParticipant": true
   },
   {
     "holderId": "9",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAnxpeOSSJVNnig9qVS3B7gYoFi3Ac+etD7r3/7jKm5PgveTaMjxRgBt+/LCKXosOyODujFXTNG8JPpA8a5tP8NQIDAQABAkB93ZhI0HSsYapm8RdGlPe/5Pa59rmVpN8bEchUIlIRtF4y3OdEcfTeHwVE+y95/3kNfTSIv7EdEoZJn/mW1XCBAiEA0AlgJmhpYhQPA0ln8gVo6bKv25fU3DIoaqagc4wZg7ECIQDDyNvZf7pmqDABQqWH8/eR4FbTxqRx5rWeLr+qX041xQIgOvT9P8VFYFtI6eiKwccQtXJDbls4IvNACwGP5U8mB/ECIEBg1doJJBQJje98KM4xrOCs8iAlG4HQqTvgh2nQePk5AiAJfxJu+k6GTB0DV9Y2gD6WDeFE8rGqwsTYZFP1uS+74w==",
-    "vote": "41:1,9,1 2 39,2 1 2,3 2 3",
+    "vote": "41:1,9,1-2-39,2-1-2,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "10",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAifziRHa4QdsjCRwP7CFlT8R1ALUlSI4fWEUlZTlKRGESdLpNHJ0r3gErwUjuVxVc7zk5Y5nsmsa1MHlwM3yAEwIDAQABAkBu/b1WypO9TTHqQus/yUD/n4tpbUu3B7KIwt2ohSOKybreCNXLnvLCYEkW8vYP49m2Zg0uZZ6mw+qWSQzi6mOJAiEA+2AsYOCGZ3HSUr0GoiB5XiTak21Es10nR5Ev898yzmUCIQCMhrj/v/9AT2ZD/Xl3Gtsji/FunN7954+8XIAFZ0ZRFwIgXpkfuklkaxNrehWGpIaiBerKksaBHxrESGt750Oso/0CIGcga12Mqiao3jThLKWiuNUiWyDA0Mjmic5C19SfULQrAiBH7E7PIR0ycRi3tkB4NIBFCkxqMHYOjqmxGMPg6E+jCQ==",
-    "vote": "5:1,10,1 2 114,2 1 28,3 1 1",
+    "vote": "5:1,10,1-2-114,2-1-28,3-1-1",
     "honestParticipant": true
   },
   {
     "holderId": "11",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAnwqPZI9z4c6H0JP5cNMsmDf87mkqu4w9zQGQgOiSSmGaXwqk4OMg0/4axYVMEvswQtw609RVvH5dsNZXoPS4owIDAQABAkBfFGUdbVWODXbMj2p0tQrYBcDEl0Lg1LqtsN2+80tiA3teMJqTXor68zpl5ci2YtKm7OVlorHjcUHqtWZbQT/BAiEA7WGYSyQT0foV3OAGS+00D+y1kaOj9okDTcOt4AI4l4kCIQCrg/e+GWAcbO7EVOK3uWVRxiVTa5GgUUf1N0Hqo61XywIhAMTERSzj9tny5vRzbkS5lpIssETM1DijUe2/6fzpWmehAiAKTa43VEzqyDx7vOG1ycRlajLZ1Q91gwyAlaY3E0gZiwIhAL/Ekbf7cjO21lQcinE/wP5hEgLD+mFYi8H4jRzJ5cK7",
-    "vote": "45:1,11,1 1 25,2 1 3,3 1 2",
+    "vote": "45:1,11,1-1-25,2-1-3,3-1-2",
     "honestParticipant": true
   },
   {
     "holderId": "12",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlhsE5PqRNOTZ46iSet3q3mB2Iv5pcHKjNnzL0ph6tKJS5rTuGSCp2LNDIyoz0/cXB8SnksWEyvq9U3y1ukF6owIDAQABAkAEdjEjDT+bruG7HpucA1Sj34IjcCR6Ly4ixHrae6XKEK12tjiqhAQn/kxFuYRWUmSZpIod4Limdbz+W7C6PC4hAiEAxeVZSPMBZMBc+SgiAZrprPfzueW/sgRZ2zeD/DrayRcCIQDCLY4w4SuI56c083AB4fVgEcTeo7akGV64kaGVf866VQIgOd+u0tSuTaasCfmgqFODjyAcWPtFqmv3U1LS+IrFvRUCIQCCBplZl95cHas05PKTACkcfKmU4JHTzv1DoJlQD7ZxxQIhAMBI6JoIV90+DqmPk66t1m9y/i/hEExwomu9+hO9zNTp",
-    "vote": "40:1,12,1 1 55,2 3 1,3 1 2",
+    "vote": "40:1,12,1-1-55,2-3-1,3-1-2",
     "honestParticipant": true
   },
   {
     "holderId": "13",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlpt3JTQV8sG+2Pw/qO5JMXA7wT14NvIRN/n2SE+kzaazdbHOMj11cSrPEogTo0TGxuWqHiAD3dmNWFu+JEmbWQIDAQABAkBWNOzxDaxWhRIBz/l8b9DTjKOXi+DoyoySlvCjGXuC/roYfhr86INa4TukDDqP1EH5oLcART2ZzV0qXZMms3mRAiEA5RrcZe/noTSOw1jyRq4zLvxUBTpX3KUM19Uij+z8rQUCIQCoSZEXvTXQgE13nX9KN4nknrtSmHsZ1RHOKDBfp/xlRQIhAI75o1+ORwxIY2uvn4rSfait2bVlgp109z3eifIt4EYNAiEAg55uHWv9v+HpNMl4udowPh+rkJDzjqOntl6WXuoqrCUCIFDd1H6DEoMeIhFPpHBtyQ+4qxHNKU+/d/QckW1LdCjP",
-    "vote": "7:1,13,1 2 40,2 3 14,3 2 15",
+    "vote": "7:1,13,1-2-40,2-3-14,3-2-15",
     "honestParticipant": true
   },
   {
     "holderId": "14",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAiuLvLAest3kenwpLonBQRD7bkrS+zX6UzJgSv3C95GegspGo3WDd1U2p6Yrw3DpJs77qDf30vIjtb4/8e2B6RQIDAQABAkBf26t59z4VUAp7eI6laeFsiPnhstByYqhu4ZMnALh/mJxg6oFI0KsL6YP7I6Iy8f6EnEyPQ9ldtTGTN41anjVhAiEA+Bw1PnfFuKUgJEOd6G4d+W1alA0ZvPdd6OZocnXEvz0CIQCPTZFthOjS5+bYhIrNopRbPWTscA4Co/iuBWGxnYrXqQIgb0HW7mgvFZmWTCy2BqA6eLr8vx8Qx5f1WJbZh1ogG9ECIEoF2nJFLnMLYT5EsOJp8dJzkzdi5onMo39Yvk8ePwMJAiAWLQWlcNFbkiwlNmfeM74aXH+dGsp+ReIqa+kik3JwwQ==",
-    "vote": "31:1,14,1 2 2,2 3 52,3 1 3",
+    "vote": "31:1,14,1-2-2,2-3-52,3-1-3",
     "honestParticipant": true
   },
   {
     "holderId": "15",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA8+osjdYccFR7kO6wpXs5eWUFntryTPOIbURpLioCM5RFPQ018o++pAKOba2cCgLhPUNsiNQKoiomjJUeR5Q9DQIDAQABAkEArt8zNjVNilNni881Ik8oM5pz3yJGGVl4dC5Z4lkH3wWGFr/UU0yXcZSgXMDi1AKdK7PtoUFBt04ypTW4kdxm2QIhAPrO91MCnqZpy+8X/kvntm5IX0he3PPEZefJUPZw3X+XAiEA+PatmP7z4VP769sZZXGABHi58PxeLeNmlj758DOdfPsCIQDTnNJCQKCZKgR969GMO6nJrNhv2FI2fou4oDvmYl4QawIgDGoglfSArMfHVCeEyK40OATdIMs01wzz3KIfTH8GZ2kCIQCa8zMbdZyFU17vHjQLrgBij74jGumrPdkGslGqnemlUg==",
-    "vote": "39:1,15,1 2 44,2 2 28,3 2 3",
+    "vote": "39:1,15,1-2-44,2-2-28,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "16",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAr3o1HQBshgtyTEjecTuHp97PrYMyeS79HgcbxZJf1WjHdOEXq0t0s5mlqDOxm/xF3APLRcHBoJrTAHcuiCAXgwIDAQABAkBLOEqeRPlAOJXlR3M6/La46hUCHvQ66D6OaaOo/IbiFpDFS94v+QHSqS0K+kCm+K2dajFhyjYH39tffX86YeexAiEA+98AAn8TmjbU7I0I/8gvp9fpl2YaTDzCeiL0bQ/EzRkCIQCyWp0+gkaUznHRxcLJgki+XWhRTraF9w0Iq9uBfeMA+wIhAN99OFz+tT4ZeUWMv3d3AhJEm5kjmCIdp9MIQSqk21PBAiBPu3akZTUMfSYg81nbH+VJRRTHlHrAdOtcvweIYjDDVQIgRu46m+cW/0/pjIhJRIOz4gKzO5xRQUlqiDxgBPGh3Nw=",
-    "vote": "36:1,16,1 2 22,2 2 3,3 2 5",
+    "vote": "36:1,16,1-2-22,2-2-3,3-2-5",
     "honestParticipant": true
   },
   {
     "holderId": "17",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAvEQZJmYZpk5F1yHDIWQ7LY3TstRjgLZbC9OyTSvFBTzL2KaI6Hvky7JtbVmjbhOHtToepLSGrBfT94NCxIpk5wIDAQABAkEAoI2qrRaRdUR3Rxph4I4r8ZNsIKwEF3Zses+U1T8ojGdv5VLI5tnqg9iL/7c/DVNdYtodQOTGtLnRelPVVKxu0QIhAOS6XlgEZ08hLl4TizyNX2dAD8yKN7v3j0f27xFc7qhbAiEA0ratxk5cYZHEfSt+ERx57LUAG2Y/YRnnrBeRDWjPO2UCIQCSooRfSxtsGGqgd0kZXcze5av7RlUq1S/vQ/jKGdkK5wIhAM5r22zrkyCaNk0Q8F0+8kprPoGY9vne8M/r/lOOm4TpAiBYavKcLGuKKQRYh6DghT9w6B1z4Z5QoHKdTY0ZQAIMIQ==",
-    "vote": "56:1,17,1 1 18,2 2 0,3 2 2",
+    "vote": "56:1,17,1-1-18,2-2-0,3-2-2",
     "honestParticipant": true
   },
   {
     "holderId": "18",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAsbQDdUME6RJ37880UAleBB9CgQxEeZTLzJKVqqewZK1NJdVqI2vPbCfBsiRNpD4p6NxGpYZAB0cfdKledoHULQIDAQABAkBgnxJqReB7ohEYkT9ObWlzMFQGutbYjLErMGC0g60Db9VhT8L0VJGVkMXQ4AH+t/bSO/qblQy5mWEJ2mVMRs3BAiEA8wIT32eMsXQiR+93OYTot6pT8BC/Gw9lcDOVZzKHdNkCIQC7NCRdfMilSdxUSltyL7pxwRseY9AuC10/VKbUk1y1dQIhAJ6n6JmfXbgt/oPA0LJ5GAdx6UN/a4YbUzsiMpUh5FZhAiEAq7Rcsn70zl5bv9hf3fEXEqVrSUmFteXohmEPkCUFwM0CIEZNp+ZCHMz4D0qzA+/2lpDErbCzKDEq7YgvncE7BQsp",
-    "vote": "52:1,18,1 3 7,2 3 0,3 2 1",
+    "vote": "52:1,18,1-3-7,2-3-0,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "19",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAoEaNq+eb9EJsg8C6nvWtou5mI63TfM0rdDk0SMQwnGwKTB9FD5aZ0ihF/7JFZiRHUM8kxPZCNjzHFpA5vIiKVwIDAQABAkB5LF43tWeHCCEaiz+MppmcMTkviF/4XvWXbRhGW22VFDH+4Z3MXrIMJ/mkmDfkXqpFlpK5Hq8Jz1zkz7ueb+zBAiEA9LHRAzRFVCVa//TwFN4gjQQfOawWTZY2bRWqUFAXOQ8CIQCnrkBNutjqr1Va+X38jRsmd+r2PPj2LCzB2nmoIDnKOQIhALnuG4m5wCxOLjVrYroYhtdgGHH0JwZRa4279qwMD3lVAiBOzcXKwhVPtjcXGknrdyVbXuA9+UnH59rhABxMt1hxgQIhAK2H0/2Oc4gewGKYmAX9K2mWZBkhWTgGpKECnB3mhM7g",
-    "vote": "5:1,19,1 2 6,2 2 1,3 2 0",
+    "vote": "5:1,19,1-2-6,2-2-1,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "20",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA8W4jTZ3k4WkBjcR0q6CDL/LSWX1BMSXc29UwdMMOhks3/TURBw7da+63/Puuw1LiuUfxuykY8iZJe1+yKWOlAQIDAQABAkBs5ioEY5kO16d8w8WAeLlT0mpxNR9HxPVXL1VZBXayubCzZrYsQSP/x7BLL76/G2/4IgNyDgTJhuFxB49twA+xAiEA+Tfh7h/TXqbM1S21gNA6SB+8bbOo3wA5VT7tHavTO40CIQD4AABx89smXDW1TVjRB0f3ESP6z2Ey36oXCqtnQ9T4RQIhAKf3O/SLyp++d8st1WiN7tnxWcPuFGDH+9wyXwliZyl5AiEAluFpY+q4qd3vzx3/qyyC3A3RlgYVXJ43HU2genMKXwECIFvU+4oePHanrbYwcyI4wLdTijIWCtcLXolev82f5I7y",
-    "vote": "53:1,20,1 2 61,2 1 62,3 1 1",
+    "vote": "53:1,20,1-2-61,2-1-62,3-1-1",
     "honestParticipant": true
   },
   {
     "holderId": "21",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAjFHW4g0DazBpu/iBri/Li1UKF67Hyk7eFwMlAmYJ1ZITDGJENKshEP+0162Us6+uEKdbZg+tljnnpkl0oTAWCwIDAQABAkA+7jVBDDUMTZoeA0WlqSnQQ0NTe79+rABOscpXWQvwC/Xfi0cVzSFUz/2kC5DCpg5UpA+tFEg8dZkW9n1JbwqBAiEA5lnceYgZR6PV7L8Kjz3exMS1pr/+cHlsp2dxBtI5xm0CIQCb8aRA1wl+07gLXu6mkr46lp54twjUuifI/DxzYifjVwIgds/Eu16qg1wK/Dixbp6f52f6tc5zo3nNxC7DipwmNqUCICTKBAr78BSIlCGymrCXa+NchzRJUf8Fj789qnE6FdjvAiAdcspbaz0EdB9iBmpQZDmicIslcuqN2PEHhnRRh8i1EA==",
-    "vote": "34:1,21,1 2 48,2 3 27,3 2 1",
+    "vote": "34:1,21,1-2-48,2-3-27,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "22",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA5roRZJqJUqc97dZZQgKGFfkF5cGvhuD6oAhMjakYb1ycGbkJXC8MIFuWP9T1UBnEkabzrCVjeeS9DfGhfWNrMwIDAQABAkEAhG0BNJvZ+32P9uVTH6bxLMVcFC3hv+l7D8UToy8NnkQS90BrW4/n8chDzf1D1MDFEAKROOvfhR53dbErbyeASQIhAP31UGGE4jgxsGJDycwU089glMzLQGQjruV5xNhPtfI1AiEA6JTwpRdzIl1J6sJe7ZJiJE9Iy0TnsIMYOeTtoJDoFMcCIAC4g4PjVqkGKxP8UURNAtTh10pFgWdHWqW4FMDwaPnJAiArDDYmOFrlB2NBAkzTp/5mPg55IP3JG9qGDKs2xttNzQIhAIg94frh/FfkDU7joxXHBShTps71aP7ZgY/lsFnL00tR",
-    "vote": "45:1,22,1 2 25,2 2 14,3 2 3",
+    "vote": "45:1,22,1-2-25,2-2-14,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "23",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAo1NQjjCASR870NQtskHhZzU78uzchyXnsFkK0M7CYR5A2BzGxwRDp/ieQZ0No0S8R32cLh/7G0kJ747VH+pJjQIDAQABAkARdQ1ONXbw2erN1nAP9qS+IF2JCLJFq9KI8euLCB6UvLfX0XekSq1lW5GRGnjQOgOjbH+zhiDxNIWrV2urakUNAiEA7yI4I4yrICeySpKhNm/J6fWdwynzR8lCyXONu/E949cCIQCu2E62PYQXQdHuyztcBI/XDgE1gv47/NtaLkTjuPaROwIhALZ/F/bRYLueb+uHca7Yq3B4eNi7iCVtzCFvpWgcGI5rAiA94E0Sz3hkpqV9xayPJwokiE9DOcVxQ035fzBgCsAvqwIgdXY5FkDhKqwmvAbaQS7xy/kcPmBjFmsYYeXJ86D2NhQ=",
-    "vote": "39:1,23,1 3 4,2 1 0,3 2 1",
+    "vote": "39:1,23,1-3-4,2-1-0,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "24",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlBcxWMoA4ghsxL6Sdn8HOjVeg5zir4EZoR8ly4NdT8FfihjPPSL4nF/0cF6JKwT+DNBE7cZCuqBLZDw1vp2C5wIDAQABAkBpBrXRoZnUtGLnebyH23k1uAnqz4YZMDcMBPoaBnVUDNcpEV2MSLlN+BkheyDzv/lX3ccn8bh321kNfFhKyv2ZAiEA8Hj8NJFL9olxQ/+cnVf6TNqNZOJ6BawKzYsKQqljLnsCIQCdpyHM2vaydaAlgy4Ml2GIvfCjG03pHpRt1+5+9yMHhQIgfzahxXVwCDZhkyVwRtS591pPHqWpA8Ml2+LIRMezTm0CIDDGaJqsk+6anbV9ZF3Y6AAaY7zS0cPyBhIF4G+/nkLRAiEAzJzCREoj6krcfQiF7LTpjDWPRY+KUOUiu0Dn+bLvxXY=",
-    "vote": "42:1,24,1 3 4,2 3 0,3 1 0",
+    "vote": "42:1,24,1-3-4,2-3-0,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "25",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqFvs1tgDPeasE4+InFQXlbM9USrvSgvbW8G5XpqL1yfcYfKpp64wB+r9CN+M5BajLKppBRVcSQ2Pyb2vgxc0XQIDAQABAkAjY69VOfL0gBiLxBAjTEno3dR1y2ChX/ysPPyKNlJO12rWz80BbVT7Zpb9MYhliNJ2T0Tv+VouI0SWQV9jl77BAiEA1vnQxBVjFrzfXCUtNLL+H6OznjwftDuXv32DbhT0ZnsCIQDIfL9o98mkR9tqtI90AmR7OdepM29fXX0yPUAY5rgFBwIgCCeVybpd9eDYQDCQ1Gztwtl82MXDFh0klnj2YVieJL0CIEMUula80dMN1/SUBYujYUt5xxbuBs250jIFHHU4fUnxAiEApHf3MIwp6WQSCKJ7hpaKgFw3Zn7ZyRdjT/2+YN8573I=",
-    "vote": "31:1,25,1 3 25,2 1 5,3 2 2",
+    "vote": "31:1,25,1-3-25,2-1-5,3-2-2",
     "honestParticipant": true
   },
   {
     "holderId": "26",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAvn3jpCbEC6dIEsKi58T3BUG6dhg98hPVJ+AAlvtI88cGfRaLp2eQxiTJBfW8+VuwtQotVEJJe0MJw8YIC3d5gQIDAQABAkEAnVGCatLJHYatczDjMN3t052QzG8A2aefZisM0aP9f7T1xaOEljpUy9q3EbCTnGE86IX9v0r0xMU9S2F5ogAdsQIhAOGGDrERC5mfmX+h/ufRmFrY0pwf7yJtWOqZmJ8q61wPAiEA2DvpGV96lPKrSOCzxpUwg4rjIzga+u9x0lk8bU6JgW8CIQCZ0RBWLnUF+3f7OGcef7L1S2siNxmoFoKNx+LztJdAewIgalSTnIGCAuqN5elxHe7RC25poTD+u3SxcPGmsE2VeosCIQCW7lZ3gESFJLsERvZpbdKP07Qs8OPZZg8n56/bU3c+8w==",
-    "vote": "44:1,26,1 3 39,2 3 28,3 2 0",
+    "vote": "44:1,26,1-3-39,2-3-28,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "27",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAjkhzhoo6E61fZ1tR9ScAmzY17kagEB9HEKab4072XVPig/BZEt8sybddHa/seAvFTKmua35ACyQyw/iRZOW56QIDAQABAkBTvJwQ8ETh08U0JPCFISEgN7VhuDr3ghDm4ccY7h3cKmFjp1GUcA/dP31PPdWWjjyiBDGVqDlKWUD1Bl8pNpDJAiEA27LGSdo/E26RzpU6e1XD2G8rY74hWZHoUVu4o6Vf3F8CIQClywNy5spBzue7wS/I5xqmrk9eZ3k8Nc8MBEiOUe4OtwIhANMSqxcBK2CL9mG3VXxxJbum8tTdMkVPvReNO5Ndqv+ZAiB9wH+MLouo4LQaUEzbWJd5Z+thkqB9T98MoU8bS/+B/wIgByiacLdEuTUZg9r8rf9UugaFsztaA6uhzCxCpaex8Iw=",
-    "vote": "31:1,27,1 3 39,2 3 16,3 3 11",
+    "vote": "31:1,27,1-3-39,2-3-16,3-3-11",
     "honestParticipant": true
   },
   {
     "holderId": "28",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAo4z9bquB1QYy/+zKQ0xP24AuRcNRUH3Pg5md2Y6ILUZHVXUrcYSttpedTWpK424Gs649mg/oDfuOQAfibRCzsQIDAQABAkArULLqNZgcIBkvuLnU2wgnXSpkJZeKltd3xh6NOPeN7ajz1Sz3T3li8wRwxmqEmBQiHYk9jwWoeiO1gLQ7mS0xAiEA/3jsTTWeDqXucN+IXQZa8bGLiy1CCgzdpIxvyjfvPJ0CIQCj43b+w2i2evsoczWFzv6/QRbsBNG2qUJtzLhxdu9lJQIhAM3zTQRdYiNK73M9MTBVLEHGMMmtXZy+jHvX31M1Tn8dAiB5NDxI5ZOHgSRGIg4vS4qzPxwIqPe/syXhtkmiAGfD0QIgJn9mfWDvC9ApzOjf4F4i21sphg38QZodYmC53VhWA1Q=",
-    "vote": "29:1,28,1 2 79,2 3 5,3 3 1",
+    "vote": "29:1,28,1-2-79,2-3-5,3-3-1",
     "honestParticipant": true
   },
   {
     "holderId": "29",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEApfWKvVcyWwFQz/s8umKJzxB1WFjCjt0BV5wJNuVBQulim9pZo1q6WI8aG+t4CWTa38wpQcD/tep8BJtDKtumkwIDAQABAkAaQJg80VFO4gtliwmVNkc0cRcO7aOBM+aldDJk86j6K22adAhkJu1PR9yIPq7Zn+YmiySFbKCu6y+K4zc+8Nj5AiEA3xaP5f0wopIiz178pzzjfF/fFW3VPcbC5+3Mq9DNGZ0CIQC+cV85GH0TvrCM0Nr79LaD/6KGhCgOmEK0m+M1Csmh7wIhAL2c+KvbmrXjDdFCA+7FUvlIp10YYHHEea8VsKusqlcFAiEAqNB6pnQMu6n3envRAjNEbvH2MeOIVpel2c+tsmEjp0UCIQC+h3UjgIQ/0+6mdlT+Gc/saULI5cPYY6JI2R35f0tlhw==",
-    "vote": "42:1,29,1 1 0,2 2 2,3 1 0",
+    "vote": "42:1,29,1-1-0,2-2-2,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "30",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA0SeQ8MYk9Y9LGOtgl2gTXJsBRWAfH0VUUVg4aMeUVku7TEkCMl9GdE6VIuQeMhUbMARkKtJG7OqXSA0DJtgHNwIDAQABAkBLHaunXXJOosz0wSwqlF1Hx/+X2+Kxh2O15zozH2J97wS5Y0mfiJ+yRW6ElGWLkRA2/IoVsFF/p4NSyVrsEpXRAiEA6Vj+K77Lq00x8l3yj5tGrlFD4LX1s4NhjOiJ4QPfnVkCIQDldVepNQuBii83FL7OUJpUSejuBZoCeO+xbslM/wdnDwIhAJDgCMY+KhNL1TPF8mAIpsR5fewY7NgsPLeQdHI4xm/ZAiEApoKemHWb4ecrGCd/xywKsjvoQkHiXwTvu6yPe8Zd0tUCIDh9aBEnoZ2MaRvwhgYNwbmrO9k+b/IGhs7W3t04pOdW",
-    "vote": "56:1,30,1 3 47,2 1 34,3 1 64",
+    "vote": "56:1,30,1-3-47,2-1-34,3-1-64",
     "honestParticipant": true
   },
   {
     "holderId": "31",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkATn6U8vqI7XqLn0/cRHbW9VqgYRYcLNb+eDgQ2X+Pu11xjjhqfXnAIwwuIbcnraQa2UUs1hvKcPHOs9ujtdSwIDAQABAkBlqFDayt5lKI7ptnlMNyQEBzZ8kVProcnJV63nhmTjhheK6iUo4bcNlLI2cgNaFJzMsW0wbTk/t66A67f4BYehAiEA3RmK0FxHuvBLZeKTGOu2HtbNXUMod5vj2g0+TjeDcQ0CIQCmwJmyGwqlbemSs04uT3k7tYcFC9LQmamx0KSKjQaBtwIgLc3h1SKY9aBcbmIPCUWjuCXV67FDC+xuuritpLSZdW0CICRlJSaagFhbBP/f4tB4yB0gIbgYPIsK/t6wizkyTplBAiEAoBcPAwJF7ohbajQaiIq8ncNi1bM++btZF0IHI+c77zo=",
-    "vote": "34:1,31,1 1 17,2 2 48,3 1 1",
+    "vote": "34:1,31,1-1-17,2-2-48,3-1-1",
     "honestParticipant": true
   },
   {
     "holderId": "32",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAi10m6aK0a+hVAzzu3R51AofErD4EFosaOB0SUoiP4aYr2rpi/iFK5yDcqd+7NBd1qboD2CsB7ERy55QWYkzXWwIDAQABAkBACPhVR/aA0oslZr0WiuUW2Y1r2z8DoLzWZb1CgQ8jjgcs1pH9HODfv6oX/JmWdbkt7eJ/I02TKiM9r8LET9v5AiEA5RHKbToehJbP/Q/XpvZ7OzMEcMk4q2bjbM1cAHKDt58CIQCbv4dPct3wR4Ve0XrO0YWeMg+F8M+p31V1ZzCgTas2xQIgOuUyGJdC1XA5FaWHGsRwtq3NTHpP+bHAc27xYqQOvZ0CIQCQpI9FeagkPkfehy1GZc9x24wPGFXDrWXwYqUGOxuHAQIgcpxo6SePpqfP6464bsWvd+G8evSNE5vo253Mw0FbZnc=",
-    "vote": "42:1,32,1 3 11,2 2 2,3 3 2",
+    "vote": "42:1,32,1-3-11,2-2-2,3-3-2",
     "honestParticipant": true
   },
   {
     "holderId": "33",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAqZdiJ41CrWRTa73urTw8uouquM8uiI+o25kHVIZw1JlXbJwnCEkL7GfRT90KuCSd8p1d9ZeN6TrgSoqgg0m98wIDAQABAkAVYIyx2Z+PBbdyPFXKpm4tQY+6jfsaoakyTR7ca7nrQlg5YpNyYr3FNCg2yNWL7l/fpO11EDGQ0vBkiLd6Cx7ZAiEA5YAm/Hipz1JIzzAIQOCP7CE+n+2Wq7GIQ2WWXDVcn2cCIQC9LFz4FMaeb5tC3LUjcEQZKmBpnhgLPxajevfsVYfxlQIhAM12wvCLUnOi1j5vYSQ8J32eccOaYKcMBNNZ8phQycCHAiEAg0XTxft00OEV1tIdiNgRCX2UpfYlLTi8VvmwLXo0+fkCIDtYQ56DuAVA4zgruQ3Y4vBe5e6liknp9LYG/wRcFFl3",
-    "vote": "16:1,33,1 1 8,2 3 2,3 3 7",
+    "vote": "16:1,33,1-1-8,2-3-2,3-3-7",
     "honestParticipant": true
   },
   {
     "holderId": "34",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAmRLDD3ljTvHHfAlb61Yzh1p1IJZl2JRwxZEQeUG5gN/qknSHYSg8wxehpdsTJnwuJeAwbxiDW+cC98HzwhIA1wIDAQABAkAOvY7JI7Bbfs7t89zFKdTmeOCEldcS5yCA9fo3IwwhC8haNpP2RFEI4Z2eHeETR5H2Ay70U17ou1G0ldCqZM6RAiEA6hnTAM3MM9yAjXLIGKzJjxTPaJaZhpOifGEoB5pwGd8CIQCnZIOVEDRZ0W4MYamBBSGDimMLxRfdLb/xzZXGVzHoCQIgKAvQ36NU2k5PI2NOPYJZXIOX03Fnw/C/a/2Gxn4xzQsCIAIS8L5sEPn76k0k+KCsm5mxoUCIFJ+c7X/leDGY6vlhAiEArGw76j5iAvpdiBaj4mqOXW4F28zUpBmUHMOj7J6WXVY=",
-    "vote": "40:1,34,1 3 9,2 3 13,3 3 8",
+    "vote": "40:1,34,1-3-9,2-3-13,3-3-8",
     "honestParticipant": true
   },
   {
     "holderId": "35",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAspZnGsntAyt64gkH68kdbehAHUKc6Fl41KNdGLT7HMZmgN0Pmp6dBo9TA8bB0XwAv0eZmWaN9Os0xcmPpgWmxQIDAQABAkBABgmKog+VTlYsiL5NOnmReGzb0JC9/62A1dw/SkqoIqMqhTZV5gNYbZcz7cK9VSCfrtCGcmyF6ZGUagloR4ShAiEA22Auw5phGz8QAD94ttUbCYhbrHlCi1jTS0wHC/u54f0CIQDQZvz6XgzrWF7TIxbIR6kFXtQglY5KGu6W2hhPlEauaQIgY8m9m+Y2c8Fc0vAMRgZr9QscwDisZ1xxSJf9wJqxtDUCIQDGvRAPKtWjMdjr/JBjWoNDDdW5ZSYWYWyaC04Xxc1J0QIhAMMIXtH2o/Xj8px7DYNKNSWJUBm6U9cIwCMrtgBzvHmx",
-    "vote": "51:1,35,1 1 0,2 3 4,3 2 0",
+    "vote": "51:1,35,1-1-0,2-3-4,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "36",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAqINJMc1fC0BfcQ7y1PTIFkzWjg1ofwlC2uQQaHbURocdzBSddVKdOAKCjdhAbU3t5DcLe2LACbTPlvliPqLK5QIDAQABAkAZO/+7+3seHjesoIZwqW9FF6CRiSR60ZI3YSur2Q+Ut+xzNuu4befj++HdDBXvppe0kVupEGlHXBFrIakWdp3JAiEA6eOTJ76KVGnzykU1/AsvJAF5fbEkODKZ4wr82a4BNicCIQC4cYWBNVuANnTSPYXcXMj8MyjPaMnDr4Zf6phprUfKEwIhAL4V3dAMVIJche0bKM/KCyr5I9Mad7RQs67JjEwh1gw7AiEAhO68q+1K71NQSx6wVaxB5xLwPNxnXrQpAwRPqQqMjSUCIDSRdHzQGQ/BtaEGV8XYMn3NiTQ91al2m8LVz2C9V5uM",
-    "vote": "3:1,36,1 3 1,2 1 0,3 3 0",
+    "vote": "3:1,36,1-3-1,2-1-0,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "37",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAi+1eu/XnGaE9qeP9HcUdZqYG4F5IX5rYxIJEcQyXdWHtj68Xiai/1iFL2NRem+uptyph4NxzHZA9l9qXdDy9sQIDAQABAkBfCpGIFZQswmpB1Mt9xv8bU7Xj++YomeKWRuz55FWTsjhB2Ufg/++ZJb0rjWu/6E5oF4XR1CYx7ez5pBtnZTpJAiEAzg0RhEb42WM/Rf2mZJhAwLpRhbTQpqLUn8+me2fMiA8CIQCt2NlCu78o74LI1KSfrnXiU2N4nU5z4/yqm/jeRjKePwIgDDbwG+RNKi3c+Vww+fOgmwwwevmeCNLMQfEAUH51vHcCIHqrXQK9v/F+r+ZORat3Sy9ccAAX39fes9cfH8iX9/e5AiAPXdj3Pw0vCmcTmAiPyzoqakiw6j+YIrC2zn5wgDvIpg==",
-    "vote": "16:1,37,1 1 3,2 3 0,3 1 0",
+    "vote": "16:1,37,1-1-3,2-3-0,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "38",
     "privateKey": "MIIBUgIBADANBgkqhkiG9w0BAQEFAASCATwwggE4AgEAAkEAiADK+B1TWJuXHHznestAEuBcm+q3oKOFc3uv3AqVVV8B2y4z/gS+cqmmc/yuVORMo47yF7z2RfDNk2pKhympywIDAQABAj9GqCLKxHGIl0zqf/nC0dV3+Rgj6M19p3atiJTUvKrYrsC9AUOIpH3MwNjGxEshMaDyxJbaKpsrh9peMNzZBLkCIQDKqbxMJUIg32V/xl+LqF652UJ5TU7A/xlLydwycM9uFQIhAKvL5WPsMEgINW7NJ5ZcqpwkAF6TFMjW8Hw1QpUgNJBfAiB8zDsU1Ni873RMU7cghCUY4u3pTq7RcAV+wyZitU825QIgaY323IVDSQ7aHcEpoKZBIXyxSWqfa6M80WQ8C7pk8YsCICQvN2qy0eGR1NwIxcBlAaDI+qrR7cBDqlpp2iWuSQAf",
-    "vote": "13:1,38,1 3 16,2 2 37,3 1 7",
+    "vote": "13:1,38,1-3-16,2-2-37,3-1-7",
     "honestParticipant": true
   },
   {
     "holderId": "39",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAg3OcbHmZBDz5W3R/zeP19IbXotYU/QUUeSsGwVBI6yCX+imA5vwVzvvn9gBcHBSPlNdviAddGZVJ/RZH/TaaFwIDAQABAkA8Gsq1Vsw+gdrKlHQzoj499sH2dMjYAFCiLqhCEAGncGv1ylb6G8gLN2Y8LIsF1V8GR25uz0vrUhiZXHQRymfRAiEA7/K6ZsfiaDULLgnECGZam6Nf59Y9L0pAytEqscim2HMCIQCMPs6oW95sJz8fJOLjc5De6c74ZFLyRuGCKo+8srQizQIgKIxpSaMvtJJ6MC6ATTcWysRiGaiPsGUo691LDL4uy9cCIE0mvB9IMssCqCnk6+A+kiLfMtnYrvzTW3l1Go+vK4O9AiBOVgPqkLF/QFGuUlAZJ4SYzThq+W8X72EXX/jxN+/6zQ==",
-    "vote": "26:1,39,1 1 2,2 3 0,3 2 2",
+    "vote": "26:1,39,1-1-2,2-3-0,3-2-2",
     "honestParticipant": true
   },
   {
     "holderId": "40",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAjQB+MlLFuHaxh9GvvbaLZeujJ2utb1TunUnabs6o0VkncNKauLUvi+eLDu6lb7LzgthAZlYdo7ZhY5lPNnuFfwIDAQABAkAebjzOH48MgJFP/rEvAHaVSIWtvE9x96KHz6iUwYUtqPz7mfj/XBqRp+/bQJvfAwgfQAKm7walJaEQeUOj7wIBAiEA3/OH93hz1O6H65xLZvQHqy5zYekULT9qa9CUg42ZddUCIQChLhtZ0Kt0bdW/0xBKpyC6Y04/Fmv5Sytplyz5d1CUAwIhALbLe7619a3m6NCaqT0mkJ/b8VgIvGxWZ9IK1T4vtQPlAiANwpztJwZsMzBLZx598RS3NOEqO6TOLJ+xLQnW5lvHtwIgIB4OVe3dVoUe1yzQXnwDpuik42LuxDkkYQFqErQjmIQ=",
-    "vote": "2:1,40,1 3 68,2 2 18,3 2 2",
+    "vote": "2:1,40,1-3-68,2-2-18,3-2-2",
     "honestParticipant": true
   },
   {
     "holderId": "41",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAmrX3B9VdqUqJHQtUDIGNAyNEF8QpY1djiqTqAoh7ipzO88Ia9e/YFYx//s1jG53voPPDg8gt0zz9npjp0cwZjwIDAQABAkAstWclCWDeul5zWUG5t3qDrJ5R6+s1/RwUBeJmRwDEpmWirogLO+gJUvFECLgkKcCTG1eaCNByldRvnMs6PO85AiEA6TlVkzyc0F+nY6Ddq7UQ+sdbPyBbb3blMF6O5fNXvzUCIQCp0cd6D7L79ginG0irgdRbclAYuECak1qPF7btguM6MwIgYWPOx2AtP5piBOl9B6HhyEcNZGv3orEsfalO1NlsD+0CICtZIjs1MLICXrkRTN6CuItTRcDZn5wViyNFoWtFYu1jAiEAvje7GCDDFB5pLFX6wGuXQHAbq1N3ZaE7JALTzERp6lo=",
-    "vote": "5:1,41,1 2 0,2 3 5,3 1 0",
+    "vote": "5:1,41,1-2-0,2-3-5,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "42",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlvMr0qKGI4EGSxaC/uBwXp1riWmnUqKrTFzFE2ReJLoobV9tzG8DddBUyk1KelijW0NQteS5upaOoLw6RgJD0wIDAQABAkEAk+hCEGpftXo/iGPOh5+ze4IUVNjJsxbhcjmUgaPe+2xHlUEfH//kQR2iAv+6M+pwwAwXHBk29bZCVFtyd5rZAQIhAOQ/2jpz623Mr2RdBtp4H5oaiF+mJc9evzHC1TdJuozDAiEAqU1o7S2XPsgnBKTjdG1c1SmnG6MWUfs37sORcvqyO7ECIAf+MG8xlgH/U/kIxO+rmzezTClFUTek0r80WnEYNN8vAiEAgfwB/F+NiNFJS8KBM+mnZa3mNEzhnS3hArs6V+nsn/ECIBrHujzx8ACBGvJ/dDZFiZSpIEbUUoquVFSNM3m06LE3",
-    "vote": "44:1,42,1 1 10,2 3 4,3 3 3",
+    "vote": "44:1,42,1-1-10,2-3-4,3-3-3",
     "honestParticipant": true
   },
   {
     "holderId": "43",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAlP1+VEhZpJivFZjf5CxBnGWTwDSOshhWji76jNbM6t3oAuNDBoS7yYPPAnrX73qRmIsez4GwI0bLXImaw0VJ0wIDAQABAkAzjadp2IMUPjTPH0/RbzLgwBEo/8akf2Fr33uYwjazyb6WS/+R2lUbvShJ2/UlCe9cZxvWCcvsjL9X8dOjuF2pAiEA4UPMDSZEhax8g+j72tCPHqpYGikoT2loIeoaePclkR0CIQCpUYZLoap2r30VCVmcZZxAltE93zdAb4kdgyx5r+bDrwIgIz3lFYWQIM2caVKw3EnWqjiCMg2QVeQqu2uRmq0nvm0CIAQW+wZypjptrLjIXAjCD48j1XQIIz6EMyyqUXWzAQDzAiAJkJbRFwpkwSBIUXUD4Xma4T6DmN25V1d9++IlnGchDA==",
-    "vote": "25:1,43,1 3 54,2 2 19,3 3 1",
+    "vote": "25:1,43,1-3-54,2-2-19,3-3-1",
     "honestParticipant": true
   },
   {
     "holderId": "44",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAgZFVRoRmUBWlEr95SN/yzgBISGqF4YpDs+p1rf6SnudfcYAHrvenipwbI21sfuficKnXRgT1UdcHJbdtTGudNQIDAQABAkBloGTOptLJRfDwP5cV/fIoejg39LWGLjjkSaZ8Dw1Z7OtOHbxpr+WdSW8pmiKAeHYI3R4agk5k7ZxQUTCPxZaBAiEAt1huzLc59eKC3wY7+xw15SVHWkUJzkXj84L9b19Rx+0CIQC06WRdz9GJ1FO9TdpPP57GAhS+RAMOd+tXYEijnwVxaQIgGisrFVkJksjTuRVgtkSehKg/eOjlr2VWVcladuz59TkCIQCzWWnp4tv9gySdWHAj/pNeA7Qix/QrxNDoJ4j7xOu1eQIgOtu5S54UiXvMvdAKuNfjaFpJ+o8cyEpbdrMlhm1GGGU=",
-    "vote": "23:1,44,1 3 39,2 3 6,3 3 2",
+    "vote": "23:1,44,1-3-39,2-3-6,3-3-2",
     "honestParticipant": true
   },
   {
     "holderId": "45",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAldrIu+wBjjg/3XnuyAlB0Fz/KZPA4CmAS5cHXSC/1e2MCae97U4rP6jDjW8GKuCeciBb7WwwgVQTW/WZM2vPyQIDAQABAkB6KqbDLSAHhavrLuCPi5xv9aC/kIkJNkw1U6bZMT2zdHg7DI5QAidb5tSTqaC4nv+Fja7cUrm1cJesJDNcuy3RAiEA2ZFUlwPmvVhO7KLiZ4+4HDnehcsdNEAKWN7dNeQfhNsCIQCwU2NhChlUuptnb1b9xgisXPRJ9q3dzKvQi5DxvzItKwIgHqQ3M6WbA6PCSdWO6WL2XRNRYap/jHJQgr+wi/x66+0CID0xM1QCBTh6amRDJ5V6nJf0ynLAwSYwWZBOX0cGa4txAiBr4v2gk/8REGuKDntN81q5STUgxHc/IbT5HBxqmmpS+w==",
-    "vote": "38:1,45,1 3 4,2 1 0,3 2 0",
+    "vote": "38:1,45,1-3-4,2-1-0,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "46",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA2LX3z+4hAmEZWIWhsc0s0FabnBZpbcBfw6H6h6pZC+90ha1xDPKEvC009ImhRGk2rEJBmQ1uyipSV32qmTyhowIDAQABAkAaIf9rPJ0Qa2MiEKNKDKLt0LPdI7q8+GjT75GFkJ5CWPoDamm56doXAWN34jq3lLyXqBydRE1diO9wN+NIXkbJAiEA9/HtAkvtiET1q/2AO/a8vAjQXbH13uTMccw29Rmp45cCIQDfwEcmR+JbtH0RIqWr3Gn4meYKurd29XTHmL20KXSD1QIgB7un5LZxhhqAfwi9AyHC6SptNT7jqDwClFoGLMbMIakCIQCmRH+alrhCZTC61wA9YaDtt48WUgGbSHLrDzmI83U9sQIhAOSWdPJcPz8rMLOYntvbY8w8UlpbxFyyMvCkihJ4DMM0",
-    "vote": "15:1,46,1 3 17,2 3 10,3 2 28",
+    "vote": "15:1,46,1-3-17,2-3-10,3-2-28",
     "honestParticipant": true
   },
   {
     "holderId": "47",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAhJ4pr5Hlq6hQopzZNmvxmyHcr8HlDdABCkC7bvDnVZbwtjHUzOiBm6L7iPh6rMz49BKbHhVi/6tRgAB9qgTrKQIDAQABAkAgLj0RVIb125cNjqAK27C6I0JpB9TsQCAwe7q/1gdctjTVtAhui+YD4tq5GPqDM6n0lWUsl0DDPq3m59Z1DDmBAiEAzvvSKbcmXMyEwnB7r0Sh86/ex/wOdByks/HrXWsOWDECIQCkBfx5BzunzHKtYquEG5bGe1jeg56yD+YYkDpKGf38eQIgMmzK8Hq8D9OLbEs29qYDxnhMD/BqHQN1ZJlFO8b/AaECIDC5RoJ9T49NAFPZF7Iqr+NOCNwwpRen+WYakfYpOnWhAiB35VQ3AXleyzXNwNjNdXrH2kavVoFdZoqN1Sac/20Ozw==",
-    "vote": "6:1,47,1 3 52,2 2 1,3 3 0",
+    "vote": "6:1,47,1-3-52,2-2-1,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "48",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAoV3ShWQr2r9iVXVAQqe1Ti8P1hW717Buup50zP4UhnnnGW9ik0lW9C8JtXls7gHY0NXdrq2VOgnd6KIBoJeULQIDAQABAkBPVc50EJzTDnctJtlyK/witVam3cads7us+szYIC89MZWKRel58/QnA06u6nInQaABqIMPyKIzkRzgOotIRQbBAiEA7fQxoJFCUR+Rvx8O/aNOjHxqkPi4ed0zTDFDiKutJBECIQCtmrTVXwurepGRF0LJucJYGilNO5jQ/qFZZgP5MUvaXQIgEz5QVR/qMQ1QiBhG6hQu4gWdyKOUp6ZP47WINKFNm0ECICUYjdOaP7AgvMI4KjlYzEJvNKwgNANUpb2ooui4s/CxAiEA6/E8RWOo0V4OGzyeAq/HJsMsTv3OLy3wNUTy5fQahjg=",
-    "vote": "34:1,48,1 2 6,2 3 5,3 3 1",
+    "vote": "34:1,48,1-2-6,2-3-5,3-3-1",
     "honestParticipant": true
   },
   {
     "holderId": "49",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA7rMXNRci1Y5/E56hV6eklWe2iT4N2+ckeUt7CUqfcbDRZUHb1MVHsA4MhX234XohEn9qRJ1hrT1Nnza4ChL1PwIDAQABAkAs7Eub1ETcCDtmR955jrVs4N37qlAVaMT2hvwa3Y5waMeTq8ht9jkr/sPMgmkAfyKtFdgxG5QYPvOp6Bm3mZLBAiEA+GCD7bPXuTYHnXWZQAVrc5NEvdYa7yoCPGP0WeP2c+8CIQD2BopJv9HNsZwrVKwbJWenTqZzqn+EPdf7VlRZlr8DsQIhAO42avGkhaZ9ukn7SrLLP+YF/Wzwlr6AlMpktysrZuiDAiBvA1x7ErcU3cPeOYK/bQ1sjSzGnHSVs2I14yqEkmT2wQIhAM2hysgNEcLvXFJPvfvdAynNFNIzGcDaeERvSI/a+62B",
-    "vote": "27:1,49,1 2 7,2 3 18,3 3 0",
+    "vote": "27:1,49,1-2-7,2-3-18,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "50",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAgJpFXDBAmLz4Ee2y/ioYFFJUqnlf0xDSfUCdmfuVwRAk0aYmS6MjylKjxJNIKOwR5DqYTfNlpt4DDxc9GSsTLwIDAQABAkAfqdw5/odpE93gTC4t9h9HoZ3G+2tkhFfPDwG+z/rnNb419f87CvS6lORPLJxjS175WdrSuiuvA6vWPFHWMEjBAiEA6N0E4R387s9MS0mOxeeaiZiJls19XNUp4XQHLEfR11sCIQCNYVWrddUr4Z1mQByRO7zfKWjZMfHOzCEcf6UyaX5PvQIhAJFMn+fL63Ajn0p2+oRYcKAcsvWLAQc05y4LVRJ3OeNzAiByt2zlIEplPb8SrajAa4F4bkhGHBGB4/5l+mjXu+Oi3QIgHdpQiyPII+dD3Or8g/RHPSQ7OcEb+3sIH9xa3+g3iVc=",
-    "vote": "24:1,50,1 2 47,2 3 47,3 3 63",
+    "vote": "24:1,50,1-2-47,2-3-47,3-3-63",
     "honestParticipant": true
   },
   {
     "holderId": "51",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqZQ6rlC7Hm+tv/YkQRmSOy8mO31Wj0KsVMePlKqeFCEIstk7fBvmsjQdHvDNLDmfcdh35EoYbnwlVHvKtsliuQIDAQABAkA3+9uzmKttzOjLqvMlGtAQAezZTvO4sAY8pvVb20f81LB/b8YAHyYhL2txYNo/mv8C5UMbGkYaB3Po0ohQ4nWRAiEA6tY1SJKuVkNR1Q4T6yXoQC/p4EcJAvkCruQngUTbaXsCIQC43H7HawwWjugwrRc+T1S/sNHK9h7yGdP6q+MQR3FsWwIgUOvFap+Y0YLbFPaH6JSkZlHcXns74LlbslZOQp4umTcCIG06vB6Q/f+GSWQZopZKwcTSceP/MaHT6RFA51YDIN3pAiEA3qlBuPU8wCfGqh0QsRJoH7EO3tSgFLRHUGxr71ZGOak=",
-    "vote": "24:1,51,1 2 75,2 2 0,3 3 5",
+    "vote": "24:1,51,1-2-75,2-2-0,3-3-5",
     "honestParticipant": true
   },
   {
     "holderId": "52",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAvJp2XcymVvDiS1RxA6Ye3MkZtCFg61PqopxEpmT8CgnSroF5nozy/JPnhkzlKCwgsMM30QyIVQeCOh6JOiPW0QIDAQABAkBUV88vS2Hn53mLrouL0jJjEhvIjlTFaJW5eqDIuMhtxAlFKevEW1vV2bnW9Zh3IZhst5Y5LSHKvZ8BgaEJp5MxAiEA8yvJhCppxoqvi5/ObNvj9tIQYvFi5sXE+Nmft3L7VPMCIQDGjbJTUMlX1DKORtyIDJrDjCwCmj5ySbNx8LgY/Y2mKwIgIqfO5GMXCBCjzAZOaP09k+OEKlW0fqcY105MkNx2LTkCIQCfg3jvXGjVacHP8ff8SPwQ+8zjrl1a3gEPGdAdK56gDwIgKFNEX7v3qMx2kbvFx2f/UoE6ggjRN6NF5+kfLAvSf0U=",
-    "vote": "17:1,52,1 2 1,2 3 14,3 3 0",
+    "vote": "17:1,52,1-2-1,2-3-14,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "53",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAnl/DbCHMEk2GlITzC1sSQuf7qnwpsBzlCkSu/V2K7W/P2FXreuQmghkOJ79ZxCCQaFhTD7mahYAF6gDUnP5CSwIDAQABAkBLq3PC6Y8Iu7PuqGs75MKf5xluxq5gcB3bPx/g/N3RPdTN/iEm02BLodhRs6+EWaWnyFk/jk3ZXC7VmiVzaW4hAiEA7/g8YGkjBpUWgzfgZhy/8PYy8n431HVG4gzn75WGqFECIQCo9CWNSQhuOxnxAxVVYjgpgrF255lKlUV1gZKN2Vu12wIhAL1GYvj4dHQArB0buZdRHeQFjPHPtGGTjzFFVLuYiPnBAiBGnRwgy9hxMdRqze4ZrJ5qgwwm9S81Y+QO86PME39oJwIhAK/PXw6b7WPr+REErtWwkvCFpW0dLiHXF72WJ+W9EzxU",
-    "vote": "57:1,53,1 2 1,2 1 3,3 2 1",
+    "vote": "57:1,53,1-2-1,2-1-3,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "54",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAtqhrKtt+BW5vqGOB8y8rL1MRPewfkES4ntKPJXbJ+NiDm17KbulnZeMRKpnC9zuoo9uQQibFQwQU3uW3ImJ7TwIDAQABAkBcpsNtgtbCtIkI1ijFjQiPwcf+K/a6vFEVpuKbc0zx3ytyJ7oi0mrg+F/UAlVjR1SqJ4hzaseQqRDO0R2kef+xAiEA/fuDJFYh4Gg/Bo+dxNqZ9CNQxMDcg20gXVoTgCb0ONkCIQC4G90gCSxVgIPeZkNQpSG5it4VN9hYlpNomeoXdTr8ZwIhANIh21ie4pxV4388J14NNr7k0RhYMJmUGejic6vdjsXRAiBfnjEQ81KwMWfLeMcbOjgyufmvgWp+T+3NFKrsdfklnwIgQDuzTvIpPOTzRsr3W6++b24qpI59tz+mQGTw4N5kGMI=",
-    "vote": "51:1,54,1 3 35,2 2 6,3 2 18",
+    "vote": "51:1,54,1-3-35,2-2-6,3-2-18",
     "honestParticipant": true
   },
   {
     "holderId": "55",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAsFQ/mOLuM0Lb9cABYXcpHa1o86+xd1comV3zR0mhv4+PHImE8poE+O6mBekvQA/vzsCkeThX4fFoDlcFg45y9wIDAQABAkBNJI6uVJnh015oJZh1C6zxTuybsEHz9C3O60uD5LLfGzUK8hUCTuTqcnJwEGbAe2QBo35rYhcHadT5gxQVmwABAiEA5ZGfRNfrqKeu3K6iWKhsg2suUjLMlDPGG+a/PBGAvlcCIQDEoWxANTe5hQpiv0BZTHn0alybSPzivQTCH/MYFQ/MYQIfQJC0Oqh/nu+KPobfIhA8dLmwTW38G7J0BWTgZASIMQIhAJe9drtqFjHN0ID51F/VW7vZpNOVFMqpUZW5cDDieAmhAiA/IPJnLMcXZWxnuhYBvu+o+ctRkgGIh9OlFaGzCtr4pQ==",
-    "vote": "16:1,55,1 1 79,2 2 8,3 1 1",
+    "vote": "16:1,55,1-1-79,2-2-8,3-1-1",
     "honestParticipant": true
   },
   {
     "holderId": "56",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAgBAVL98TS8f8nvIYuArgeuPN4HLNMK6TLbxVy8FN7EjMeyaqy8gyzxFUpsoa69Ot/0ppTthgNHER0A6MFLqbFQIDAQABAkAeRq8boDupoOBCm63oZPnpU84qkDmelsdI+su13j+T6tONGfL9N2M9AwXeuTcXcrJs3sA0PTNO80NAIj25YqoBAiEA0hfeoQ6usd5wFMegLQxt/agXEGl7JOt7FDuy/wFAusECIQCcC58C2JY9wLXSbkOTQI2b/fWiZ6M6fUt5ip4joq/ZVQIgFZCbqn5+UgWaDZf8CgO3mozRaT7ahAyjwozqL6CqS0ECICjv34pWmaufp9OJu86gq8XVrSArAiZxAmDjXbNJlcp1AiAldmgcmsEFJecdBPaQIOlOdKycidBgzWlziP3BMS/wCg==",
-    "vote": "5:1,56,1 2 12,2 1 2,3 1 2",
+    "vote": "5:1,56,1-2-12,2-1-2,3-1-2",
     "honestParticipant": true
   },
   {
     "holderId": "57",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAi29auJmSDmEcb3BPqRYQx+0o7w2rUFW8CAHtVDctw0/189ZkZXvJRqD2dJAitqF1Emp+xQ2RvgdOIFNRX8R2wQIDAQABAkACmHwT26gAZIZm/Kw+9Y4yapPMf3Ck+jOZ4o9MdgqADEGv0x+QlDxIHey8aaIusbS+YNABGIC0QN0Rsp0M1/DBAiEA/AbkZu6/6JLO3EDV9/b6JgAVBsVf8wFh4CqvMc5cnG0CIQCNohLaRhgGZiNW+9VSIQp4LouGtN7DgmcKYSTOQ/pnJQIgDnqC4prysXTFp4eeAznQEyDMFHCAW6CHs+4f1HergF0CIDg9He1MHegUkH3Om6Lz+btFCCQiF75cPlwRvNKmjXx9AiAcAI9HBlIXM2mOhfrVPo67FV9rhHXGdtjNed7MgYa8JA==",
-    "vote": "4:1,57,1 2 31,2 3 11,3 3 19",
+    "vote": "4:1,57,1-2-31,2-3-11,3-3-19",
     "honestParticipant": true
   },
   {
     "holderId": "58",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAneBhHGlJ16Q5ufJQZnSHBPJe2WdYEdvif1nD89qX40iUmAhhag5nrH9q68eWDTfWlcCizyApcvFwFGUdFSHlcQIDAQABAkApsIi0UfFX6lv8CErG41qMKdx2GF4fSStEadXe3Qhi0eshovBPurL4eRC8/k0P0twZpHI/KCOMQml+9DKII/BhAiEA29Uqw9lwDoD4PKv4hI3jGUZB6WKXGImvYSRX+wPOnqUCIQC32cN2iEK2fmU6hrWBiMymKuPgoU8/Dtx/C4pYSs1d3QIgVnpb8WF3IG2BubRY9iQu40FtKldbYw6+zDMU3S0ZOfUCIQCpC1aZD1Lf/7nOJXyQnRsmknsy2L9HyL9fJVpQMn9AFQIgSEFdP3qzE8FqHEujveED5bB6UNsItk25E8YVA1RZ5Ww=",
-    "vote": "25:1,58,1 2 7,2 3 19,3 2 44",
+    "vote": "25:1,58,1-2-7,2-3-19,3-2-44",
     "honestParticipant": true
   },
   {
     "holderId": "59",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAp858DcfOb5ZsZ4cuQ3/zSK/cULImQgHKoW8XWJ+yZHoKQsJ0+RPvW0DgtYOwAePNrAjr6dzT+GQBVxbi2l/dwQIDAQABAkATY1QJ84/ybJrRy1iZC+t79nWqDStGbRaQWFmGL81YtmDqgLQndXh/lLDmG2l8LoyqCKbKBVKNtcAK8fA9SsBRAiEA4sWdJvNENVgGPn7O3hq8vDcMnCZ+Y1CcRgaKqUsJrG8CIQC9b0wHBM9ShbDQGVmMz8F6YTJgtmHvzx+TQvUPQeGQzwIgVjNoGXY/Z0eemAL7/9GKDMGgOXsob/gkbzntW4z6kGECIGW+JChU5gEdetSZ+OXPI8xV7dfRvRIuvXe7a6FRMhQzAiBsX0VLUqTTKCJ8cScj9rAr6GsMUTAx24e/girss1DlTg==",
-    "vote": "56:1,59,1 1 9,2 1 9,3 3 9",
+    "vote": "56:1,59,1-1-9,2-1-9,3-3-9",
     "honestParticipant": true
   },
   {
     "holderId": "60",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAlPeKkpRM53EVgfplsBFOMGaPg4tmQBZxtfdq5v08FvxH46jBTRxm5AyWCZRQkoFSrz1GSnKFDaNzmVpTO5NWgwIDAQABAkA8qZGEn1+x4BsiExXV3TY5/4nxx5KcBofH0jl2VylhMjk3hW57Gv+DU/nFc6gFOn8Cg4nMyX0rjLXBY+RhP5QBAiEA66DWkFhqTaYZzxMfNP2jc1944VTRTboHXHnjmaqDRqsCIQCh2KC2yGdA2uwNUX5+fTUBuBtziWWSSk5rF9nQ2IuPiQIgXZns4jZdNC9RfVMJSJGhRomciVaaNpg5qGC7KyXzNDUCICFOgmx7O3yGURPAlKaVP8ZVzBhvyx5a+l5hryqilb35AiA93jxKBBeF79H/YrV9qr6T4u/vWn01PwtQEkmVI7Am/w==",
-    "vote": "22:1,60,1 3 118,2 2 24,3 3 1",
+    "vote": "22:1,60,1-3-118,2-2-24,3-3-1",
     "honestParticipant": true
   },
   {
     "holderId": "61",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAvBJgiVEvUUw8gEZQsrvKkXyw5w6t5hvV/A+Gfr120Qzvc2raYSyVg2Uw31/Wlg400a0JXmB49Hie6JIc5rwFHwIDAQABAkBObFtU50WT4PZZhvifjy8o+5XIw5ZAHdtdABxVPSwOf158Ny0SvJufKOVZv2OlhmS732/F1D4E+SHMWtGkgawBAiEA8edKmDOGKLsTlPN91+99luNKC15L7scig9AnuO3/uXcCIQDHCAaw/7H7Nf2h5FggemfArswZ1EbdRpl9Xf4xngZ7mQIga7xbGJY59gH7oqcfMQDUqlLoM0/3+Yxu7s3SIya8cdkCIApVrVtFe61qqUfdvoG5OWf0654vuppEzzWGSuuyo+2JAiAh6Jxo+MqMWtWrpeqPxIBysaLlLYe1Q+OTuitjPi0j3A==",
-    "vote": "34:1,61,1 2 10,2 3 31,3 1 30",
+    "vote": "34:1,61,1-2-10,2-3-31,3-1-30",
     "honestParticipant": true
   },
   {
     "holderId": "62",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAkhxMcDY8r49+VPp1c6zn8ug0SQ5JyccHtXNv12RGgDLiKtvzyQweCxldw505lAeWgvDfYC/Tp2zB3Sp2nITqkwIDAQABAkBCtGixUhGilQA4C6BTjzzVyO0V7VACrrr2PB1zWHRXUjExM9SGR4VtEMdFBL9vZHUMMQkq9LB5+7fhDmJPTG4BAiEA3+xvboua9PeNMoNrFzaL9qF23zk8tcwoTVgaLRsrntsCIQCnClwLLVJlIrCvCMk7YdSSDGkdwanHNhBH6yLgYxrkqQIgQNtUcypQWX+SD/1seS69X1PpAEKtyOI3Eh/ghQwHmF0CIQCMwoQRvx1hsDvnI6Y/bg8tC1xBAQNKpdpOYGzBXYI6EQIhAKqcYbuGlLA/QU8sIRNDXoO5OO71F8JhGq3QeoOsSu+S",
-    "vote": "55:1,62,1 3 10,2 1 0,3 1 8",
+    "vote": "55:1,62,1-3-10,2-1-0,3-1-8",
     "honestParticipant": true
   },
   {
     "holderId": "63",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAufvF/oJQ0mQrpgTSp4UTKNGLsslHnQy20D6x1DWE4LzUVN07Vbw/Jie9pYWEFjmyqaesBKC5Gunj62fCKL32mQIDAQABAkALcTH9NodCamdFD4bmR4mmOT4fAcMmJmIY7cKDC8fhC6IofwY57C44NkEudaXrbdkVMzg6j9JfPoCNUgqmHzMBAiEA4HcMINP9tRGF/oHBQzKAPtBK779lOB/mBCwD2F1VI0cCIQDUHLnRz9BO4Y3ZQMsWJ4x3uBK9bVswyS6NuiVwYypHHwIgZttGbHiX5nP8Ma6lr7QhficWX5wVts0vKrQ8otXJ4JsCIGi5ahEp/loDyMob0Gk2y4aMTkxSQrS6j46P+k4b19LXAiBZWi0xsdPk5IvWyVgb902a7QV/fGGtbxhogbXFrw0Tgw==",
-    "vote": "57:1,63,1 2 0,2 2 0,3 3 5",
+    "vote": "57:1,63,1-2-0,2-2-0,3-3-5",
     "honestParticipant": true
   },
   {
     "holderId": "64",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAxbO30lpnFB6OUoCCbAdi3JEqRFKgKQ//p7+W7wF7QJRRXDG1hNWmI2qx3tDUY77jFb7pwJ/KRVNNxCv39E7q3wIDAQABAkAoV3TSEqpn+5g1E44JdzRgJ6sFSArwdhhH5Ztp59Z7pau/bB+RCKqv07ce94TO8EzUV3kfvTc9HiwvthtEsO9pAiEA/ZqIjN67i7/WLjf1jPZ2qgwsmWTTq4DzBvHbGMFzieUCIQDHkfVxrTMXEVpguMgGgQkhul72nKXCCCJ1Of0yr3SFcwIhAPKQSGNU9tVoG5gBdh/p7P4gvtfJFJxJrinKUuGOxs/xAiBqVvrrFLgZfZSj3zIuTQl5oF5DmBq29jCuODUTkexLwwIhAOqWfk7Us5Wggv5oHTz5yr1oVGspWNrDDONGbIakWEOs",
-    "vote": "2:1,64,1 3 34,2 2 0,3 2 0",
+    "vote": "2:1,64,1-3-34,2-2-0,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "65",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAh7VBNtAbtjChyBFgtDH8Zr9kIFY0mIpYMxt4i3CAVQuymOEaalGnIjrf6ZRRwAO6gXbLEkNlgB9c/unV1IwRowIDAQABAkBgiVOmxkuwQtATHimIhbZi8OstBaXMjT1IvdX2e0UPOXk5PsZrN2SGMvODsqV7CHTkh4G5fT2taWbEhqPd6QoBAiEA/XHCftwflahdO/3v1qKF8xQvAD1htJYx6ZjZXuAcQMECIQCJE5Ik+njiX+2fDTyf8ORgicngqLztMVF6Q1onjInHYwIhAI0+1RI2QzP4vN0uTHfl45jw6rDLhKRMAE0bbik95QEBAiB2JLUQRAUOb0mZjUoUPAZKIlgp1qVG9fvYmdZJQfq6KwIhAJ9KAhqCnI72mie94eT516EL76idQp8dvNfCO53Ao/kE",
-    "vote": "36:1,65,1 2 69,2 2 27,3 1 1",
+    "vote": "36:1,65,1-2-69,2-2-27,3-1-1",
     "honestParticipant": true
   },
   {
     "holderId": "66",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAjXwrZpMpHaIrpHzsDLMxE0YLTECf8HNDCm7/PdJmLaibfGVuHjL4evyIQihubPJzm3m371m4zOrdsi+uRnr3MQIDAQABAkBiyPWMkuc8N4R9PnOZkmuLZ3Zv8Rc6zV9bo5A22/ZXnbeDk5Wm0Az33UN9wQN/0Ufxv7is2gnfrWOyJEPWGda5AiEA7L8dRNdRpNiLjIwDl9MJ5q6QTkLb7B7+r3rGvm8VswcCIQCY/cg0aHMivN6B+jd+uhtZ6zlbo6L9G7dTZq9XD4XeBwIgOrZmztTLZaNicFek6HkpAnGWTiJcoiFJrkE3mrC34+8CIFxRNw+4v1EE2tdfn0EPGBYIRJIxidZldRgUbFWCfmrdAiBazA+mWJjZbI1IL0NaGhGY6lCTHNWF0p92Jnao4Wv5rg==",
-    "vote": "21:1,66,1 3 22,2 3 20,3 3 18",
+    "vote": "21:1,66,1-3-22,2-3-20,3-3-18",
     "honestParticipant": true
   },
   {
     "holderId": "67",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA3dhKy1jlbn5ssOoULKTYN9dITWiA9na+2HXhM3Jh0vHSyAc9/ouiDh3wYigP9+uT1YarRQR6+JPM9/irH5j36wIDAQABAkBCZpr8gn8ps22VBntDYZPWIvnhMYZoPuKgp6fgXjwphumG/xcwpYW+a5sYOSSEf9SvvCAT/JLaMjG3bHreSAwBAiEA7l512mlKTg7bxkEw52NCBfXyD5M5D6e/Y4WYTOg9QtsCIQDuQPJM04XxY0KqtInI+hY5T7NOOZByHjtofGw9gGdEMQIgE/I7kmc1HIsJwPE7kmEv6SfHdZ4wLCsxTLalI+pbFfkCIQCTLfHAfea/cGcNlwuK6NrzuoV0rGDL7lsat8oR0BF68QIgL61ova9Yl63l9LGoIfb3TqQp4i1Y496omPsAf41T7Jw=",
-    "vote": "50:1,67,1 3 18,2 3 5,3 2 23",
+    "vote": "50:1,67,1-3-18,2-3-5,3-2-23",
     "honestParticipant": true
   },
   {
     "holderId": "68",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAk85gwsMwHDWVBChP4y8o4INsqDE9YAY8z9uQGEo5ZnYCla7ygl3tS5329qndv3+iKKn+nxN8yalpb994q7cKbQIDAQABAkAhJ8FCzyACo+5acWSCNLj5q+F61RjMannHspvfJv87QVHbB50SSwMMSPm21dyYjsRCRVs6MYYP9D/bQzSfbS4hAiEA9kwtOn4nSoJ0Vg8ivnZVR2HYXml4AZNCC8yUBjY9I+kCIQCZoPNXi7Vm+1BbVvLWGxUPjGb+GE3mAL8Zhg5PL1qz5QIgEzNLD1VIUNmsogzaA4kMCt2I1YtZTJ4jNvJC090klQkCIA8HQqa+wPkY/oxg3hJ5xb6monCa2gv06LzLc1zlqf7NAiEAisO9PMrIE+0RvlLPNbGEpzh0PtoA0RvRyw0uKTgo1pI=",
-    "vote": "33:1,68,1 3 21,2 3 0,3 1 0",
+    "vote": "33:1,68,1-3-21,2-3-0,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "69",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA4IHmgTwK2Pvj5JNo3cOXa+8B7+MimBm94hAJexXipdO0UXTdBpOkGblxqh2C3C/dU5AssAYO8ZaHD3Kn26/z0wIDAQABAkEAi7qtkR+ijLvxcbEBYoy6cJXX+cq/HDVhRhK/I9lSL+wx6i5TRtJYqt5XltviQEGL2+2xjBMwxHjogpiK4mO1UQIhAPMdNML1qRHPY0zvbGlGGn1fNmRJ4lYgPKbDV0ishpgpAiEA7Gg43Mv/64YpRAigb5nJqHKrGb8Mw7v1IXQi3m2pm5sCIQCAuNoS0BewwmoFdk+kfeXQs/UMrMIWcAMtGQjCBfdN4QIgJMPQlAXltusWX843pSN1iQzMLyTXB1mjtaAqDA1h4yECIQClXwJQ4OSxN03lgwIt+uHyaXpaF6BjYlCazyc9i9CrrQ==",
-    "vote": "2:1,69,1 2 5,2 2 0,3 2 1",
+    "vote": "2:1,69,1-2-5,2-2-0,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "70",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAv8qUN4I+RtK25my0kPXFnFl3voc7fI9Ns+js55Z/aIoM/2+DWC6gYVTt7oOHxgHcoYURKQuqirRLjMfMrQeddwIDAQABAkB2NJz1OUi4zdX8XrNLRK7ulhW/UAnR02DIqZ6ZfaA5BQqWdYA0RGA7yt9yqWqSvNGNRgVMWVHvlc1icYPwI71BAiEA8i1NpVXglz++/QaHK5fOXEfiTaTWnn/bQZ/zidzjbyUCIQDKvQoLlHPu3ayvqrsfaW0fpWOSRMlQVW8Jq4fPmue1awIgT7MZGpBomV4hPKQpV+9duoDtuR/GgeMSBUben0BSmQECIQC+xqB7QRjO/54ON9SZvHVJQDKwYzYk+B/is5y7CQNdPQIhAL599xtzZlCGQO08CTHsURX/4nfdZ2OrLI3DVdoJWSzX",
-    "vote": "26:1,70,1 2 16,2 3 87,3 3 17",
+    "vote": "26:1,70,1-2-16,2-3-87,3-3-17",
     "honestParticipant": true
   },
   {
     "holderId": "71",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEApSjPURyljhTP0tpDfvsHBuo8KCWc6IyvKSNPeZM3Q3IqcRQDNk1kO/VPeN+gsWq/lRU2kIABfEmPlgG0CfNepQIDAQABAkB09H5C+R8/ivtUXB2Z6RejzPGGmIQRpbZQUmHwPNDQn/vNCxH17SOXY4OWnh72KTPAH6+CRgVO+RXzLhGYKQ5NAiEA8jd3ppKEIPktB78RmFFduquWxHBdesDvuaNLPrpb+JcCIQCujsw4XCWpSPn25vH74pFuCwH98bPMBqk5kv77CFzuIwIhAJlgDDD7GBW1ExGTqLWV2E8q9lY/fMINR/956ly3LyPTAiAh5Uy2rP4LL0aKsTHQDaDb03thimu1dJ2rtmWY7XjOLQIhAMM5EpR4XqWtO13OkJZFi+XouhlfSuxGnDLeGj5Qcx5n",
-    "vote": "21:1,71,1 3 32,2 2 2,3 2 6",
+    "vote": "21:1,71,1-3-32,2-2-2,3-2-6",
     "honestParticipant": true
   },
   {
     "holderId": "72",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAn/wyH7LEoJsPVAbBBjg3hfFkAbSW0N8Yz12pffLX7AjECXBghcJtgcO9V4ETF/4SNBv+C79YgW/kUue3xAzPrQIDAQABAkEAj4gmvBOZnvGejedFU7wp7CyGaZVIXXpaeuhwAMRXfbVr/uUvwTO9zkhUfZ9x8gNK0OhtucdcoFBi0rpwkzszLQIhAOygwHcFdK7rMnou0IXn6cSpUlMgTf2OLE4xe00Qk1fTAiEArRUqDi1ieCUwi1xlyYFw18DktjMtpj2K5kBvhjKiCn8CIQDRVd0u7lqtrFD5mpTLAcHjQ1AbTgbw+2fivQ+xu6o+FQIgTfDh51B4rzHQEnGhRISNlBrA42tYeyvriJQrpHrYjXECIQC01iIhwqr86tYV/0UChTalWq8NIR8Wta3YO1wqMCOw4Q==",
-    "vote": "17:1,72,1 1 60,2 3 27,3 1 0",
+    "vote": "17:1,72,1-1-60,2-3-27,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "73",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAntTVAmqMlNuIA1gILf6WbB3Qx5qCIEBYRtmn/lDMIVaNyA5OUPL7kT/thkSa/Pn7nnpHTcHNpEO2SCKMKwLBnQIDAQABAkAkbjzNaRMFsbToz3BQ3Gw0MEKLBe2C6D9XQOU/d9jabFsSMFgBJOAPgiYpLRV8C7sTomiHUTXToi1sbircMOIhAiEA25MXfaWWtd1x8c+ETf/TG6fnHhOKpjPN6e13Ml/oqocCIQC5LhgFXrV9n5pjEMCYlZYzN+C/nCTyON+BLANgKBeHuwIhAJPPJ9AQKS0R/gNOs3yiSyVh2KYZd4s8clAX59aEU6Z/AiBmkY1kjAzixCBzdrf2zAQh4nVuLEKal73UglhsTkiaOQIgMHCYHOf9SE8Z/vLznyBxgAFwGlvnwfxdNlGAYLiOjqY=",
-    "vote": "42:1,73,1 2 8,2 1 6,3 3 3",
+    "vote": "42:1,73,1-2-8,2-1-6,3-3-3",
     "honestParticipant": true
   },
   {
     "holderId": "74",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAgpwHGe8beB72EhRhpi57P2jMFQBiHmkLueq40RJjeypsnQ+HBjo8OBsupFg13cQvu+GkUdQysx/fpRVgx4syYQIDAQABAkAQp57MMs5Y6fHM6mZtT34N3uovP2ZDpHeHVKQOnP6shNSgk5rzXxa1wEq/JDGF4ufkAh+gukJYGNMNcye0METlAiEAxZJi9iLIsnzgVpPZyIduj9oRrr15KZOvGYBSxsD24BMCIQCpPBvPEvwWrcBTzvjBROv6Z71IyIbuN1RABh7swUH6OwIgNxASRpjxKFWHTHnOU4XzOWJEVVf3IbBIN6o856m15EMCIQCJXpZAHuvrSLxeCxnWX6igyMZXpxYHlXfYxF8j1LdGcwIgDq0Ik244AOjK3YH06GWc0wDN2KmJ4Qoegas3vFi3Y8Y=",
-    "vote": "37:1,74,1 2 31,2 2 2,3 2 7",
+    "vote": "37:1,74,1-2-31,2-2-2,3-2-7",
     "honestParticipant": true
   },
   {
     "holderId": "75",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkbgjtb41ZzV/kTxUUJzbbqxCiiQUoH6kX8RadHwl8n552+KTJTN5c/hnJn5Qi3b0DllMXsparSXFEkT+lq3OaQIDAQABAkAJl49yNTUauCDPlKMQM2MWY+x1X26kKfH0A97YcBunXKWmzbfYrDj2Mz1Y5QPxs6QGj1EEm4p4BtDkUhywqdABAiEA+vjJaMoI4XUVvbDG7ygtu45x4aUHxDKIHOa/5Eor5QECIQCUo4V8GxLCk/CTI69CmzXkOPhp5juzG3lna4yjc2fhaQIhALwz+QXmDAbWgLlBac1KuhDeXzQxR8OviTbzK4+Mt6IBAiAR9wWeL2OAEwNjtU9sfHfyApS7r/ENP8fXoR8Zbkxi6QIgDsav5Qkag3rO3dsbEwIVpgo4GMSKkknUaJxZ+ENKoJs=",
-    "vote": "36:1,75,1 3 7,2 3 8,3 2 3",
+    "vote": "36:1,75,1-3-7,2-3-8,3-2-3",
     "honestParticipant": true
   },
   {
     "holderId": "76",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlfzGdXIagFbYKFhu4ENqofqZbg73qgAGCBjBqfMGcVKy5rkVYsBeOgDxhjYX2SLpLznq+2eNuRyx/rWXaq4KoQIDAQABAkAJwsaDlCZnXb95eK/WhmylF/LuN6kkdhXuZvYLglZT/41Ej4ynIT5k0Fh6raQ29F1s+cQB61B8vP6LhoUqFr8lAiEAx9gQoPBFveG31VgZKf+D2guj30rMY50T/sWk8AWh/1cCIQDAIjyUdXyEAqXUJor1YJRKyCivF7UCnGUt4S/THYEixwIhAJTrkLCte/scqgYkiVP/oXyp8eribV7J3e2b0OY//FEvAiBnBzTjCyktBNp1rAFh2VtLyo9+bMEE2GatNo7Vr4Ga6wIgbmfAjET825oR+QUh4jrJcTg74jfs/Edg/9tu4gOYlKE=",
-    "vote": "13:1,76,1 1 7,2 1 12,3 1 0",
+    "vote": "13:1,76,1-1-7,2-1-12,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "77",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAg9u8P9PgkG3hUehkzhajBZF3kLY7BNLsG/RShLxSzcJrxmHlk8XpbJo7zXFvVUseP5WqppgcVl+NMKjRuz8d9QIDAQABAkBLmYWSNuGPDWDdfFenjXUEcUXTM5gdCO2UjX1uWydCjrs+zYsySdORhnBAP3aqMtxTq+rzhYNaR393gnWD2svVAiEA2icXsh+ERHrFlF1SA9Kj90xf266lOYxIr9xHjd2SiHcCIQCavAPbOfUDIC/Ccm8uSmoeCrFtRftv5wu2niwoQ59T8wIhAJ7xHpWb2t2d6biIKYo5fVdfoPPJEf6U1By1TLjy96FPAiB53dqrrtnpvE/hNX+bVcB+KK3VAmklmTMAgVMF4zx5QQIhAI14wuf+HhcTWPcnHGVfiKqlH35TG8DTZANVp8nZ1vbf",
-    "vote": "32:1,77,1 2 6,2 2 18,3 2 0",
+    "vote": "32:1,77,1-2-6,2-2-18,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "78",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAkyhgXwddiYqziA7H7uNIbJl8YIv5f8pXJOliTTJFHsKPWm6B/d9jeWeo03kqGzjXo8QtStf/IQJpFS9jx2saMwIDAQABAkAXrh2j7Rl+MpWlRUujA2v6HdDH8H5btAHF7NBmv7ojssi8Z4GEHVydCrT7CZZLHp6Bi+c4RGfhz94nJKwAF3yBAiEAyp9sEcZe7hck1o8D7NKkBgHSNOz8DeMnRZrTPy73WtMCIQC57HmtWXcFtfnyzTUS1Zg59flUwGxS90WCwWp8WpznIQIgKYpdoZdFxxI/ny1a5KaashCVg/xCAKbdWkvPm1iJpbkCIDWpFbk9gAeq7Pfx2CaWdTgNUSfv3ZPYgDxr3HMFqBFhAiBWqVd2nAiR7u9Y5Jxn+9IFG6PFv/aN1jP/ZY3G6sCrLA==",
-    "vote": "49:1,78,1 2 42,2 1 4,3 3 12",
+    "vote": "49:1,78,1-2-42,2-1-4,3-3-12",
     "honestParticipant": true
   },
   {
     "holderId": "79",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAnuc4+RMuKyVSwtobMbbzqxgFWsZ/AADrYD/ry8YNCjV6HBJjs2CgW5/y+33sbuHTTHk2I4XxfPoQ7GuADIhgTwIDAQABAkBLCF/MrRPl56/WtmqU5RDWP3d3z7b0Z3q9bjGHfTN3F9uKQnkKYAXzF6di/t2pS6zjEFdOy5dL6Ze91JDHUwixAiEA8yj3BZPnQlIYIpjNNxKjOg4csMswsVL+g/l/PArxZh0CIQCnS0Zbc8MF064UGT7CCE0KdF7Zw7gF8kjzYisqHUEkWwIhAOEoZJxQmUqLE/gtP5Eoe+aNHLoEXGFGdZClHdDuXRttAiAfqxo4eaNzWOzdFSJSLKwYzIqgAnK1fXXdzLmLEVqhfQIhANfS663EeIRDXGcI7VPhzdwDYAgisTFlsyHlC/Pha71/",
-    "vote": "16:1,79,1 1 15,2 1 10,3 3 0",
+    "vote": "16:1,79,1-1-15,2-1-10,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "80",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAtIIH/1bpABtdbWPNPIPYrbhgtP8cxvLrv3gfiNQ8LmlTNeVKHKSGjQo1QjfFPR+jpLd5MsWJkGnfFRxGdaTETwIDAQABAkEAjIHjQ8kdGa4zbWEQcxiWY7Nv47PpbJvPEn2o3lOGfQDEsjqM/I1FzH6Fw8dzN6Zrdw5WPUpkyY8CFhMI7rRhAQIhANzSQ7/mYZMfYq3Gm/BR7AFvF1rjhIUBB6M47NrzMF9BAiEA0UOrLcfZYCeMUa+Xa7N2BOuyqMZDXa8hTLnYSdQaz48CIGdKFxSpL5UAxkigsQpdV3ZoP1VtPOx1ydvIYcocnNDBAiB689Fd4rA7qMDvNcY4B4duOLYOJ/9oyf88v2zvY+okzQIhALF83AiRcUEscPqBSgbGCHmOiUyx62DnhfCCWtHaqMc6",
-    "vote": "52:1,80,1 2 9,2 2 49,3 2 1",
+    "vote": "52:1,80,1-2-9,2-2-49,3-2-1",
     "honestParticipant": true
   },
   {
     "holderId": "81",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAmdf5y0CdfswKk32z+QSVAUHhE0qp5Y2bJtZFOb94c8Ea7s1G2ESbE/ygGnPV7e8zi5rKdjUTEgObS9GoeoI87QIDAQABAkAG2sCedbqOs7ik6azjI3kgHTdSDLmVKMII8PMUp5tOTPI0CtrPd5QC4R6adEbPncX2PB37MMVnrqp79/LMSKJhAiEA9oqRz/4CzIZBNLZIGG2fCDZemgGeOsIBQQj2XFXgCicCIQCfvveILunUpogW6eFIu4cWpE7Bsx7bx5Ym1Ic9vqJQywIgBVKymUILv2y6pa+12MktINlDq6GTUAN2UXgnEZFNGAsCIEBYTaB/NRTA14RTRLllP+6w1EBVhBKG/EY7yRXn2b2tAiA+E/oiz6u9c/kS3Yk7l1NhUz9OZ4ClMa1Q9YmExDR4vA==",
-    "vote": "23:1,81,1 1 22,2 3 6,3 3 5",
+    "vote": "23:1,81,1-1-22,2-3-6,3-3-5",
     "honestParticipant": true
   },
   {
     "holderId": "82",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAw8Sb5YmZYWqB84x8P7nVX3mt9Y+MVUfgG//1QhE/hppSppEFi7vcy4Q6jndtTsa80t0AyeTuZNuidkaf3TzKMwIDAQABAkAFHfF5OXSB4FfPNt/UhpX2LecHIR5o6D0KXlFZzbucWAaAn/WQb/irmH7OD82cTksHETcFELvvVzdI0FWTQKyRAiEA/PviHTU5IVhpGK06RYlDu21wb7RNDyLvsrAWYk07aWkCIQDGGhm7mC/GH/1VNLAguzbjTcaFFjpRuLVLrbyC94inOwIgJ4U515I+8ISdNmupVL+Swy7fh7PE7f5pL6LufEDQbTECIQC/4+RtPJt6NN51vJWm/vHJ+DqGC+Pt6Rdj+SSTUCdEpQIhAJlHC4QlKDFtyin4CFl4Oc2u5JJ31AcEmsCvClleoejS",
-    "vote": "44:1,82,1 2 75,2 2 9,3 2 0",
+    "vote": "44:1,82,1-2-75,2-2-9,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "83",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqBmbwsyR+k49FV4kkaiHQUcOyqYiui9Pb3mV9qbox1/MMC6ETdHSYvAI6wbF/1k+bxnA/9erBX/K4Pt+vhutNwIDAQABAkEAiHDQtppo2ivq9I8HS5rovZk5bk7O3SRNa4ParurnAftuQ//hcXSw+1tz853iHsAOFHigbUOU5s7pBI2+dtvMwQIhAP0f3MWIKVhYcuUOkKYwjEVf78a2T0QzWCNRyyVuQraHAiEAqgJ6R4UNsVFlKsu25xpgYMSEf3OfoFbC7Z+TqnVnT9ECIFN18wxqpf9MQq4GDGnPriCdzmi96gr5xwD2Uj5ISdT3AiAspFPpndWXnzD6iN2xV6rBHjlQolLjLoUnEoUa+JM1UQIgIcIx3NLn5CR9vQ/9kS7VJqg5STtNr2QRw1FjfoWOlX4=",
-    "vote": "26:1,83,1 2 33,2 3 2,3 2 4",
+    "vote": "26:1,83,1-2-33,2-3-2,3-2-4",
     "honestParticipant": true
   },
   {
     "holderId": "84",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAtuR/LVYsucTNzokzRFzSWKa/voOHhpuaevhOS0jPgCb4kJTOtHDpFWbeT2/W1eqQJwEgV6u2lYPh5AzPAiXOTQIDAQABAkEArnNlm6kHIGtIpCjaberb+ROU8fQj4ZGq2IDgrY7V3jWvxMHspLym7CbcGV+A5An2msJ8GnjH98VJCMJOWTF+AQIhAOtKvQdbOwzowMHH4Hn0q0IBpckiiXlLQoX+gLnt89ypAiEAxv0rpJgCYF1Xg9voGuIewxX8slzztTIWomhqouPW5wUCIGyX3uxRP8yyc5w8Cq9eq9fX+NL+vKIdiQNctb6aQw2ZAiEAvCJdAu8dQBLATVC6r8AeKYA+PDyZxjSnJcHnID6dzikCIQDEvJvpvE82t4ZHKyZqz7AfhxN3ylFrC135bcr9+a1K+w==",
-    "vote": "39:1,84,1 2 22,2 1 12,3 1 8",
+    "vote": "39:1,84,1-2-22,2-1-12,3-1-8",
     "honestParticipant": true
   },
   {
     "holderId": "85",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAmCqGYppi+Hckdezf157hn+KFQ2djhC2m9yxygwdSi3aKqqj/CPQ6GYGVznE0gnkKHucHKmI2ZeFDMknINQ0JMwIDAQABAkBi0wNyGHh8i8xHNi7uN4arMw9/hi8QkiGk194LEP9gCPWJaus/A+jQ0zobItTsYeVj9uu6YeAp6yRFqX6U7f4pAiEA/TrOJHm9QMUKwH6q9EAoAOKKbZXmdifufY/zxPqjSHUCIQCZ1K5fJuiLXcldvrPKs79KlFLVg4le6izJruJFnWwWBwIhALQg0mYL2t1pzD4lXEGmKU6H1uQgzvCZcwIKFeK2TtPJAiEAiJLrsSzxHvLIWcN7CoclWYhwNoJOzwbndrQeziGimbcCIQCdB2miiJOrSt5Q68yg+F7xKfF/NIkULwUdftZpHq64hg==",
-    "vote": "53:1,85,1 3 10,2 3 6,3 1 7",
+    "vote": "53:1,85,1-3-10,2-3-6,3-1-7",
     "honestParticipant": true
   },
   {
     "holderId": "86",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAigFJNT7Zk7MPFSVQiDCdHddUqTA4bD0mcSep/ZL9frgjY8jzq3I38qdUHGcqVGbZ9a/Eo1QweSredyO/7D4DwQIDAQABAkBVXPpFnzzCaa3YrJ4lv7xP6xQJGzSrbx/KOnihyzxWFvO7tBl83p7WNPEzgVpARzlEhSRTO2fYenL6PQZy3mgBAiEAxGlt+6ZjPXEqe9MW0uLaKhqPIFNUggarZGwdDK2lIOECIQCz355RWLUHVTH6K5D/KUvCIiTkknxFU9SEz+4Hebne4QIhALEnQssSxTn6402yFEj70bjeIbAPWQ66Q0adeQohaOohAiB0dkgqgVYM3mOSiBzEqTdNBhB/Ej12IdYK/BoxKuZm4QIhAIWgAicRig6IWvoTgNPqIAA5pAhKW6VAhyvDJzqQf63c",
-    "vote": "13:1,86,1 1 8,2 3 0,3 2 0",
+    "vote": "13:1,86,1-1-8,2-3-0,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "87",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA10tgtr45Cq/42h0XU6jUmWqsKI5vi49To9ft3rShRRG9ClYrVzyiVPBwqQZ53tihpveIxLZTV5xfxINbJ/609QIDAQABAkEAjMaQDc4idFeOa+ibyStbIJn8ymQgkev9L+RQeNA5p3P3Z91HxJH5ryEQdJExR7m725ndni2fzdG+HexPONmlXQIhAPemXYFMgGuZMAg7EGisqbBKFRronh1Nvaz8/l0MP76PAiEA3o27GWugqqUCqsQbar7VQk0lFzhIUzfs7bhQN9z6ljsCIQCKfQ1jJg3Wnfa/U5BMiOnnvLXqs1TgXD4Kw/vWuufWvwIgLVPom5DUNG1PUcCHZQJhJRPZThVkha6KTxCPJhGX6CkCIB3sYgVbx+O/neWQVsfR7mmvfAK4NmWaykAeQSwW6MH8",
-    "vote": "23:1,87,1 3 66,2 2 1,3 3 0",
+    "vote": "23:1,87,1-3-66,2-2-1,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "88",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAo8A5ZbMcurxQJn/V2WX+crPg2/ef07ioORkZcxvaAmWh3yS98UR1iIofxTL7xiCusb4/mXppAb9uINkEfTQluwIDAQABAkALmTf3jiJAz8nVkERza5gEQ91vdzCo7HFt6es1jgl5FeCB6Sk/stEJ9TyDK2Ge7Ecrski6+H6D/ueUkwFNVv0hAiEA61yQ0gTIo4XzDlGNkluL9suSYv/NQXeN5aofHeYZy0kCIQCyHCFCPTe57C9AovgzkxDMMfnDYiEa8FxaDq789inE4wIhAJUZXdD+INCesbwXY9Uc04zzp3e5zyCzCRw96lp5g0upAiBbA1bXc1LTleY7gEuWhzMRNQRtG+rQyjxW5KP0rZGAgwIhAOmmGLtfmQzW2uYcbG20FDn9p8tF0Ho3lDEu4OpQgWRv",
-    "vote": "21:1,88,1 1 32,2 1 13,3 3 4",
+    "vote": "21:1,88,1-1-32,2-1-13,3-3-4",
     "honestParticipant": true
   },
   {
     "holderId": "89",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAqH9lQmpTQrDukIXmEaxiIvnFeiYOStf7NUnJfR3vJJ90Jo97Njb4pM/h2RvPOCsj4rW9Bks4vMtZbknH4sLDqwIDAQABAkA2vgz74udiB3G6aoYwv7yyeEt8P9js3/axfWOEzrDfSJdFsaPCCji2zvte8sIpLIrw375ALjyKT6QM/ws2vVchAiEA42eU2rwK4hzV67HijG9CQEt8PM49OAFIuTVYsozDQNUCIQC9r4e2/Rssl/Juy7mPZebFg/R/ZvzfflVjz0q5/EwyfwIhAJWO5ClPjuDTEiYnIdY2vh3HB3h+M2kH/yo/2YvkY+3ZAiEArelcneqL2qPpk6nXlOER52/nYFPVbzfOJHevBLyMRBMCIA2w5vkfgxZpbvjlHkl4WG304HpP+Sddj+VfNY2J7NxV",
-    "vote": "2:1,89,1 2 69,2 1 0,3 2 0",
+    "vote": "2:1,89,1-2-69,2-1-0,3-2-0",
     "honestParticipant": true
   },
   {
     "holderId": "90",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkgHYb/ovZ0g6i5L68I2N3yp3D9QoHgMlDkjtZwnkbvjoOZSyvf2DpAqx7NPk/Xmv4d8XMCZoszxMORSUFOSYWwIDAQABAkBZprpwX22V/Hq+Uxy0cian3hpHZNzRONsa/1qORzu1iznho+105YHXIUDZUGMNFn+gdL+LgSrjhNKUTB7S1dQpAiEA9zeza8Ic7GkCLGsldkU1Hv7HNpbmBXc2dzXKt3RKsL0CIQCXMbIN0ayZNh14ewnNh/duuaalXQ8olPRUm62KxaJ69wIhALZy/lCl1tDHAtqjTOeHVhgE8iMgpKwd+i1qnqxcAA+FAiBmY7MvBJWcVDd1Be3HkJKSG4utZO4FD4q/WYYW+mxkVQIgIEV4pV3jgyyqHH/p3drj99PDZT8I0MKTSndvtb2jh6E=",
-    "vote": "19:1,90,1 1 39,2 2 41,3 3 0",
+    "vote": "19:1,90,1-1-39,2-2-41,3-3-0",
     "honestParticipant": true
   },
   {
     "holderId": "91",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAiVjtlg3IrJyxxa9d05IKnbn5Z68ZAYAiPeeMDz0ZSZwwrLPtOPm7Xeb8FbhsAay2sro530Y3uIK2J/QGvzU2GwIDAQABAkBQa05pjtaSIwmAC2dvqtImei8LQ53rn//sqTf78DVvQHW1Y75ri0VIcZ906DgJofkkRC31N4b/dSKR/Alow/QRAiEAyJoLcr7baiMkIaxBUoUzZGgrqobkpl2aHcD86SIVcWMCIQCvRvw39HrX8IJy1DWIqKGtkTDpoEZtYhzdfyUZRaPh6QIgIM9JNhBPVNHAlB1XZcbRfAeptK9xcGB414r8Eql3dl8CIGlpcYpdV/vCQ1G32jJD6GgwJ5B5uaFTHjT/oFogjbzxAiEApXQlcT6psqY7v53X7uh5h3h0biGF8kt9vR5FP1usIxg=",
-    "vote": "20:1,91,1 1 21,2 3 28,3 1 6",
+    "vote": "20:1,91,1-1-21,2-3-28,3-1-6",
     "honestParticipant": true
   },
   {
     "holderId": "92",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAgadG7qFK2qddT5Sm7e5WK5vvFMU7OyzQiK+douAPTAjkr+XuHW2e5itLNF9VGXJq8+t6K6iT0hoxZlhH9JfMaQIDAQABAkAKOFNhEBnEbpjuYvtdmgH04g/QhVOL8JZnj+BPLHZIOfZ+J2RIOHMILoAvFQYeQDLQsu/JLOZ/vOXCSJgXAr45AiEAvZohWkXEzMv2qhqgqXLsPxIwWUAC351GLNxMtubquXMCIQCvDrygjDNptW8vV+z+isH7E0xM0gsCkgVmM+bHSTMbswIhALxu60jZYB6dcvdZ4WSmx65jOFPrLy/oEa9R/pgkZRGLAiBNKdnLiwE+n1MbM06sBM3stlzzn8Jqp6Lpogcf4Qw+MQIgD5uiQ7QSrrMEBEKiM2FjgJ6HIt8/05Wg1L9lA9G1scc=",
-    "vote": "23:1,92,1 3 24,2 1 23,3 1 0",
+    "vote": "23:1,92,1-3-24,2-1-23,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "93",
     "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAzAHJzOzk5G7xiaP/1zvkqI0SU3FukpnJiABy6qOVYVbpB/6H6igg6LHhEogAUlKtgxE2ifl1qFRvaxhy7pWdBQIDAQABAkBw8yiEskBEjXxjpY5X34xJGdokovACcO0YxI7bhHiHbDW4t2/TkYrXlq5wK24sZ6r894zbLv1wAebwrx5axKE9AiEA/QKRvAotHa8KixcwnsY2i5rtFst+RwIIyLdmd62tjPMCIQDOavhd4FoSfeqoLTV0+ohoHcHcEJr/Ps59xS9Pjr9MJwIgQLvnjbUM1gtzJyNHzVfpnM6G2s42APUESlaiYPyO6wECIHoS3Qt3sQ0alnobMnAZ8i3Q22MwFto45JmQ0ef0/cElAiAWrobObo7aEd+yLu1KseJXvYeAifDxi1KJFBJyzo6iZw==",
-    "vote": "28:1,93,1 2 4,2 1 4,3 2 7",
+    "vote": "28:1,93,1-2-4,2-1-4,3-2-7",
     "honestParticipant": true
   },
   {
     "holderId": "94",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlcWYBW+gPVEUbpeogur30/E3vMLO3o8RYsgHs0Yx+EusBtM6jxKjGsXPHKZPWrpTmpRrxuWVSkCi0Ab3olXk9QIDAQABAkAKoZgE6sOJFrRIlWNUx7EHzluSfpGIosctJ93ED/uEEF8vwSTLhTRTcL7E+BFU0qM5tm4E7M3IsIOqe1HRsuYBAiEA0DktP9vttHGCs5q/r8EHfwT5gBJtKzPPUZnhdYIGJqECIQC4Iwlxhzrz6JkNi6ZxGyGMXZp+x+fdye803wjgSB0h1QIhAMUk/YSy1DK+LkOixs6+8jv/F8N8rsPyv93A1kiNnQlBAiA0z3ep48r4oUEkLWUzE0Dv7PieW98YMQ4177GwAX65cQIgM91FuOW14p9AHrrwxA5aK+2kSMjJoc08H5xmeagXtvQ=",
-    "vote": "5:1,94,1 3 50,2 3 17,3 1 4",
+    "vote": "5:1,94,1-3-50,2-3-17,3-1-4",
     "honestParticipant": true
   },
   {
     "holderId": "95",
     "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAikRv/4lk4GW5Wq2rx38w46HWcAqHYtPTIVKSmX+eOG4lndjfQAzZh9IQ1bCX5xEkK3Tgx89KGcn5O9e8hCL+CwIDAQABAkBKz1qVtT36V6+hC2RtDTljgFXoyxmTdC7A0c918+Gkf8vAia6DxeY+oFsYoqLWILrWd4MGZ9onhTcSP0YMWDGZAiEA6axTxLCuz/6TMy/EOhVO1tVQAY60Dl0A+uTSkOjyXfcCIQCXenkEi06SnkHr9Rwgw85/CsTRm4SI02E8fXvYFdlrjQIgM8rsbkYzGQr2GXxW5ADhDqENMKsuoZhfpTyep1vajJUCIH2Ub1exFga/ZO91WUhgjIUOLHWJdKrqcyZu8YkHNCTRAiEA2+H5lkf4XUk8KK0F4gmIpDd0apqddYsocvtbLQRWtCk=",
-    "vote": "44:1,95,1 3 34,2 2 0,3 1 0",
+    "vote": "44:1,95,1-3-34,2-2-0,3-1-0",
     "honestParticipant": true
   },
   {
     "holderId": "96",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAk1oWz69aTLpupZgDDScAMdAVrrwLE6unTcV5NUgKgAs0wYCFPAY42FnAyjBF7mfALg3mkGToIZYipj4cR1SVMwIDAQABAkEAkORmR+Rau9Ya1RQr8/PkuhauK3rWvYnt4oiKjjz/rjVLQI61qUk18g0nBxJ4FHDLe+w63rZc8VGpbiJeDxMMuQIhAP0knDd8srnuiDbbeSXbxDvkTbNOx2Sb3tRDXSAz4bVtAiEAlQPSz9jLXHNq7L1Z3b+N6R2EoiQZQjMjIP1CUXOE8R8CIQCy61piuYdVdWvfYhZplMBJGJ92mbrCuIyxeH9s0F66rQIgeiMMIzf6Vuhy91+rzMk4s51yHMOhwFTRsjRiqwgYKtkCIECYGxcUoRBWgIvWzGqiBpox4FEsoH8d5ULpwhT6f4uY",
-    "vote": "30:1,96,1 1 19,2 2 31,3 3 8",
+    "vote": "30:1,96,1-1-19,2-2-31,3-3-8",
     "honestParticipant": true
   },
   {
     "holderId": "97",
     "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAkPkaJVRJZAF0Ln5BteozXPkYSEYO5O3H1VgtKg9kuFEHp2ycq5e7/xrb4LfLUWXC0XiIwLh5nS01WMCxgGN+1QIDAQABAkBv+AUqmavJUpoiIp+r2gPrpfQMNhfg1onGDEFtv8/hzngJH+aNU6zC0rWjiWbt9W6bZ5/y7Zx6SO3zVMwF+dxtAiEA+YwCGIjWL1BoJQjRdVFOaPcn358Uo5Ke0D2kVHJGodcCIQCUuNGWHpE1ao9UOWO/Ir0qj2K+rIdW7zZ84BCRQXKnMwIhANL6fAsiJXN7F5G4Et6NDy3PR/bYGCrzGzIT64s50l2hAiEAit3QBYZhPClVz+UOeEhtrbHZGAVtEgWnMQ7fKWKdNfUCIQD5gEelSVT0kcAC+dhP5LUX25KPRhfk6rfFmdTd2/r76w==",
-    "vote": "50:1,97,1 2 3,2 2 8,3 3 3",
+    "vote": "50:1,97,1-2-3,2-2-8,3-3-3",
     "honestParticipant": true
   },
   {
     "holderId": "98",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAi4msLeBglimbJ0vKnP7MCKntCMRMZzq0NXgRrREeY6w/Nn8IF/EEjYEoxR/s356+YbYQUNWUOYCiais9kfudowIDAQABAkBr8YKasrrFL0ZxLbZ9oLYh9aICaChaqxUBT/MMmPOTUmS+LXGNxG48abNsD6LqF962RjFieG+0/Za/bP9G/uqRAiEAzmeHU51OiOZF9oj5eszm97exe3S9dEEYJVlJ0bzru80CIQCtEQEO2/BWGdCkb5RB5F6Y/uKuSSTzIjOSLYhifZ+vLwIhAMDpiFUBELbpKnja2voIatMacBqoKK5wbKXzxwft4BH9AiEAjA1FqOutW0/6uwccmBIhx3gEovvILgVQbIvyYZm9nrsCIBikUUcN2dhDb9tVrFgLrXN5im7LuT4Csy/rBqwZCrCI",
-    "vote": "45:1,98,1 2 22,2 3 15,3 1 14",
+    "vote": "45:1,98,1-2-22,2-3-15,3-1-14",
     "honestParticipant": true
   },
   {
     "holderId": "99",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEA23/w+vTCJbESvwPkU9WhKE3clVrwFlNsRzwW1uJhfXN37euYEgwi2RW3uTBNQlwn5Np4Q8qghC5ZkBfbdbjFswIDAQABAkA9tAaTFXDqVY+2gKqT4o7uHI0wsyKgtAzRLZQiDftn3yNsPKj6dWO5JjBag5EVvwBUYd5p/iYrC80EcbBIFJaxAiEA9n0+FIekBRu8DlvdZ/+/Q0IlE2dnLOgqJw1/VZgcrgkCIQDj+BqXhV8RS6g082Jhgs9HG+BHY90M51+BQOawnKnE2wIhAJnBnGUQC5eIKnHGikEifnuFGj2VZf3UQN8lg0WwYkuJAiEAmOdPRrPxGNOrBaD9KrQnPOWon5mOqVoDB9m1IV5izCMCIBCbal0E7KyvFEdmBlFsyWIl+xX3IqrTujLJvX6+nCLB",
-    "vote": "10:1,99,1 3 1,2 2 0,3 3 1",
+    "vote": "10:1,99,1-3-1,2-2-0,3-3-1",
     "honestParticipant": true
   },
   {
     "holderId": "100",
     "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEArWaqGlhbLB9cL1SBuejr8cIX2aKxUQQC0SopEXF1sGKZpRcvptRfZCIAlTm3VEn7Q3suU3fqs0R3/g7+cO+mfQIDAQABAkBEGKJKsFI1tKcWK0C6yr8F9Sw6msq5vzKAA+eW4xDN0HV5yT+WYEobiRfDViqOXgVl7ZU/mdVxI1Q6uioIBREBAiEA1R4eOWxfaTO54OMfopg1FAcUUewqdRTSJ9XvG/ytC70CIQDQSrUw1qRsP8Cqv01MSDdIGRxgtq/aOxSheyBdS39RwQIhAJc35a5NLW4SW+QshHf0lET/uPVgI8gr2+qULDOpmIfpAiEAnFzY9FbNi+24BvYhYvh7d4ZSRVAfZyYe8LJrs12vsIECICTtJdmSSIUenezYYedJwVncsU3oW6R66zdWa4+CoDXL",
-    "vote": "50:1,100,1 3 3,2 3 22,3 3 6",
+    "vote": "50:1,100,1-3-3,2-3-22,3-3-6",
     "honestParticipant": true
   }
 ]
