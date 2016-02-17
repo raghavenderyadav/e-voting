@@ -202,49 +202,20 @@ public class BaseWalletManager implements WalletManager {
 
     @Override
     public List<Message> getNewMessages(long timestamp) {
-        List<Transaction> result = new ArrayList<>();
-        for (int i = 0; ; i++) {
-            List<Transaction> messages = getMessages(i * 10, (i + 1) * 10);
-            if (messages == null)
-                return null;
-            if (messages.size() == 0)
-                break;
-            boolean isFinished = false;
-            for (Transaction message : messages) {
-                if (message.getTimestamp() < timestamp) {
-                    isFinished = true;
-                    break;
-                }
-                if (message.getAttachment().isMessageIsText())
-                    result.add(message);
-            }
-            if (isFinished)
-                break;
-        }
-
+        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
+            keyToValue.put("account", selfAccount);
+            keyToValue.put("timestamp", Long.toString(timestamp / 1000));
+            keyToValue.put("withMessage", "true");
+        }, TransactionsResponse.class);
+        if (result == null)
+            return null;
         try {
-            return result.stream().map(pm -> {
-                String transactionId = pm.getTransaction();
-                String readedMessage = pm.getAttachment().getMessage();
-                if (readedMessage == null)
-                    throw new RuntimeException(transactionId);
-                return new Message(transactionId, readedMessage.getBytes(StandardCharsets.UTF_8));
-            }).collect(Collectors.toList());
+            return Arrays.asList(result.getTransactions()).stream().map(t ->
+                new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getNewMessages[{}] failed. Message: {}", timestamp, e.getMessage());
             return null;
         }
-    }
-
-    private List<Transaction> getMessages(int firstIndex, int lastIndex) {
-        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
-            keyToValue.put("account", selfAccount);
-            keyToValue.put("firstIndex", Integer.toString(firstIndex));
-            keyToValue.put("lastIndex", Integer.toString(lastIndex));
-        }, TransactionsResponse.class);
-        if (result == null)
-            return null;
-        return Arrays.asList(result.getTransactions());
     }
 
     private boolean startForging() {
