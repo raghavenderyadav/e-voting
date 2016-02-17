@@ -88,7 +88,7 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.testDbDir", "./nxt");
             nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
             nxtProperties.setProperty("nxt.isOffline", "false");
-            nxtProperties.setProperty("nxt.isTestnet", "false");
+            nxtProperties.setProperty("nxt.isTestnet", "true");
             nxtProperties.setProperty("nxt.minNeedBlocks", "1");
             saveProperties(propertiesPath, nxtProperties);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
