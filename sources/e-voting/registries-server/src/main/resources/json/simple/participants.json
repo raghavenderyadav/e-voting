@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "name": "Voter 1",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAPctrrnelJw/RGjmUji8vHn8mSuxwHnNS3ViLWVfw1EqXXW8Yn5doGLeDzmXFsP07cKNvc8CzJEJUWmsH0ApnK0CAwEAAQ=="
+  },
+  {
+    "id": "2",
+    "name": "Voter 2",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAI268H2uq/ZdGXQIH+fhIsZ6Rfd1RYko6LaRUA23pFmXWAT7FFLRV7upUuiA0lnRtq2ZtO8Km9Gk15/qzd8O8y0CAwEAAQ=="
+  },
+  {
+    "id": "3",
+    "name": "Voter 3",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIukBgsXE4Vr3BNHkzjKghocqZAxamNyn+N4eLDEeso10N4nYJd2SSSfdAoOtlrh5MLJXRPb0+8U2Uym4pLuMY8CAwEAAQ=="
+  },
+  {
+    "id": "4",
+    "name": "Voter 4",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMGEvc61DsUfOOC8JJ1/uTUfn0VbTQ/TDh/0fMF96iRdXCOVhmJFomjsrH3lUDFvJfCs23jP6dx0X0prxG6AAmsCAwEAAQ=="
+  },
+  {
+    "id": "5",
+    "name": "Voter 5",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK/BoNH+H61yWwuwLqJbPfc1aNPh6H8cL3qZxB2YZYJiPnI9QYytL6+ohsfJjFlrXAKLBnOXjtLv+KSmTurwGL8CAwEAAQ=="
+  },
+  {
+    "id": "6",
+    "name": "Voter 6",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK8IOiSS+n5c/pgkmk9QTb2irdz/vwH/IjJQEMlq4W/GDNVv1qsgWTnTjTPoZM7v2S3uXKBpcPDP5mrjDo2XRwECAwEAAQ=="
+  },
+  {
+    "id": "7",
+    "name": "Voter 7",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJjmY+r2L+tFqVqPCJ7Qj1w6ZKhTogxpssU4Pq4G9XAfGAYKIvKfUZQtUK0wRriyNUtYT8ksXFZXP0CgBAEAryECAwEAAQ=="
+  },
+  {
+    "id": "8",
+    "name": "Voter 8",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIkrWvrihrX9eROvMFDvgFvUOPaM29VHprjKDnewfpquu9u3EqrDcnZ442FMXJWQj70F2xez80/RrDKNhzmOh9sCAwEAAQ=="
+  },
+  {
+    "id": "9",
+    "name": "Voter 9",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL64Qs8i8zYxE4NI7w1X6EKmvCR8zK/yfhz8Ohtpbe6BfAGlAfx/DI2hKv20qMH1IBecti+laAotJQDRmwkSqLMCAwEAAQ=="
+  },
+  {
+    "id": "10",
+    "name": "Voter 10",
+    "publicKey": "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAK6Tqe4NjjI8c/i/ZR6Z7fuv+hHc2OsICNfZvvbtP6Se6vUiOH3MFd65PER1oDMkLs3m3fs7gV4Hjzm3G3GKZxECAwEAAQ=="
+  }
+]

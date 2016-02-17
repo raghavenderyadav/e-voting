@@ -90,6 +90,10 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.isOffline", "false");
             nxtProperties.setProperty("nxt.isTestnet", "true");
             nxtProperties.setProperty("nxt.minNeedBlocks", "1");
+            nxtProperties.setProperty("nxt.enablePeerServerDoSFilter", "true");
+            nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestMs", "300000");
+            nxtProperties.setProperty("nxt.peerServerDoSFilter.delayMs", "1000");
+            nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
             saveProperties(propertiesPath, nxtProperties);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
             //starting clients

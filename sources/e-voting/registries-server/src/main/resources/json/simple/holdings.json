@@ -1,0 +1,52 @@
+[
+  {
+    "holderId": "1",
+    "packetSize": 66,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "2",
+    "packetSize": 38,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "3",
+    "packetSize": 90,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "4",
+    "packetSize": 8,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "5",
+    "packetSize": 54,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "6",
+    "packetSize": 8,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "7",
+    "packetSize": 1,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "8",
+    "packetSize": 28,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "9",
+    "packetSize": 54,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "10",
+    "packetSize": 18,
+    "nominalHolderId": null
+  }
+]
