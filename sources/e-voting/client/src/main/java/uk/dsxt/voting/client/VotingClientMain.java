@@ -40,11 +40,12 @@ public class VotingClientMain {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
 
-            if (args != null && args.length < 3)
+            if (args != null && args.length < 4)
                 throw new InternalLogicException("Wrong arguments");
             String ownerId = args == null ? properties.getProperty("owner.id") : args[0];
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[1]);
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[2];
+            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[3];
 
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
             long resultsAggregationPeriod = Integer.parseInt(properties.getProperty("results.aggregation.period")) * 60000;
@@ -59,7 +60,7 @@ public class VotingClientMain {
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
-            init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, resultsAggregationPeriod);
+            init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, resultsAggregationPeriod, walletOffSchedule);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -67,7 +68,7 @@ public class VotingClientMain {
     }
 
     private static void init(RegistriesServer registriesServer, WalletManager walletManager, ResultsBuilder resultsBuilder, String ownerId, PrivateKey ownerPrivateKey,
-                             String messagesFileContent, long newMessagesRequestInterval, long resultsAggregationPeriod) {
+                             String messagesFileContent, long newMessagesRequestInterval, long resultsAggregationPeriod, String walletOffSchedule) {
         BlockedPacket[] blackList = registriesServer.getBlackList();
         Holding[] holdings = registriesServer.getHoldings();
         Participant[] participants = registriesServer.getParticipants();
@@ -75,10 +76,12 @@ public class VotingClientMain {
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
         VotingClient client = new VotingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);
-        VoteScheduler scheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, resultsAggregationPeriod, ownerId);
+        VoteScheduler voteScheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, resultsAggregationPeriod, ownerId);
+        WalletScheduler walletScheduler = new WalletScheduler(walletManager);
 
         client.run(newMessagesRequestInterval);
-        scheduler.run();
+        voteScheduler.run();
+        walletScheduler.run(walletOffSchedule);
     }
 
 }
