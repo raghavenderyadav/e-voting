@@ -46,7 +46,7 @@ public class TestsLauncher {
     private static final String MASTER_NAME = "nxt";
     private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
 
-    private static final String CLIENT_JAR_PATH = "client.jar";
+    private static final String CLIENT_JAR_PATH = "../libs/client.jar";
 
     private static Map<String, Process> processesByName = new HashMap<>();
 
