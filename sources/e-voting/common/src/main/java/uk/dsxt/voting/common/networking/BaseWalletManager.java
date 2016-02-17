@@ -131,8 +131,8 @@ public class BaseWalletManager implements WalletManager {
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
-            inheritIO(nxtProcess.getInputStream(), false);
-            inheritIO(nxtProcess.getErrorStream(), true);
+            inheritIO(nxtProcess.getInputStream());
+            inheritIO(nxtProcess.getErrorStream());
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
                     stopWallet();
@@ -252,14 +252,15 @@ public class BaseWalletManager implements WalletManager {
         return response != null;
     }
 
-    private void inheritIO(final InputStream src, final boolean isError) {
+    private void inheritIO(final InputStream src) {
         new Thread(() -> {
             Scanner sc = new Scanner(src);
             while (sc.hasNextLine()) {
-                if (isError) {
-                    log.error(sc.nextLine());
+                String logStr = sc.nextLine();
+                if (logStr.contains("ERROR")) {
+                    log.error(logStr);
                 } else {
-                    log.info(sc.nextLine());
+                    log.info(logStr);
                 }
             }
         }).start();
