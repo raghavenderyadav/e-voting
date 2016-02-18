@@ -46,9 +46,7 @@ public class BaseWalletManager implements WalletManager {
 
         jarPath = properties.getProperty("nxt.jar.path");
 
-        mainAddress = properties.getProperty("nxt.main.address");
         passwordForRegister = properties.getProperty("nxt.register.password");
-        passphrase = properties.getProperty("nxt.account.passphrase");
         httpHelper = new HttpHelper(5000, 5000);
 
         mapper = new ObjectMapper();
@@ -58,8 +56,12 @@ public class BaseWalletManager implements WalletManager {
         nxtPropertiesPath = args != null && args.length > 0 ? args[0] : properties.getProperty("nxt.properties.path");
         Properties nxtProperties = PropertiesHelper.loadPropertiesFromPath(nxtPropertiesPath);
         if (args != null && args.length > 0) {
+            mainAddress = args[1];
+            passphrase = args[2];
             port = nxtProperties.getProperty("nxt.apiServerPort");
         } else {
+            mainAddress = properties.getProperty("nxt.main.address");
+            passphrase = properties.getProperty("nxt.account.passphrase");
             port = properties.getProperty("nxt.apiServerPort");
             nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
             nxtProperties.setProperty("nxt.apiServerPort", port);
@@ -259,7 +261,8 @@ public class BaseWalletManager implements WalletManager {
     }
 
     private boolean startForging() {
-        StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {}, StartForgingResponse.class);
+        StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {
+        }, StartForgingResponse.class);
         return response != null;
     }
 
@@ -286,7 +289,8 @@ public class BaseWalletManager implements WalletManager {
         while ((selfAccount == null || passphrase == null) && !Thread.currentThread().isInterrupted()) {
             try {
                 if (accountId == null || selfAccount == null) {
-                    AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {}, AccountResponse.class);
+                    AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {
+                    }, AccountResponse.class);
                     if (account != null) {
                         accountId = account.getAccountId();
                         selfAccount = account.getAddress();

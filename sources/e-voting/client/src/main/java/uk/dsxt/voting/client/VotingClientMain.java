@@ -40,17 +40,15 @@ public class VotingClientMain {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
 
-            if (args != null && args.length < 6)
+            if (args != null && args.length < 8)
                 throw new InternalLogicException("Wrong arguments");
-            String ownerId = args == null ? properties.getProperty("owner.id") : args[1];
-            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[2]);
-            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[3];
-            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[4];
-            long resultsAggregationPeriod = (args == null ? Integer.parseInt(properties.getProperty("results.aggregation.period")) : Integer.valueOf(args[5])) * 60000;
-
+            String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
+            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
+            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
+            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
+            long resultsAggregationPeriod = (args == null ? Integer.parseInt(properties.getProperty("results.aggregation.period")) : Integer.valueOf(args[7])) * 60000;
 
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
-
 
             String registriesServerUrl = properties.getProperty("register.server.url");
             String resultsBuilderUrl = properties.getProperty("results.builder.url");

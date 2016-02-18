@@ -53,6 +53,13 @@ public class TestsLauncher {
 
     private static boolean startClientsAsProcesses = true;
 
+    private static String masterAccount;
+    private static String masterPassword;
+    private static String clientAccount;
+    private static String clientPassword;
+    private static String victimAccount;
+    private static String victimPassword;
+
     @FunctionalInterface
     public interface SimpleRequest {
         void run();
@@ -74,6 +81,13 @@ public class TestsLauncher {
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
             int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
             int clientAggregationPeriod = Integer.parseInt(properties.getProperty("client.results.aggregation.period"));
+
+            masterAccount = properties.getProperty("master.address");
+            masterPassword = properties.getProperty("master.passphrase");
+            clientAccount = properties.getProperty("client.address");
+            clientPassword = properties.getProperty("client.passphrase");
+            victimAccount = properties.getProperty("victim.address");
+            victimPassword = properties.getProperty("victim.passphrase");
             //json file configuration for clients
             String configFileName = properties.getProperty("client.config.file");
             String resourceJson = PropertiesHelper.getResourceString(String.format(configFileName, testingType));
@@ -90,9 +104,10 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestMs", "300000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.delayMs", "1000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
+            nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s;%s", clientAccount, victimAccount));
 
             final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties);
-            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
+            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath, masterAccount, masterPassword}));
             //starting clients
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
@@ -101,6 +116,8 @@ public class TestsLauncher {
                 final int ii = i;
                 ClientConfiguration conf = configurations[i];
                 String clientName = String.format("nxt-node-%s", conf.getHolderId());
+                String blackList = !conf.isHonestParticipant() ? victimAccount : "";
+                nxtProperties.setProperty("nxt.evt.blackList", blackList);
                 String clientPropertiesPath = createWalletPropertiesFile(clientName, startPort + 2 * i, nxtProperties);
                 String walletOffSchedule = conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
                 startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod);
@@ -127,7 +144,6 @@ public class TestsLauncher {
             ResultsBuilderMain.shutdown();
             //stop other modules
             VotingMasterClientMain.shutdown();
-            //TODO: stop clients
             log.info("Testing finished");
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -150,12 +166,14 @@ public class TestsLauncher {
 
     private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule, int clientAggregationPeriod) {
         ClientConfiguration conf = configurations[idx];
+        final String account = conf.isVictim() ? victimAccount : clientAccount;
+        final String password = conf.isVictim() ? victimPassword : clientPassword;
         if (startClientsAsProcesses) {
-            startProcess("Client" + idx, CLIENT_JAR_PATH,
-                    new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(),
+            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(),
                     conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         } else {
-            VotingClientMain.main(new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
+            VotingClientMain.main(new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
+                    walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         }
     }
 
