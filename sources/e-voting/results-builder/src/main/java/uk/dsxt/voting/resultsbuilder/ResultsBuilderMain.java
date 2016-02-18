@@ -48,7 +48,7 @@ public class ResultsBuilderMain {
             jettyServer = JettyRunner.run(application, properties, "results.builder.web.port");
 
             String[] votingIds = properties.getProperty("votingIds").split(",");
-            long period = (args == null ? Integer.parseInt(properties.getProperty("checkPeriod", "10")) : Integer.parseInt(args[0])) * 60000;
+            long period = (args == null ? Integer.parseInt(properties.getProperty("checkPeriod", "10")) : Integer.parseInt(args[0])) * 1000;
             timer = new Timer("ResultsPeriodicChecker timer");
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
