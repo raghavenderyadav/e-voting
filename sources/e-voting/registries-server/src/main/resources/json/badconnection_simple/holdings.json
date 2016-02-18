@@ -1,0 +1,502 @@
+[
+  {
+    "holderId": "1",
+    "packetSize": 546,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "2",
+    "packetSize": 26,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "3",
+    "packetSize": 22,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "4",
+    "packetSize": 95,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "5",
+    "packetSize": 24,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "6",
+    "packetSize": 69,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "7",
+    "packetSize": 81,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "8",
+    "packetSize": 73,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "9",
+    "packetSize": 30,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "10",
+    "packetSize": 28,
+    "nominalHolderId": "1"
+  },
+  {
+    "holderId": "11",
+    "packetSize": 575,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "12",
+    "packetSize": 46,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "13",
+    "packetSize": 72,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "14",
+    "packetSize": 67,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "15",
+    "packetSize": 59,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "16",
+    "packetSize": 27,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "17",
+    "packetSize": 37,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "18",
+    "packetSize": 79,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "19",
+    "packetSize": 92,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "20",
+    "packetSize": 42,
+    "nominalHolderId": "11"
+  },
+  {
+    "holderId": "21",
+    "packetSize": 591,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "22",
+    "packetSize": 49,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "23",
+    "packetSize": 50,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "24",
+    "packetSize": 77,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "25",
+    "packetSize": 88,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "26",
+    "packetSize": 93,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "27",
+    "packetSize": 60,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "28",
+    "packetSize": 50,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "29",
+    "packetSize": 19,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "30",
+    "packetSize": 15,
+    "nominalHolderId": "21"
+  },
+  {
+    "holderId": "31",
+    "packetSize": 501,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "32",
+    "packetSize": 15,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "33",
+    "packetSize": 41,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "34",
+    "packetSize": 34,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "35",
+    "packetSize": 33,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "36",
+    "packetSize": 49,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "37",
+    "packetSize": 22,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "38",
+    "packetSize": 49,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "39",
+    "packetSize": 76,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "40",
+    "packetSize": 90,
+    "nominalHolderId": "31"
+  },
+  {
+    "holderId": "41",
+    "packetSize": 706,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "42",
+    "packetSize": 68,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "43",
+    "packetSize": 88,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "44",
+    "packetSize": 99,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "45",
+    "packetSize": 89,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "46",
+    "packetSize": 62,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "47",
+    "packetSize": 75,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "48",
+    "packetSize": 68,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "49",
+    "packetSize": 31,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "50",
+    "packetSize": 63,
+    "nominalHolderId": "41"
+  },
+  {
+    "holderId": "51",
+    "packetSize": 447,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "52",
+    "packetSize": 59,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "53",
+    "packetSize": 71,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "54",
+    "packetSize": 67,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "55",
+    "packetSize": 37,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "56",
+    "packetSize": 34,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "57",
+    "packetSize": 26,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "58",
+    "packetSize": 25,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "59",
+    "packetSize": 53,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "60",
+    "packetSize": 48,
+    "nominalHolderId": "51"
+  },
+  {
+    "holderId": "61",
+    "packetSize": 627,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "62",
+    "packetSize": 93,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "63",
+    "packetSize": 27,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "64",
+    "packetSize": 26,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "65",
+    "packetSize": 95,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "66",
+    "packetSize": 70,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "67",
+    "packetSize": 20,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "68",
+    "packetSize": 70,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "69",
+    "packetSize": 51,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "70",
+    "packetSize": 77,
+    "nominalHolderId": "61"
+  },
+  {
+    "holderId": "71",
+    "packetSize": 525,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "72",
+    "packetSize": 92,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "73",
+    "packetSize": 27,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "74",
+    "packetSize": 93,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "75",
+    "packetSize": 37,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "76",
+    "packetSize": 48,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "77",
+    "packetSize": 57,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "78",
+    "packetSize": 21,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "79",
+    "packetSize": 60,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "80",
+    "packetSize": 75,
+    "nominalHolderId": "71"
+  },
+  {
+    "holderId": "81",
+    "packetSize": 467,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "82",
+    "packetSize": 37,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "83",
+    "packetSize": 19,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "84",
+    "packetSize": 59,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "85",
+    "packetSize": 42,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "86",
+    "packetSize": 30,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "87",
+    "packetSize": 47,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "88",
+    "packetSize": 25,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "89",
+    "packetSize": 91,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "90",
+    "packetSize": 20,
+    "nominalHolderId": "81"
+  },
+  {
+    "holderId": "91",
+    "packetSize": 494,
+    "nominalHolderId": null
+  },
+  {
+    "holderId": "92",
+    "packetSize": 90,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "93",
+    "packetSize": 75,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "94",
+    "packetSize": 65,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "95",
+    "packetSize": 16,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "96",
+    "packetSize": 22,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "97",
+    "packetSize": 21,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "98",
+    "packetSize": 57,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "99",
+    "packetSize": 48,
+    "nominalHolderId": "91"
+  },
+  {
+    "holderId": "100",
+    "packetSize": 67,
+    "nominalHolderId": "91"
+  }
+]

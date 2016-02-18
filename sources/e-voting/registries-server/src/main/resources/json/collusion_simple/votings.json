@@ -1,0 +1,64 @@
+[
+  {
+    "id": "1",
+    "name": "The annual voting of shareholders of OJSC 'Blockchain Company'",
+    "startTimestamp": 1455812307265,
+    "endTimestamp": 1455812427265,
+    "questions": [
+      {
+        "id": 1,
+        "question": "New member",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Temnov"
+          },
+          {
+            "id": 2,
+            "name": "Svetlov"
+          },
+          {
+            "id": 3,
+            "name": "Vertev"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "question": "New vice-president",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Tsrev"
+          },
+          {
+            "id": 2,
+            "name": "Bronev"
+          },
+          {
+            "id": 3,
+            "name": "Steklov"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "question": "New chairman",
+        "answers": [
+          {
+            "id": 1,
+            "name": "Ivanov"
+          },
+          {
+            "id": 2,
+            "name": "Petrov"
+          },
+          {
+            "id": 3,
+            "name": "Sidorov"
+          }
+        ]
+      }
+    ]
+  }
+]
