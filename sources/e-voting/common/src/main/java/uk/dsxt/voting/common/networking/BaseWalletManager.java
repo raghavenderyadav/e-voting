@@ -39,6 +39,7 @@ public class BaseWalletManager implements WalletManager {
 
     private Process nxtProcess;
     private boolean isForgeNow = false;
+    private boolean isInitialized = false;
 
     public BaseWalletManager(Properties properties, String[] args) {
         workingDir = new File(System.getProperty("user.dir"));
@@ -115,11 +116,13 @@ public class BaseWalletManager implements WalletManager {
             try {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
-                log.error("Can't parse response: {}. Error message: {}", response, e.getMessage());
+                if (isInitialized)
+                    log.error("Can't parse response: {}. Error message: {}", response, e.getMessage());
             }
             return result;
         } catch (Exception e) {
-            log.error("Method {} failed. Error message {}", type, e.getMessage());
+            if (isInitialized)
+                log.error("Method {} failed. Error message {}", type, e.getMessage());
             return null;
         }
     }
@@ -302,6 +305,7 @@ public class BaseWalletManager implements WalletManager {
             }
         }
         log.info("Wallet initialization finished. selfAccount={}", selfAccount);
+        isInitialized = true;
         while (!isForgeNow && !Thread.currentThread().isInterrupted()) {
             isForgeNow = startForging();
             sleep(100);
