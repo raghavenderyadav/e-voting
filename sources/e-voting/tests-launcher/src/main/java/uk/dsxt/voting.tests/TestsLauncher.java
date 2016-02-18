@@ -135,7 +135,7 @@ public class TestsLauncher {
             Thread.sleep(sleepPeriod);
 
             // TODO: check that results builder has finished calculating results
-            // TODO Thread.sleep(2 * 60 * 1000);
+            Thread.sleep((clientAggregationPeriod + 1) * 60 * 1000);
 
             stopAllProcesses();
             //stop jetty servers
