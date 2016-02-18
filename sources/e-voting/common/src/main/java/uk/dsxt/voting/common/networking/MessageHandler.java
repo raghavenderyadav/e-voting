@@ -27,16 +27,18 @@ import uk.dsxt.voting.common.utils.CryptoHelper;
 
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 public abstract class MessageHandler {
 
+    private static final long MAX_MESSAGE_DELAY = 10 * 60 * 1000;
+
     protected final WalletManager walletManager;
 
     private final Map<String, PublicKey> publicKeysById = new HashMap<>();
+
+    private final Set<String> handledMessageIDs = new HashSet<>();
 
     private long lastNewMessagesRequestTime;
 
@@ -84,11 +86,15 @@ public abstract class MessageHandler {
     }
 
     private void checkNewMessages() {
-        List<Message> newMessages = walletManager.getNewMessages(lastNewMessagesRequestTime);
-        lastNewMessagesRequestTime = System.currentTimeMillis()-1;
+        long now = System.currentTimeMillis();
+        List<Message> newMessages = walletManager.getNewMessages(Math.max(0, lastNewMessagesRequestTime-MAX_MESSAGE_DELAY));
+        lastNewMessagesRequestTime = now;
         if (newMessages == null)
             return;
         for(Message message : newMessages) {
+            if (!handledMessageIDs.add(message.getId())) {
+                continue;
+            }
             try {
                 MessageContent messageContent = new MessageContent(message.getBody());
                 PublicKey authorKey = publicKeysById.get(messageContent.getAuthor());

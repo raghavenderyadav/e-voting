@@ -52,6 +52,7 @@ public class MessageHandlerTest {
         messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null)));
         messages.add(new Message("m2", MessageContent.buildOutputMessage("X2", "01", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null)));
         messages.add(new Message("m3", MessageContent.buildOutputMessage("X3", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null)));
+        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null)));
         when(walletManager.getNewMessages(0)).thenReturn(messages);
 
         List<MessageContent> filteredContents = new ArrayList<>();
