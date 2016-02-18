@@ -86,6 +86,7 @@ public class TestsLauncher {
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
             int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
             int clientAggregationPeriod = Integer.parseInt(properties.getProperty("client.results.aggregation.period"));
+            String allowedHosts = properties.getProperty("allowed.hosts");
 
             masterAccount = properties.getProperty("master.address");
             masterPassword = properties.getProperty("master.passphrase");
@@ -111,7 +112,7 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
             nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s;%s", clientAccount, victimAccount));
 
-            final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties);
+            final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties,allowedHosts);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath, masterAccount, masterPassword}));
             //starting clients
             long start = Instant.now().getMillis();
@@ -123,7 +124,7 @@ public class TestsLauncher {
                 String clientName = String.format("nxt-node-%s", conf.getHolderId());
                 String blackList = !conf.isHonestParticipant() ? victimAccount : "";
                 nxtProperties.setProperty("nxt.evt.blackList", blackList);
-                String clientPropertiesPath = createWalletPropertiesFile(clientName, startPort + 2 * i, nxtProperties);
+                String clientPropertiesPath = createWalletPropertiesFile(clientName, startPort + 2 * i, nxtProperties, allowedHosts);
                 String walletOffSchedule = conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
                 startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod);
             }
@@ -155,7 +156,7 @@ public class TestsLauncher {
         }
     }
 
-    private static String createWalletPropertiesFile(String nodeName, int port, Properties nxtProperties) {
+    private static String createWalletPropertiesFile(String nodeName, int port, Properties nxtProperties, String allowedHosts) {
         String clientPropertiesPath = String.format("conf/%s.properties", nodeName);
         final Path path = Paths.get(".", DB_FOLDER, nodeName);
         nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(port));
@@ -165,6 +166,9 @@ public class TestsLauncher {
         nxtProperties.setProperty("nxt.isTestnet", "true");
         nxtProperties.setProperty("nxt.testDbDir", path.toString());
         nxtProperties.setProperty("nxt.minNeedBlocks", "1");
+        nxtProperties.setProperty("nxt.testnetGuaranteedBalanceConfirmations", "1");
+        nxtProperties.setProperty("nxt.allowedUserHosts", allowedHosts);
+        nxtProperties.setProperty("nxt.allowedBotHosts", allowedHosts);
         saveProperties(clientPropertiesPath, nxtProperties);
         return clientPropertiesPath;
     }
