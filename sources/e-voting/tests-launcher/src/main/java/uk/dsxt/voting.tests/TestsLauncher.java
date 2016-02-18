@@ -84,21 +84,14 @@ public class TestsLauncher {
             startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
             startSingleModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(new String[]{String.valueOf(resultsCheckPeriod)}));
             //load properties and set master node to offline mode
-            final String propertiesPath = String.format("conf/%s.properties", MASTER_NAME);
 
             Properties nxtProperties = PropertiesHelper.loadProperties("nxt-default");
-            nxtProperties.setProperty("nxt.peerServerPort", "7873");
-            nxtProperties.setProperty("nxt.apiServerPort", "7872");
-            nxtProperties.setProperty("nxt.testDbDir", "./nxt");
-            nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
-            nxtProperties.setProperty("nxt.isOffline", "false");
-            nxtProperties.setProperty("nxt.isTestnet", "true");
-            nxtProperties.setProperty("nxt.minNeedBlocks", "1");
             nxtProperties.setProperty("nxt.enablePeerServerDoSFilter", "true");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestMs", "300000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.delayMs", "1000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
-            saveProperties(propertiesPath, nxtProperties);
+
+            final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath}));
             //starting clients
             long start = Instant.now().getMillis();
@@ -108,16 +101,7 @@ public class TestsLauncher {
                 final int ii = i;
                 ClientConfiguration conf = configurations[i];
                 String clientName = String.format("nxt-node-%s", conf.getHolderId());
-                String clientPropertiesPath = String.format("conf/%s.properties", clientName);
-                String dbDir = String.format("./%s", clientName);
-                nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(startPort + 2 * i));
-                nxtProperties.setProperty("nxt.peerServerPort", String.valueOf(startPort + 2 * i + 1));
-                nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
-                nxtProperties.setProperty("nxt.isOffline", "false");
-                nxtProperties.setProperty("nxt.isTestnet", "true");
-                nxtProperties.setProperty("nxt.testDbDir", dbDir);
-                nxtProperties.setProperty("nxt.minNeedBlocks", "1");
-                saveProperties(clientPropertiesPath, nxtProperties);
+                String clientPropertiesPath = createWalletPropertiesFile(clientName, startPort + 2 * i, nxtProperties);
                 String walletOffSchedule = conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
                 startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod);
             }
@@ -150,10 +134,25 @@ public class TestsLauncher {
         }
     }
 
+    private static String createWalletPropertiesFile(String nodeName, int port, Properties nxtProperties) {
+        String clientPropertiesPath = String.format("conf/%s.properties", nodeName);
+        String dbDir = String.format("./%s", nodeName);
+        nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(port));
+        nxtProperties.setProperty("nxt.peerServerPort", String.valueOf(port + 1));
+        nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
+        nxtProperties.setProperty("nxt.isOffline", "false");
+        nxtProperties.setProperty("nxt.isTestnet", "true");
+        nxtProperties.setProperty("nxt.testDbDir", dbDir);
+        nxtProperties.setProperty("nxt.minNeedBlocks", "1");
+        saveProperties(clientPropertiesPath, nxtProperties);
+        return clientPropertiesPath;
+    }
+
     private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule, int clientAggregationPeriod) {
         ClientConfiguration conf = configurations[idx];
         if (startClientsAsProcesses) {
-            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(),
+            startProcess("Client" + idx, CLIENT_JAR_PATH,
+                    new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(),
                     conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         } else {
             VotingClientMain.main(new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
@@ -194,21 +193,22 @@ public class TestsLauncher {
 
     private static void startProcess(String name, String jarPath, String[] params) {
         if (processesByName.containsKey(name)) {
-
+            stopProcess(name);
         }
         try {
             List<String> cmd = new ArrayList<>();
             cmd.add("java");
             cmd.add("-jar");
             cmd.add(jarPath);
-            for (String param : params) {
-                cmd.add(param);
-            }
+            Collections.addAll(cmd, params);
 
             log.debug("Start process command: {}", StringUtils.join(cmd, " "));
 
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.command(cmd);
+            //processBuilder.directory(workingDir);
+            processBuilder.redirectError(new File(String.format("error_%s.log", name)));
+            processBuilder.redirectOutput(new File(String.format("output_%s.log", name)));
             Process process = processBuilder.start();
             processesByName.put(name, process);
             log.info("Process {} started", name);
