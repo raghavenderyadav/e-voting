@@ -3,12 +3,14 @@ package uk.dsxt.voting.common.networking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.sun.deploy.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.RequestType;
 import uk.dsxt.voting.common.datamodel.walletapi.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class BaseWalletManager implements WalletManager {
 
+    private final String workingDir;
     private final String jarPath;
     private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
@@ -38,6 +41,7 @@ public class BaseWalletManager implements WalletManager {
     private boolean isForgeNow = false;
 
     public BaseWalletManager(Properties properties, String[] args) {
+        workingDir = properties.getProperty("working.dir");
         jarPath = properties.getProperty("nxt.jar.path");
 
         mainAddress = properties.getProperty("nxt.main.address");
@@ -124,7 +128,12 @@ public class BaseWalletManager implements WalletManager {
             cmd.add("-jar");
             cmd.add(jarPath);
             cmd.add(nxtPropertiesPath);
+
+            log.debug("Working directory: {}", workingDir);
+            log.debug("Starting nxt wallet process: {}", StringUtils.join(cmd, " "));
+
             ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.directory(new File(workingDir));
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
             inheritIO(nxtProcess.getInputStream());
@@ -136,7 +145,7 @@ public class BaseWalletManager implements WalletManager {
             });
             waitInitialize();
         } catch (Exception e) {
-            String errorMessage = String.format("Can't run wallet. Error: %s", e.getMessage());
+            String errorMessage = String.format("Couldn't run wallet. Error: %s", e.getMessage());
             log.error(errorMessage, e);
             throw new RuntimeException(errorMessage);
         }
@@ -207,10 +216,9 @@ public class BaseWalletManager implements WalletManager {
         if (unconfirmedMessages == null)
             return null;
         resultIds.addAll(result.stream().map(Message::getId).collect(Collectors.toList()));
-        for (Message unconfirmedMessage : unconfirmedMessages) {
-            if (!resultIds.contains(unconfirmedMessage.getId()))
-                result.add(unconfirmedMessage);
-        }
+        result.addAll(unconfirmedMessages.stream().
+                filter(unconfirmedMessage -> !resultIds.contains(unconfirmedMessage.getId())).
+                collect(Collectors.toList()));
         return result;
     }
 
@@ -223,8 +231,9 @@ public class BaseWalletManager implements WalletManager {
         if (result == null)
             return null;
         try {
-            return Arrays.asList(result.getTransactions()).stream().map(t ->
-                    new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).collect(Collectors.toList());
+            return Arrays.asList(result.getTransactions()).stream().
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getConfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
             return null;
@@ -233,15 +242,15 @@ public class BaseWalletManager implements WalletManager {
 
     private List<Message> getUnconfirmedMessages(long timestamp) {
         long secondsTimestamp = timestamp / 1000;
-        UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS, keyToValue -> {
-            keyToValue.put("account", selfAccount);
-        }, UnconfirmedTransactionsResponse.class);
+        UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS,
+                keyToValue -> keyToValue.put("account", selfAccount), UnconfirmedTransactionsResponse.class);
         if (result == null)
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                     filter(t -> t.getAttachment().isMessageIsText() && t.getTimestamp() >= secondsTimestamp).
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).collect(Collectors.toList());
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
             return null;
@@ -258,8 +267,10 @@ public class BaseWalletManager implements WalletManager {
             Scanner sc = new Scanner(src);
             while (sc.hasNextLine()) {
                 String logStr = sc.nextLine();
-                if (logStr.contains("ERROR") || logStr.contains("WARNING")) {
+                if (logStr.toUpperCase().contains("ERROR")) {
                     log.error(logStr);
+                } else if (logStr.toUpperCase().contains("WARNING")) {
+                    log.warn(logStr);
                 } else {
                     log.info(logStr);
                 }
