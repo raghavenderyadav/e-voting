@@ -40,7 +40,8 @@ public class TestDataGenerator {
     private final static String TESTING_TYPE = "stress";
 
     //common settings
-    private final static int COUNT = 100;
+    private final static int PARTICIPANTS_COUNT = 100;
+    private final static int NODES_COUNT = 10;
     private final static BigDecimal MAX_BLOCKED_PACKET_SIZE = new BigDecimal(30);
     private final static int DURATION_MINUTES = 60;
 
@@ -60,19 +61,19 @@ public class TestDataGenerator {
         Voting voting = generateVoting(startTime, endTime);
         Voting[] votings = new Voting[]{voting};
         //generating keys
-        KeyPair[] keys = CryptoKeysGenerator.generateKeys(COUNT);
+        KeyPair[] keys = CryptoKeysGenerator.generateKeys(PARTICIPANTS_COUNT);
         //generating participants
-        Participant[] participants = new Participant[COUNT];
-        for (int i = 0; i < COUNT; i++) {
+        Participant[] participants = new Participant[PARTICIPANTS_COUNT];
+        for (int i = 0; i < PARTICIPANTS_COUNT; i++) {
             participants[i] = new Participant(String.valueOf(i + 1), String.format("Voter %d", i + 1), keys[i].getPublicKey());
         }
         //generate holdings
-        Holding[] holdings = new Holding[COUNT];
-        for (int i = 0; i < COUNT; i++) {
-            holdings[i] = new Holding(participants[i].getId(), new BigDecimal(randomInt(1, 100)), null);
-            if (i % 10 == 0 && i != 0) {
+        Holding[] holdings = new Holding[PARTICIPANTS_COUNT];
+        for (int i = 0; i < PARTICIPANTS_COUNT; i++) {
+            holdings[i] = new Holding(participants[i].getId(), new BigDecimal(randomInt(15, 100)), null);
+            if ((i % (PARTICIPANTS_COUNT / NODES_COUNT)) != 0) {
                 //setting nominal holder
-                int nominalHolderId = i - 1;
+                int nominalHolderId = i < (PARTICIPANTS_COUNT / NODES_COUNT) ? 0 : (i / (PARTICIPANTS_COUNT / NODES_COUNT)) * 10;
                 holdings[i] = new Holding(holdings[i].getHolderId(), holdings[i].getPacketSize(), participants[nominalHolderId].getId());
                 holdings[nominalHolderId] = new Holding(holdings[nominalHolderId].getHolderId(),
                         holdings[nominalHolderId].getPacketSize().add(holdings[i].getPacketSize()), null);
@@ -82,7 +83,7 @@ public class TestDataGenerator {
         List<BlockedPacket> blackListEntries = new ArrayList<>();
         Map<String, BigDecimal> blockedPacketByHolderId = new HashMap<>();
         for (int i = 0; i < holdings.length; i++) {
-            if ((i + 1) % 5 == 0) {
+            if ((i + 1) % (PARTICIPANTS_COUNT / NODES_COUNT) == 0) {
                 Holding holding = holdings[i];
                 BigDecimal blockedPacket = holding.getPacketSize().compareTo(MAX_BLOCKED_PACKET_SIZE) < 0 ? holding.getPacketSize() : MAX_BLOCKED_PACKET_SIZE;
                 blackListEntries.add(new BlockedPacket(holding.getHolderId(), blockedPacket));
@@ -91,23 +92,30 @@ public class TestDataGenerator {
         }
         BlockedPacket[] blackList = blackListEntries.toArray(new BlockedPacket[blackListEntries.size()]);
         //generating client configuration
-        ClientConfiguration[] clientConfs = new ClientConfiguration[COUNT];
-        for (int i = 0; i < COUNT; i++) {
-            VoteResult vote = generateVote(i, voting, holdings, participants, blockedPacketByHolderId);
-            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, false, String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()), null);
+        ClientConfiguration[] clientConfs = new ClientConfiguration[NODES_COUNT];
+        for (int i = 0; i < NODES_COUNT; i++) {
+            StringBuilder builderMask = new StringBuilder();
+            for (int j = 0; j < (PARTICIPANTS_COUNT / NODES_COUNT); j++) {
+                VoteResult vote = generateVote(i * (PARTICIPANTS_COUNT / NODES_COUNT) + j, voting, holdings, participants, blockedPacketByHolderId);
+                builderMask.append(String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()));
+                if (j != (PARTICIPANTS_COUNT / NODES_COUNT) - 1)
+                    builderMask.append(";");
+            }
+            String mask = builderMask.toString();
+            clientConfs[i] = new ClientConfiguration(participants[i * (PARTICIPANTS_COUNT / NODES_COUNT)].getId(), keys[i * (PARTICIPANTS_COUNT / NODES_COUNT)].getPrivateKey(), true, false, mask, null);
         }
         //set some of the participants as fraudsters if needed
         if (COLLUSION_PARTICIPANTS > 0 && VICTIM_PARTICIPANTS > 0) {
             List<Integer> fraudsters = new ArrayList<>();
-            ThreadLocalRandom.current().ints(0, 99).distinct().limit(COLLUSION_PARTICIPANTS).forEach(i -> {
+            ThreadLocalRandom.current().ints(0, (PARTICIPANTS_COUNT / NODES_COUNT) - 1).distinct().limit(COLLUSION_PARTICIPANTS).forEach(i -> {
                 makeCollusion(i, clientConfs, voting, holdings, participants, blockedPacketByHolderId);
                 fraudsters.add(i);
             });
-            ThreadLocalRandom.current().ints(0, 99).filter(i -> !fraudsters.contains(i)).distinct().limit(VICTIM_PARTICIPANTS).forEach(i -> clientConfs[i].setVictim(true));
+            ThreadLocalRandom.current().ints(0, (PARTICIPANTS_COUNT / NODES_COUNT) - 1).filter(i -> !fraudsters.contains(i)).distinct().limit(VICTIM_PARTICIPANTS).forEach(i -> clientConfs[i].setVictim(true));
         }
         //set disconnections
         if (BADCONNECTION_PARTICIPANTS > 0 && MAX_DISCONNECT_COUNT > 0 && MAX_DISCONNECT_PERIOD > 0) {
-            ThreadLocalRandom.current().ints(0, COUNT).distinct().limit(BADCONNECTION_PARTICIPANTS).forEach(i -> makeDisconnect(i, clientConfs));
+            ThreadLocalRandom.current().ints(0, (PARTICIPANTS_COUNT / NODES_COUNT) - 1).distinct().limit(BADCONNECTION_PARTICIPANTS).forEach(i -> makeDisconnect(i, clientConfs));
         }
         //save data to files
         saveTestData(clientConfs, votings, holdings, participants, blackList);
@@ -174,7 +182,7 @@ public class TestDataGenerator {
         for (int j = 0; j < voting.getQuestions().length; j++) {
             int questionId = voting.getQuestions()[j].getId();
             int answerId = randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1;
-            BigDecimal voteAmount = new BigDecimal(randomInt(0, holdings[i].getPacketSize().subtract(totalSum).intValue()));
+            BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, holdings[i].getPacketSize().subtract(totalSum).intValue()));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByQuestionId().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
         }
