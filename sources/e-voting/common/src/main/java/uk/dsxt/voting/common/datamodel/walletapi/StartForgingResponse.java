@@ -2,9 +2,11 @@ package uk.dsxt.voting.common.datamodel.walletapi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
+@EqualsAndHashCode(callSuper=false)
 public class StartForgingResponse extends BaseWalletResponse {
     long deadline;
     long hitTime;
