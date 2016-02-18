@@ -61,7 +61,7 @@ public class WalletScheduler {
                 if (terms.length != 2)
                     throw new IllegalArgumentException(String.format("WalletOff schedule record can not be created from string with %d terms (%s)", terms.length, period));
                 int begin = Integer.parseInt(terms[0]);
-                int end = Integer.parseInt(terms[0]);
+                int end = Integer.parseInt(terms[1]);
                 walletStartStopTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
