@@ -82,16 +82,18 @@ public class VoteAggregator {
         return rootRecord.getTreeResult();
     }
 
-    public void addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
+    public boolean addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
         if (!checkVote(voteResult, timestamp, signAuthorId)) {
-            return;
+            return false;
         }
         HolderRecord record = results.get(voteResult.getHolderId());
 
         if (record.selfResults.size() == 0 || record.selfResults.size() == 1 && !record.selfResults.get(0).equals(voteResult)) {
             record.selfResults.add(voteResult);
             recalculateResults(record);
+            return true;
         }
+        return false;
     }
 
     private void recalculateResults(HolderRecord record) {

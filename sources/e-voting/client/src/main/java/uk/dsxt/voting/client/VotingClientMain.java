@@ -75,7 +75,7 @@ public class VotingClientMain {
         Voting[] votings = registriesServer.getVotings();
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
-        VotingClient client = new VotingClient(walletManager, aggregation, ownerId, ownerPrivateKey, participants);
+        VotingClient client = new VotingClient(walletManager, aggregation, resultsBuilder, ownerId, ownerPrivateKey, votings, participants);
         VoteScheduler voteScheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, resultsAggregationPeriod, ownerId);
         WalletScheduler walletScheduler = new WalletScheduler(walletManager);
 

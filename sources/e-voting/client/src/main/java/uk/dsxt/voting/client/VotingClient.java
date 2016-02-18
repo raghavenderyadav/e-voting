@@ -24,8 +24,10 @@ package uk.dsxt.voting.client;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.VoteResult;
+import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.MessageContent;
 import uk.dsxt.voting.common.networking.MessageHandler;
+import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.security.PrivateKey;
@@ -36,22 +38,30 @@ public class VotingClient extends MessageHandler {
 
     private final VoteAggregation voteAggregation;
 
-    private final String ownerId;
+    private final ResultsBuilder resultsBuilder;
+
+    private final String holderId;
 
     private final PrivateKey ownerPrivateKey;
 
-    public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, String ownerId, PrivateKey ownerPrivateKey, Participant[] participants) {
+    private final Map<String, Voting> votingsById = new HashMap<>();
+
+
+    public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, ResultsBuilder resultsBuilder,
+                        String holderId, PrivateKey ownerPrivateKey, Voting[] votings, Participant[] participants) {
         super(walletManager, participants);
         this.voteAggregation = voteAggregation;
-        this.ownerId = ownerId;
+        this.resultsBuilder = resultsBuilder;
+        this.holderId = holderId;
         this.ownerPrivateKey = ownerPrivateKey;
+        Arrays.stream(votings).forEach(v -> votingsById.put(v.getId(), v));
     }
 
     public boolean sendVoteResult(VoteResult voteResult) {
         Map<String, String> fields = new HashMap<>();
         fields.put(MessageContent.FIELD_VOTE_RESULT, voteResult.toString());
         try {
-            String id = walletManager.sendMessage(MessageContent.buildOutputMessage(MessageContent.TYPE_VOTE_RESULT, ownerId, ownerPrivateKey, fields));
+            String id = walletManager.sendMessage(MessageContent.buildOutputMessage(MessageContent.TYPE_VOTE_RESULT, holderId, ownerPrivateKey, fields));
             if (id == null) {
                 log.error("sendVoteResult fails");
                 return false;
@@ -69,7 +79,13 @@ public class VotingClient extends MessageHandler {
         if (MessageContent.TYPE_VOTE_RESULT.equals(messageContent.getType())) {
             log.info("Message {} contains vote result", messageId);
             VoteResult result = new VoteResult(messageContent.getField(MessageContent.FIELD_VOTE_RESULT));
-            voteAggregation.addVote(result, messageContent.getFieldTimestamp(), messageContent.getAuthor());
+            Voting voting = votingsById.get(result.getVotingId());
+            if (voting == null) {
+                return;
+            }
+            if (voteAggregation.addVote(result, messageContent.getFieldTimestamp(), messageContent.getAuthor()) &&
+                    voting.getEndTimestamp() >= System.currentTimeMillis())
+                resultsBuilder.addResult(holderId, voteAggregation.getResult(result.getVotingId()).toString());
         }
     }
 

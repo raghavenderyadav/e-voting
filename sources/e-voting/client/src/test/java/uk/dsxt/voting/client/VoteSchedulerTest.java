@@ -78,8 +78,10 @@ public class VoteSchedulerTest {
         assertEquals("2", sentResults.get(1).getHolderId());
         assertEquals(1, sentToBuilderResults.size());
         assertEquals("2", new VoteResult(sentToBuilderResults.get(0)).getHolderId());
-        assertEquals(1, sentAggregatedResults.size());
+        assertEquals(2, sentAggregatedResults.size());
         assertEquals(null, new VoteResult(sentAggregatedResults.get(0)).getHolderId());
         assertEquals("22", new VoteResult(sentAggregatedResults.get(0)).getVotingId());
+        assertEquals(null, new VoteResult(sentAggregatedResults.get(1)).getHolderId());
+        assertEquals("22", new VoteResult(sentAggregatedResults.get(1)).getVotingId());
     }
 }

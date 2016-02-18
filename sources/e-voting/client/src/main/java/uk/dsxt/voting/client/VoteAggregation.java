@@ -38,13 +38,14 @@ public class VoteAggregation {
         }
     }
 
-    public void addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
+    public boolean addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
         VoteAggregator aggregator = aggregatorsByVotingId.get(voteResult.getVotingId());
         if (aggregator == null) {
             log.warn("Can not add vote of holder {} to voting {}: voting not found",
                     voteResult.getHolderId(), voteResult.getVotingId());
+            return false;
         } else {
-            aggregator.addVote(voteResult, timestamp, signAuthorId);
+            return aggregator.addVote(voteResult, timestamp, signAuthorId);
         }
     }
 

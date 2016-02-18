@@ -67,6 +67,7 @@ public class VoteScheduler {
         for (Voting voting : votings) {
             votingsById.put(voting.getId(), voting);
             recordsByTime.add(new VoteRecord(voting.getEndTimestamp() + resultsAggregationPeriod, true, new VoteResult(voting.getId(), null)));
+            recordsByTime.add(new VoteRecord(voting.getEndTimestamp(), true, new VoteResult(voting.getId(), null)));
         }
 
         String[] lines = messagesFileContent.split("\\r?\\n");
