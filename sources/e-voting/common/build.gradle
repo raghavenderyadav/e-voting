@@ -6,6 +6,8 @@ repositories {
 
 dependencies {
     compile "commons-io:commons-io:2.4"
+    compile "commons-lang:commons-lang:2.6"
+
 
     compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"

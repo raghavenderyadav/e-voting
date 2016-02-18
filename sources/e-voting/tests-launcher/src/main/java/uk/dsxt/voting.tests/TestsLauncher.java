@@ -24,6 +24,7 @@ package uk.dsxt.voting.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.VotingClientMain;
 import uk.dsxt.voting.common.datamodel.InternalLogicException;
@@ -131,7 +132,8 @@ public class TestsLauncher {
             log.info("Waiting {} seconds while voting ends", sleepPeriod / 1000);
             Thread.sleep(sleepPeriod);
 
-            //TODO: check that results builder has finished calculating results
+            // TODO: check that results builder has finished calculating results
+            // TODO Thread.sleep(2 * 60 * 1000);
 
             stopAllProcesses();
             //stop jetty servers
@@ -200,6 +202,9 @@ public class TestsLauncher {
             for(String param : params) {
                 cmd.add(param);
             }
+
+            log.debug("Start process command: {}", StringUtils.join(cmd, " "));
+
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.command(cmd);
             Process process = processBuilder.start();
