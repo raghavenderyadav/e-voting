@@ -1,0 +1,75 @@
+[
+  {
+    "holderId": "1",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAk4QPElt7gS5Jnp1Cx2N3AGDeDANKZOoo3+j5Aw0/hu0Cod0cux5TprgbPCY7IzTWuLgxqQ7tImEEEc1yChpCSwIDAQABAkB7ZTtKStYsADE7CieDLHOuEFmNyO7hLXLVokcyQ1HBpZjFF/oh9NMaGGkXg/pcIXNMu+lGLzaawTQoWLuJiEyBAiEA0YxdVCZ1LRzH5B1ryHB94+mehy0AtTJNQYvdg0pOiEECIQC0N2vdspWsOrHwUVayv2+XwLdqHcyWFHlcII2OQJyHiwIhAMmO2B6fN0qDSopS+l+8RHs7Na8UTH/9uG352MH2cX+BAiEAi/bbJIS1b9zqI53YetzpO2/mQ1k/cnQWSTHTHt8Zcr8CIAzYvJ7LVFkSBAHLR+Fnjkd1k46inqv8MwUkObWA62iD",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "4:1,1,1-1-1,2-3-1,3-3-4;3:1,2,1-2-2,2-3-15,3-1-8;2:1,3,1-1-1,2-3-11,3-3-2;4:1,4,1-3-74,2-1-0,3-2-7;4:1,5,1-3-14,2-2-10,3-3-0;3:1,6,1-2-61,2-1-8,3-3-0;1:1,7,1-1-74,2-2-0,3-3-7;2:1,8,1-3-10,2-2-16,3-2-44;4:1,9,1-1-9,2-1-14,3-2-1;1:1,10,1-3-0,2-3-0,3-2-0"
+  },
+  {
+    "holderId": "11",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAuCORH4goRE2PMgPHdT1iUk5Cds64I5cj+MUr7CT/QY3cUoVV25OK6SOcBcqJqDLLt2eZpguRX+ZbNYB3jCHjiwIDAQABAkEApyBQ5UeVFHk4kHJxo+00wfMZy+9Pna3eDjoW5Vum+X0WH8osZEoYjjfbE3gC9Iv2imZfJOO7e/oxdN2oXaDuYQIhAO7toZkxDy81QIWyJrfmnzLD4NGx//inkANK37nq9UgjAiEAxUvBBYTqrqltT9Qlu5SY/5ZYRG6ApEgI4ro7HRMBOXkCIE5PRG/ZTIjEg2lOgrIzvGn/GWihVqxA/0qU988P22TRAiAVLCj9p6LrtYDmlTSraan1m7PDPDyP5K8XbbbUSurRuQIhAOVM/E8OBJ6krP5zTin4soCbJ2FsVZ+4LH7wrghVZ9eN",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,11,1-1-1,2-2-1,3-1-2;1:1,12,1-3-11,2-3-18,3-1-13;2:1,13,1-2-67,2-2-2,3-2-0;3:1,14,1-3-11,2-1-14,3-2-33;1:1,15,1-1-30,2-1-23,3-3-6;1:1,16,1-1-15,2-3-10,3-1-0;3:1,17,1-2-35,2-1-0,3-2-2;2:1,18,1-1-18,2-2-15,3-3-34;2:1,19,1-2-45,2-2-21,3-1-6;3:1,20,1-2-0,2-1-1,3-3-11"
+  },
+  {
+    "holderId": "21",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkNAd5ffplxLDqIa/ztfKoMi4ouBVJXtO+t6zndn6hXI4CCLupoqW67Quw3b1YS//yPCRjXHX5uWnOdyxOGceRwIDAQABAkAi4+GwPLDtEzpM6lpgTaGmZ3YE2CPrqe/3hZylFZXEfMmcddNoG8JY6Gf5++FUv4UO4E8PdInwOmyN+bmbP3MBAiEAyfIJkTYP+5qgDoBE032UzDHiS32lT3jsuZiG+ZXt5cECIQC3kyx3QE7bcZbaBbggQfNvR3YRqnFtRuTHfcJqJ3dWBwIgPKH0J2pBAD0bw17Vy14QOALeO+Y8pRDcmpjmJbfTVsECIQCiUftmcrGHrnfBzn7R3x7+jYSj+D8VbjNLBjNLJByMLwIgJZ8W7DTRqRdp0grPXi894cYpwGQxGaOaYUswaMoNXGI=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,21,1-3-2,2-1-3,3-2-0;4:1,22,1-2-45,2-3-2,3-3-0;3:1,23,1-1-43,2-2-1,3-1-0;3:1,24,1-3-37,2-3-24,3-2-2;2:1,25,1-3-29,2-2-39,3-3-12;2:1,26,1-1-55,2-3-0,3-1-32;1:1,27,1-1-8,2-3-12,3-2-38;3:1,28,1-3-17,2-1-31,3-3-0;2:1,29,1-1-5,2-1-10,3-2-3;1:1,30,1-2-0,2-1-0,3-3-0"
+  },
+  {
+    "holderId": "31",
+    "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAkQZ1C63rlhPI2TXDGlB6jTrq1zl2oDkglIOLm9szH2u3OxihtHOCprYBLNs7itG+bioDvWbO7Xwp89yGOV1QFwIDAQABAkAnam3dYsOo4m+wOWBxgnYMdHrnTALlwSENvELxdT4Lx727US5Sg3G47SpCIDqWcGj2GvBPlKRrCdzJJHJyOnFBAiEA0n46xVE9vNThtqlqwC/PDxaPZ0Jgcisdq4nZp/s/VE8CIQCwYOY7E61KJ56M3cbgySypJ5oPIrUhQyuA18xREWCtuQIhAKyc5TcQUy9554ryTV9DFWqLFpgX/51ALDmSdtHhIGLTAiEAnQfocrh2FAtqEahyJDd317I2aztPYCnZVYDLm3GJTaECIQCv35lUBA8krnC6vsbeKatyyoLvp8TdAhJR5o/ZF49fvg==",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "4:1,31,1-3-3,2-3-3,3-2-4;2:1,32,1-3-1,2-1-11,3-2-3;3:1,33,1-2-1,2-2-2,3-2-35;3:1,34,1-2-1,2-3-10,3-1-10;1:1,35,1-3-5,2-1-3,3-3-7;3:1,36,1-2-28,2-3-12,3-3-8;4:1,37,1-3-19,2-2-3,3-2-0;4:1,38,1-1-17,2-3-0,3-2-28;3:1,39,1-2-51,2-1-17,3-1-8;3:1,40,1-1-22,2-1-36,3-3-2"
+  },
+  {
+    "holderId": "41",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAirTqYzTCkWigVqZ2Wq7zs8svbCWlQp0fEjBFA3a+10Ka4YPWbUnvmV+neREp73sAErOcVcy7AWuT3u3GZ6zRcQIDAQABAkBSlZzoLEWcJdsxPDNDkt7usY8uqMtYegxB3BN7GHxP1SugJ1MSq9QIKT0ao/nO+p3YzmMMtUwEN0sKZF/OWagBAiEAxMRtgslYpandMgWUXW2tacoYmhXYHaQhAHhrqsfBEuECIQC0diLtrGZktBZUXAui5IAB6OVbJAEnceWE4IP7pJUgkQIhAIJWJsASRRD/MpDW108Hvm2ru54dSBliRaX9HjxysrahAiAJ0ySzq98nPGa60QgRJj+R2wwhmiQ18Y19XnvRB3TXAQIgSibUmGb4f58L8TS86l+j15TYgBuQUI0FPSzvu7Lsn5E=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "4:1,41,1-2-2,2-2-2,3-3-2;1:1,42,1-1-49,2-3-19,3-2-0;3:1,43,1-1-23,2-3-57,3-2-1;2:1,44,1-1-63,2-2-27,3-1-4;4:1,45,1-2-71,2-2-17,3-1-1;4:1,46,1-1-54,2-3-3,3-3-1;3:1,47,1-2-34,2-2-34,3-1-5;2:1,48,1-1-42,2-3-5,3-1-20;2:1,49,1-2-22,2-1-7,3-1-2;1:1,50,1-1-20,2-3-1,3-3-12",
+    "disconnectMask": "1-3"
+  },
+  {
+    "holderId": "51",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAogkzrQdf6WNiO5KqAWs5Lb2+3/0NlRS73s9lsAYT2AZdypWjulepjc91Jihm6BC9oqWFUNaCLGQHErvUTlWmFwIDAQABAkAvL7jRwZ0HrT51FL/XS+9Jx8DnH50t9ezD9Oeq/AoZVUD5NYWLBm/w5Rb4JNR+EpT5/RwLj6Ko/PrC5czbJv+JAiEA8Q8AQK6zrsnXdTgu/k26m0iYjrzA6vmmcieZByRVFWsCIQCsFE7xDHjy7W4VBrLG7dzHrlq8OE/v6GuS6Hj19KhxBQIhAOQrj9CpzHhIo0FX8dtSFazAFW8eKPkBX1Q0OPvynvqLAiEApGIqH1940yg5duCVPC/SLvbCOvfYdSgkS4zEsMDtgDkCIFUlWmYVoQrJyqo/lxxV04GmxY9No8iYZUuF0OIXvgNY",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,51,1-3-2,2-3-0,3-2-2;3:1,52,1-1-27,2-2-6,3-1-16;4:1,53,1-1-67,2-2-2,3-2-2;2:1,54,1-2-44,2-1-3,3-3-19;1:1,55,1-1-5,2-3-26,3-3-1;3:1,56,1-2-18,2-3-13,3-1-3;2:1,57,1-2-12,2-3-3,3-1-9;4:1,58,1-3-12,2-2-12,3-3-0;3:1,59,1-1-5,2-3-24,3-3-13;1:1,60,1-3-14,2-2-0,3-2-2",
+    "disconnectMask": "2-3"
+  },
+  {
+    "holderId": "61",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAkOqFa+QhCOioVzftL6FJYL/p0QD3AzPG4IXAx0dCxdFj947TtJRMaAKEflAyUg6QFeLjVYBye3JSxfKpPLd7pwIDAQABAkAl0O1MQFXWi1ASooeEnGQXmT0cy1GqRkKpqH2sAw6LrDaKQJmEmodj94SBHURLNGceGVAjHd7MnKCAOTiGjwSxAiEA+tm+iTNEfyljEB5Y67SRIRbVLgxf4xCK2t2mtJnQQ4UCIQCT5BN5swm/Mj6wF31JisSuZcOypQlrXXDOr1vXa438OwIhAOIezcZXVHNcF1Q8RuORzREKx/fOZ9EC5GgOTWuXC0kRAiAnd8zCw8csIWqdcAddow0ORdZOTMEQyCUc46us9+UylQIgB2ox4gJN4Ygs3QHaKZNzIlJXR8rWYRamFHssrRzUQds=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "2:1,61,1-3-3,2-3-4,3-2-1;3:1,62,1-3-10,2-2-77,3-2-3;3:1,63,1-2-6,2-1-12,3-1-6;4:1,64,1-1-9,2-1-15,3-3-0;3:1,65,1-3-81,2-3-4,3-1-3;2:1,66,1-3-39,2-2-12,3-2-8;2:1,67,1-2-20,2-3-0,3-3-0;3:1,68,1-2-22,2-3-4,3-3-33;4:1,69,1-3-41,2-1-6,3-2-4;2:1,70,1-2-3,2-3-1,3-2-25",
+    "disconnectMask": "2-3"
+  },
+  {
+    "holderId": "71",
+    "privateKey": "MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEAgWmPF5iepf4PauGGP1tsZER57GM8ISU0FXFjai2MK+FW4l3Kzh29Gy5fvJb4VI9p5dx1x+6um0nlKiOTRjAn+wIDAQABAkBleJptWwsShqoaGSmFZi8QU6zyEEFmj+BN6/GSoJInGNPt13HePxgqAGsucXLbkyr11WZQxK2jDN1YhAlNRVkpAiEAxg0Pfzpqhnej8743dcs0VH4+UZSmZMZbcPRFtV1eyoUCIQCnRySoo3uLcZC5EV2V3u2ZzmFv976vF+Eit1Y+OynwfwIgRqXOC2J5MXJoJ8CI5BoSlrlZ3ZwbJwOjBs38N9AQykkCIHeYndUUTVg9McOfbtGgOTAmJfPvpR16bTRs7/Q+SJXxAiBEzVAFiAHKkO9lX3x7zWzp1k7crkspdoyyN7WEFFxWcg==",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "2:1,71,1-1-1,2-3-4,3-3-3;3:1,72,1-3-58,2-1-32,3-2-1;4:1,73,1-3-16,2-3-9,3-3-1;3:1,74,1-2-21,2-3-58,3-3-8;3:1,75,1-3-14,2-3-11,3-1-1;4:1,76,1-2-32,2-1-6,3-3-10;4:1,77,1-3-42,2-1-2,3-2-11;1:1,78,1-1-4,2-1-8,3-1-3;4:1,79,1-3-15,2-2-16,3-3-2;1:1,80,1-2-30,2-1-5,3-2-1"
+  },
+  {
+    "holderId": "81",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAsfY/42I9pbQEjam53G0AeD8ZkejwmQVAdftLdc7i7Sus+GB5KeKyYzF4VodQktzdvVR0/FAcmdiKGvIgZBKsvwIDAQABAkBEZugrmAkl9cmCQeiEhwkVLvu/D4/a4R/juVFJ2Nl0Wxzuj5MKvW7Tx5HbEfHS7WguPkMRfeE0+vust/DXjAWhAiEA+8/yFsM5Wn/Ko1MLBSxbFzrB30d8kKJ5wwaFiyz1DCkCIQC06+WJYdbq4/d+GFyje32eJaj9koHZ8lPbL0xkRtGOpwIgO2D3t0Jl3d9Qi17jtF6XRE0ItnwG9Zw6ljCNgRoi1rECIQCTG1xAILXHuCT8+oIYy8iQVr7Zr861kDxu9D6BKrQp8QIgEDZbDkDPdeOTD3CsTCbV/3XquOP7PV8YZaSl4eEinR4=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,81,1-2-2,2-3-3,3-2-0;4:1,82,1-2-26,2-3-11,3-3-0;4:1,83,1-1-2,2-1-10,3-2-4;2:1,84,1-1-34,2-2-15,3-2-9;4:1,85,1-1-38,2-2-2,3-2-1;2:1,86,1-2-11,2-2-5,3-2-4;2:1,87,1-3-16,2-1-1,3-2-16;2:1,88,1-3-15,2-2-9,3-2-0;4:1,89,1-1-36,2-2-31,3-3-6;3:1,90,1-1-0,2-2-0,3-2-0"
+  },
+  {
+    "holderId": "91",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAx56EpRMkKslO55VaciMqaqm/iLuSD71eGdKcBntTHTaAP+Fj+tFQ/l8PbscY48ElQ7kpaOZYxntys59XzpUt2wIDAQABAkAjZkMTmw9g3w41F1FQyFevTqb+snS2gdh8L9MnextEJKPUO4hQ2b7wVu2NGW2zhcvK6e3cIMaiW7qZ3R/4dS1xAiEA7i/VS5q+Oh4/Cu8TGdla2mcJFTG5twxdUrnvsk6wKtcCIQDWjEtu7weYhpDBULg1NOELAvopUPnoip56bY4f75dYnQIgaaIrHVmmbc4GNYor1XXw9hVmENE5xPWl2c9+f3yoYocCIFuvsuDih4V4JE5o13/tbCrPh+a2M0ZcTuOVBALD2hLFAiEAsfjX5TfdSj+mEXVGPX6wFOSPhCyQ1dzRmYN3O+2LdEo=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "4:1,91,1-3-2,2-1-1,3-2-3;3:1,92,1-1-57,2-3-25,3-3-7;1:1,93,1-3-60,2-2-4,3-1-4;2:1,94,1-2-4,2-1-11,3-1-33;2:1,95,1-1-5,2-1-2,3-1-3;2:1,96,1-1-5,2-3-4,3-1-5;1:1,97,1-1-6,2-3-12,3-2-1;4:1,98,1-1-5,2-1-15,3-1-14;2:1,99,1-1-34,2-2-14,3-1-0;3:1,100,1-1-14,2-1-23,3-3-0"
+  }
+]

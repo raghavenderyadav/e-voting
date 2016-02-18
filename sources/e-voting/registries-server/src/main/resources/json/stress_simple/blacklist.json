@@ -1,0 +1,42 @@
+[
+  {
+    "holderId": "100",
+    "packetSize": 30
+  },
+  {
+    "holderId": "200",
+    "packetSize": 27
+  },
+  {
+    "holderId": "300",
+    "packetSize": 30
+  },
+  {
+    "holderId": "400",
+    "packetSize": 30
+  },
+  {
+    "holderId": "500",
+    "packetSize": 30
+  },
+  {
+    "holderId": "600",
+    "packetSize": 30
+  },
+  {
+    "holderId": "700",
+    "packetSize": 30
+  },
+  {
+    "holderId": "800",
+    "packetSize": 30
+  },
+  {
+    "holderId": "900",
+    "packetSize": 15
+  },
+  {
+    "holderId": "1000",
+    "packetSize": 30
+  }
+]

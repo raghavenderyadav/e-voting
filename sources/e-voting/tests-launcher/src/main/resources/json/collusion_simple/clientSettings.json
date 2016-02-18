@@ -1,0 +1,72 @@
+[
+  {
+    "holderId": "1",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAtWDRTgSjAoSiDFj33Hyomr5+4BshZvtloMbS9tdrb+ks+6YT+Byk77lYpF7KKF8/FQnHjhe1v0q+7xU3C1Q/HwIDAQABAkEAlSy82Irtuut1D+y4ZqpMTYExfoYx0a4gJrx/1C7WmSHq2+rIoa1wjgPdabp3Of+vM2ISixATS+G5z8GFoH/nUQIhAPnUdgnAIVNWebyeKmYYTicVv6pR0hgGH8k1or4pO5VZAiEAuduSya+MeZsW2jhecB1Z9XV7pEyyhO04voTviGi2UTcCIGuzoTNw5a0EwbSDxyl+XurQoHEvltAOi9N1UPSD2BD5AiANqGURDSV1ikATqTDHbGC/+PItELXNruEMnxg7HfbH4QIgcDFTJw68E1sfP4THK45cfBCw3xGPtXf7HLRKwJs1ivE=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,1,1-1-1,2-2-4,3-2-1;1:1,2,1-1-11,2-1-22,3-3-1;1:1,3,1-1-82,2-2-11,3-1-1;1:1,4,1-2-19,2-3-17,3-2-3;1:1,5,1-1-28,2-2-0,3-2-20;1:1,6,1-2-8,2-1-3,3-1-15;1:1,7,1-2-20,2-2-28,3-2-1;1:1,8,1-2-3,2-2-4,3-2-12;1:1,9,1-3-1,2-2-54,3-1-7;1:1,10,1-2-4,2-1-10,3-3-0"
+  },
+  {
+    "holderId": "11",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAkw2MuT9SjWuq43fxXss42tYgVROyRKce9xHWAP9t/IZgdBAOtSQRUG8mYnFWFHXw6oAnxJ1hulzpxiCa+pixMwIDAQABAkAN2nLtaLfANupsb3o/selzRETbfvWGXjAemoGMqoOUDHfTfNDOymA1jTanVtvX3VVMnm7D+CyQQvZl8StSOYaBAiEA3yG8bnrs14I4Gr+DVJUJphYsoG4cbhWlhGwMSxb53xMCIQCotuRoGehRxlxaz2ZJM2lsqoqeYBWeyiMCdrUkC46JYQIgYsT6NiVvxY287AouRjiaxsw2AOX867XlSJLTdkG7ZcUCIQCNvZGoz9M5GHAwrrudVf8FF0X8BndDf0joYfiOvtLSIQIhAMyQ8GVwSVJmcxP9MmmTt1ndUKNpHXzDvAb2aoRbfDQF",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,11,1-2-0,2-3-1,3-2-4;1:1,12,1-2-15,2-3-2,3-3-0;1:1,13,1-3-3,2-3-5,3-3-10;1:1,14,1-1-63,2-3-20,3-3-1;1:1,15,1-2-43,2-3-7,3-2-21;1:1,16,1-2-18,2-1-3,3-1-18;1:1,17,1-3-11,2-3-3,3-1-5;1:1,18,1-1-35,2-2-3,3-1-0;1:1,19,1-2-9,2-2-3,3-3-30;1:1,20,1-2-3,2-2-17,3-3-4"
+  },
+  {
+    "holderId": "21",
+    "privateKey": "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEAo42GPeZ4O7YJnQjL6laiXCMMphdAfripZDqWB630zWY3/3fdjLnj3NDG7EABa0HIWE6uxut6ERPyw//jI4eHMwIDAQABAkEAiwikNbrWOuxk/7man3tGSk0BU7Awg4k3dpzXLXATywbcn00KT4dVot6g9xMIOc3LzjiaXb3uPrrHmkZ0B+puAQIhAOKVmL+Zcu4P3P19X/JNUA5VhhThH1xkVy9oHUeH6t9LAiEAuMkcPgVt5wys5R/SYyp9GLljsOFr5TnbK/S+hE8oPrkCIQDMn47XkUuChF7tqbjpSDrBBylUV84LkS5PSLYQcEWDKwIhAJG2TKX/pAWBMklPSZjXJWQ8tIcDixBsCg9kZGNzBBpJAiBY7kwHzFxUfqgVPSTxG7L7h+3z9iZ806lpeNzy0sViqw==",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,21,1-3-4,2-2-4,3-2-1;1:1,22,1-1-52,2-1-2,3-3-4;1:1,23,1-3-34,2-3-0,3-1-0;1:1,24,1-2-23,2-2-0,3-1-0;1:1,25,1-3-100,2-3-0,3-2-0;1:1,26,1-3-69,2-2-14,3-1-6;1:1,27,1-3-11,2-2-4,3-2-0;1:1,28,1-1-74,2-2-1,3-2-0;1:1,29,1-3-71,2-2-5,3-2-7;1:1,30,1-2-24,2-2-0,3-2-7"
+  },
+  {
+    "holderId": "31",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAzZYC9HtVMmStLLrSfkKatS73R8/CpCx7bDRVsY/NLRj472/8T6RtR3glQC+cjIMpwjRZCnuW/Lt6Kl9OV6izzwIDAQABAkBjvtW+Mpyab5hJ7Ha2RbB0Gc5mLBoet2pGjHnLRZ7hsq3SceTLgdnqeo87n95nH/BjvV+Uk+nHbxJEYt6ab8YpAiEA9xfmtXVmvhHmp1ZIaoZCLJ/zwjrrQ7jfO3If4zxcoAMCIQDU/xfse+jMbId4eDy61A17YJHMNsZJ6jyqxP3RfVsxRQIgQ6CuC0Iboa/ikjAiV81xNSd+Hs3jcECcEHgW1CnELCMCIQDQm+MXh6hTBvyLnd+E8AkgTE2foAoG/LZcXsFlOwxkrQIgGMwGGyAu7qHE3I7klP5fYXmyjFTlTBY81HTSWW54coQ=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,31,1-2-1,2-2-4,3-3-4;1:1,32,1-2-12,2-2-80,3-1-0;1:1,33,1-1-32,2-3-5,3-3-1;1:1,34,1-1-83,2-1-9,3-1-0;1:1,35,1-1-4,2-1-6,3-3-15;1:1,36,1-3-26,2-3-4,3-3-1;1:1,37,1-2-25,2-3-7,3-3-0;1:1,38,1-2-9,2-1-9,3-1-12;1:1,39,1-3-34,2-3-3,3-2-2;1:1,40,1-3-2,2-3-2,3-1-8"
+  },
+  {
+    "holderId": "41",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAgJe3d5riqeQSQExd3atarlQBdD/jEGaTXSN6n60a+Y9AKTDy4mD52IWvGGTFIPRYMYcWq/1Whj53Mj0nJ/fT6QIDAQABAkAyZMJ2cdFQCNwKLKNAYo2X8b3cI8lFPR2VC3lbqAgBMk8ZabNrpX+xEaNc5sLcRMW7paLAXR54d/S94OPVrAIBAiEAtr59djn2cK7sGdqEh8+pByqxkjK2hpgT6hWFRGn9NikCIQC0JByq54rT5P/B5Dw+XSZBs8J8NeV4MF4IPp8/mvvnwQIhALHs/Hjc7I5AMc7mTH1y+a7pqaSfzcl0Todu1qeKzqgpAiBoz3YKjgt9PAj+0/+lPWdL5P4sbONlaabcXysiw9b7QQIga/gczlJ5p+At5L5A/j4T7N5SmzO5WlRBArrmJCzuId0=",
+    "honestParticipant": true,
+    "victim": true,
+    "vote": "1:1,41,1-3-4,2-2-4,3-2-1;1:1,42,1-2-0,2-2-16,3-1-44;1:1,43,1-3-23,2-2-54,3-1-2;1:1,44,1-2-22,2-2-8,3-1-2;1:1,45,1-2-23,2-1-1,3-2-0;1:1,46,1-3-37,2-2-4,3-2-1;1:1,47,1-3-20,2-2-31,3-2-7;1:1,48,1-1-7,2-1-14,3-2-10;1:1,49,1-2-82,2-3-4,3-1-2;1:1,50,1-2-0,2-2-0,3-3-0"
+  },
+  {
+    "holderId": "51",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAov7JF32dK6d0Jdo+xrrg+h0tn7kyjvA26sgy4yjI+tXNR+hwFgMgjb4OtBKO9HJ/1hfNEHFXW9/0QLexlItKowIDAQABAkA2qdIRAbyjNk6anz3sciIfX4e8iGSvUVpplOiUDEqS7HNQiFvEEqZUrMacU6K+GY17Ze9FSAzPbdOkn+uZT1iRAiEA+gawn0EEwl85q0NmMV3eYDXpXaX1mJoLRXK60durULsCIQCm48MvoDbLlS1DDxZ8J34+J4I1MAtSlNc+k23o/apjOQIhAKTxcuWs/BnKvn3ImgtpVMH97vVz/eDthxAKz0qQ86TvAiBHzbT79727p8pakNJGxqMtUMhX4/zrIfjeBoaCeSlnGQIgR4ppPNNtU3sGasPNAkIz1qEEgMTvghGUQS3A/9DAJ34=",
+    "honestParticipant": true,
+    "victim": true,
+    "vote": "1:1,51,1-3-4,2-3-3,3-3-2;1:1,52,1-3-68,2-2-15,3-1-3;1:1,53,1-2-75,2-2-24,3-2-0;1:1,54,1-3-60,2-1-5,3-1-7;1:1,55,1-1-70,2-3-0,3-3-0;1:1,56,1-2-9,2-1-22,3-3-2;1:1,57,1-2-33,2-3-5,3-1-2;1:1,58,1-3-43,2-3-9,3-1-0;1:1,59,1-2-38,2-1-15,3-1-21;1:1,60,1-1-0,2-1-1,3-3-1"
+  },
+  {
+    "holderId": "61",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAj43g81ODzTy8n0vt6cJFYFqBE12by30R75zSvXg8iEk87MdlqwnxuvoRfcnJq++9J1J8Si8DxR8DXopsQZnUfwIDAQABAkBI26tmE+b7DW52MuVHFPB9HLISEBp4RrwJrsBOpW2jhTVCIiEkx4RaNhRxdWX86Ag04HVjK0ai+oFhXupS6O5RAiEAzK37kD+O6fSOh5nIpJmEBKbnfRwpE6IMY2cDTnefyEsCIQCzjF2v9jo7lv24aWKxsxOmLVJdtfAQ7/mMCLQ8RLHsHQIhALkIN7kJnDrn+MmhPn9+wJgsAm1ZvdCf2C8sexK+ldXNAiAY344vDUZd8PnvLTJN+cf0En1BnC3IuuXwP1hwrPeVBQIgHlArNW5io6fBOmgC1XmHSPFgt0m6Jk3eRB5MocaGr3I=",
+    "honestParticipant": false,
+    "victim": false,
+    "vote": "1:1,7,1-1-21,2-2-12,3-1-18:-;1:1,7,1-1-55,2-2-1,3-3-2:-"
+  },
+  {
+    "holderId": "71",
+    "privateKey": "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA3l5fm9lr1lCrJlPzMbSL1EjMZ3VJjX0cqiaeykFx3Qb7y2BGYZUaId3ITXJt04GF13wgXAutWYL/JyTbui7CCQIDAQABAkAvd+nk9QbGGzZN2kHh7G6lBF1OAIWRBJIn6FKhTlMmIT+MI60kowsd4FuvoK+vpFElrRCsaFP8BP+jeSLBhxqZAiEA+VohlspkooF2M3pKCl0vS3F9qHREDC4RqKlWiXtY1mMCIQDkTBNw0ezNinSnmYKBGaf2N576mt63KJHz2jNc63gLowIhAMWgX9rJUnVRskMeeyw3qtJagsNOUthscuaAP+v67PANAiBtqP1NnAibUn5mYx6E1MYRRvZeejWw1RQGhjFV2OV48QIgH+qQa/fEU5yVf4u1JYJ2j0GS3SQflmZQWtEIa7UCetc=",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,71,1-3-2,2-3-3,3-3-0;1:1,72,1-3-44,2-1-49,3-1-1;1:1,73,1-2-3,2-2-2,3-1-1;1:1,74,1-3-4,2-1-4,3-2-7;1:1,75,1-2-14,2-3-52,3-3-7;1:1,76,1-2-27,2-3-0,3-3-6;1:1,77,1-2-35,2-1-8,3-1-1;1:1,78,1-1-33,2-2-6,3-1-9;1:1,79,1-3-23,2-1-14,3-1-2;1:1,80,1-1-5,2-1-2,3-2-1"
+  },
+  {
+    "holderId": "81",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAh+2YCtNRlYmeSnqZGpQLgd4/D5vbfFtI7D52p7bfaTdTL0zxx9K2OhdBmfVzGbRIiORa4voRc4lHMtpXWybrAQIDAQABAkARXKzF/TX3hst8MeqqdWx+2xds8/h2Cubmnhfj1jz1IFWShDY7+5va4/Dwdu8LxNsd+3CD8HU03jp7+QuX7eORAiEA9AVHXwW66mbZyrzHMWVEs+WXKRDddIQoh2emxfTxlO0CIQCOmd2r85wROwKhVGRuk87gfFLGnrw2/v3twIMf2ZQf5QIgLb3zlAdh82CWQN/EQykliMdn34XOzXGcm009wOvagT0CIQCGVbiXhfRd3wNJS6EY8jEPFM89wMd535kC4jokROnfaQIhAIaoiUiVlsdOxCi5Ju+r6c4doVwqSP+wEUi/T05C+Let",
+    "honestParticipant": false,
+    "victim": false,
+    "vote": "1:1,9,1-3-10,2-3-37,3-1-30:-;1:1,9,1-3-12,2-2-59,3-2-6:-"
+  },
+  {
+    "holderId": "91",
+    "privateKey": "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAsfZfYkXHAV2O3dXhHXpdP8moQZPaPlTDChsY1zeXevZN0NddukbqwnX6SRM0EU6GDUEoYTr1yocCR8KwUnqj3QIDAQABAkEAr6NR5mKpkw5sV0Kkh/xhlfgHyJkM12G+kPXHYXlrVp2ku6dDHKeiQHIfXBsmpabpxQTCqtbF0RcgkbwF74cfQQIhAOBvts5pFjKCPZDC4gHFff6lMYOsiSTmGivh7eT9z4ytAiEAyv15vmmQYNQqJhS2r1/AjqRLSDQnENUcwEMKAF09qfECIAS0kuKU9XAtptjIHTDoURHrqLQYA/AQGvBclj48zAMpAiBKKmy15ooK5tnzifPphbmsJFkhK3TukH7tvFDGK0shcQIhAMyiAOtAry/GU1mwEN/oYoXFAWzUjn59zPGTQeg8aYH1",
+    "honestParticipant": true,
+    "victim": false,
+    "vote": "1:1,91,1-3-0,2-3-1,3-1-4;1:1,92,1-1-14,2-2-10,3-2-37;1:1,93,1-2-6,2-1-23,3-1-3;1:1,94,1-3-19,2-3-0,3-3-1;1:1,95,1-1-7,2-1-31,3-1-7;1:1,96,1-1-49,2-1-8,3-3-1;1:1,97,1-3-1,2-3-33,3-3-2;1:1,98,1-3-34,2-2-10,3-1-1;1:1,99,1-3-25,2-1-6,3-1-1;1:1,100,1-3-18,2-1-1,3-1-0"
+  }
+]
