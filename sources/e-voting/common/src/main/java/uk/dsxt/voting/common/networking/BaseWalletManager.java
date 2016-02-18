@@ -223,7 +223,7 @@ public class BaseWalletManager implements WalletManager {
             confirmedMessages.stream().forEach(m -> result.add(m));
         }
         if (unconfirmedMessages != null) {
-            unconfirmedMessages.stream().filter(m -> resultIds.contains(m.getId())).forEach(m -> result.add(m));
+            unconfirmedMessages.stream().filter(m -> !resultIds.contains(m.getId())).forEach(m -> result.add(m));
         }
         return result;
     }
