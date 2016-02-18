@@ -40,39 +40,27 @@ public class VotingClient extends MessageHandler {
 
     private final PrivateKey ownerPrivateKey;
 
-    private final List<VoteResult> sentVoteResults = new ArrayList<>();
-
     public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, String ownerId, PrivateKey ownerPrivateKey, Participant[] participants) {
         super(walletManager, participants);
         this.voteAggregation = voteAggregation;
         this.ownerId = ownerId;
         this.ownerPrivateKey = ownerPrivateKey;
-
-        if (walletManager.getBalance().signum() == 0) {
-            sendInitialMoneyRequest();
-        }
     }
 
-    private void sendInitialMoneyRequest() {
-        Map<String, String> fields = new HashMap<>();
-        fields.put(MessageContent.FIELD_WALLET, walletManager.getSelfAddress());
-        try {
-            walletManager.sendMessage(MessageContent.buildOutputMessage(MessageContent.TYPE_INITIAL_MONEY_REQUEST, ownerId, ownerPrivateKey, fields));
-            log.info("initialMoneyRequest sent");
-        } catch (Exception e) {
-            log.error("sendInitialMoneyRequest fails", e);
-        }
-    }
-
-    public void sendVoteResult(VoteResult voteResult) {
+    public boolean sendVoteResult(VoteResult voteResult) {
         Map<String, String> fields = new HashMap<>();
         fields.put(MessageContent.FIELD_VOTE_RESULT, voteResult.toString());
         try {
-            walletManager.sendMessage(MessageContent.buildOutputMessage(MessageContent.TYPE_VOTE_RESULT, ownerId, ownerPrivateKey, fields));
-            sentVoteResults.add(voteResult);
+            String id = walletManager.sendMessage(MessageContent.buildOutputMessage(MessageContent.TYPE_VOTE_RESULT, ownerId, ownerPrivateKey, fields));
+            if (id == null) {
+                log.error("sendVoteResult fails");
+                return false;
+            }
             log.info("voteResult sent");
+            return true;
         } catch (Exception e) {
             log.error("sendVoteResult fails", e);
+            return false;
         }
     }
 

@@ -51,7 +51,7 @@ public class VoteSchedulerTest {
         VotingClient client = mock(VotingClient.class);
         doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
-            return null;
+            return true;
         }).when(client).sendVoteResult(anyObject());
 
         List<String> sentToBuilderResults = new ArrayList<>();

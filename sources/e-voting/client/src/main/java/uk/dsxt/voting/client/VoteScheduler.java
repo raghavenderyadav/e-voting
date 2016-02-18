@@ -118,8 +118,7 @@ public class VoteScheduler {
                 VoteResult voteResult = recordsByTime.get(currentRecordIdx).getVoteResult();
                 if (voteResult.getHolderId() != null) {
                     log.info("Sending vote record {}", voteResult);
-                    votingClient.sendVoteResult(voteResult);
-                    if (recordsByTime.get(currentRecordIdx).isSendToResult()) {
+                    if (votingClient.sendVoteResult(voteResult) && recordsByTime.get(currentRecordIdx).isSendToResult()) {
                         resultsBuilder.addVote(voteResult.toString());
                     }
                 } else {
