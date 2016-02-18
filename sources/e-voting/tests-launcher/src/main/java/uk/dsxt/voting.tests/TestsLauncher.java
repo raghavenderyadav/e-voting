@@ -169,6 +169,7 @@ public class TestsLauncher {
         nxtProperties.setProperty("nxt.testnetGuaranteedBalanceConfirmations", "1");
         nxtProperties.setProperty("nxt.allowedUserHosts", allowedHosts);
         nxtProperties.setProperty("nxt.allowedBotHosts", allowedHosts);
+        nxtProperties.setProperty("nxt.apiServerHost", "0.0.0.0");
         saveProperties(clientPropertiesPath, nxtProperties);
         return clientPropertiesPath;
     }
