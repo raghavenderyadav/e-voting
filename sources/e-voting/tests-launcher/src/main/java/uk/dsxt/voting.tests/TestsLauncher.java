@@ -140,10 +140,9 @@ public class TestsLauncher {
             long sleepPeriod = currentVoting.getEndTimestamp() - Instant.now().getMillis();
             log.info("Waiting {} seconds while voting ends", sleepPeriod / 1000);
             Thread.sleep(sleepPeriod);
-
+            log.info("----------------------------- TEST FINISHED -----------------------------");
             // TODO: check that results builder has finished calculating results
-            Thread.sleep((clientAggregationPeriod + 1) * 60 * 1000);
-
+            Thread.sleep(60 * 60 * 1000);
             stopAllProcesses();
             //stop jetty servers
             RegistriesServerMain.shutdown();

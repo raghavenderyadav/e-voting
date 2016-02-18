@@ -1,22 +1,22 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
 package uk.dsxt.voting.resultsbuilder;
@@ -77,15 +77,18 @@ public class ResultsManager implements ResultsBuilder {
                 if (votingResults == null) {
                     log.info("  No node results received on voting #{}", votingId);
                 } else {
-                    log.info("  Received {} node results on voting #{}", votingResults.size(), votingId);
+                    int incorrect = 0;
                     for (Map.Entry<String, VoteResult> holderRecord : votingResults.entrySet()) {
-                        if (!referenceResult.equals(holderRecord.getValue())) {
-                            log.warn("    Holder {}. Voting #{}. Result is INCORRECT: {}",
-                                    holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
-                        } else {
-                            log.info("    Holder {}. Voting #{}. Result is CORRECT.", holderRecord.getKey(), votingId);
-                        }
+//                        if (!referenceResult.equals(holderRecord.getValue())) {
+//                            log.warn("    Holder {}. Voting #{}. Result is INCORRECT: {}",
+//                                    holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
+//                        } else {
+//                            log.info("    Holder {}. Voting #{}. Result is CORRECT.", holderRecord.getKey(), votingId);
+//                        }
+                        if (!referenceResult.equals(holderRecord.getValue()))
+                            incorrect++;
                     }
+                    log.info("  Received {} node results on voting #{}. {} is correct and {} is incorrect", votingResults.size(), votingId, votingResults.size() - incorrect, incorrect);
                 }
             }
         }

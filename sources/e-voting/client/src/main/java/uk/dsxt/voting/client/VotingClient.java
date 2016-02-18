@@ -31,7 +31,9 @@ import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.security.PrivateKey;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 public class VotingClient extends MessageHandler {
@@ -84,7 +86,7 @@ public class VotingClient extends MessageHandler {
                 return;
             }
             if (voteAggregation.addVote(result, messageContent.getFieldTimestamp(), messageContent.getAuthor()) &&
-                    voting.getEndTimestamp() >= System.currentTimeMillis())
+                    voting.getEndTimestamp() <= System.currentTimeMillis())
                 resultsBuilder.addResult(holderId, voteAggregation.getResult(result.getVotingId()).toString());
         }
     }
