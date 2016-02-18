@@ -70,6 +70,8 @@ public class PropertiesHelper {
     }
 
     public static String getResourceString(String name) {
+        if (name == null || name.isEmpty())
+            return "";
         try {
             final File resourceFile = getConfFile(name);
             if (resourceFile.exists()) {
