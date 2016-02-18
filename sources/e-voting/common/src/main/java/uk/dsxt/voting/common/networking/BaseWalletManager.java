@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class BaseWalletManager implements WalletManager {
 
-    private final String workingDir;
+    private final File workingDir;
     private final String jarPath;
     private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
@@ -41,7 +41,9 @@ public class BaseWalletManager implements WalletManager {
     private boolean isForgeNow = false;
 
     public BaseWalletManager(Properties properties, String[] args) {
-        workingDir = properties.getProperty("working.dir");
+        workingDir = new File(System.getProperty("user.dir"));
+        log.info("Working directory (user.dir): {}", workingDir.getAbsolutePath());
+
         jarPath = properties.getProperty("nxt.jar.path");
 
         mainAddress = properties.getProperty("nxt.main.address");
@@ -129,11 +131,10 @@ public class BaseWalletManager implements WalletManager {
             cmd.add(jarPath);
             cmd.add(nxtPropertiesPath);
 
-            log.debug("Working directory: {}", workingDir);
             log.debug("Starting nxt wallet process: {}", StringUtils.join(cmd, " "));
 
             ProcessBuilder processBuilder = new ProcessBuilder();
-            processBuilder.directory(new File(workingDir));
+            processBuilder.directory(workingDir);
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
             inheritIO(nxtProcess.getInputStream());
