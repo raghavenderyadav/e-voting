@@ -67,9 +67,9 @@ public class ResultsManager implements ResultsBuilder {
             VoteResult referenceResult = referenceResultsByVotingId.get(votingId);
             if (referenceResult == null) {
                 referenceResult = new VoteResult(votingId, null);
-                log.info("Empty result on voting #{}", votingId);
+                log.info("Voting #{} - empty", votingId);
             } else {
-                log.info("Results on voting #{} : {}", votingId, printVotingResult(referenceResult));
+                log.info("Voting #{} result: {}", votingId, printVotingResult(referenceResult));
             }
 
             synchronized (resultsByHolderIdAndVotingId) {
@@ -80,8 +80,10 @@ public class ResultsManager implements ResultsBuilder {
                     log.info("  Received {} node results on voting #{}", votingResults.size(), votingId);
                     for (Map.Entry<String, VoteResult> holderRecord : votingResults.entrySet()) {
                         if (!referenceResult.equals(holderRecord.getValue())) {
-                            log.info("    Node result of holder {} on voting #{} is not equal reference result: {}",
+                            log.warn("    Holder {}. Voting #{}. Result is INCORRECT: {}",
                                     holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
+                        } else {
+                            log.info("    Holder {}. Voting #{}. Result is CORRECT.", holderRecord.getKey(), votingId);
                         }
                     }
                 }
@@ -98,7 +100,7 @@ public class ResultsManager implements ResultsBuilder {
             String[] answerAndQuestion = key.split("-");
             int questionId = Integer.valueOf(answerAndQuestion[0]);
             if (questionId != prevQuestionId) {
-                builder.append(String.format("  Votes on question #%s are as follows:", questionId));
+                builder.append(String.format("  Votes on question #%s:", questionId));
                 builder.append(System.lineSeparator());
                 prevQuestionId = questionId;
             }
