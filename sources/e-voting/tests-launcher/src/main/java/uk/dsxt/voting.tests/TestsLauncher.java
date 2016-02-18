@@ -38,6 +38,8 @@ import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Log4j2
@@ -59,6 +61,9 @@ public class TestsLauncher {
     private static String clientPassword;
     private static String victimAccount;
     private static String victimPassword;
+
+    private static final String LOGS_FOLDER = "logs";
+    private static final String DB_FOLDER = "nxt-db";
 
     @FunctionalInterface
     public interface SimpleRequest {
@@ -152,13 +157,13 @@ public class TestsLauncher {
 
     private static String createWalletPropertiesFile(String nodeName, int port, Properties nxtProperties) {
         String clientPropertiesPath = String.format("conf/%s.properties", nodeName);
-        String dbDir = String.format("./%s", nodeName);
+        final Path path = Paths.get(".", DB_FOLDER, nodeName);
         nxtProperties.setProperty("nxt.apiServerPort", String.valueOf(port));
         nxtProperties.setProperty("nxt.peerServerPort", String.valueOf(port + 1));
         nxtProperties.setProperty("nxt.defaultTestnetPeers", DEFAULT_TESTNET_PEERS);
         nxtProperties.setProperty("nxt.isOffline", "false");
         nxtProperties.setProperty("nxt.isTestnet", "true");
-        nxtProperties.setProperty("nxt.testDbDir", dbDir);
+        nxtProperties.setProperty("nxt.testDbDir", path.toString());
         nxtProperties.setProperty("nxt.minNeedBlocks", "1");
         saveProperties(clientPropertiesPath, nxtProperties);
         return clientPropertiesPath;
@@ -196,15 +201,17 @@ public class TestsLauncher {
 
     private static void deleteNxtFiles() throws Exception {
         File file = new File(System.getProperty("user.dir"));
-        if (file.listFiles() == null)
-            throw new InternalLogicException("wrong path for deleting files");
+        if (file.listFiles() == null) {
+            throw new InternalLogicException(String.format("Couldn't delete files - the path is incorrect: %s", file.getAbsolutePath()));
+        }
         for (File c : file.listFiles()) {
             if (c.getName().contains("nxt")) {
-                System.out.println(c.getName());
-                if (c.isDirectory())
+                log.info("Deleting {}...", c.getName());
+                if (c.isDirectory()) {
                     FileUtils.deleteDirectory(c);
-                else
+                } else {
                     c.delete();
+                }
             }
         }
     }
@@ -224,9 +231,8 @@ public class TestsLauncher {
 
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.command(cmd);
-            //processBuilder.directory(workingDir);
-            processBuilder.redirectError(new File(String.format("error_%s.log", name)));
-            processBuilder.redirectOutput(new File(String.format("output_%s.log", name)));
+            processBuilder.redirectError(new File(LOGS_FOLDER, String.format("error_%s.log", name)));
+            processBuilder.redirectOutput(new File(LOGS_FOLDER, String.format("output_%s.log", name)));
             Process process = processBuilder.start();
             processesByName.put(name, process);
             log.info("Process {} started", name);
