@@ -46,9 +46,9 @@ public class VotingClientMain {
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
             String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
-            long resultsAggregationPeriod = (args == null ? Integer.parseInt(properties.getProperty("results.aggregation.period")) : Integer.valueOf(args[7])) * 60000;
+            long resultsAggregationPeriod = (args == null ? Integer.parseInt(properties.getProperty("results.aggregation.period")) : Integer.valueOf(args[7])) * 1000;
 
-            long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 60000;
+            long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
 
             String registriesServerUrl = properties.getProperty("register.server.url");
             String resultsBuilderUrl = properties.getProperty("results.builder.url");
