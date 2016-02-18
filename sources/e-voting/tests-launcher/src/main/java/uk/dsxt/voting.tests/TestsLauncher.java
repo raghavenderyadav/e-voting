@@ -72,6 +72,8 @@ public class TestsLauncher {
             String registriesServerUrl = properties.getProperty("register.server.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
+            int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
+            int clientAggregationPeriod = Integer.parseInt(properties.getProperty("client.results.aggregation.period"));
             //json file configuration for clients
             String configFileName = properties.getProperty("client.config.file");
             String resourceJson = PropertiesHelper.getResourceString(String.format(configFileName, testingType));
@@ -80,7 +82,7 @@ public class TestsLauncher {
 
             //starting single modules
             startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
-            startSingleModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(null));
+            startSingleModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(new String[]{String.valueOf(resultsCheckPeriod)}));
             //load properties and set master node to offline mode
             final String propertiesPath = String.format("conf/%s.properties", MASTER_NAME);
 
@@ -116,8 +118,8 @@ public class TestsLauncher {
                 nxtProperties.setProperty("nxt.testDbDir", dbDir);
                 nxtProperties.setProperty("nxt.minNeedBlocks", "1");
                 saveProperties(clientPropertiesPath, nxtProperties);
-                String walletOffSchedule =  conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
-                startClient(ii, configurations, clientPropertiesPath, walletOffSchedule);
+                String walletOffSchedule = conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
+                startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod);
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
@@ -148,13 +150,13 @@ public class TestsLauncher {
         }
     }
 
-    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule) {
+    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule, int clientAggregationPeriod) {
         ClientConfiguration conf = configurations[idx];
         if (startClientsAsProcesses) {
-            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{ conf.getHolderId(), conf.getPrivateKey(),
-                    conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), clientPropertiesPath, walletOffSchedule});
+            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(),
+                    conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         } else {
-            VotingClientMain.main(new String[]{conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), clientPropertiesPath, walletOffSchedule});
+            VotingClientMain.main(new String[]{clientPropertiesPath, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         }
     }
 
@@ -177,8 +179,8 @@ public class TestsLauncher {
 
     private static void deleteNxtFiles() throws Exception {
         File file = new File(System.getProperty("user.dir"));
-           if (file.listFiles() == null)
-               throw new InternalLogicException("wrong path for deleting files");
+        if (file.listFiles() == null)
+            throw new InternalLogicException("wrong path for deleting files");
         for (File c : file.listFiles()) {
             if (c.getName().contains("nxt")) {
                 System.out.println(c.getName());
@@ -199,7 +201,7 @@ public class TestsLauncher {
             cmd.add("java");
             cmd.add("-jar");
             cmd.add(jarPath);
-            for(String param : params) {
+            for (String param : params) {
                 cmd.add(param);
             }
 
@@ -216,7 +218,7 @@ public class TestsLauncher {
     }
 
     private static void stopAllProcesses() {
-        for(Map.Entry<String, Process> processEntry : processesByName.entrySet()) {
+        for (Map.Entry<String, Process> processEntry : processesByName.entrySet()) {
             try {
                 processEntry.getValue().destroy();
                 log.info("Process {} killed", processEntry.getKey());

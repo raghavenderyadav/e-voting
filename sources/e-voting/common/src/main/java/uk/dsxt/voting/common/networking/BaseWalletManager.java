@@ -55,7 +55,7 @@ public class BaseWalletManager implements WalletManager {
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        nxtPropertiesPath = args != null && args.length > 0 ? args[args.length-1] : properties.getProperty("nxt.properties.path");
+        nxtPropertiesPath = args != null && args.length > 0 ? args[0] : properties.getProperty("nxt.properties.path");
         Properties nxtProperties = PropertiesHelper.loadPropertiesFromPath(nxtPropertiesPath);
         if (args != null && args.length > 0) {
             port = nxtProperties.getProperty("nxt.apiServerPort");
