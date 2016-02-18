@@ -212,16 +212,16 @@ public class BaseWalletManager implements WalletManager {
     @Override
     public List<Message> getNewMessages(long timestamp) {
         Set<String> resultIds = new HashSet<>();
-        List<Message> result = getConfirmedMessages(timestamp);
-        if (result == null)
-            return null;
+        List<Message> result = new ArrayList<>();
+        List<Message> confirmedMessages = getConfirmedMessages(timestamp);
         List<Message> unconfirmedMessages = getUnconfirmedMessages(timestamp);
-        if (unconfirmedMessages == null)
-            return null;
-        resultIds.addAll(result.stream().map(Message::getId).collect(Collectors.toList()));
-        result.addAll(unconfirmedMessages.stream().
-                filter(unconfirmedMessage -> !resultIds.contains(unconfirmedMessage.getId())).
-                collect(Collectors.toList()));
+        if (confirmedMessages != null) {
+            resultIds.addAll(confirmedMessages.stream().map(Message::getId).collect(Collectors.toList()));
+            confirmedMessages.stream().forEach(m -> result.add(m));
+        }
+        if (unconfirmedMessages != null) {
+            unconfirmedMessages.stream().filter(m -> resultIds.contains(m.getId())).forEach(m -> result.add(m));
+        }
         return result;
     }
 
