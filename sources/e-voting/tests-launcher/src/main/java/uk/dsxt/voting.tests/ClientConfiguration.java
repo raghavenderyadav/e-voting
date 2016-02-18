@@ -37,19 +37,19 @@ public class ClientConfiguration {
     @Setter
     boolean isHonestParticipant;
     String vote;
-    Integer disconnectAmount;
-    Integer disconnectDuration;
+    @NonFinal
+    @Setter
+    String disconnectMask;
 
     @JsonCreator
     public ClientConfiguration(@JsonProperty("holderId") String holderId, @JsonProperty("privateKey") String privateKey,
                                @JsonProperty("isHonestParticipant") boolean isHonestParticipant, @JsonProperty("vote") String vote,
-                               @JsonProperty("disconnectAmount") Integer disconnectAmount, @JsonProperty("disconnectDuration") Integer disconnectDuration) {
+                               @JsonProperty("disconnectMask") String disconnectMask) {
         this.holderId = holderId;
         this.privateKey = privateKey;
         this.isHonestParticipant = isHonestParticipant;
         this.vote = vote;
-        this.disconnectAmount = disconnectAmount;
-        this.disconnectDuration = disconnectDuration;
+        this.disconnectMask = disconnectMask;
     }
 }
 

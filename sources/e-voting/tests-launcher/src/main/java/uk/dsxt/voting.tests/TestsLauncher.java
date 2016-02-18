@@ -101,7 +101,6 @@ public class TestsLauncher {
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
             int startPort = 9000;
-            Random rnd = new Random();
             for (int i = 0; i < configurations.length; i++) {
                 final int ii = i;
                 ClientConfiguration conf = configurations[i];
@@ -116,13 +115,7 @@ public class TestsLauncher {
                 nxtProperties.setProperty("nxt.testDbDir", dbDir);
                 nxtProperties.setProperty("nxt.minNeedBlocks", "1");
                 saveProperties(clientPropertiesPath, nxtProperties);
-                String walletOffSchedule = ";";
-                if (conf.getDisconnectAmount() != null && conf.getDisconnectAmount() > 0 && conf.getDisconnectDuration() != null && conf.getDisconnectDuration() > 0) {
-                    for(int j = 0; j < conf.getDisconnectAmount(); j++) {
-                        int begin = rnd.nextInt(votingDuration-conf.getDisconnectDuration());
-                        walletOffSchedule += String.format("%d-%d;", begin, begin+conf.getDisconnectDuration());
-                    }
-                }
+                String walletOffSchedule =  conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
                 startClient(ii, configurations, clientPropertiesPath, walletOffSchedule);
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);

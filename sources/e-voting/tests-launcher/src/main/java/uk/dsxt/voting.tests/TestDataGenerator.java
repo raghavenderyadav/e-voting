@@ -49,6 +49,11 @@ public class TestDataGenerator {
     //for collusion test case
     private final static int COLLUSION_PARTICIPANTS = 0;
 
+    //for badconnection test
+    private final static int BADCONNECTION_PARTICIPANTS = 0;
+    private final static int MAX_DISCONNECT_COUNT = 0;
+    private final static int MAX_DISCONNECT_PERIOD = 0;
+
     public static void generate() throws Exception {
         //generate voting
         long startTime = Instant.now().getMillis();
@@ -87,11 +92,15 @@ public class TestDataGenerator {
         ClientConfiguration[] clientConfs = new ClientConfiguration[COUNT];
         for (int i = 0; i < COUNT; i++) {
             VoteResult vote = generateVote(i, voting, holdings, participants);
-            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()), null, null);
+            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()), null);
         }
         //set some of the participants as fraudsters if needed
         if (COLLUSION_PARTICIPANTS > 0) {
             ThreadLocalRandom.current().ints(0, COUNT).distinct().limit(COLLUSION_PARTICIPANTS).forEach(i -> makeCollusion(i, clientConfs, voting, holdings, participants));
+        }
+        //set disconnections
+        if (BADCONNECTION_PARTICIPANTS > 0 && MAX_DISCONNECT_COUNT > 0 && MAX_DISCONNECT_PERIOD > 0) {
+            ThreadLocalRandom.current().ints(0, COUNT).distinct().limit(BADCONNECTION_PARTICIPANTS).forEach(i -> makeDisconnect(i, clientConfs));
         }
         //save data to files
         saveTestData(clientConfs, votings, holdings, participants, blackList);
@@ -130,7 +139,24 @@ public class TestDataGenerator {
             voteMask = String.format("%s:%s:-", randomInt(1, DURATION_MINUTES - 1), anotherUserVote.toString());
         }
 
-        clientConfs[i] = new ClientConfiguration(clientConfs[i].getHolderId(), clientConfs[i].getPrivateKey(), false, voteMask, null, null);
+        clientConfs[i] = new ClientConfiguration(clientConfs[i].getHolderId(), clientConfs[i].getPrivateKey(), false, voteMask, null);
+    }
+
+    private static void makeDisconnect(int i, ClientConfiguration[] clientConfs) {
+        StringBuilder maskBuilder = new StringBuilder();
+        int disconnectCount = randomInt(1, MAX_DISCONNECT_COUNT);
+        int startDisconnectTime = randomInt(1, DURATION_MINUTES / MAX_DISCONNECT_COUNT);
+        for (int j = 0; j < disconnectCount; j++) {
+            int period = randomInt(1, MAX_DISCONNECT_PERIOD);
+            int endDisconnectTime = Math.min(startDisconnectTime + period, DURATION_MINUTES - 1);
+            maskBuilder.append(String.format("%s-%s", startDisconnectTime, endDisconnectTime));
+            if (endDisconnectTime == DURATION_MINUTES - 1)
+                break;
+            startDisconnectTime = endDisconnectTime + 1;
+            if (j < disconnectCount - 1)
+                maskBuilder.append(";");
+        }
+        clientConfs[i].setDisconnectMask(maskBuilder.toString());
     }
 
     private static VoteResult generateVote(int i, Voting voting, Holding[] holdings, Participant[] participants) {
@@ -149,19 +175,23 @@ public class TestDataGenerator {
     private static Voting generateVoting(long startTime, long endTime) throws Exception {
         Question[] questions = new Question[3];
         Answer[] answers = new Answer[3];
-        answers[0] = new Answer(1, "Yes");
-        answers[1] = new Answer(2, "No");
-        answers[2] = new Answer(3, "Abstained");
-        questions[0] = new Question(1, "Do you approve the results of work?", answers);
-        questions[1] = new Question(2, "Will you elect a new chairman?", answers);
+        answers[0] = new Answer(1, "Temnov");
+        answers[1] = new Answer(2, "Svetlov");
+        answers[2] = new Answer(3, "Vertev");
+        questions[0] = new Question(1, "New member", answers);
 
+        answers = new Answer[3];
+        answers[0] = new Answer(1, "Tsrev");
+        answers[1] = new Answer(2, "Bronev");
+        answers[2] = new Answer(3, "Steklov");
+        questions[1] = new Question(2, "New vice-president", answers);
         answers = new Answer[3];
         answers[0] = new Answer(1, "Ivanov");
         answers[1] = new Answer(2, "Petrov");
         answers[2] = new Answer(3, "Sidorov");
         questions[2] = new Question(3, "New chairman", answers);
-        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'",
-                startTime, endTime, questions);
+        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions);
+
     }
 
     private static int randomInt(int baseMinValue, int baseMaxValue) {

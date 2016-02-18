@@ -1,0 +1,82 @@
+[
+  {
+    "holderId": "50",
+    "packetSize": 30
+  },
+  {
+    "holderId": "100",
+    "packetSize": 30
+  },
+  {
+    "holderId": "150",
+    "packetSize": 30
+  },
+  {
+    "holderId": "200",
+    "packetSize": 30
+  },
+  {
+    "holderId": "250",
+    "packetSize": 28
+  },
+  {
+    "holderId": "300",
+    "packetSize": 30
+  },
+  {
+    "holderId": "350",
+    "packetSize": 29
+  },
+  {
+    "holderId": "400",
+    "packetSize": 30
+  },
+  {
+    "holderId": "450",
+    "packetSize": 29
+  },
+  {
+    "holderId": "500",
+    "packetSize": 30
+  },
+  {
+    "holderId": "550",
+    "packetSize": 30
+  },
+  {
+    "holderId": "600",
+    "packetSize": 21
+  },
+  {
+    "holderId": "650",
+    "packetSize": 30
+  },
+  {
+    "holderId": "700",
+    "packetSize": 30
+  },
+  {
+    "holderId": "750",
+    "packetSize": 30
+  },
+  {
+    "holderId": "800",
+    "packetSize": 30
+  },
+  {
+    "holderId": "850",
+    "packetSize": 30
+  },
+  {
+    "holderId": "900",
+    "packetSize": 30
+  },
+  {
+    "holderId": "950",
+    "packetSize": 23
+  },
+  {
+    "holderId": "1000",
+    "packetSize": 30
+  }
+]
