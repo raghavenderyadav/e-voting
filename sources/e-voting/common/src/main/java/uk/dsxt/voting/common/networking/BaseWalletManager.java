@@ -274,9 +274,9 @@ public class BaseWalletManager implements WalletManager {
             Scanner sc = new Scanner(src);
             while (sc.hasNextLine()) {
                 String logStr = sc.nextLine();
-                if (logStr.toUpperCase().contains("ERROR")) {
+                if (logStr.toUpperCase().contains("ERROR:")) {
                     log.error(logStr);
-                } else if (logStr.toUpperCase().contains("WARNING")) {
+                } else if (logStr.toUpperCase().contains("WARNING:")) {
                     log.warn(logStr);
                 } else {
                     log.info(logStr);
