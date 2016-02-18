@@ -28,6 +28,8 @@ import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+import javax.ws.rs.DefaultValue;
+
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientConfiguration {
@@ -35,7 +37,10 @@ public class ClientConfiguration {
     String privateKey;
     @NonFinal
     @Setter
-    boolean isHonestParticipant;
+    boolean honestParticipant;
+    @NonFinal
+    @Setter
+    boolean victim;
     String vote;
     @NonFinal
     @Setter
@@ -43,11 +48,12 @@ public class ClientConfiguration {
 
     @JsonCreator
     public ClientConfiguration(@JsonProperty("holderId") String holderId, @JsonProperty("privateKey") String privateKey,
-                               @JsonProperty("isHonestParticipant") boolean isHonestParticipant, @JsonProperty("vote") String vote,
-                               @JsonProperty("disconnectMask") String disconnectMask) {
+                               @DefaultValue("true") @JsonProperty("honestParticipant") boolean honestParticipant, @DefaultValue("false") @JsonProperty("victim") boolean victim,
+                               @JsonProperty("vote") String vote, @JsonProperty("disconnectMask") String disconnectMask) {
         this.holderId = holderId;
         this.privateKey = privateKey;
-        this.isHonestParticipant = isHonestParticipant;
+        this.honestParticipant = honestParticipant;
+        this.victim = victim;
         this.vote = vote;
         this.disconnectMask = disconnectMask;
     }

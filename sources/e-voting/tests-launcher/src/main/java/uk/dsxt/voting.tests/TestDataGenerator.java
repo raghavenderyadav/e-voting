@@ -30,9 +30,7 @@ import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestDataGenerator {
@@ -48,6 +46,7 @@ public class TestDataGenerator {
 
     //for collusion test case
     private final static int COLLUSION_PARTICIPANTS = 0;
+    private final static int VICTIM_PARTICIPANTS = 0;
 
     //for badconnection test
     private final static int BADCONNECTION_PARTICIPANTS = 0;
@@ -81,22 +80,30 @@ public class TestDataGenerator {
         }
         //generating blacklist
         List<BlockedPacket> blackListEntries = new ArrayList<>();
+        Map<String, BigDecimal> blockedPacketByHolderId = new HashMap<>();
         for (int i = 0; i < holdings.length; i++) {
             if ((i + 1) % 5 == 0) {
                 Holding holding = holdings[i];
-                blackListEntries.add(new BlockedPacket(holding.getHolderId(), holding.getPacketSize().compareTo(MAX_BLOCKED_PACKET_SIZE) < 0 ? holding.getPacketSize() : MAX_BLOCKED_PACKET_SIZE));
+                BigDecimal blockedPacket = holding.getPacketSize().compareTo(MAX_BLOCKED_PACKET_SIZE) < 0 ? holding.getPacketSize() : MAX_BLOCKED_PACKET_SIZE;
+                blackListEntries.add(new BlockedPacket(holding.getHolderId(), blockedPacket));
+                blockedPacketByHolderId.put(holding.getHolderId(), blockedPacket);
             }
         }
         BlockedPacket[] blackList = blackListEntries.toArray(new BlockedPacket[blackListEntries.size()]);
         //generating client configuration
         ClientConfiguration[] clientConfs = new ClientConfiguration[COUNT];
         for (int i = 0; i < COUNT; i++) {
-            VoteResult vote = generateVote(i, voting, holdings, participants);
-            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()), null);
+            VoteResult vote = generateVote(i, voting, holdings, participants, blockedPacketByHolderId);
+            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, false, String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString()), null);
         }
         //set some of the participants as fraudsters if needed
-        if (COLLUSION_PARTICIPANTS > 0) {
-            ThreadLocalRandom.current().ints(0, COUNT).distinct().limit(COLLUSION_PARTICIPANTS).forEach(i -> makeCollusion(i, clientConfs, voting, holdings, participants));
+        if (COLLUSION_PARTICIPANTS > 0 && VICTIM_PARTICIPANTS > 0) {
+            List<Integer> fraudsters = new ArrayList<>();
+            ThreadLocalRandom.current().ints(0, 99).distinct().limit(COLLUSION_PARTICIPANTS).forEach(i -> {
+                makeCollusion(i, clientConfs, voting, holdings, participants, blockedPacketByHolderId);
+                fraudsters.add(i);
+            });
+            ThreadLocalRandom.current().ints(0, 99).filter(i -> !fraudsters.contains(i)).distinct().limit(VICTIM_PARTICIPANTS).forEach(i -> clientConfs[i].setVictim(true));
         }
         //set disconnections
         if (BADCONNECTION_PARTICIPANTS > 0 && MAX_DISCONNECT_COUNT > 0 && MAX_DISCONNECT_PERIOD > 0) {
@@ -106,7 +113,7 @@ public class TestDataGenerator {
         saveTestData(clientConfs, votings, holdings, participants, blackList);
     }
 
-    private static void saveTestData(ClientConfiguration[] clientConfs, Voting[] votings, Holding[] holdings, Participant[] participants, BlockedPacket[] blackList) throws Exception{
+    private static void saveTestData(ClientConfiguration[] clientConfs, Voting[] votings, Holding[] holdings, Participant[] participants, BlockedPacket[] blackList) throws Exception {
         final String dirPath = "/src/main/resources/json";
 
         String dataPath = String.format("%s/%s/%s", RegistriesServerMain.MODULE_NAME, dirPath, TESTING_TYPE);
@@ -124,22 +131,24 @@ public class TestDataGenerator {
         FileUtils.writeStringToFile(new File(String.format("%s/clientSettings.json", dataPath)), clientConfigurationJson);
     }
 
-    private static void makeCollusion(int i, ClientConfiguration[] clientConfs, Voting voting, Holding[] holdings, Participant[] participants) {
-        VoteResult vote = generateVote(i, voting, holdings, participants);
-
+    private static void makeCollusion(int i, ClientConfiguration[] clientConfs, Voting voting, Holding[] holdings, Participant[] participants, Map<String, BigDecimal> blockedPacketByHolderId) {
         boolean isDoubleTransaction = randomBoolean(50);
-        String voteMask = String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), vote.toString());
+        String voteMask = null;
         if (isDoubleTransaction) {
+            VoteResult firstVote = generateVote(i, voting, holdings, participants, blockedPacketByHolderId);
+            VoteResult secondVote = generateVote(i, voting, holdings, participants, blockedPacketByHolderId);
+            String firstVoteMask = String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), firstVote.toString());
+            String secondVoteMask = String.format("%s:%s", randomInt(1, DURATION_MINUTES - 1), secondVote.toString());
             //send second vote
-            voteMask = String.format("%s:-%s%s:-", clientConfs[i].getVote(), System.lineSeparator(), voteMask);
+            voteMask = String.format("%s:-;%s:-", firstVoteMask, secondVoteMask);
         } else {
+            VoteResult vote = generateVote(i, voting, holdings, participants, blockedPacketByHolderId);
             //send wrong participant id
             VoteResult anotherUserVote = new VoteResult(voting.getId(), participants[i == 0 ? 1 : i - 1].getId());
             anotherUserVote.getAnswersByQuestionId().putAll(vote.getAnswersByQuestionId());
             voteMask = String.format("%s:%s:-", randomInt(1, DURATION_MINUTES - 1), anotherUserVote.toString());
         }
-
-        clientConfs[i] = new ClientConfiguration(clientConfs[i].getHolderId(), clientConfs[i].getPrivateKey(), false, voteMask, null);
+        clientConfs[i] = new ClientConfiguration(clientConfs[i].getHolderId(), clientConfs[i].getPrivateKey(), false, false, voteMask, null);
     }
 
     private static void makeDisconnect(int i, ClientConfiguration[] clientConfs) {
@@ -159,9 +168,9 @@ public class TestDataGenerator {
         clientConfs[i].setDisconnectMask(maskBuilder.toString());
     }
 
-    private static VoteResult generateVote(int i, Voting voting, Holding[] holdings, Participant[] participants) {
+    private static VoteResult generateVote(int i, Voting voting, Holding[] holdings, Participant[] participants, Map<String, BigDecimal> blockedPacketByHolderId) {
         VoteResult vote = new VoteResult(voting.getId(), participants[i].getId());
-        BigDecimal totalSum = BigDecimal.ZERO;
+        BigDecimal totalSum = blockedPacketByHolderId.containsKey(holdings[i].getHolderId()) ? blockedPacketByHolderId.get(holdings[i].getHolderId()) : BigDecimal.ZERO;
         for (int j = 0; j < voting.getQuestions().length; j++) {
             int questionId = voting.getQuestions()[j].getId();
             int answerId = randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1;
