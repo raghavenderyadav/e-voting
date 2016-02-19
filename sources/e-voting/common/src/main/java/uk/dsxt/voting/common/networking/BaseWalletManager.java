@@ -32,6 +32,7 @@ public class BaseWalletManager implements WalletManager {
     private final String passwordForRegister;
     private final String port;
     private final HttpHelper httpHelper;
+    private final List<String> javaOptions = new ArrayList<>();
 
     private String passphrase;
     private String accountId;
@@ -48,6 +49,14 @@ public class BaseWalletManager implements WalletManager {
         jarPath = properties.getProperty("nxt.jar.path");
 
         passwordForRegister = properties.getProperty("nxt.register.password");
+        String javaOptionsStr = properties.getProperty("nxt.javaOptions");
+        if (javaOptionsStr != null && !javaOptionsStr.isEmpty()) {
+            for (String property : javaOptionsStr.split(";")) {
+                if (!property.isEmpty())
+                    javaOptions.add(property);
+            }
+        }
+
         httpHelper = new HttpHelper(5000, 5000);
 
         mapper = new ObjectMapper();
@@ -135,6 +144,7 @@ public class BaseWalletManager implements WalletManager {
             cmd.add("-jar");
             cmd.add(jarPath);
             cmd.add(nxtPropertiesPath);
+            cmd.addAll(javaOptions);
 
             log.debug("Starting nxt wallet process: {}", StringUtils.join(cmd, " "));
 
