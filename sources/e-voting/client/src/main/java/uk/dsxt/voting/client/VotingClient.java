@@ -86,7 +86,7 @@ public class VotingClient extends MessageHandler {
                 return;
             }
             if (voteAggregation.addVote(result, messageContent.getFieldTimestamp(), messageContent.getAuthor()) &&
-                    voting.getEndTimestamp() >= messageContent.getFieldTimestamp())
+                    voting.getEndTimestamp() <= System.currentTimeMillis())
                 resultsBuilder.addResult(holderId, voteAggregation.getResult(result.getVotingId()).toString());
         }
     }
