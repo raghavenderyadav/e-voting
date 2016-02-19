@@ -141,10 +141,10 @@ public class BaseWalletManager implements WalletManager {
         try {
             List<String> cmd = new ArrayList<>();
             cmd.add("java");
+            cmd.addAll(javaOptions);
             cmd.add("-jar");
             cmd.add(jarPath);
             cmd.add(nxtPropertiesPath);
-            cmd.addAll(javaOptions);
 
             log.debug("Starting nxt wallet process: {}", StringUtils.join(cmd, " "));
 
