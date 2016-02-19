@@ -11,7 +11,7 @@ Module runs Jetty server and has web service to provide registry information to 
 In module configuration file `e-voting\registries-server\src\main\resources\registries-server.properties` you can configure some module properties. For example to configure Jetty TCP/IP port you should change **registries.server.web.port** property. Set of **.filepath** properties configure where module should look for registry JSON files to load data from. 
 
 ###### master-client
-Master client module represents special blockchain master node, which runs blockchain and produces emission of money required for voting.
+Master client module represents special blockchain master node, which runs blockchain and produces emission of money required for voting. Address of master client is in configuration of each client, so on start each client connects to master-client to get network configuration.
 
 ###### client
 Client module represents nodes of the network. Each node is used by shareholder or its' representative. Nodes connect to registries-server to collect some common data and to master-client wallet. Also it send votes to results-builder module.
