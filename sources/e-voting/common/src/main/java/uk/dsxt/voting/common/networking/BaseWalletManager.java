@@ -230,7 +230,7 @@ public class BaseWalletManager implements WalletManager {
 
     private List<Message> getConfirmedMessages(long timestamp) {
         TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
-            keyToValue.put("account", selfAccount);
+            keyToValue.put("account", mainAddress);
             keyToValue.put("timestamp", Long.toString(timestamp / 1000));
             keyToValue.put("withMessage", "true");
         }, TransactionsResponse.class);
@@ -249,7 +249,7 @@ public class BaseWalletManager implements WalletManager {
     private List<Message> getUnconfirmedMessages(long timestamp) {
         long secondsTimestamp = timestamp / 1000;
         UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS,
-                keyToValue -> keyToValue.put("account", selfAccount), UnconfirmedTransactionsResponse.class);
+                keyToValue -> keyToValue.put("account", mainAddress), UnconfirmedTransactionsResponse.class);
         if (result == null)
             return null;
         try {

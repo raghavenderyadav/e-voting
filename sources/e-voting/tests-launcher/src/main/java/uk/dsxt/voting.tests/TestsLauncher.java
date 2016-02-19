@@ -175,13 +175,12 @@ public class TestsLauncher {
 
     private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule, int clientAggregationPeriod) {
         ClientConfiguration conf = configurations[idx];
-        final String account = conf.isVictim() ? victimAccount : clientAccount;
         final String password = conf.isVictim() ? victimPassword : clientPassword;
         if (startClientsAsProcesses) {
-            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(),
+            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(),
                     conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         } else {
-            VotingClientMain.main(new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
+            VotingClientMain.main(new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
                     walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         }
     }
