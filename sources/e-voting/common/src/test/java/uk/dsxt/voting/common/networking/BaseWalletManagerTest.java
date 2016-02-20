@@ -51,6 +51,8 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.register.password", "master_password");
         properties.setProperty("nxt.defaultTestnetPeers", "127.0.0.1:7873;");
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
+        properties.setProperty("nxt.testUnconfirmedTransactions", "true");
+        properties.setProperty("nxt.sendToPeersLimit", "1000");
         WalletManager wm2 = new BaseWalletManager(properties, null, "2");
         wm2.runWallet();
         String selfAddress = wm2.getSelfAddress();
