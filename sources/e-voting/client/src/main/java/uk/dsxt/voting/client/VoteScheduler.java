@@ -26,6 +26,8 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
+import uk.dsxt.voting.common.networking.VoteAggregation;
+import uk.dsxt.voting.common.networking.VotingClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,18 +100,6 @@ public class VoteScheduler {
         scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
         scheduler.start();
         log.info("VoteScheduler #{} runs", holderId);
-    }
-
-    public void pause() {
-        scheduler.interrupt();
-        votingClient.stop();
-        log.info("VoteScheduler #{} paused", holderId);
-    }
-
-    public void resume() {
-        votingClient.resume();
-        scheduler.start();
-        log.info("VoteScheduler #{} resumed", holderId);
     }
 
     private void sendVotesOnTime() {

@@ -19,14 +19,13 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.*;
-
 
 import java.math.BigDecimal;
 import java.util.*;

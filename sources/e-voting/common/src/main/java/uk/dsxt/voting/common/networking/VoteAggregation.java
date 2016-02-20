@@ -19,10 +19,13 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.datamodel.BlockedPacket;
+import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.VoteResult;
+import uk.dsxt.voting.common.datamodel.Voting;
 
 import java.util.HashMap;
 import java.util.Map;

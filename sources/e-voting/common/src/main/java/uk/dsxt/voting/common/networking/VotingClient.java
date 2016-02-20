@@ -19,16 +19,12 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.networking.MessageContent;
-import uk.dsxt.voting.common.networking.MessageHandler;
-import uk.dsxt.voting.common.networking.ResultsBuilder;
-import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.security.PrivateKey;
 import java.util.Arrays;
@@ -38,15 +34,15 @@ import java.util.Map;
 @Log4j2
 public class VotingClient extends MessageHandler {
 
-    private final VoteAggregation voteAggregation;
+    protected final VoteAggregation voteAggregation;
 
-    private final ResultsBuilder resultsBuilder;
+    protected final ResultsBuilder resultsBuilder;
 
     private final String holderId;
 
     private final PrivateKey ownerPrivateKey;
 
-    private final Map<String, Voting> votingsById = new HashMap<>();
+    protected final Map<String, Voting> votingsById = new HashMap<>();
 
 
     public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, ResultsBuilder resultsBuilder,
