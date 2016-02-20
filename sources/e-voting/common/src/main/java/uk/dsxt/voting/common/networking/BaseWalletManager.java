@@ -37,12 +37,14 @@ public class BaseWalletManager implements WalletManager {
     private String passphrase;
     private String accountId;
     private String selfAccount;
+    private String name;
 
     private Process nxtProcess;
     private boolean isForgeNow = false;
     private boolean isInitialized = false;
 
-    public BaseWalletManager(Properties properties, String[] args) {
+    public BaseWalletManager(Properties properties, String[] args, String name) {
+        this.name = name;
         workingDir = new File(System.getProperty("user.dir"));
         log.info("Working directory (user.dir): {}", workingDir.getAbsolutePath());
 
@@ -150,10 +152,10 @@ public class BaseWalletManager implements WalletManager {
 
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(workingDir);
+            processBuilder.redirectError(new File(String.format("./logs/wallet_err_%s.log", name)));
+            processBuilder.redirectOutput(new File(String.format("./logs/wallet_out_%s.log", name)));
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
-            inheritIO(nxtProcess.getInputStream());
-            inheritIO(nxtProcess.getErrorStream());
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
                     stopWallet();

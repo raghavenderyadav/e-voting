@@ -30,7 +30,7 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "1000");
         properties.setProperty("nxt.minNeedBlocks", "1");
-        BaseWalletManager wm1 = new BaseWalletManager(properties, null);
+        BaseWalletManager wm1 = new BaseWalletManager(properties, null, "1");
         /*wm1.runWallet();
         Thread.sleep(1000);
         assertEquals(wm1.getBalance().compareTo(new BigDecimal(1000000000L)), 0);
@@ -40,7 +40,7 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.isOffline", "false");
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "10");
-        wm1 = new BaseWalletManager(properties, null);
+        wm1 = new BaseWalletManager(properties, null, "11");
         wm1.runWallet();
         wm1.getSelfAddress();
         Thread.sleep(3000);
@@ -51,7 +51,7 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.register.password", "master_password");
         properties.setProperty("nxt.defaultTestnetPeers", "127.0.0.1:7873;");
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
-        WalletManager wm2 = new BaseWalletManager(properties, null);
+        WalletManager wm2 = new BaseWalletManager(properties, null, "2");
         wm2.runWallet();
         String selfAddress = wm2.getSelfAddress();
         assertNotNull(selfAddress);

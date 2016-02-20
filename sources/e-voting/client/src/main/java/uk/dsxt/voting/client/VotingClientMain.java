@@ -56,7 +56,7 @@ public class VotingClientMain {
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-            WalletManager walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args);
+            WalletManager walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args, ownerId);
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
