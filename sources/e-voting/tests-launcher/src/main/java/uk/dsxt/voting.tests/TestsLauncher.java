@@ -180,6 +180,9 @@ public class TestsLauncher {
         nxtProperties.setProperty("nxt.allowedUserHosts", allowedHosts);
         nxtProperties.setProperty("nxt.allowedBotHosts", allowedHosts);
         nxtProperties.setProperty("nxt.apiServerHost", "0.0.0.0");
+        nxtProperties.setProperty("nxt.forceScan", "true");
+        //nxtProperties.setProperty("nxt.disableAdminPassword", "true");
+        //nxtProperties.setProperty("nxt.forgingSpeedup", "10");
         saveProperties(clientPropertiesPath, nxtProperties);
         return clientPropertiesPath;
     }
