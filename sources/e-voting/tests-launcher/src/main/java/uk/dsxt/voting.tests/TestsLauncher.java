@@ -96,6 +96,7 @@ public class TestsLauncher {
 
             String content = PropertiesHelper.getResourceString("nxtAccounts.txt");
             NXTAccount[] nxtAccounts = loadNxtAccounts(content);
+            log.info("Found {} accounts. First is {}", nxtAccounts.length, nxtAccounts[0].getAccount());
 
             //json file configuration for clients
             String configFileName = properties.getProperty("client.config.file");
