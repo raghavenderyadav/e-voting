@@ -111,6 +111,7 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.peerServerDoSFilter.delayMs", "1000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
             nxtProperties.setProperty("nxt.sendToPeersLimit", "1000");
+            nxtProperties.setProperty("nxt.testUnconfirmedTransactions", "true");
             nxtProperties.setProperty("nxt.pushThreshold", "0");
 
             nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s;%s", clientAccount, victimAccount));
