@@ -77,10 +77,10 @@ public class VotingClient extends MessageHandler {
     }
 
     @Override
-    protected void handleNewMessage(MessageContent messageContent, String messageId) {
+    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited) {
         if (MessageContent.TYPE_VOTE_RESULT.equals(messageContent.getType())) {
             VoteResult result = new VoteResult(messageContent.getField(MessageContent.FIELD_VOTE_RESULT));
-            log.info("Client {} receive message {} with vote result {}", holderId, messageId, result);
+            log.info("Client {} receive {} message {} with vote result {}", holderId, isCommited ? "commited" : "uncommited", messageId, result);
             Voting voting = votingsById.get(result.getVotingId());
             if (voting == null) {
                 return;

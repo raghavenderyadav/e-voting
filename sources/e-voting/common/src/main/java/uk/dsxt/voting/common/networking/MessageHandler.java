@@ -106,12 +106,12 @@ public abstract class MessageHandler {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
                     continue;
                 }
-                handleNewMessage(messageContent, message.getId());
+                handleNewMessage(messageContent, message.getId(), message.isCommited());
             } catch (Exception e) {
                 log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
             }
         }
     }
 
-    protected abstract void handleNewMessage(MessageContent messageContent, String messageId);
+    protected abstract void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited);
 }

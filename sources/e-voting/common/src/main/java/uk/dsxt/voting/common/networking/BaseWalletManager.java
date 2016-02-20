@@ -243,14 +243,14 @@ public class BaseWalletManager implements WalletManager {
     private List<Message> getConfirmedMessages(long timestamp) {
         TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
             keyToValue.put("account", mainAddress);
-            keyToValue.put("timestamp", Long.toString(timestamp / 1000));
+            keyToValue.put("timestamp", "0");
             keyToValue.put("withMessage", "true");
         }, TransactionsResponse.class);
         if (result == null)
             return null;
         try {
             return Arrays.asList(result.getTransactions()).stream().
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), true)).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getConfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
@@ -267,7 +267,7 @@ public class BaseWalletManager implements WalletManager {
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                     filter(t -> t.getAttachment().isMessageIsText() && t.getTimestamp() >= secondsTimestamp).
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), false)).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
