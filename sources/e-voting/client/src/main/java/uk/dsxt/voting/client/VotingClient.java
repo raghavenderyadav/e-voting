@@ -79,8 +79,8 @@ public class VotingClient extends MessageHandler {
     @Override
     protected void handleNewMessage(MessageContent messageContent, String messageId) {
         if (MessageContent.TYPE_VOTE_RESULT.equals(messageContent.getType())) {
-            log.info("Message {} contains vote result", messageId);
             VoteResult result = new VoteResult(messageContent.getField(MessageContent.FIELD_VOTE_RESULT));
+            log.info("Client {} receive message {} with vote result {}", holderId, messageId, result);
             Voting voting = votingsById.get(result.getVotingId());
             if (voting == null) {
                 return;

@@ -128,12 +128,12 @@ public class BaseWalletManager implements WalletManager {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
                 if (isInitialized)
-                    log.error("Can't parse response: {}. Error message: {}", response, e.getMessage());
+                    log.error("Wallet {}. Can't parse response: {}. Error message: {}", name, response, e.getMessage());
             }
             return result;
         } catch (Exception e) {
             if (isInitialized)
-                log.error("Method {} failed. Error message {}", type, e.getMessage());
+                log.error("Wallet {}. Method {} failed. Error message {}", name, type, e.getMessage());
             return null;
         }
     }
