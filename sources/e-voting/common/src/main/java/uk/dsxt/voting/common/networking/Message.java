@@ -30,4 +30,6 @@ public class Message {
 
     byte[] body;
 
+    boolean isCommited;
+
 }

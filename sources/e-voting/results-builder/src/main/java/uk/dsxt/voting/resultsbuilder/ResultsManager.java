@@ -79,12 +79,12 @@ public class ResultsManager implements ResultsBuilder {
                 } else {
                     int incorrect = 0;
                     for (Map.Entry<String, VoteResult> holderRecord : votingResults.entrySet()) {
-//                        if (!referenceResult.equals(holderRecord.getValue())) {
-//                            log.warn("    Holder {}. Voting #{}. Result is INCORRECT: {}",
-//                                    holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
+                        if (!referenceResult.equals(holderRecord.getValue())) {
+                            log.warn("    Holder {}. Voting #{}. Result is INCORRECT: {}",
+                                    holderRecord.getKey(), votingId, printVotingResult(holderRecord.getValue()));
 //                        } else {
 //                            log.info("    Holder {}. Voting #{}. Result is CORRECT.", holderRecord.getKey(), votingId);
-//                        }
+                        }
                         if (!referenceResult.equals(holderRecord.getValue()))
                             incorrect++;
                     }

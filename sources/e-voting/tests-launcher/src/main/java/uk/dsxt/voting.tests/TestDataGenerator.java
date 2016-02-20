@@ -73,7 +73,7 @@ public class TestDataGenerator {
             holdings[i] = new Holding(participants[i].getId(), new BigDecimal(randomInt(15, 100)), null);
             if ((i % (PARTICIPANTS_COUNT / NODES_COUNT)) != 0) {
                 //setting nominal holder
-                int nominalHolderId = i < (PARTICIPANTS_COUNT / NODES_COUNT) ? 0 : (i / (PARTICIPANTS_COUNT / NODES_COUNT)) * 10;
+                int nominalHolderId = i < (PARTICIPANTS_COUNT / NODES_COUNT) ? 0 : (i / (PARTICIPANTS_COUNT / NODES_COUNT)) * (PARTICIPANTS_COUNT / NODES_COUNT);
                 holdings[i] = new Holding(holdings[i].getHolderId(), holdings[i].getPacketSize(), participants[nominalHolderId].getId());
                 holdings[nominalHolderId] = new Holding(holdings[nominalHolderId].getHolderId(),
                         holdings[nominalHolderId].getPacketSize().add(holdings[i].getPacketSize()), null);

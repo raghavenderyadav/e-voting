@@ -49,7 +49,7 @@ public class VotingMasterClientMain {
             BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
 
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-            walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args);
+            walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args, "master");
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             init(registriesServer, walletManager, moneyToNode, newMessagesRequestInterval);

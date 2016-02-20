@@ -1,11 +1,11 @@
 [
   {
     "holderId": "100",
-    "packetSize": 30
+    "packetSize": 26
   },
   {
     "holderId": "200",
-    "packetSize": 27
+    "packetSize": 30
   },
   {
     "holderId": "300",
@@ -25,7 +25,7 @@
   },
   {
     "holderId": "700",
-    "packetSize": 30
+    "packetSize": 28
   },
   {
     "holderId": "800",
@@ -33,7 +33,7 @@
   },
   {
     "holderId": "900",
-    "packetSize": 15
+    "packetSize": 30
   },
   {
     "holderId": "1000",

@@ -43,7 +43,7 @@ public class MoneyDistributor extends MessageHandler {
     }
 
     @Override
-    protected void handleNewMessage(MessageContent messageContent, String messageId) {
+    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited) {
         if (MessageContent.TYPE_INITIAL_MONEY_REQUEST.equals(messageContent.getType())) {
             log.info("Message {} contains initial money request", messageId);
             if (sentIds.contains(messageContent.getAuthor())) {

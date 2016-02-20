@@ -22,6 +22,7 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +47,12 @@ import java.util.*;
 public class TestsLauncher {
     public static final String MODULE_NAME = "tests-launcher";
 
+    @Value
+    private static class NXTAccount {
+        String account;
+        String password;
+    }
+
     private static final String MASTER_NAME = "nxt";
     private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
 
@@ -57,10 +64,6 @@ public class TestsLauncher {
 
     private static String masterAccount;
     private static String masterPassword;
-    private static String clientAccount;
-    private static String clientPassword;
-    private static String victimAccount;
-    private static String victimPassword;
 
     private static final String LOGS_FOLDER = "logs";
     private static final String DB_FOLDER = "nxt-db";
@@ -90,15 +93,26 @@ public class TestsLauncher {
 
             masterAccount = properties.getProperty("master.address");
             masterPassword = properties.getProperty("master.passphrase");
-            clientAccount = properties.getProperty("client.address");
-            clientPassword = properties.getProperty("client.passphrase");
-            victimAccount = properties.getProperty("victim.address");
-            victimPassword = properties.getProperty("victim.passphrase");
+
+            String content = PropertiesHelper.getResourceString("nxtAccounts.txt");
+            NXTAccount[] nxtAccounts = loadNxtAccounts(content);
+            log.info("Found {} accounts. First is {}", nxtAccounts.length, nxtAccounts[0].getAccount());
+
             //json file configuration for clients
             String configFileName = properties.getProperty("client.config.file");
             String resourceJson = PropertiesHelper.getResourceString(String.format(configFileName, testingType));
             ClientConfiguration[] configurations = mapper.readValue(resourceJson, ClientConfiguration[].class);
             startClientsAsProcesses = Boolean.parseBoolean(properties.getProperty("testing.clients_as_processes"));
+
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < configurations.length; i++) {
+                if (configurations[i].isVictim()) ;
+                builder.append(nxtAccounts[i].account);
+                builder.append(";");
+            }
+            String victimAccounts = builder.toString();
+            if (victimAccounts.length() > 0)
+                victimAccounts = victimAccounts.substring(0, victimAccounts.length() - 1);
 
             //starting single modules
             startSingleModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
@@ -110,9 +124,13 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestMs", "300000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.delayMs", "1000");
             nxtProperties.setProperty("nxt.peerServerDoSFilter.maxRequestsPerSec", "3000");
-            nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s;%s", clientAccount, victimAccount));
+            nxtProperties.setProperty("nxt.sendToPeersLimit", "1000");
+            nxtProperties.setProperty("nxt.testUnconfirmedTransactions", "true");
+            nxtProperties.setProperty("nxt.pushThreshold", "0");
 
-            final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties,allowedHosts);
+            nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s", masterAccount));
+
+            final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties, allowedHosts);
             startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath, masterAccount, masterPassword}));
             //starting clients
             long start = Instant.now().getMillis();
@@ -122,11 +140,11 @@ public class TestsLauncher {
                 final int ii = i;
                 ClientConfiguration conf = configurations[i];
                 String clientName = String.format("nxt-node-%s", conf.getHolderId());
-                String blackList = !conf.isHonestParticipant() ? victimAccount : "";
+                String blackList = !conf.isHonestParticipant() ? victimAccounts : "";
                 nxtProperties.setProperty("nxt.evt.blackList", blackList);
                 String clientPropertiesPath = createWalletPropertiesFile(clientName, startPort + 2 * i, nxtProperties, allowedHosts);
                 String walletOffSchedule = conf.getDisconnectMask() == null ? ";" : conf.getDisconnectMask();
-                startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod);
+                startClient(ii, configurations, clientPropertiesPath, walletOffSchedule, clientAggregationPeriod, nxtAccounts);
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
@@ -173,15 +191,15 @@ public class TestsLauncher {
         return clientPropertiesPath;
     }
 
-    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath, String walletOffSchedule, int clientAggregationPeriod) {
+    private static void startClient(int idx, ClientConfiguration[] configurations, String clientPropertiesPath,
+                                    String walletOffSchedule, int clientAggregationPeriod, NXTAccount[] nxtAccounts) {
         ClientConfiguration conf = configurations[idx];
-        final String account = conf.isVictim() ? victimAccount : clientAccount;
-        final String password = conf.isVictim() ? victimPassword : clientPassword;
+        final String password = nxtAccounts[idx].getPassword();
         if (startClientsAsProcesses) {
-            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(),
+            startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(),
                     conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         } else {
-            VotingClientMain.main(new String[]{clientPropertiesPath, account, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
+            VotingClientMain.main(new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
                     walletOffSchedule, String.valueOf(clientAggregationPeriod)});
         }
     }
@@ -268,5 +286,15 @@ public class TestsLauncher {
             log.error("Can't kill process {}. Error: {}", e.getMessage(), name, e);
         }
         processesByName.remove(name);
+    }
+
+    private static NXTAccount[] loadNxtAccounts(String content) {
+        List<NXTAccount> accs = new ArrayList<>();
+        String[] lines = content.split(System.lineSeparator());
+        for (String line : lines) {
+            String[] account = line.split(":");
+            accs.add(new NXTAccount(account[0], account[1]));
+        }
+        return accs.toArray(new NXTAccount[accs.size()]);
     }
 }

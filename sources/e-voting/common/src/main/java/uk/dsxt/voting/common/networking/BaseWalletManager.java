@@ -32,22 +32,33 @@ public class BaseWalletManager implements WalletManager {
     private final String passwordForRegister;
     private final String port;
     private final HttpHelper httpHelper;
+    private final List<String> javaOptions = new ArrayList<>();
 
     private String passphrase;
     private String accountId;
     private String selfAccount;
+    private String name;
 
     private Process nxtProcess;
     private boolean isForgeNow = false;
     private boolean isInitialized = false;
 
-    public BaseWalletManager(Properties properties, String[] args) {
+    public BaseWalletManager(Properties properties, String[] args, String name) {
+        this.name = name;
         workingDir = new File(System.getProperty("user.dir"));
         log.info("Working directory (user.dir): {}", workingDir.getAbsolutePath());
 
         jarPath = properties.getProperty("nxt.jar.path");
 
         passwordForRegister = properties.getProperty("nxt.register.password");
+        String javaOptionsStr = properties.getProperty("nxt.javaOptions");
+        if (javaOptionsStr != null && !javaOptionsStr.isEmpty()) {
+            for (String property : javaOptionsStr.split(";")) {
+                if (!property.isEmpty())
+                    javaOptions.add(property);
+            }
+        }
+
         httpHelper = new HttpHelper(5000, 5000);
 
         mapper = new ObjectMapper();
@@ -117,12 +128,12 @@ public class BaseWalletManager implements WalletManager {
                 result = mapper.readValue(response, tClass);
             } catch (IOException e) {
                 if (isInitialized)
-                    log.error("Can't parse response: {}. Error message: {}", response, e.getMessage());
+                    log.error("Wallet {}. Can't parse response: {}. Error message: {}", name, response, e.getMessage());
             }
             return result;
         } catch (Exception e) {
             if (isInitialized)
-                log.error("Method {} failed. Error message {}", type, e.getMessage());
+                log.error("Wallet {}. Method {} failed. Error message {}", name, type, e.getMessage());
             return null;
         }
     }
@@ -132,6 +143,7 @@ public class BaseWalletManager implements WalletManager {
         try {
             List<String> cmd = new ArrayList<>();
             cmd.add("java");
+            cmd.addAll(javaOptions);
             cmd.add("-jar");
             cmd.add(jarPath);
             cmd.add(nxtPropertiesPath);
@@ -140,10 +152,10 @@ public class BaseWalletManager implements WalletManager {
 
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(workingDir);
+            processBuilder.redirectError(new File(String.format("./logs/wallet_err_%s.log", name)));
+            processBuilder.redirectOutput(new File(String.format("./logs/wallet_out_%s.log", name)));
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
-            inheritIO(nxtProcess.getInputStream());
-            inheritIO(nxtProcess.getErrorStream());
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
                     stopWallet();
@@ -230,15 +242,15 @@ public class BaseWalletManager implements WalletManager {
 
     private List<Message> getConfirmedMessages(long timestamp) {
         TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
-            keyToValue.put("account", selfAccount);
-            keyToValue.put("timestamp", Long.toString(timestamp / 1000));
+            keyToValue.put("account", mainAddress);
+            keyToValue.put("timestamp", "0");
             keyToValue.put("withMessage", "true");
         }, TransactionsResponse.class);
         if (result == null)
             return null;
         try {
             return Arrays.asList(result.getTransactions()).stream().
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), true)).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getConfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
@@ -249,13 +261,13 @@ public class BaseWalletManager implements WalletManager {
     private List<Message> getUnconfirmedMessages(long timestamp) {
         long secondsTimestamp = timestamp / 1000;
         UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS,
-                keyToValue -> keyToValue.put("account", selfAccount), UnconfirmedTransactionsResponse.class);
+                keyToValue -> keyToValue.put("account", mainAddress), UnconfirmedTransactionsResponse.class);
         if (result == null)
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                     filter(t -> t.getAttachment().isMessageIsText() && t.getTimestamp() >= secondsTimestamp).
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), false)).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
