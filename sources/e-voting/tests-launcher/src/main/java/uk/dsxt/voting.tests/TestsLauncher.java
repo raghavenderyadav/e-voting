@@ -22,7 +22,6 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,12 +45,6 @@ import java.util.*;
 @Log4j2
 public class TestsLauncher {
     public static final String MODULE_NAME = "tests-launcher";
-
-    @Value
-    private static class NXTAccount {
-        String account;
-        String password;
-    }
 
     private static final String MASTER_NAME = "nxt";
     private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
@@ -94,9 +87,9 @@ public class TestsLauncher {
             masterAccount = properties.getProperty("master.address");
             masterPassword = properties.getProperty("master.passphrase");
 
-            String content = PropertiesHelper.getResourceString("nxtAccounts.txt");
-            NXTAccount[] nxtAccounts = loadNxtAccounts(content);
-            log.info("Found {} accounts. First is {}", nxtAccounts.length, nxtAccounts[0].getAccount());
+            String accountsJson = PropertiesHelper.getResourceString("json/nxtAccounts.json");
+            NXTAccount[] nxtAccounts = mapper.readValue(accountsJson, NXTAccount[].class);
+            log.info("Found {} accounts.", nxtAccounts.length);
 
             //json file configuration for clients
             String configFileName = properties.getProperty("client.config.file");
@@ -107,7 +100,7 @@ public class TestsLauncher {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < configurations.length; i++) {
                 if (configurations[i].isVictim()) ;
-                builder.append(nxtAccounts[i].account);
+                builder.append(nxtAccounts[i].getAccount());
                 builder.append(";");
             }
             String victimAccounts = builder.toString();
