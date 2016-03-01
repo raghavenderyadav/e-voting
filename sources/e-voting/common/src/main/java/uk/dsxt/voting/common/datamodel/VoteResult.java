@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class VoteResult {
 
@@ -37,7 +38,10 @@ public class VoteResult {
     private final String holderId;
 
     @Getter
-    private final Map<String, VotedAnswer> answersByQuestionId = new HashMap<>();
+    VoteResultStatus status;
+
+    @Getter
+    private final Map<String, VotedAnswer> answersByKey = new TreeMap<>();
 
     public VoteResult(String votingId, String holderId) {
         this.votingId = votingId;
@@ -58,12 +62,16 @@ public class VoteResult {
         holderId = terms[1].length() == 0 ? null : terms[1];
         for(int i = 2; i < terms.length; i++) {
             VotedAnswer answer = new VotedAnswer(terms[i]);
-            answersByQuestionId.put(answer.getKey(), answer);
+            answersByKey.put(answer.getKey(), answer);
         }
     }
 
     public Collection<VotedAnswer> getAnswers() {
-        return answersByQuestionId.values();
+        return answersByKey.values();
+    }
+
+    public VotedAnswer getAnswerByKey(String key) {
+        return answersByKey.get(key);
     }
 
     @Override
@@ -74,7 +82,7 @@ public class VoteResult {
         if (holderId != null) {
             sb.append(holderId);
         }
-        for(VotedAnswer answer : answersByQuestionId.values()) {
+        for(VotedAnswer answer : answersByKey.values()) {
             sb.append(',');
             sb.append(answer);
         }
@@ -90,10 +98,10 @@ public class VoteResult {
             return false;
         if ((holderId == null) != (other.getHolderId() == null) || holderId != null && !holderId.equals(other.getHolderId()))
             return false;
-        if (answersByQuestionId.size() != other.getAnswers().size())
+        if (answersByKey.size() != other.getAnswers().size())
             return false;
         for(VotedAnswer otherAnswer: other.getAnswers()) {
-            VotedAnswer answer = answersByQuestionId.get(otherAnswer.getKey());
+            VotedAnswer answer = answersByKey.get(otherAnswer.getKey());
             if (answer == null || answer.getVoteAmount().compareTo(otherAnswer.getVoteAmount()) != 0)
                 return false;
         }
@@ -104,16 +112,16 @@ public class VoteResult {
         if (other == null)
             return;
         for(VotedAnswer otherAnswer: other.getAnswers()) {
-            VotedAnswer answer = answersByQuestionId.get(otherAnswer.getKey());
+            VotedAnswer answer = answersByKey.get(otherAnswer.getKey());
             if (answer == null) {
-                answersByQuestionId.put(otherAnswer.getKey(), otherAnswer);
+                answersByKey.put(otherAnswer.getKey(), otherAnswer);
             } else {
-                answersByQuestionId.put(otherAnswer.getKey(), new VotedAnswer(answer.getQuestionId(), answer.getAnswerId(), answer.getVoteAmount().add(otherAnswer.getVoteAmount())));
+                answersByKey.put(otherAnswer.getKey(), new VotedAnswer(answer.getQuestionId(), answer.getAnswerId(), answer.getVoteAmount().add(otherAnswer.getVoteAmount())));
             }
         }
     }
 
     public BigDecimal getSumQuestionAmount(int questionId) {
-        return answersByQuestionId.values().stream().filter(a -> a.getQuestionId() == questionId).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+        return answersByKey.values().stream().filter(a -> a.getQuestionId() == questionId).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 }

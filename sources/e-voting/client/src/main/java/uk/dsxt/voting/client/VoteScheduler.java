@@ -54,7 +54,7 @@ public class VoteScheduler {
     private Thread scheduler;
 
     public VoteScheduler(VotingClient votingClient, ResultsBuilder resultsBuilder, VoteAggregation aggregation, Voting[] votings,
-                         String messagesFileContent, long resultsAggregationPeriod, String holderId) {
+                         String messagesFileContent, String holderId) {
         this.votingClient = votingClient;
         this.resultsBuilder = resultsBuilder;
         this.aggregation = aggregation;
@@ -100,6 +100,13 @@ public class VoteScheduler {
         scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
         scheduler.start();
         log.info("VoteScheduler #{} runs", holderId);
+    }
+
+    public void stop() {
+        if (scheduler != null) {
+            scheduler.interrupt();
+            scheduler = null;
+        }
     }
 
     private void sendVotesOnTime() {

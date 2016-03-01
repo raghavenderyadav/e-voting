@@ -36,9 +36,6 @@ public class VotedAnswer {
     @Getter
     private final BigDecimal voteAmount;
 
-    @Getter
-    private final String key;
-
     @Override
     public String toString() {
         return String.format("%d-%d-%s", questionId, answerId, voteAmount);
@@ -53,7 +50,6 @@ public class VotedAnswer {
         questionId = Integer.parseInt(terms[0]);
         answerId = Integer.parseInt(terms[1]);
         voteAmount = new BigDecimal(terms[2]);
-        key = String.format("%d-%d", questionId, answerId);
     }
 
 
@@ -61,7 +57,10 @@ public class VotedAnswer {
         this.questionId = questionId;
         this.answerId = answerId;
         this.voteAmount = voteAmount;
-        key = String.format("%d-%d", questionId, answerId);
+    }
+
+    public String getKey() {
+        return String.format("%d-%d", questionId, answerId);
     }
 
 }

@@ -22,8 +22,7 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.InternalLogicException;
-import uk.dsxt.voting.common.datamodel.RequestType;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.HttpHelper;
 
 import java.io.IOException;
@@ -32,17 +31,17 @@ import java.util.Map;
 
 @Log4j2
 public class ResultsBuilderImpl implements ResultsBuilder {
-    private final String ADD_RESULT_URL_PART = "/addResult";
-    private final String ADD_VOTE_URL_PART = "/addVote";
+    private final static String ADD_RESULT_URL_PART = "/addResult";
+    private final static String ADD_VOTE_URL_PART = "/addVote";
 
     private final HttpHelper httpHelper;
 
     private final String addResultUrl;
-    private final String addVotetUrl;
+    private final String addVoteUrl;
 
     public ResultsBuilderImpl(String baseUrl, int connectionTimeout, int readTimeout) {
         addResultUrl = String.format("%s%s", baseUrl, ADD_RESULT_URL_PART);
-        addVotetUrl = String.format("%s%s", baseUrl, ADD_VOTE_URL_PART);
+        addVoteUrl = String.format("%s%s", baseUrl, ADD_VOTE_URL_PART);
 
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
     }
@@ -51,7 +50,7 @@ public class ResultsBuilderImpl implements ResultsBuilder {
         try {
             httpHelper.request(url, parameters, RequestType.POST);
         } catch (IOException e) {
-            log.error("{} failed. url={}", name, url, e);
+            log.error("{} failed. url={} error={}", name, url, e);
         } catch (InternalLogicException e) {
             log.error("{} failed. url={}", name, url, e);
         }
@@ -69,6 +68,6 @@ public class ResultsBuilderImpl implements ResultsBuilder {
     public void addVote(String voteResult) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("voteResult", voteResult);
-        execute("addVote", addVotetUrl, parameters);
+        execute("addVote", addVoteUrl, parameters);
     }
 }

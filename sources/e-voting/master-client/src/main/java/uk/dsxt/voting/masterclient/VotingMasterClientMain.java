@@ -22,14 +22,11 @@
 package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Client;
 import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
-import java.math.BigDecimal;
 import java.util.Properties;
 
 @Log4j2
@@ -50,29 +47,25 @@ public class VotingMasterClientMain {
             String resultsBuilderUrl = properties.getProperty("results.builder.url");
             int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
-            BigDecimal moneyToNode = new BigDecimal(properties.getProperty("money", "1"));
 
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
             walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args, "master");
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
-            init(registriesServer, resultsBuilder, walletManager, moneyToNode, newMessagesRequestInterval);
+            init(registriesServer, resultsBuilder, walletManager, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
         }
     }
 
-    private static void init(RegistriesServer registriesServer, ResultsBuilder resultsBuilder, WalletManager walletManager, BigDecimal moneyToNode,
-                             long newMessagesRequestInterval) {
-        BlockedPacket[] blackList = registriesServer.getBlackList();
-        Holding[] holdings = registriesServer.getHoldings();
+    private static void init(RegistriesServer registriesServer, ResultsBuilder resultsBuilder, WalletManager walletManager, long newMessagesRequestInterval) {
         Participant[] participants = registriesServer.getParticipants();
-        Voting[] votings = registriesServer.getVotings();
+        Client[] clients = null; //TODO load clients from config or database
 
-        VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
-        distributor = new MoneyDistributor(walletManager, participants, moneyToNode, votings, resultsBuilder, aggregation);
+        VoteAggregation aggregation = new VoteAggregation(clients);
+        distributor = new MoneyDistributor(walletManager, participants, resultsBuilder, aggregation);
 
         distributor.run(newMessagesRequestInterval);
     }

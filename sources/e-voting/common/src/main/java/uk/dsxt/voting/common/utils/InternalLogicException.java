@@ -19,25 +19,21 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.utils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
+import lombok.Getter;
 
-import java.math.BigDecimal;
+public class InternalLogicException extends Exception {
 
-@Value
-public class Holding {
-    String holderId;
-    BigDecimal packetSize;
-    String nominalHolderId;
+    @Getter
+    private final Object returnValue; // Unfortunately, generic class can not inherit Exception, so returnValue has not concrete type.
 
-    @JsonCreator
-    public Holding(@JsonProperty("holderId") String holderId, @JsonProperty("packetSize") BigDecimal packetSize,
-                   @JsonProperty("nominalHolderId") String nominalHolderId) {
-        this.holderId = holderId;
-        this.packetSize = packetSize;
-        this.nominalHolderId = nominalHolderId;
+    public InternalLogicException(String message) {
+        this(null, message);
+    }
+
+    public InternalLogicException(Object returnValue, String message) {
+        super(message);
+        this.returnValue = returnValue;
     }
 }

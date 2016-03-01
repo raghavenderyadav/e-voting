@@ -21,11 +21,6 @@
 
 package uk.dsxt.voting.common.networking;
 
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
-import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
-
 public interface ResultsBuilder {
 
     void addResult(String holderId, String voteResult);

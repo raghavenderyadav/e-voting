@@ -25,13 +25,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
-@Value
+@Value()
 public class Voting {
     String id;
     String name;
     long startTimestamp;
     long endTimestamp;
     Question[] questions;
+    KeyPair keyPair;
 
     @JsonCreator
     public Voting(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("startTimestamp") long startTimestamp, @JsonProperty("endTimestamp") long endTimestamp,

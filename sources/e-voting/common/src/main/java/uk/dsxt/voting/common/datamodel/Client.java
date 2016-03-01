@@ -19,21 +19,25 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.resultsbuilder;
+package uk.dsxt.voting.common.datamodel;
 
-import lombok.extern.log4j.Log4j2;
-import org.glassfish.jersey.server.ResourceConfig;
-import uk.dsxt.voting.common.utils.InternalLogicException;
-import uk.dsxt.voting.common.utils.JettyRunner;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-import javax.ws.rs.ApplicationPath;
+import java.math.BigDecimal;
 
-@Log4j2
-@ApplicationPath("")
-public class ResultsBuilderApplication extends ResourceConfig {
+@Value
+public class Client {
+    String participantId;
+    ParticipantRole clientType;
+    BigDecimal packetSize;
 
-    public ResultsBuilderApplication(ResultsManager manager) throws InternalLogicException {
-        JettyRunner.configureMapper(this);
-        this.registerInstances(new ResultsBuilderResource(manager));
+    @JsonCreator
+    public Client(@JsonProperty("participantId") String participantId, @JsonProperty("packetSize") BigDecimal packetSize,
+                  @JsonProperty("clientType") ParticipantRole clientType) {
+        this.participantId = participantId;
+        this.packetSize = packetSize;
+        this.clientType = clientType;
     }
 }

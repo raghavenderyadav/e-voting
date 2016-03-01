@@ -97,7 +97,7 @@ public class ResultsManager implements ResultsBuilder {
     private String printVotingResult(VoteResult result) {
         StringBuilder builder = new StringBuilder();
         builder.append(System.lineSeparator());
-        List<String> keys = result.getAnswersByQuestionId().keySet().stream().sorted().collect(Collectors.toList());
+        List<String> keys = result.getAnswers().stream().map(VotedAnswer::getKey).sorted().collect(Collectors.toList());
         int prevQuestionId = -1;
         for (String key : keys) {
             String[] answerAndQuestion = key.split("-");
@@ -107,7 +107,7 @@ public class ResultsManager implements ResultsBuilder {
                 builder.append(System.lineSeparator());
                 prevQuestionId = questionId;
             }
-            VotedAnswer answer = result.getAnswersByQuestionId().get(key);
+            VotedAnswer answer = result.getAnswerByKey(key);
             builder.append(String.format("      Answer #%s - [%s] votes", answer.getAnswerId(), answer.getVoteAmount()));
             builder.append(System.lineSeparator());
         }

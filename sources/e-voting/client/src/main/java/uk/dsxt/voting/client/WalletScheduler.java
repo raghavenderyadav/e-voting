@@ -21,11 +21,7 @@
 
 package uk.dsxt.voting.client;
 
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.VoteResult;
-import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.util.*;

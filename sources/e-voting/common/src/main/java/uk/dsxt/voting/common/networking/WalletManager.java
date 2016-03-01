@@ -30,13 +30,7 @@ public interface WalletManager {
 
     void stopWallet();
 
-    BigDecimal getBalance();
-
-    void sendMoneyToAddressBalance(BigDecimal money, String address);
-
     String sendMessage(byte[] body);
-    
-    String getSelfAddress();
 
     List<Message> getNewMessages(long timestamp);
 }

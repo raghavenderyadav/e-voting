@@ -21,20 +21,7 @@
 
 package uk.dsxt.voting.common.datamodel;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
-
-import java.math.BigDecimal;
-
-@Value
-public class BlockedPacket {
-    String holderId;
-    BigDecimal packetSize;
-
-    @JsonCreator
-    public BlockedPacket(@JsonProperty("holderId") String voterId, @JsonProperty("packetSize") BigDecimal packetSize) {
-        this.holderId = voterId;
-        this.packetSize = packetSize;
-    }
+public enum VoteResultStatus {
+    OK,
+    ERROR,
 }

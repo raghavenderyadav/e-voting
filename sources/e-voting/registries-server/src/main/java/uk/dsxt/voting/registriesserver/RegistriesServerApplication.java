@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -48,9 +49,7 @@ public class RegistriesServerApplication extends ResourceConfig {
             log.info(String.format("Testing mode. subdirectory: '%s'. votingDuration: %s minutes", subdirectory, votingDuration));
         }
         Participant[] participants = loadResource(properties, subdirectory, "participants.filepath", Participant[].class);
-        Holding[] holdings = loadResource(properties, subdirectory, "holdings.filepath", Holding[].class);
         Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
-        BlockedPacket[] blackList = loadResource(properties, subdirectory, "blacklist.filepath", BlockedPacket[].class);
 
         if (votingDuration != null) {
             long now = Instant.now().getMillis();
@@ -59,7 +58,7 @@ public class RegistriesServerApplication extends ResourceConfig {
             }
         }
         //initialization
-        RegistriesServerManager manager = new RegistriesServerManager(participants, holdings, votings, blackList);
+        RegistriesServerManager manager = new RegistriesServerManager(participants);
         JettyRunner.configureMapper(this);
         this.registerInstances(new RegistriesServerResource(manager));
     }

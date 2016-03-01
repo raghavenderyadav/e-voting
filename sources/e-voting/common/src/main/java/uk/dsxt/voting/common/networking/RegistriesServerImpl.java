@@ -26,39 +26,27 @@ import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.net.ConnectException;
 
 @Log4j2
 @Value
 public class RegistriesServerImpl implements RegistriesServer {
-    private final String HOLDING_URL_PART = "/holdings";
-    private final String PARTICIPANTS_URL_PART = "/participants";
-    private final String VOTINGS_URL_PART = "/votings";
-    private final String BLACKLIST_URL_PART = "/blackList";
+    private static final String PARTICIPANTS_URL_PART = "/participants";
 
     public static final String EMPTY_ERROR = "Empty answer";
     public static final String INTERNAL_LOGIC_ERROR = "Internal logic exception";
     public static final String UNKNOWN_ERROR = "Unknown exception";
 
-    String baseUrl;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final HttpHelper httpHelper;
 
-    HttpHelper httpHelper;
-
-    String holdingsUrl;
-    String participantUrl;
-    String votingsUrl;
-    String blacklistUrl;
-
+    private final String participantUrl;
 
     public RegistriesServerImpl(String baseUrl, int connectionTimeout, int readTimeout) {
-        this.baseUrl = baseUrl;
-        holdingsUrl = String.format("%s%s", baseUrl, HOLDING_URL_PART);
         participantUrl = String.format("%s%s", baseUrl, PARTICIPANTS_URL_PART);
-        votingsUrl = String.format("%s%s", baseUrl, VOTINGS_URL_PART);
-        blacklistUrl = String.format("%s%s", baseUrl, BLACKLIST_URL_PART);
 
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
     }
@@ -88,22 +76,7 @@ public class RegistriesServerImpl implements RegistriesServer {
     }
 
     @Override
-    public Holding[] getHoldings() {
-        return execute("getHoldings", holdingsUrl, Holding[].class);
-    }
-
-    @Override
     public Participant[] getParticipants() {
         return execute("getParticipants", participantUrl, Participant[].class);
-    }
-
-    @Override
-    public Voting[] getVotings() {
-        return execute("getVotings", votingsUrl, Voting[].class);
-    }
-
-    @Override
-    public BlockedPacket[] getBlackList() {
-        return execute("getBlackList", blacklistUrl, BlockedPacket[].class);
     }
 }

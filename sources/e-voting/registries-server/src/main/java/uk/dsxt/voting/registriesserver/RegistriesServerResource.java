@@ -22,10 +22,7 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
 import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 
 import javax.ws.rs.GET;
@@ -54,33 +51,9 @@ public class RegistriesServerResource implements RegistriesServer {
 
     @Override
     @GET
-    @Path("/holdings")
-    @Produces("application/json")
-    public Holding[] getHoldings() {
-        return execute("getHoldings", manager::getHoldings);
-    }
-
-    @Override
-    @GET
     @Path("/participants")
     @Produces("application/json")
     public Participant[] getParticipants() {
         return execute("getParticipants", manager::getParticipants);
-    }
-
-    @Override
-    @GET
-    @Path("/votings")
-    @Produces("application/json")
-    public Voting[] getVotings() {
-        return execute("getVotings", manager::getVotings);
-    }
-
-    @Override
-    @GET
-    @Path("/blackList")
-    @Produces("application/json")
-    public BlockedPacket[] getBlackList() {
-        return execute("getBlackList", manager::getBlackList);
     }
 }

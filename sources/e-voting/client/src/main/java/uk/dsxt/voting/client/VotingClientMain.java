@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.security.PrivateKey;
@@ -46,7 +47,6 @@ public class VotingClientMain {
             PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
             String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
-            long resultsAggregationPeriod = (args == null ? Integer.parseInt(properties.getProperty("results.aggregation.period")) : Integer.valueOf(args[7])) * 1000;
 
             long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
 
@@ -60,7 +60,7 @@ public class VotingClientMain {
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
-            init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, resultsAggregationPeriod, walletOffSchedule);
+            init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, walletOffSchedule);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -68,15 +68,14 @@ public class VotingClientMain {
     }
 
     private static void init(RegistriesServer registriesServer, WalletManager walletManager, ResultsBuilder resultsBuilder, String ownerId, PrivateKey ownerPrivateKey,
-                             String messagesFileContent, long newMessagesRequestInterval, long resultsAggregationPeriod, String walletOffSchedule) {
-        BlockedPacket[] blackList = registriesServer.getBlackList();
-        Holding[] holdings = registriesServer.getHoldings();
+                             String messagesFileContent, long newMessagesRequestInterval, String walletOffSchedule) {
         Participant[] participants = registriesServer.getParticipants();
-        Voting[] votings = registriesServer.getVotings();
+        Client[] clients = null; //TODO load clients from resources or database;
+        Voting[] votings = null; //TODO get all votings;
 
-        VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
-        VotingClient client = new VotingClient(walletManager, aggregation, resultsBuilder, ownerId, ownerPrivateKey, votings, participants);
-        VoteScheduler voteScheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, resultsAggregationPeriod, ownerId);
+        VoteAggregation aggregation = new VoteAggregation(clients);
+        VotingClient client = new VotingClient(walletManager, aggregation, resultsBuilder, ownerId, ownerPrivateKey, participants);
+        VoteScheduler voteScheduler = new VoteScheduler(client, resultsBuilder, aggregation, votings, messagesFileContent, ownerId);
         WalletScheduler walletScheduler = new WalletScheduler(walletManager);
 
         client.run(newMessagesRequestInterval);

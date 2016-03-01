@@ -3,7 +3,6 @@ package uk.dsxt.voting.common.networking;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
@@ -30,19 +29,21 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "1000");
         properties.setProperty("nxt.minNeedBlocks", "1");
-        BaseWalletManager wm1 = new BaseWalletManager(properties, null, "1");
-        /*wm1.runWallet();
+        BaseWalletManager wm1;
+/*
+        wm1 = new BaseWalletManager(properties, null, "1");
+        wm1.runWallet();
         Thread.sleep(1000);
         assertEquals(wm1.getBalance().compareTo(new BigDecimal(1000000000L)), 0);
         Thread.sleep(60000);
         wm1.stopWallet();
-        Thread.sleep(1000);*/
+        Thread.sleep(1000);
+        */
         properties.setProperty("nxt.isOffline", "false");
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "10");
         wm1 = new BaseWalletManager(properties, null, "11");
         wm1.runWallet();
-        wm1.getSelfAddress();
         Thread.sleep(3000);
         properties.setProperty("nxt.peerServerPort", "7973");
         properties.setProperty("nxt.apiServerPort", "7972");
@@ -53,9 +54,6 @@ public class BaseWalletManagerTest {
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
         WalletManager wm2 = new BaseWalletManager(properties, null, "2");
         wm2.runWallet();
-        String selfAddress = wm2.getSelfAddress();
-        assertNotNull(selfAddress);
-        System.out.println(selfAddress);
         Thread.sleep(1000);
         String messageId = null;
         while (messageId == null) {
@@ -70,8 +68,5 @@ public class BaseWalletManagerTest {
             Thread.sleep(1000);
         }
         System.out.println(newMessages);
-        wm1.sendMoneyToAddressBalance(BigDecimal.ONE, wm2.getSelfAddress());
-        while (true)
-            Thread.sleep(1000);
     }
 }

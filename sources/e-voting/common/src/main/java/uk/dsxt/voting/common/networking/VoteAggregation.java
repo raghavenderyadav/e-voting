@@ -22,8 +22,7 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.BlockedPacket;
-import uk.dsxt.voting.common.datamodel.Holding;
+import uk.dsxt.voting.common.datamodel.Client;
 import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
 
@@ -33,12 +32,15 @@ import java.util.Map;
 @Log4j2
 public class VoteAggregation {
 
-    private Map<String, VoteAggregator> aggregatorsByVotingId = new HashMap<>();
+    private final Map<String, VoteAggregator> aggregatorsByVotingId = new HashMap<>();
+    private final Client[] clients;
 
-    public VoteAggregation(Voting[] votings, Holding[] holdings, BlockedPacket[] blackList) {
-        for(Voting voting : votings) {
-            aggregatorsByVotingId.put(voting.getId(), new VoteAggregator(voting, holdings, blackList));
-        }
+    public VoteAggregation(Client[] clients) {
+        this.clients = clients;
+    }
+
+    public void addVoting(Voting voting) {
+        aggregatorsByVotingId.put(voting.getId(), new VoteAggregator(voting, clients));
     }
 
     public boolean addVote(VoteResult voteResult, long timestamp, String signAuthorId) {

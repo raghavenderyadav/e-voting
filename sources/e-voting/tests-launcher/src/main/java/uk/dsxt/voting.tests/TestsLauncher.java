@@ -27,8 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.VotingClientMain;
-import uk.dsxt.voting.common.datamodel.InternalLogicException;
-import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 import uk.dsxt.voting.common.networking.RegistriesServerImpl;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -142,6 +141,7 @@ public class TestsLauncher {
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
             RegistriesServer regServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
+            /*
             Voting[] votings = regServer.getVotings();
             if (votings.length > 1) {
                 log.error("There is more than one voting. Stopping {}", MODULE_NAME);
@@ -151,6 +151,7 @@ public class TestsLauncher {
             long sleepPeriod = currentVoting.getEndTimestamp() - Instant.now().getMillis();
             log.info("Waiting {} seconds while voting ends", sleepPeriod / 1000);
             Thread.sleep(sleepPeriod);
+            */
             log.info("----------------------------- TEST FINISHED -----------------------------");
             // TODO: check that results builder has finished calculating results
             Thread.sleep(60 * 60 * 1000);

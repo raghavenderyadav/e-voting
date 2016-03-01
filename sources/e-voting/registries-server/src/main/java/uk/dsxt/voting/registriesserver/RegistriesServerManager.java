@@ -24,8 +24,8 @@ package uk.dsxt.voting.registriesserver;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Log4j2
@@ -33,45 +33,19 @@ import java.util.*;
 public class RegistriesServerManager {
 
     Participant[] participants;
-    Holding[] holdings;
-    Voting[] votings;
-    BlockedPacket[] blackList;
 
-    public RegistriesServerManager(Participant[] participants, Holding[] holdings,
-                                   Voting[] votings, BlockedPacket[] blackList) throws InternalLogicException {
-        validateData(participants, holdings, votings, blackList);
+    public RegistriesServerManager(Participant[] participants) throws InternalLogicException {
+        validateData(participants);
 
         this.participants = participants;
-        this.holdings = holdings;
-        this.votings = votings;
-        this.blackList = blackList;
-    }
-
-    public Holding[] getHoldings() {
-        return holdings;
     }
 
     public Participant[] getParticipants() {
         return participants;
     }
 
-    public Voting[] getVotings() {
-        return votings;
-    }
-
-    public BlockedPacket[] getBlackList() {
-        return blackList;
-    }
-
-    private void validateData(Participant[] participants, Holding[] holdings,
-                              Voting[] votings, BlockedPacket[] blackList) throws InternalLogicException {
-        validateVotings(votings);
-
-        Map<String, Participant> participantsById = validateAndMapParticipants(participants);
-
-        Map<String, BigDecimal> holdersPacketSizeByHolderId = validateAndMapHoldings(holdings, participantsById);
-
-        validateBlackList(blackList, participantsById, holdersPacketSizeByHolderId);
+    private void validateData(Participant[] participants) throws InternalLogicException {
+        validateParticipants(participants);
     }
 
     void validateVotings(Voting[] votings) throws InternalLogicException {
@@ -96,7 +70,7 @@ public class RegistriesServerManager {
         }
     }
 
-    Map<String, Participant> validateAndMapParticipants(Participant[] participants) throws InternalLogicException {
+    void validateParticipants(Participant[] participants) throws InternalLogicException {
         Map<String, Participant> participantsById = new HashMap<>();
         //participant validation
         if (participants == null || participants.length == 0)
@@ -108,70 +82,6 @@ public class RegistriesServerManager {
             if (participantsById.containsKey(p.getId()))
                 throw new InternalLogicException(String.format("validateAndMapParticipants failed. Participant with id %s is represented twice.", p.getId()));
             participantsById.put(p.getId(), p);
-        }
-        return participantsById;
-    }
-
-    Map<String, BigDecimal> validateAndMapHoldings(Holding[] holdings, Map<String, Participant> participantsById) throws InternalLogicException {
-        Map<String, BigDecimal> holdersPacketSizeByHolderId = new HashMap<>();
-        Map<String, String> nominalHoldersByHolderId = new HashMap<>();
-        if (holdings == null || holdings.length == 0)
-            throw new InternalLogicException("validateAndMapHoldings failed. holdings are null or empty.");
-        for (int i = 0; i < holdings.length; i++) {
-            Holding h = holdings[i];
-            if (h == null || h.getHolderId() == null || h.getHolderId().isEmpty() || h.getPacketSize() == null || h.getPacketSize().compareTo(BigDecimal.ZERO) <= 0)
-                throw new InternalLogicException(String.format("validateAndMapHoldings failed. One of the holding fields are incorrect. index=%d", i));
-            if (holdersPacketSizeByHolderId.containsKey(h.getHolderId()))
-                throw new InternalLogicException(String.format("validateAndMapHoldings failed. Holding with holder id %s is represented twice.", h.getHolderId()));
-            if (!participantsById.containsKey(h.getHolderId()))
-                throw new InternalLogicException(String.format("validateAndMapHoldings failed. Holding's holder id %s is unknown. index=%d", h.getHolderId(), i));
-            //check nominal holder
-            if (h.getNominalHolderId() != null) {
-                if (!participantsById.containsKey(h.getNominalHolderId()))
-                    throw new InternalLogicException(String.format("validateAndMapHoldings failed. Holding's nominal holder id %s is unknown. index=%d", h.getNominalHolderId(), i));
-                nominalHoldersByHolderId.put(h.getHolderId(), h.getNominalHolderId());
-            }
-            //check for trees are not cyclic
-            for (Map.Entry<String, String> entry : nominalHoldersByHolderId.entrySet()) {
-                List<String> handledNodes = new ArrayList<>();
-                handledNodes.add(entry.getKey());
-                validateTreeAcyclic(entry.getValue(), nominalHoldersByHolderId, handledNodes);
-            }
-
-            holdersPacketSizeByHolderId.put(h.getHolderId(), h.getPacketSize());
-        }
-
-        if (participantsById.size() != holdersPacketSizeByHolderId.size())
-            throw new InternalLogicException(String.format("validateAndMapHoldings failed. Participants size %d doesn't equal to holdings size %d",
-                    participantsById.size(), holdersPacketSizeByHolderId.size()));
-
-        return holdersPacketSizeByHolderId;
-    }
-
-    private void validateTreeAcyclic(String parent, Map<String, String> pairs, List<String> handledNodes) throws InternalLogicException {
-        if (handledNodes.contains(parent))
-            throw new InternalLogicException(String.format("validateTreeAcyclic failed. Cyclic tree found. nodes %s", Arrays.toString(handledNodes.toArray())));
-        if (pairs.containsKey(parent)) {
-            handledNodes.add(parent);
-            validateTreeAcyclic(pairs.get(parent), pairs, handledNodes);
-        }
-    }
-
-    private void validateBlackList(BlockedPacket[] blackList, Map<String, Participant> participantsById,
-                                   Map<String, BigDecimal> holdersPacketSizeByHolderId) throws InternalLogicException {
-        if (blackList == null)
-            throw new InternalLogicException("validateBlackList failed. blackList is null.");
-        for (int i = 0; i < blackList.length; i++) {
-            BlockedPacket bp = blackList[i];
-            if (bp.getHolderId() == null || bp.getPacketSize() == null || bp.getPacketSize().compareTo(BigDecimal.ZERO) <= 0)
-                throw new InternalLogicException(String.format("validateBlackList failed. One of the blacklist entry fields are incorrect. index=%d", i));
-            if (!participantsById.containsKey(bp.getHolderId()))
-                throw new InternalLogicException(String.format("validateBlackList failed. There is no participant with id %s. index=%d", bp.getHolderId(), i));
-            //check that blocked packet size value is correct
-            BigDecimal originalPacketSize = holdersPacketSizeByHolderId.get(bp.getHolderId());
-            if (originalPacketSize.compareTo(bp.getPacketSize()) < 0)
-                throw new InternalLogicException(String.format("validateBlackList failed. Blocked packet size %s is greater than original %s for id %s. index=%d",
-                        originalPacketSize, bp.getPacketSize(), bp.getHolderId(), i));
         }
     }
 

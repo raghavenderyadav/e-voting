@@ -35,50 +35,41 @@ public class VoteAggregator {
 
     private final Voting voting;
 
-    private Map<Integer, Set<Integer>> availableAnswerIdsByQuestionId = new HashMap<>();
+    private final Map<Integer, Set<Integer>> availableAnswerIdsByQuestionId = new HashMap<>();
+
+    private final Map<Integer, BigDecimal> multiplicatorByQuestionId = new HashMap<>();
 
     @Data
     @AllArgsConstructor
     private static class HolderRecord {
-        private final String holderId;
-        private VoteResult treeResult;
-        private final List<VoteResult> selfResults;
-        private final List<HolderRecord> children;
-        private HolderRecord parent;
+        private final String participantId;
+        private VoteResult sumResult;
+        private final List<VoteResult> results;
         private BigDecimal nonBlockedAmount;
     }
 
     private Map<String, HolderRecord> results = new HashMap<>();
 
-    private HolderRecord rootRecord;
+    private VoteResult sumResult;
 
-    public VoteAggregator(Voting voting, Holding[] holdings, BlockedPacket[] blackList) {
+    public VoteAggregator(Voting voting, Client[] clients) {
         this.voting = voting;
         for(Question question : voting.getQuestions()) {
             Set<Integer> answerIds = new HashSet<>();
             availableAnswerIdsByQuestionId.put(question.getId(), answerIds);
+            multiplicatorByQuestionId.put(question.getId(), new BigDecimal(question.getMultiplicator()));
             for(Answer answer : question.getAnswers()) {
                 answerIds.add(answer.getId());
             }
         }
-        for(Holding holding : holdings) {
-            results.put(holding.getHolderId(), new HolderRecord(holding.getHolderId(), null, new ArrayList<>(), new ArrayList<>(), null, holding.getPacketSize()));
+        for(Client client : clients) {
+            results.put(client.getParticipantId(), new HolderRecord(client.getParticipantId(), null, new ArrayList<>(), client.getPacketSize()));
         }
-        rootRecord = new HolderRecord(null, new VoteResult(voting.getId(), null), new ArrayList<>(), new ArrayList<>(), null, BigDecimal.ZERO);
-        for(Holding holding : holdings) {
-            HolderRecord record = results.get(holding.getHolderId());
-            record.setParent(holding.getNominalHolderId() == null ? rootRecord : results.get(holding.getNominalHolderId()));
-            record.getParent().getChildren().add(record);
-        }
-        for(BlockedPacket blockedPacket : blackList) {
-            for(HolderRecord record = results.get(blockedPacket.getHolderId()); record != null; record = record.getParent()) {
-                record.setNonBlockedAmount(record.getNonBlockedAmount().subtract(blockedPacket.getPacketSize()));
-            }
-        }
+        sumResult = new VoteResult(voting.getId(), null);
     }
 
     public VoteResult getResult() {
-        return rootRecord.getTreeResult();
+        return sumResult;
     }
 
     public boolean addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
@@ -86,39 +77,9 @@ public class VoteAggregator {
             return false;
         }
         HolderRecord record = results.get(voteResult.getHolderId());
-
-        if (record.selfResults.size() == 0 || record.selfResults.size() == 1 && !record.selfResults.get(0).equals(voteResult)) {
-            record.selfResults.add(voteResult);
-            recalculateResults(record);
-            return true;
-        }
-        return false;
-    }
-
-    private void recalculateResults(HolderRecord record) {
-        VoteResult treeResult = new VoteResult(voting.getId(), record.getHolderId());
-        for(HolderRecord child : record.getChildren()) {
-            treeResult.add(child.getTreeResult());
-        }
-        if (record.selfResults.size() == 1) {
-            VoteResult selfResult = record.selfResults.get(0);
-            boolean skipSelfRecord = false;
-            for(Question question : voting.getQuestions()) {
-                if (treeResult.getSumQuestionAmount(question.getId()).add(selfResult.getSumQuestionAmount(question.getId())).compareTo(record.getNonBlockedAmount()) > 0) {
-                    skipSelfRecord = true;
-                    break;
-                }
-            }
-            if (!skipSelfRecord) {
-                treeResult.add(selfResult);
-            }
-        }
-        record.setTreeResult(treeResult);
-
-        HolderRecord parent = record.getParent();
-        if (parent != null) {
-            recalculateResults(parent);
-        }
+        record.getSumResult().add(voteResult);
+        sumResult.add(voteResult);
+        return true;
     }
 
     private boolean checkVote(VoteResult voteResult, long timestamp, String signAuthorId) {
@@ -153,12 +114,38 @@ public class VoteAggregator {
                     voteResult.getHolderId(), voting.getName());
             return false;
         }
-        for(; record != rootRecord; record = record.getParent()) {
-            if (record.getHolderId().equals(signAuthorId))
-                return true;
+        if (!record.getParticipantId().equals(signAuthorId)) {
+            log.warn("Can not add vote of holder {} to voting {}: vote sign author is incorrect",
+                    voteResult.getHolderId(), voting.getName());
+            return false;
         }
-        log.error("Can not add vote of holder {} to voting {}: vote sign author not found",
-                voteResult.getHolderId(), voting.getName(), signAuthorId);
-        return false;
+
+        Map<Integer, BigDecimal> sumByQuestionId = new HashMap<>();
+        for(VotedAnswer answer: voteResult.getAnswers()) {
+            BigDecimal oldSum = sumByQuestionId.get(answer.getQuestionId());
+            sumByQuestionId.put(answer.getQuestionId(), oldSum == null ? answer.getVoteAmount() : answer.getVoteAmount().add(oldSum));
+        }
+        for(VotedAnswer answer: voteResult.getAnswers()) {
+            BigDecimal oldSum = sumByQuestionId.get(answer.getQuestionId());
+            sumByQuestionId.put(answer.getQuestionId(), oldSum == null ? answer.getVoteAmount() : answer.getVoteAmount().add(oldSum));
+        }
+        for(VotedAnswer answer: record.getSumResult().getAnswers()) {
+            BigDecimal oldSum = sumByQuestionId.get(answer.getQuestionId());
+            sumByQuestionId.put(answer.getQuestionId(), oldSum == null ? answer.getVoteAmount() : answer.getVoteAmount().add(oldSum));
+        }
+        for(Map.Entry<Integer, BigDecimal> questionEntry : sumByQuestionId.entrySet()) {
+            BigDecimal multiplicator = multiplicatorByQuestionId.get(questionEntry.getKey());
+            if (multiplicator == null) {
+                log.warn("Can not add vote of holder {} to voting {}: question {} not found",
+                        voteResult.getHolderId(), voting.getName(), questionEntry.getKey());
+                return false;
+            }
+            if (record.getNonBlockedAmount().multiply(multiplicator).compareTo(questionEntry.getValue()) < 0) {
+                log.warn("Can not add vote of holder {} to voting {}: question {} has too many votes {}, limit is {}",
+                        voteResult.getHolderId(), voting.getName(), questionEntry.getKey(), questionEntry.getValue(), record.getNonBlockedAmount().multiply(multiplicator));
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -41,14 +41,13 @@ public class VoteAggregatorTest {
                 new Question(1, "q1", new Answer[]{new Answer(1, "q11"), new Answer(2, "q12")}),
                 new Question(2, "q2", new Answer[]{new Answer(1, "q21")}),
         });
-        Holding[] holdings = new Holding[]{
-                new Holding("1", BigDecimal.ONE, null),
-                new Holding("2", new BigDecimal(20), null),
-                new Holding("3", BigDecimal.TEN, "2"),
-                new Holding("4", BigDecimal.ONE, "2"),
+        Client[] clients = new Client[]{
+                new Client("1", BigDecimal.ONE, ParticipantRole.NominalHolder),
+                new Client("2", new BigDecimal(20), ParticipantRole.NominalHolder),
+                new Client("3", BigDecimal.TEN, ParticipantRole.Owner),
+                new Client("4", BigDecimal.ONE, ParticipantRole.ManagementCompany),
         };
-        BlockedPacket[] blackList = new BlockedPacket[] {new BlockedPacket("3", BigDecimal.ONE)};
-        aggregator = new VoteAggregator(voting, holdings, blackList);
+        aggregator = new VoteAggregator(voting, clients);
     }
 
     @Test

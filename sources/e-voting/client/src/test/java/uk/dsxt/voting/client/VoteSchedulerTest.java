@@ -71,7 +71,7 @@ public class VoteSchedulerTest {
         VoteAggregation aggregation = mock(VoteAggregation.class);
         when(aggregation.getResult("2")).thenReturn(new VoteResult("22", null));
 
-        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, 1000, "001");
+        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, "001");
         scheduler.run();
         Thread.sleep(100);
 

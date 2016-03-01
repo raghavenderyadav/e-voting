@@ -27,7 +27,6 @@ import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
 
 import java.security.PrivateKey;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,13 +45,16 @@ public class VotingClient extends MessageHandler {
 
 
     public VotingClient(WalletManager walletManager, VoteAggregation voteAggregation, ResultsBuilder resultsBuilder,
-                        String holderId, PrivateKey ownerPrivateKey, Voting[] votings, Participant[] participants) {
+                        String holderId, PrivateKey ownerPrivateKey, Participant[] participants) {
         super(walletManager, participants);
         this.voteAggregation = voteAggregation;
         this.resultsBuilder = resultsBuilder;
         this.holderId = holderId;
         this.ownerPrivateKey = ownerPrivateKey;
-        Arrays.stream(votings).forEach(v -> votingsById.put(v.getId(), v));
+    }
+
+    public void addVoting(Voting voting) {
+        votingsById.put(voting.getId(), voting);
     }
 
     public boolean sendVoteResult(VoteResult voteResult) {

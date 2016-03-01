@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
-import uk.dsxt.voting.common.datamodel.RequestType;
 import uk.dsxt.voting.common.datamodel.walletapi.*;
 import uk.dsxt.voting.common.utils.HttpHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -13,8 +12,6 @@ import uk.dsxt.voting.common.utils.PropertiesHelper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -29,7 +26,6 @@ public class BaseWalletManager implements WalletManager {
     private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
     private final String mainAddress;
-    private final String passwordForRegister;
     private final String port;
     private final HttpHelper httpHelper;
     private final List<String> javaOptions = new ArrayList<>();
@@ -50,7 +46,6 @@ public class BaseWalletManager implements WalletManager {
 
         jarPath = properties.getProperty("nxt.jar.path");
 
-        passwordForRegister = properties.getProperty("nxt.register.password");
         String javaOptionsStr = properties.getProperty("nxt.javaOptions");
         if (javaOptionsStr != null && !javaOptionsStr.isEmpty()) {
             for (String property : javaOptionsStr.split(";")) {
@@ -180,24 +175,6 @@ public class BaseWalletManager implements WalletManager {
     }
 
     @Override
-    public BigDecimal getBalance() {
-        BalanceResponse balance = sendApiRequest(WalletRequestType.GET_BALANCE, keyToValue -> keyToValue.put("account", accountId), BalanceResponse.class);
-        if (balance != null)
-            return balance.getBalance();
-        return null;
-    }
-
-    @Override
-    public void sendMoneyToAddressBalance(BigDecimal money, String address) {
-        sendApiRequest(WalletRequestType.SEND_MONEY, passphrase, keyToValue -> {
-            keyToValue.put("recipient", address);
-            keyToValue.put("feeNQT", "0");
-            keyToValue.put("amountNQT", Long.toString(money.multiply(new BigDecimal(BaseWalletResponse.ONE_NXT)).longValue()));
-            keyToValue.put("deadline", "60");
-        }, SendTransactionResponse.class);
-    }
-
-    @Override
     public String sendMessage(byte[] body) {
         return sendMessage(mainAddress, body);
     }
@@ -219,12 +196,6 @@ public class BaseWalletManager implements WalletManager {
     }
 
     @Override
-    public String getSelfAddress() {
-        waitInitialize();
-        return selfAccount;
-    }
-
-    @Override
     public List<Message> getNewMessages(long timestamp) {
         Set<String> resultIds = new HashSet<>();
         List<Message> result = new ArrayList<>();
@@ -232,10 +203,10 @@ public class BaseWalletManager implements WalletManager {
         List<Message> unconfirmedMessages = getUnconfirmedMessages(timestamp);
         if (confirmedMessages != null) {
             resultIds.addAll(confirmedMessages.stream().map(Message::getId).collect(Collectors.toList()));
-            confirmedMessages.stream().forEach(m -> result.add(m));
+            confirmedMessages.stream().forEach(result::add);
         }
         if (unconfirmedMessages != null) {
-            unconfirmedMessages.stream().filter(m -> !resultIds.contains(m.getId())).forEach(m -> result.add(m));
+            unconfirmedMessages.stream().filter(m -> !resultIds.contains(m.getId())).forEach(result::add);
         }
         return result;
     }
@@ -279,22 +250,6 @@ public class BaseWalletManager implements WalletManager {
         StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {
         }, StartForgingResponse.class);
         return response != null;
-    }
-
-    private void inheritIO(final InputStream src) {
-        new Thread(() -> {
-            Scanner sc = new Scanner(src);
-            while (sc.hasNextLine()) {
-                String logStr = sc.nextLine();
-                if (logStr.toUpperCase().contains("ERROR:")) {
-                    log.error(logStr);
-                } else if (logStr.toUpperCase().contains("WARNING:")) {
-                    log.warn(logStr);
-                } else {
-                    log.info(logStr);
-                }
-            }
-        }).start();
     }
 
     private void waitInitialize() {

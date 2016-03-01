@@ -23,8 +23,7 @@ package uk.dsxt.voting.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import uk.dsxt.voting.common.datamodel.InternalLogicException;
-import uk.dsxt.voting.common.datamodel.RequestType;
+import uk.dsxt.voting.common.networking.RequestType;
 
 import javax.ws.rs.core.Response;
 import java.io.*;

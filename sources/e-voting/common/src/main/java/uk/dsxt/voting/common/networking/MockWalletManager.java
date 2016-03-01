@@ -15,22 +15,7 @@ public class MockWalletManager implements WalletManager {
     }
 
     @Override
-    public BigDecimal getBalance() {
-        return BigDecimal.ZERO;
-    }
-
-    @Override
-    public void sendMoneyToAddressBalance(BigDecimal money, String address) {
-
-    }
-
-    @Override
     public String sendMessage(byte[] body) {
-        return null;
-    }
-
-    @Override
-    public String getSelfAddress() {
         return null;
     }
 
