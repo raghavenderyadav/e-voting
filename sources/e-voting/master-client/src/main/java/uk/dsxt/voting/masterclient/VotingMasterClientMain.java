@@ -27,9 +27,11 @@ import uk.dsxt.voting.common.datamodel.Holding;
 import uk.dsxt.voting.common.datamodel.Participant;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.*;
+import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.math.BigDecimal;
+import java.security.PrivateKey;
 import java.util.Properties;
 
 @Log4j2
@@ -55,9 +57,13 @@ public class VotingMasterClientMain {
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
             walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args, "master");
 
+            String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
+            PrivateKey ownerPrivateKey = args != null && args[4].isEmpty() ? null : CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
+            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
+
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
-            init(registriesServer, resultsBuilder, walletManager, moneyToNode, newMessagesRequestInterval);
+            init(registriesServer, resultsBuilder, walletManager, moneyToNode, newMessagesRequestInterval, messagesFileContent, ownerId, ownerPrivateKey);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -65,15 +71,16 @@ public class VotingMasterClientMain {
     }
 
     private static void init(RegistriesServer registriesServer, ResultsBuilder resultsBuilder, WalletManager walletManager, BigDecimal moneyToNode,
-                             long newMessagesRequestInterval) {
+                             long newMessagesRequestInterval, String messagesFileContent, String ownerId, PrivateKey ownerPrivateKey) {
         BlockedPacket[] blackList = registriesServer.getBlackList();
         Holding[] holdings = registriesServer.getHoldings();
         Participant[] participants = registriesServer.getParticipants();
         Voting[] votings = registriesServer.getVotings();
 
         VoteAggregation aggregation = new VoteAggregation(votings, holdings, blackList);
-        distributor = new MoneyDistributor(walletManager, participants, moneyToNode, votings, resultsBuilder, aggregation);
-
+        distributor = new MoneyDistributor(walletManager, participants, moneyToNode, votings, resultsBuilder, aggregation, ownerPrivateKey, ownerId);
+        VoteScheduler voteScheduler = new VoteScheduler(distributor, resultsBuilder, aggregation, votings, messagesFileContent, ownerId);
+        voteScheduler.run();
         distributor.run(newMessagesRequestInterval);
     }
 

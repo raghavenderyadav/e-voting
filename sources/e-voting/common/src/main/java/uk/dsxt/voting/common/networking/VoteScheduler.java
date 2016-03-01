@@ -19,15 +19,12 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.client;
+package uk.dsxt.voting.common.networking;
 
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
-import uk.dsxt.voting.common.networking.ResultsBuilder;
-import uk.dsxt.voting.common.networking.VoteAggregation;
-import uk.dsxt.voting.common.networking.VotingClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +51,7 @@ public class VoteScheduler {
     private Thread scheduler;
 
     public VoteScheduler(VotingClient votingClient, ResultsBuilder resultsBuilder, VoteAggregation aggregation, Voting[] votings,
-                         String messagesFileContent, long resultsAggregationPeriod, String holderId) {
+                         String messagesFileContent, String holderId) {
         this.votingClient = votingClient;
         this.resultsBuilder = resultsBuilder;
         this.aggregation = aggregation;

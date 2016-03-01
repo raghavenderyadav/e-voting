@@ -28,6 +28,7 @@ import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.*;
 
 import java.math.BigDecimal;
+import java.security.PrivateKey;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -43,8 +44,8 @@ public class MoneyDistributor extends VotingClient {
     private final Timer sendResultTimer = new Timer("sendResultTimer");
 
     public MoneyDistributor(WalletManager walletManager, Participant[] participants, BigDecimal moneyToNode, Voting[] votings,
-                            ResultsBuilder resultsBuilder, VoteAggregation voteAggregation) {
-        super(walletManager, voteAggregation, resultsBuilder, "master", null, votings, participants);
+                            ResultsBuilder resultsBuilder, VoteAggregation voteAggregation, PrivateKey ownerPrivateKey, String ownerId) {
+        super(walletManager, voteAggregation, resultsBuilder, ownerId, ownerPrivateKey, votings, participants);
         this.moneyToNode = moneyToNode;
 
         final String[] ids = new String[1];

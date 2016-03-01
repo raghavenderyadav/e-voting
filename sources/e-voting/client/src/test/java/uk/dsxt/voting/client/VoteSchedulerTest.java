@@ -26,6 +26,7 @@ import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.VoteAggregation;
+import uk.dsxt.voting.common.networking.VoteScheduler;
 import uk.dsxt.voting.common.networking.VotingClient;
 
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class VoteSchedulerTest {
         VoteAggregation aggregation = mock(VoteAggregation.class);
         when(aggregation.getResult("2")).thenReturn(new VoteResult("22", null));
 
-        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, 1000, "001");
+        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, "001");
         scheduler.run();
         Thread.sleep(100);
 
