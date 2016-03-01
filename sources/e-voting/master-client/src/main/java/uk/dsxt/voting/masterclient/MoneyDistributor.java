@@ -23,7 +23,6 @@ package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.VoteResult;
 import uk.dsxt.voting.common.datamodel.Voting;
 import uk.dsxt.voting.common.networking.*;
 
@@ -31,8 +30,6 @@ import java.math.BigDecimal;
 import java.security.PrivateKey;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @Log4j2
 public class MoneyDistributor extends VotingClient {
@@ -41,27 +38,12 @@ public class MoneyDistributor extends VotingClient {
 
     private final Set<String> sentIds = new HashSet<>();
 
-    private final Timer sendResultTimer = new Timer("sendResultTimer");
-
     public MoneyDistributor(WalletManager walletManager, Participant[] participants, BigDecimal moneyToNode, Voting[] votings,
                             ResultsBuilder resultsBuilder, VoteAggregation voteAggregation, PrivateKey ownerPrivateKey, String ownerId) {
         super(walletManager, voteAggregation, resultsBuilder, ownerId, ownerPrivateKey, votings, participants);
         this.moneyToNode = moneyToNode;
 
         final String[] ids = new String[1];
-        for (Voting v : votingsById.values()) {
-            ids[0] = v.getId();
-            sendResultTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    VoteResult result = voteAggregation.getResult(ids[0]);
-                    if (result == null) {
-                        result = new VoteResult(ids[0], null);
-                    }
-                    resultsBuilder.addResult("master", result.toString());
-                }
-            }, v.getEndTimestamp() - System.currentTimeMillis());
-        }
     }
 
     @Override
