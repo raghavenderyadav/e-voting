@@ -42,6 +42,7 @@ public class TestDataGenerator {
     //common settings
     private final static int PARTICIPANTS_COUNT = 100;
     private final static int NODES_COUNT = 10;
+    private final static int EMPTY_NODES_COUNT = 0;
     private final static BigDecimal MAX_BLOCKED_PACKET_SIZE = new BigDecimal(30);
     private final static int DURATION_MINUTES = 60;
 
@@ -92,7 +93,7 @@ public class TestDataGenerator {
         }
         BlockedPacket[] blackList = blackListEntries.toArray(new BlockedPacket[blackListEntries.size()]);
         //generating client configuration
-        ClientConfiguration[] clientConfs = new ClientConfiguration[NODES_COUNT];
+        ClientConfiguration[] clientConfs = new ClientConfiguration[NODES_COUNT + EMPTY_NODES_COUNT];
         for (int i = 0; i < NODES_COUNT; i++) {
             StringBuilder builderMask = new StringBuilder();
             for (int j = 0; j < (PARTICIPANTS_COUNT / NODES_COUNT); j++) {
@@ -104,6 +105,10 @@ public class TestDataGenerator {
             String mask = builderMask.toString();
             clientConfs[i] = new ClientConfiguration(participants[i * (PARTICIPANTS_COUNT / NODES_COUNT)].getId(), keys[i * (PARTICIPANTS_COUNT / NODES_COUNT)].getPrivateKey(), true, false, mask, null);
         }
+        for (int i = NODES_COUNT; i < NODES_COUNT + EMPTY_NODES_COUNT; i++) {
+            clientConfs[i] = new ClientConfiguration(participants[i].getId(), keys[i].getPrivateKey(), true, false, null, null);
+        }
+
         //set some of the participants as fraudsters if needed
         if (COLLUSION_PARTICIPANTS > 0 && VICTIM_PARTICIPANTS > 0) {
             List<Integer> fraudsters = new ArrayList<>();

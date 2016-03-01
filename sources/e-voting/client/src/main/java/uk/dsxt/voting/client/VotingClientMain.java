@@ -43,7 +43,7 @@ public class VotingClientMain {
             if (args != null && args.length < 8)
                 throw new InternalLogicException("Wrong arguments");
             String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
-            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
+            PrivateKey ownerPrivateKey = args != null && args[4].isEmpty() ? null : CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
             String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
 
