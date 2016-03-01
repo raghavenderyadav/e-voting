@@ -33,6 +33,7 @@ public class BaseWalletManager implements WalletManager {
     private final String port;
     private final HttpHelper httpHelper;
     private final List<String> javaOptions = new ArrayList<>();
+    private final boolean getUnconfirmed;
 
     private String passphrase;
     private String accountId;
@@ -70,8 +71,10 @@ public class BaseWalletManager implements WalletManager {
         if (args != null && args.length > 0) {
             mainAddress = args[1];
             passphrase = args[2];
+            getUnconfirmed = Boolean.getBoolean(args[args.length - 1]);
             port = nxtProperties.getProperty("nxt.apiServerPort");
         } else {
+            getUnconfirmed = Boolean.getBoolean(properties.getProperty("nxt.getUnconfirmed"));
             mainAddress = properties.getProperty("nxt.main.address");
             passphrase = properties.getProperty("nxt.account.passphrase");
             port = properties.getProperty("nxt.apiServerPort");
@@ -229,7 +232,7 @@ public class BaseWalletManager implements WalletManager {
         Set<String> resultIds = new HashSet<>();
         List<Message> result = new ArrayList<>();
         List<Message> confirmedMessages = getConfirmedMessages(timestamp);
-        List<Message> unconfirmedMessages = getUnconfirmedMessages(timestamp);
+        List<Message> unconfirmedMessages = getUnconfirmed ? getUnconfirmedMessages(timestamp) : null;
         if (confirmedMessages != null) {
             resultIds.addAll(confirmedMessages.stream().map(Message::getId).collect(Collectors.toList()));
             confirmedMessages.stream().forEach(m -> result.add(m));
