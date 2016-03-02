@@ -34,6 +34,11 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestDataGenerator {
+
+    public static void main(String[] args) throws Exception {
+        TestDataGenerator.generate();
+    }
+
     private final static ObjectMapper mapper = new ObjectMapper();
 
     //testing type
