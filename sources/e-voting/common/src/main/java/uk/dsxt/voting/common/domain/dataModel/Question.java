@@ -19,9 +19,36 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.domain.dataModel;
 
-public enum VoteResultStatus {
-    OK,
-    ERROR,
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
+
+@Value
+public class Question {
+    int id;
+    String question;
+    Answer[] answers;
+    boolean canSelectMultiple;
+    int multiplicator;
+
+    @JsonCreator
+    public Question(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers) {
+        this.id = id;
+        this.question = question;
+        this.answers = answers;
+        this.canSelectMultiple = false;
+        this.multiplicator = 1;
+    }
+
+    @JsonCreator
+    public Question(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers,
+                    @JsonProperty("canSelectMultiple") boolean canSelectMultiple, @JsonProperty("multiplicator") int multiplicator) {
+        this.id = id;
+        this.question = question;
+        this.answers = answers;
+        this.canSelectMultiple = canSelectMultiple;
+        this.multiplicator = multiplicator;
+    }
 }

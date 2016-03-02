@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.*;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -83,9 +83,9 @@ public class VoteAggregator {
     }
 
     private boolean checkVote(VoteResult voteResult, long timestamp, String signAuthorId) {
-        if (timestamp < voting.getStartTimestamp()) {
+        if (timestamp < voting.getBeginTimestamp()) {
             log.warn("Can not add vote of holder {} to voting {}: result timestamp {} before voting begings {}",
-                    voteResult.getHolderId(), voting.getName(), new Instant(timestamp), new Instant(voting.getStartTimestamp()));
+                    voteResult.getHolderId(), voting.getName(), new Instant(timestamp), new Instant(voting.getBeginTimestamp()));
             return false;
         }
         if (timestamp > voting.getEndTimestamp()) {

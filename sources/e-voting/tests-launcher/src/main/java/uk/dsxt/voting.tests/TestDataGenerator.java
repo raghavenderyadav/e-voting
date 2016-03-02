@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 

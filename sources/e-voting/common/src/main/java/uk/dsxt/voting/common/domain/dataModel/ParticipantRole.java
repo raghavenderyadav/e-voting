@@ -19,28 +19,12 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.domain.dataModel;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
-
-@Value()
-public class Voting {
-    String id;
-    String name;
-    long startTimestamp;
-    long endTimestamp;
-    Question[] questions;
-    KeyPair keyPair;
-
-    @JsonCreator
-    public Voting(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("startTimestamp") long startTimestamp, @JsonProperty("endTimestamp") long endTimestamp,
-                  @JsonProperty("questions") Question[] questions) {
-        this.id = id;
-        this.name = name;
-        this.startTimestamp = startTimestamp;
-        this.endTimestamp = endTimestamp;
-        this.questions = questions;
-    }
+public enum ParticipantRole {
+    NRD,
+    NominalHolder,
+    ForeignNominalHolder,
+    Owner,
+    ManagementCompany,
 }

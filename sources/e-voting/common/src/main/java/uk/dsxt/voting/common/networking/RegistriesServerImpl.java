@@ -24,7 +24,7 @@ package uk.dsxt.voting.common.networking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.utils.HttpHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 

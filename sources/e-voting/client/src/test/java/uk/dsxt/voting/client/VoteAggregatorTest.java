@@ -23,7 +23,7 @@ package uk.dsxt.voting.client;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.networking.VoteAggregator;
 
 import java.math.BigDecimal;

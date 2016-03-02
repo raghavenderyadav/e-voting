@@ -23,7 +23,7 @@ package uk.dsxt.voting.common;
 
 import org.junit.Test;
 import uk.dsxt.voting.common.datamodel.KeyPair;
-import uk.dsxt.voting.common.datamodel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.CryptoKeysGenerator;

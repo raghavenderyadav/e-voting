@@ -19,50 +19,9 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.domain.dataModel;
 
-import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.Client;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-
-import java.util.HashMap;
-import java.util.Map;
-
-@Log4j2
-public class VoteAggregation {
-
-    private final Map<String, VoteAggregator> aggregatorsByVotingId = new HashMap<>();
-    private final Client[] clients;
-
-    public VoteAggregation(Client[] clients) {
-        this.clients = clients;
-    }
-
-    public void addVoting(Voting voting) {
-        aggregatorsByVotingId.put(voting.getId(), new VoteAggregator(voting, clients));
-    }
-
-    public boolean addVote(VoteResult voteResult, long timestamp, String signAuthorId) {
-        VoteAggregator aggregator = aggregatorsByVotingId.get(voteResult.getVotingId());
-        if (aggregator == null) {
-            log.warn("Can not add vote of holder {} to voting {}: voting not found",
-                    voteResult.getHolderId(), voteResult.getVotingId());
-            return false;
-        } else {
-            return aggregator.addVote(voteResult, timestamp, signAuthorId);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public VoteResult getResult(String votingId) {
-        VoteAggregator aggregator = aggregatorsByVotingId.get(votingId);
-        if (aggregator == null) {
-            log.warn("Can not get voting {} results: voting not found", votingId);
-            return null;
-        } else {
-            return aggregator.getResult();
-        }
-    }
-
+public enum VoteResultStatus {
+    OK,
+    ERROR,
 }

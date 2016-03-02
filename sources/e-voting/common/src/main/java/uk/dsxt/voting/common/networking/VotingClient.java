@@ -22,9 +22,9 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.Participant;
-import uk.dsxt.voting.common.datamodel.VoteResult;
-import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.security.PrivateKey;
 import java.util.HashMap;

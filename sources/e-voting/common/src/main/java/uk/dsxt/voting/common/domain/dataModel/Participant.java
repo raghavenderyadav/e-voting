@@ -19,36 +19,22 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.domain.dataModel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
-public class Question {
-    int id;
-    String question;
-    Answer[] answers;
-    boolean canSelectMultiple;
-    int multiplicator;
+public class Participant {
+    String id;
+    String name;
+    String publicKey;
 
     @JsonCreator
-    public Question(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers) {
+    public Participant(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("publicKey") String publicKey) {
         this.id = id;
-        this.question = question;
-        this.answers = answers;
-        this.canSelectMultiple = false;
-        this.multiplicator = 1;
-    }
-
-    @JsonCreator
-    public Question(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers,
-                    @JsonProperty("canSelectMultiple") boolean canSelectMultiple, @JsonProperty("multiplicator") int multiplicator) {
-        this.id = id;
-        this.question = question;
-        this.answers = answers;
-        this.canSelectMultiple = canSelectMultiple;
-        this.multiplicator = multiplicator;
+        this.name = name;
+        this.publicKey = publicKey;
     }
 }

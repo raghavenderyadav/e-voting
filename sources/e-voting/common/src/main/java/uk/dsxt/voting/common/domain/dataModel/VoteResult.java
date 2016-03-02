@@ -19,16 +19,17 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.domain.dataModel;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class VoteResult {
 
     @Getter
@@ -38,32 +39,43 @@ public class VoteResult {
     private final String holderId;
 
     @Getter
-    VoteResultStatus status;
+    private BigDecimal packetSize;
 
     @Getter
-    private final Map<String, VotedAnswer> answersByKey = new TreeMap<>();
+    @Setter
+    private VoteResultStatus status;
+
+    @Getter
+    private final SortedMap<String, VotedAnswer> answersByKey;
 
     public VoteResult(String votingId, String holderId) {
+        answersByKey = new TreeMap<>();
         this.votingId = votingId;
         this.holderId = holderId;
+        packetSize = BigDecimal.ZERO;
+        status = VoteResultStatus.OK;
     }
 
     public VoteResult(String s) {
+        answersByKey = new TreeMap<>();
         if (s == null)
             throw new IllegalArgumentException("VoteResult can not be created from null string");
         String[] terms = s.split(",");
         if (terms.length == 1 && s.endsWith(",")) {
             votingId = terms[0];
             holderId = null;
+            packetSize = BigDecimal.ZERO;
             return;
-        } else if (terms.length < 2)
+        } else if (terms.length < 3)
             throw new IllegalArgumentException(String.format("VoteResult can not be created from string with %d terms (%s)", terms.length, s));
         votingId = terms[0];
         holderId = terms[1].length() == 0 ? null : terms[1];
-        for(int i = 2; i < terms.length; i++) {
+        packetSize = new BigDecimal(terms[2]);
+        for(int i = 3; i < terms.length; i++) {
             VotedAnswer answer = new VotedAnswer(terms[i]);
             answersByKey.put(answer.getKey(), answer);
         }
+        status = VoteResultStatus.OK;
     }
 
     public Collection<VotedAnswer> getAnswers() {
@@ -98,6 +110,8 @@ public class VoteResult {
             return false;
         if ((holderId == null) != (other.getHolderId() == null) || holderId != null && !holderId.equals(other.getHolderId()))
             return false;
+        if (packetSize.compareTo(other.getPacketSize()) != 0)
+            return false;
         if (answersByKey.size() != other.getAnswers().size())
             return false;
         for(VotedAnswer otherAnswer: other.getAnswers()) {
@@ -111,17 +125,49 @@ public class VoteResult {
     public void add(VoteResult other) {
         if (other == null)
             return;
-        for(VotedAnswer otherAnswer: other.getAnswers()) {
-            VotedAnswer answer = answersByKey.get(otherAnswer.getKey());
+        addAnswers(answersByKey, other.getAnswers());
+    }
+
+    public VoteResult sum(VoteResult other) {
+        SortedMap<String, VotedAnswer> answers = new TreeMap<>(answersByKey);
+        addAnswers(answers, other.getAnswers());
+        return new VoteResult(votingId, holderId, packetSize.add(other.getPacketSize()), status, answers);
+    }
+
+    private void addAnswers(SortedMap<String, VotedAnswer> answers, Collection<VotedAnswer> newAnswers) {
+        for(VotedAnswer otherAnswer: newAnswers) {
+            VotedAnswer answer = answers.get(otherAnswer.getKey());
             if (answer == null) {
-                answersByKey.put(otherAnswer.getKey(), otherAnswer);
+                answers.put(otherAnswer.getKey(), otherAnswer);
             } else {
-                answersByKey.put(otherAnswer.getKey(), new VotedAnswer(answer.getQuestionId(), answer.getAnswerId(), answer.getVoteAmount().add(otherAnswer.getVoteAmount())));
+                answers.put(otherAnswer.getKey(), new VotedAnswer(answer.getQuestionId(), answer.getAnswerId(), answer.getVoteAmount().add(otherAnswer.getVoteAmount())));
             }
         }
     }
 
     public BigDecimal getSumQuestionAmount(int questionId) {
         return answersByKey.values().stream().filter(a -> a.getQuestionId() == questionId).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+    }
+
+    public String findError(Voting voting) {
+        if (packetSize.signum() <= 0)
+            return String.format("Result has nonpositive packet size %s", packetSize);
+        Map<Integer, BigDecimal> amountsByQuestionId = new HashMap<>();
+        for(VotedAnswer answer : answersByKey.values()) {
+            if (answer.getVoteAmount().signum() <= 0)
+                return String.format("Answer %s has nonpositive amount %s", answer.getKey(), answer.getVoteAmount());
+            Optional<Question> question = Arrays.stream(voting.getQuestions()).filter(q -> q.getId() == answer.getQuestionId()).findFirst();
+            if (!question.isPresent())
+                return String.format("Answer %s has unknown question %d", answer.getKey(), answer.getQuestionId());
+            if (!Arrays.stream(question.get().getAnswers()).filter(a -> a.getId() == answer.getAnswerId()).findFirst().isPresent())
+                return String.format("Answer %s has unknown answer %d", answer.getKey(), answer.getAnswerId());
+            BigDecimal sum = amountsByQuestionId.get(answer.getQuestionId());
+            amountsByQuestionId.put(answer.getQuestionId(), sum == null ? answer.getVoteAmount() : sum.add(answer.getVoteAmount()));
+        }
+        for(Map.Entry<Integer, BigDecimal> questionAmount : amountsByQuestionId.entrySet()) {
+            if (questionAmount.getValue().compareTo(packetSize) > 0)
+                return String.format("Question %d sum amount %s is more than packet size %s", questionAmount.getKey(), questionAmount.getValue(), packetSize);
+        }
+        return null;
     }
 }

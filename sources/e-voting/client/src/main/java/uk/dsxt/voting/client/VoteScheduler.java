@@ -23,8 +23,8 @@ package uk.dsxt.voting.client;
 
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.VoteResult;
-import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.VoteAggregation;
 import uk.dsxt.voting.common.networking.VotingClient;
@@ -87,7 +87,7 @@ public class VoteScheduler {
                     log.error("Can not find voting with id {}", voteResult.getVotingId());
                     continue;
                 }
-                long sendTimestamp = voting.getStartTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
+                long sendTimestamp = voting.getBeginTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
                 boolean sendToResult = terms.length < 3 || !terms[2].equals("-");
                 recordsByTime.add(new VoteRecord(sendTimestamp, sendToResult, voteResult));
             }

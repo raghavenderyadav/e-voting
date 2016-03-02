@@ -19,25 +19,20 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.utils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
+import java.util.Map;
+import java.util.function.Supplier;
 
-import java.math.BigDecimal;
+public final class CollectionsHelper {
 
-@Value
-public class Client {
-    String participantId;
-    ParticipantRole clientType;
-    BigDecimal packetSize;
-
-    @JsonCreator
-    public Client(@JsonProperty("participantId") String participantId, @JsonProperty("packetSize") BigDecimal packetSize,
-                  @JsonProperty("clientType") ParticipantRole clientType) {
-        this.participantId = participantId;
-        this.packetSize = packetSize;
-        this.clientType = clientType;
+    public static <K, V> V getOrAdd(Map<K, V> map, K key, Supplier<V> constructor) {
+        V value = map.get(key);
+        if (value == null) {
+            value = constructor.get();
+            map.put(key, value);
+        }
+        return value;
     }
+
 }

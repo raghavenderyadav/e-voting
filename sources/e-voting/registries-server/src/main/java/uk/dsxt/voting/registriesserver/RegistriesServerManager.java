@@ -23,7 +23,10 @@ package uk.dsxt.voting.registriesserver;
 
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.Answer;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.Question;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.util.*;

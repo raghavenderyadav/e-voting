@@ -22,7 +22,7 @@
 package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.datamodel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 
 import javax.ws.rs.GET;

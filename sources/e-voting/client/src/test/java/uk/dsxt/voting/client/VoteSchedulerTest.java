@@ -22,8 +22,8 @@
 package uk.dsxt.voting.client;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.datamodel.VoteResult;
-import uk.dsxt.voting.common.datamodel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.networking.ResultsBuilder;
 import uk.dsxt.voting.common.networking.VoteAggregation;
 import uk.dsxt.voting.common.networking.VotingClient;
