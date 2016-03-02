@@ -19,20 +19,19 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.domain.nodes;
+package uk.dsxt.voting.common.messaging;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
-import java.util.Collection;
-import java.util.Map;
+public interface MessagesSerializer {
 
-public interface AssetsHolder extends VoteAcceptor {
+    String serialize(Voting voting);
 
-    Collection<Voting> getVotings();
+    String serialize(VoteResult voteResult);
 
-    VoteResult getTotalVotingResult(String votingId);
+    Voting deserializeVoting(String message) throws InternalLogicException;
 
-    Map<String, VoteResult> getAllClientVotes(String votingId);
-
+    VoteResult deserializeVoteResult(String message) throws InternalLogicException;
 }

@@ -27,12 +27,7 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import java.util.Collection;
 import java.util.Map;
 
-public interface AssetsHolder extends VoteAcceptor {
+public interface VoteAcceptor {
 
-    Collection<Voting> getVotings();
-
-    VoteResult getTotalVotingResult(String votingId);
-
-    Map<String, VoteResult> getAllClientVotes(String votingId);
-
+    boolean acceptVote(VoteResult newResult, String clientId, String holdersTreePath);
 }

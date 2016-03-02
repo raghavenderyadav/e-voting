@@ -38,7 +38,7 @@ public class MasterNode extends ClientNode {
     private final ScheduledExecutorService calculateResultsService;
 
     public MasterNode(BroadcastingMessageConnector network, Voting[] votings) {
-        super(null, "0");
+        super("0");
         this.network = network;
         calculateResultsService = Executors.newScheduledThreadPool(10);
         for(Voting voting : votings) {

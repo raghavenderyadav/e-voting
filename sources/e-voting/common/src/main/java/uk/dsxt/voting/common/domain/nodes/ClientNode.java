@@ -21,6 +21,8 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -34,10 +36,12 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
 
-    private static final String PATH_SEPARATOR = "/";
+    public static final String PATH_SEPARATOR = "/";
 
-    private final AssetsHolder parentHolder;
+    @Setter
+    private VoteAcceptor parentHolder;
 
+    @Getter
     private final String participantId;
 
     private final SortedMap<Long, Map<String, Client>> clientsByIdByTimestamp = new TreeMap<>();
@@ -51,8 +55,7 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
 
     protected final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public ClientNode(AssetsHolder parentHolder, String participantId) {
-        this.parentHolder = parentHolder;
+    public ClientNode(String participantId) {
         this.participantId = participantId;
     }
 

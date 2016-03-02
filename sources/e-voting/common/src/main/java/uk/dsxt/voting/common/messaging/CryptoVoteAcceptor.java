@@ -19,20 +19,15 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.domain.nodes;
+package uk.dsxt.voting.common.messaging;
 
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
-import java.util.Collection;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 
-public interface AssetsHolder extends VoteAcceptor {
+public interface CryptoVoteAcceptor {
 
-    Collection<Voting> getVotings();
-
-    VoteResult getTotalVotingResult(String votingId);
-
-    Map<String, VoteResult> getAllClientVotes(String votingId);
+    void acceptVote(String newResultMessage, String clientId, String holdersTreePath, String signature) throws InternalLogicException, GeneralSecurityException, UnsupportedEncodingException;
 
 }
