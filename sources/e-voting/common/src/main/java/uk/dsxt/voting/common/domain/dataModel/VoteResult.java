@@ -102,6 +102,8 @@ public class VoteResult {
         if (holderId != null) {
             sb.append(holderId);
         }
+        sb.append(',');
+        sb.append(packetSize);
         for(VotedAnswer answer : answersByKey.values()) {
             sb.append(',');
             sb.append(answer);
