@@ -32,13 +32,20 @@ import java.security.PublicKey;
 import java.util.*;
 
 @Log4j2
-public abstract class MessageHandler {
+public class MessageHandler {
+
+    @FunctionalInterface
+    public interface MessageReceiver {
+        void handleNewMessage(MessageContent messageContent, String messageId);
+    }
 
     private static final long MAX_MESSAGE_DELAY = 10 * 60 * 1000;
 
     protected final WalletManager walletManager;
 
     private final CryptoHelper cryptoHelper;
+
+    private final MessageReceiver messageReceiver;
 
     private final Map<String, PublicKey> publicKeysById = new HashMap<>();
 
@@ -48,9 +55,28 @@ public abstract class MessageHandler {
 
     protected Thread messagesHandler;
 
+    public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants, MessageReceiver messageReceiver) {
+        this.walletManager = walletManager;
+        this.cryptoHelper = cryptoHelper;
+        this.messageReceiver = messageReceiver;
+        for(Participant participant : participants) {
+            if (participant.getPublicKey() != null) {
+                try {
+                    PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
+                    publicKeysById.put(participant.getId(), key);
+                } catch (GeneralSecurityException e) {
+                    log.error("Can not extract public key for participant {}({})", participant.getName(), participant.getId());
+                }
+            }
+        }
+
+        walletManager.runWallet();
+    }
+
     protected MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants) {
         this.walletManager = walletManager;
         this.cryptoHelper = cryptoHelper;
+        this.messageReceiver = null;
         for(Participant participant : participants) {
             if (participant.getPublicKey() != null) {
                 try {
@@ -113,5 +139,7 @@ public abstract class MessageHandler {
         }
     }
 
-    protected abstract void handleNewMessage(MessageContent messageContent, String messageId);
+    protected void handleNewMessage(MessageContent messageContent, String messageId) {
+        messageReceiver.handleNewMessage(messageContent, messageId);
+    }
 }

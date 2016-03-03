@@ -54,11 +54,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final MessagesSerializer serializer;
 
-    private final PrivateKey privateKey;
-
     private final CryptoHelper cryptoHelper;
 
     private final Map<String, Participant> participantsById;
+
+    private final PrivateKey privateKey;
 
     private final String holderId;
 
