@@ -23,6 +23,8 @@ package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.messaging.MessageContent;
+import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 
 import java.security.GeneralSecurityException;
@@ -36,6 +38,8 @@ public abstract class MessageHandler {
 
     protected final WalletManager walletManager;
 
+    private final CryptoHelper cryptoHelper;
+
     private final Map<String, PublicKey> publicKeysById = new HashMap<>();
 
     private final Set<String> handledMessageIDs = new HashSet<>();
@@ -44,12 +48,13 @@ public abstract class MessageHandler {
 
     protected Thread messagesHandler;
 
-    protected MessageHandler(WalletManager walletManager, Participant[] participants) {
+    protected MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants) {
         this.walletManager = walletManager;
+        this.cryptoHelper = cryptoHelper;
         for(Participant participant : participants) {
             if (participant.getPublicKey() != null) {
                 try {
-                    PublicKey key = CryptoHelper.loadPublicKey(participant.getPublicKey());
+                    PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
                     publicKeysById.put(participant.getId(), key);
                 } catch (GeneralSecurityException e) {
                     log.error("Can not extract public key for participant {}({})", participant.getName(), participant.getId());
@@ -97,16 +102,16 @@ public abstract class MessageHandler {
                     log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
                     continue;
                 }
-                if (!messageContent.checkSign(authorKey)) {
+                if (!messageContent.checkSign(authorKey, cryptoHelper)) {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
                     continue;
                 }
-                handleNewMessage(messageContent, message.getId(), message.isCommited());
+                handleNewMessage(messageContent, message.getId());
             } catch (Exception e) {
                 log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
             }
         }
     }
 
-    protected abstract void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited);
+    protected abstract void handleNewMessage(MessageContent messageContent, String messageId);
 }

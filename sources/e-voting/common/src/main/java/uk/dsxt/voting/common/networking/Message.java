@@ -29,7 +29,4 @@ public class Message {
     String id;
 
     byte[] body;
-
-    boolean isCommited;
-
 }

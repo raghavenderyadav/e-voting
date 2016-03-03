@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.*;
 import uk.dsxt.voting.common.domain.dataModel.*;
+import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 
@@ -55,6 +56,8 @@ public class TestDataGenerator {
     private final static int MAX_DISCONNECT_COUNT = 0;
     private final static int MAX_DISCONNECT_PERIOD = 0;
 
+    private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+
     public static void generate() throws Exception {
         //generate voting
         long startTime = Instant.now().getMillis();
@@ -62,7 +65,7 @@ public class TestDataGenerator {
         Voting voting = generateVoting(startTime, endTime);
         Voting[] votings = new Voting[]{voting};
         //generating keys
-        KeyPair[] keys = CryptoKeysGenerator.generateKeys(PARTICIPANTS_COUNT);
+        KeyPair[] keys = CryptoKeysGenerator.generateKeys(cryptoHelper, PARTICIPANTS_COUNT);
         //generating participants
         Participant[] participants = new Participant[PARTICIPANTS_COUNT];
         for (int i = 0; i < PARTICIPANTS_COUNT; i++) {

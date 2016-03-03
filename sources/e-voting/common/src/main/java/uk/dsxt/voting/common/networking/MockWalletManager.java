@@ -1,6 +1,7 @@
 package uk.dsxt.voting.common.networking;
 
-import java.math.BigDecimal;
+import uk.dsxt.voting.common.messaging.WalletManager;
+
 import java.util.List;
 
 public class MockWalletManager implements WalletManager {

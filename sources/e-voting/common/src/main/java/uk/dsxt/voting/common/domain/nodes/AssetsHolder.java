@@ -25,7 +25,6 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.util.Collection;
-import java.util.Map;
 
 public interface AssetsHolder extends VoteAcceptor {
 
@@ -33,6 +32,13 @@ public interface AssetsHolder extends VoteAcceptor {
 
     VoteResult getTotalVotingResult(String votingId);
 
-    Map<String, VoteResult> getAllClientVotes(String votingId);
+    Collection<VoteResult> getAllClientVotes(String votingId);
+
+    Collection<VoteResult> getConfirmedClientVotes(String votingId);
+
+    VoteResult getClientVote(String votingId, String clientId);
+
+    void addClientVote(VoteResult result);
+
 
 }

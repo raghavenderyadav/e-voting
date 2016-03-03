@@ -24,6 +24,9 @@ package uk.dsxt.voting.common;
 import org.junit.Test;
 import uk.dsxt.voting.common.datamodel.KeyPair;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.networking.Message;
+import uk.dsxt.voting.common.messaging.MessageContent;
+import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
@@ -37,9 +40,11 @@ import static org.junit.Assert.*;
 
 public class MessageHandlerTest {
 
+    private final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+
     @Test
     public void testMessageFilter() throws Exception {
-        KeyPair[] keys = CryptoKeysGenerator.generateKeys(3);
+        KeyPair[] keys = CryptoKeysGenerator.generateKeys(cryptoHelper, 3);
 
         Participant[] participants = new Participant[3];
         participants[0] = new Participant("00", "name00", keys[0].getPublicKey());
@@ -48,19 +53,19 @@ public class MessageHandlerTest {
 
         WalletManager walletManager = mock(WalletManager.class);
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("m0", MessageContent.buildOutputMessage("X0", "10", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null), true));
-        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null), true));
-        messages.add(new Message("m2", MessageContent.buildOutputMessage("X2", "01", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null), true));
-        messages.add(new Message("m3", MessageContent.buildOutputMessage("X3", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null), true));
-        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", CryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), null), true));
+        messages.add(new Message("m0", MessageContent.buildOutputMessage("X0", "10", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
+        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
+        messages.add(new Message("m2", MessageContent.buildOutputMessage("X2", "01", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
+        messages.add(new Message("m3", MessageContent.buildOutputMessage("X3", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
+        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
         when(walletManager.getNewMessages(0)).thenReturn(messages);
 
         List<MessageContent> filteredContents = new ArrayList<>();
         List<String> filteredIds = new ArrayList<>();
 
-        MessageHandler handler = new MessageHandler(walletManager, participants) {
+        MessageHandler handler = new MessageHandler(walletManager, CryptoHelper.DEFAULT_CRYPTO_HELPER, participants) {
             @Override
-            protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited) {
+            protected void handleNewMessage(MessageContent messageContent, String messageId) {
                 filteredContents.add(messageContent);
                 filteredIds.add(messageId);
             }

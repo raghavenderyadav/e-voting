@@ -35,25 +35,27 @@ import static org.junit.Assert.assertTrue;
 
 public class CryptoTest {
 
+    private final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+
     @Test
     public void testCryptoKeys() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(CryptoHelper.ALGORITHM);
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
         KeyPair pair = gen.generateKeyPair();
         final String originalText = "Text to be encrypted";
-        String signature = CryptoHelper.createSignature(originalText, pair.getPrivate());
-        assertTrue(CryptoHelper.verifySignature(originalText, signature, pair.getPublic()));
+        String signature = cryptoHelper.createSignature(originalText, pair.getPrivate());
+        assertTrue(cryptoHelper.verifySignature(originalText, signature, pair.getPublic()));
 
         //convert public key to string
-        String publicKey = CryptoKeysGenerator.savePublicKey(pair.getPublic());
+        String publicKey = CryptoKeysGenerator.savePublicKey(cryptoHelper, pair.getPublic());
         //convert public key back to Public key from string
-        PublicKey publicSaved = CryptoHelper.loadPublicKey(publicKey);
+        PublicKey publicSaved = cryptoHelper.loadPublicKey(publicKey);
         //convert private key to string
-        String privateKey = CryptoKeysGenerator.savePrivateKey(pair.getPrivate());
+        String privateKey = CryptoKeysGenerator.savePrivateKey(cryptoHelper, pair.getPrivate());
         //convert private key back to Public key from string
-        PrivateKey privateSaved = CryptoHelper.loadPrivateKey(privateKey);
+        PrivateKey privateSaved = cryptoHelper.loadPrivateKey(privateKey);
 
-        String signatureSaved = CryptoHelper.createSignature(originalText, privateSaved);
-        assertTrue(CryptoHelper.verifySignature(originalText, signatureSaved, publicSaved));
+        String signatureSaved = cryptoHelper.createSignature(originalText, privateSaved);
+        assertTrue(cryptoHelper.verifySignature(originalText, signatureSaved, publicSaved));
 
         assertEquals(signature, signatureSaved);
     }

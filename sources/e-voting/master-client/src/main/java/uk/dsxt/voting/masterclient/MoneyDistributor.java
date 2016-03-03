@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 
 import java.util.Timer;
@@ -51,12 +52,5 @@ public class MoneyDistributor extends VotingClient {
                 resultsBuilder.addResult("master", result.toString());
             }
         }, voting.getEndTimestamp() - System.currentTimeMillis());
-    }
-
-    @Override
-    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommited) {
-        if (MessageContent.TYPE_VOTE_RESULT.equals(messageContent.getType())) {
-            super.handleNewMessage(messageContent, messageId, isCommited);
-        }
     }
 }

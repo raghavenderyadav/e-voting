@@ -26,6 +26,7 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +34,11 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class MasterNode extends ClientNode {
 
-    private final BroadcastingMessageConnector network;
+    private final NetworkMessagesSender network;
 
     private final ScheduledExecutorService calculateResultsService;
 
-    public MasterNode(BroadcastingMessageConnector network, Voting[] votings) {
+    public MasterNode(NetworkMessagesSender network, Voting[] votings) {
         super("0");
         this.network = network;
         calculateResultsService = Executors.newScheduledThreadPool(10);
@@ -58,6 +59,22 @@ public class MasterNode extends ClientNode {
         VoteResult totalResult = new VoteResult(votingId, null);
         votingRecord.sumClientResultsByClientId.values().stream().filter(r -> r.getStatus() == VoteResultStatus.OK).forEach(r -> totalResult.add(r));
         network.addVotingTotalResult(totalResult);
+    }
+
+    @Override
+    public synchronized boolean acceptVote(VoteResult newResult, List<String> signatures) {
+        if (super.acceptVote(newResult, signatures)) {
+            String[] holderIds = newResult.getHolderId().split(ClientNode.PATH_SEPARATOR);
+            String holderPath = null;
+            for(int i = 0; i < holderIds.length; i++) {
+                int idx = holderIds.length-i-1;
+                String holderId = holderIds[idx];
+                holderPath = i == 0 ? holderId : holderId + ClientNode.PATH_SEPARATOR + holderPath;
+                network.addVote(newResult, signatures.get(idx), holderId);
+            }
+            return true;
+        }
+        return false;
     }
 
 

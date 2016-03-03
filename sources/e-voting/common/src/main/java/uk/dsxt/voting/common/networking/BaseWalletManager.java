@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import uk.dsxt.voting.common.datamodel.walletapi.*;
+import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.utils.HttpHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -221,7 +222,7 @@ public class BaseWalletManager implements WalletManager {
             return null;
         try {
             return Arrays.asList(result.getTransactions()).stream().
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), true)).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getConfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
@@ -238,7 +239,7 @@ public class BaseWalletManager implements WalletManager {
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                     filter(t -> t.getAttachment().isMessageIsText() && t.getTimestamp() >= secondsTimestamp).
-                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), false)).
+                    map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                     collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());

@@ -24,18 +24,16 @@ package uk.dsxt.voting.common.messaging;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.domain.nodes.BroadcastingMessageConnector;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
-import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,46 +41,50 @@ import java.util.stream.Collectors;
 @Log4j2
 public class CryptoNodeDecorator implements CryptoVoteAcceptor {
 
-    private static final String MESSAGE_PART_SEPARATOR = "|";
-
     private final ClientNode node;
 
-    private CryptoVoteAcceptor parentNode;
+    private final CryptoVoteAcceptor parentNode;
 
     private final Map<String, Participant> participantsById;
 
-    private PrivateKey privateKey;
+    private final PrivateKey privateKey;
 
-    private MessagesSerializer serializer;
+    private final MessagesSerializer serializer;
 
-    public CryptoNodeDecorator(ClientNode node, CryptoVoteAcceptor parentNode, Participant[] participants, PrivateKey privateKey, MessagesSerializer serializer) {
+    private final CryptoHelper cryptoHelper;
+
+    public CryptoNodeDecorator(ClientNode node, CryptoVoteAcceptor parentNode, MessagesSerializer serializer, CryptoHelper cryptoProvider, Participant[] participants, PrivateKey privateKey) {
         this.node = node;
         this.parentNode = parentNode;
         this.privateKey = privateKey;
         this.serializer = serializer;
+        this.cryptoHelper = cryptoProvider;
         participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
-        node.setParentHolder((newResult, clientId, holdersTreePath) -> acceptVote(newResult, clientId, holdersTreePath));
+        node.setParentHolder((newResult, signatures) -> acceptVote(newResult, signatures));
     }
 
     @Override
-    public void acceptVote(String newResultMessage, String clientId, String holdersTreePath, String signature)
+    public void acceptVote(String newResultMessage, String clientId, List<String> signatures)
             throws InternalLogicException, GeneralSecurityException, UnsupportedEncodingException {
         Participant participant = participantsById.get(clientId);
         if (participant == null)
             throw new InternalLogicException(String.format("Participant %s not found", clientId));
-        String fullMessageText = String.format("%s%s%s", newResultMessage, MESSAGE_PART_SEPARATOR, holdersTreePath);
-        if (!CryptoHelper.verifySignature(fullMessageText, signature, CryptoHelper.loadPublicKey(participant.getPublicKey())))
+        if (signatures == null || signatures.size() == 0)
+            throw new InternalLogicException(String.format("List of signatures is empty"));
+        if (!cryptoHelper.verifySignature(newResultMessage, signatures.get(0), cryptoHelper.loadPublicKey(participant.getPublicKey())))
             throw new InternalLogicException(String.format("Participant %s signature is invalid", clientId));
         VoteResult newResult = serializer.deserializeVoteResult(newResultMessage);
-        node.acceptVote(newResult, clientId, holdersTreePath);
+        node.acceptVote(newResult, signatures);
     }
 
-    private boolean acceptVote(VoteResult newResult, String clientId, String holdersTreePath) {
+    private boolean acceptVote(VoteResult newResult, List<String> signatures) {
         String newResultMessage = serializer.serialize(newResult);
-        String fullMessageText = String.format("%s%s%s", newResultMessage, MESSAGE_PART_SEPARATOR, holdersTreePath);
         try {
-            String signature = CryptoHelper.createSignature(fullMessageText, privateKey);
-            parentNode.acceptVote(newResultMessage, clientId, holdersTreePath, signature);
+            String signature = cryptoHelper.createSignature(newResultMessage, privateKey);
+            if (signatures == null)
+                signatures = new ArrayList<>();
+            signatures.add(0, signature);
+            parentNode.acceptVote(newResultMessage, node.getParticipantId(), signatures);
             return true;
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("acceptVote. Can not create signature: {}", e.getMessage());

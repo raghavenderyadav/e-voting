@@ -22,7 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.networking.WalletManager;
+import uk.dsxt.voting.common.messaging.WalletManager;
 
 import java.util.*;
 

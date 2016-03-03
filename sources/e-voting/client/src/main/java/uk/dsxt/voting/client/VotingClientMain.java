@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
@@ -38,6 +39,8 @@ public class VotingClientMain {
 
     public static final String MODULE_NAME = "client";
 
+    private static final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+
     public static void main(String[] args) {
         try {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
@@ -46,7 +49,7 @@ public class VotingClientMain {
             if (args != null && args.length < 8)
                 throw new InternalLogicException("Wrong arguments");
             String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
-            PrivateKey ownerPrivateKey = CryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
+            PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
             String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
 

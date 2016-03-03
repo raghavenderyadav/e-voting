@@ -32,25 +32,25 @@ import java.util.Base64;
 
 public class CryptoKeysGenerator {
 
-    public static KeyPair[] generateKeys(int count) throws Exception{
+    public static KeyPair[] generateKeys(CryptoHelper cryptoHelper, int count) throws Exception{
         KeyPair[] keys = new KeyPair[count];
         for (int i = 0; i < keys.length; i++) {
-            keys[i] = generateKeyPair();
+            keys[i] = generateKeyPair(cryptoHelper);
         }
         return keys;
     }
 
-    public static KeyPair generateKeyPair() throws Exception {
-        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(CryptoHelper.ALGORITHM);
+    public static KeyPair generateKeyPair(CryptoHelper cryptoHelper) throws Exception {
+        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
         keyGen.initialize(512);
         final java.security.KeyPair pair = keyGen.generateKeyPair();
-        String pubKey = savePublicKey(pair.getPublic());
-        String privateKey = savePrivateKey(pair.getPrivate());
+        String pubKey = savePublicKey(cryptoHelper, pair.getPublic());
+        String privateKey = savePrivateKey(cryptoHelper, pair.getPrivate());
         return new KeyPair(pubKey, privateKey);
     }
 
-    public static String savePrivateKey(PrivateKey privateKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(CryptoHelper.ALGORITHM);
+    public static String savePrivateKey(CryptoHelper cryptoHelper, PrivateKey privateKey) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgoritm());
         PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey, PKCS8EncodedKeySpec.class);
         byte[] packed = spec.getEncoded();
         String key64 = Base64.getEncoder().encodeToString(packed);
@@ -58,8 +58,8 @@ public class CryptoKeysGenerator {
         return key64;
     }
 
-    public static String savePublicKey(PublicKey publicKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(CryptoHelper.ALGORITHM);
+    public static String savePublicKey(CryptoHelper cryptoHelper, PublicKey publicKey) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgoritm());
         X509EncodedKeySpec spec = fact.getKeySpec(publicKey, X509EncodedKeySpec.class);
         return Base64.getEncoder().encodeToString(spec.getEncoded());
     }

@@ -24,17 +24,14 @@ package uk.dsxt.voting.common.domain.nodes;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.Client;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.*;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
+public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
     public static final String PATH_SEPARATOR = "/";
 
@@ -51,6 +48,7 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
         public VoteResult totalResult;
         public Map<String, VoteResult> sumClientResultsByClientId = new HashMap<>();
         public Map<String, VoteResult> allClientResultsByClientPath = new HashMap<>();
+        public Map<String, VoteResult> confirmedClientResultsByClientPath = new HashMap<>();
     }
 
     protected final Map<String, VotingRecord> votingsById = new HashMap<>();
@@ -64,19 +62,37 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
     }
 
     @Override
-    public synchronized boolean acceptVote(VoteResult newResult, String clientId, String holdersTreePath) {
+    public synchronized boolean acceptVote(VoteResult newResult, List<String> signatures) {
+        if (!addVote(newResult, false))
+            return false;
+        if (parentHolder != null)
+            parentHolder.acceptVote(new VoteResult(newResult, participantId + PATH_SEPARATOR + newResult.getHolderId()), signatures);
+        return true;
+    }
+
+    private boolean addVote(VoteResult newResult, boolean isConfirmed) {
         Map<String, Client> clients = null;
+        String holdersTreePath = newResult.getHolderId();
+        String[] clientIds = holdersTreePath.split(PATH_SEPARATOR);
+        if (clientIds.length < 1) {
+            log.warn("acceptVote. holdersTreePath is empty. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
+            return false;
+        }
         VotingRecord votingRecord = votingsById.get(newResult.getVotingId());
         if (votingRecord == null) {
-            log.warn("acceptVote. Voting not found {}", newResult.getVotingId());
+            log.warn("acceptVote. Voting not found {}. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
-        if (votingRecord.voting.getBeginTimestamp() > System.currentTimeMillis()) {
-            log.warn("acceptVote. Voting {} does not begin yet", newResult.getVotingId());
+        if (votingRecord.allClientResultsByClientPath.containsKey(holdersTreePath)) {
+            log.warn("acceptVote. Duplicate holdersTreePath. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
-        if (votingRecord.voting.getEndTimestamp() < System.currentTimeMillis()) {
-            log.warn("acceptVote. Voting {} already ends", newResult.getVotingId());
+        if (!isConfirmed && votingRecord.voting.getBeginTimestamp() > System.currentTimeMillis()) {
+            log.warn("acceptVote. Voting {} does not begin yet. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
+            return false;
+        }
+        if (!isConfirmed && votingRecord.voting.getEndTimestamp() < System.currentTimeMillis()) {
+            log.warn("acceptVote. Voting {} already ends. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
         for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
@@ -87,23 +103,20 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
             }
         }
         if (clients == null) {
-            log.warn("acceptVote. Clients not found on voting begin. votingId={}", newResult.getVotingId());
+            log.warn("acceptVote. Clients not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
+        String clientId = clientIds[0];
         Client client = clients.get(clientId);
         if (client == null) {
-            log.warn("acceptVote. Client not found on voting begin. votingId={} clientId={}", newResult.getVotingId(), clientId);
-            return false;
-        }
-        if (votingRecord.allClientResultsByClientPath.containsKey(holdersTreePath)) {
-            log.warn("acceptVote. Duplicate holdersTreePath. votingId={} clientId={} path={}", newResult.getVotingId(), clientId, holdersTreePath);
+            log.warn("acceptVote. Client not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
 
         if (newResult.getStatus() == VoteResultStatus.OK) {
             String resutError = newResult.findError(votingRecord.voting);
             if (resutError != null) {
-                log.warn("acceptVote. VoteResult has errors. votingId={} clientId={} error={}", newResult.getVotingId(), clientId, resutError);
+                log.warn("acceptVote. VoteResult has errors. votingId={} holdersTreePath={} error={}", newResult.getVotingId(), holdersTreePath, resutError);
                 newResult.setStatus(VoteResultStatus.ERROR);
             } else {
                 VoteResult clientResult = votingRecord.sumClientResultsByClientId.get(clientId);
@@ -111,8 +124,8 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
                     clientResult = new VoteResult(newResult.getVotingId(), clientId);
                 clientResult = clientResult.sum(newResult);
                 if (clientResult.getPacketSize().compareTo(client.getPacketSize()) > 0) {
-                    log.warn("acceptVote. VoteResult adds to big packet size to client. votingId={} clientId={} clientPacketSize={} newPacketSize={}",
-                            newResult.getVotingId(), clientId, client.getPacketSize(), clientResult.getPacketSize());
+                    log.warn("acceptVote. VoteResult adds to big packet size to client. votingId={} holdersTreePath={} clientPacketSize={} newPacketSize={}",
+                            newResult.getVotingId(), holdersTreePath, client.getPacketSize(), clientResult.getPacketSize());
                     newResult.setStatus(VoteResultStatus.ERROR);
                 } else {
                     votingRecord.sumClientResultsByClientId.put(clientId, clientResult);
@@ -121,8 +134,8 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
 
         }
         votingRecord.allClientResultsByClientPath.put(holdersTreePath, newResult);
-        if (parentHolder != null)
-            parentHolder.acceptVote(newResult, participantId, participantId + PATH_SEPARATOR + holdersTreePath);
+        if (isConfirmed)
+            votingRecord.confirmedClientResultsByClientPath.put(holdersTreePath, newResult);
         return true;
     }
 
@@ -138,9 +151,26 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
     }
 
     @Override
-    public Map<String, VoteResult> getAllClientVotes(String votingId) {
+    public Collection<VoteResult> getAllClientVotes(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
-        return votingRecord == null ? null : votingRecord.allClientResultsByClientPath;
+        return votingRecord == null ? null : votingRecord.allClientResultsByClientPath.values();
+    }
+
+    @Override
+    public Collection<VoteResult> getConfirmedClientVotes(String votingId) {
+        VotingRecord votingRecord = votingsById.get(votingId);
+        return votingRecord == null ? null : votingRecord.confirmedClientResultsByClientPath.values();
+    }
+
+    @Override
+    public VoteResult getClientVote(String votingId, String clientId) {
+        VotingRecord votingRecord = votingsById.get(votingId);
+        return votingRecord == null ? null : votingRecord.allClientResultsByClientPath.get(clientId);
+    }
+
+    @Override
+    public void addClientVote(VoteResult result) {
+        acceptVote(result, new ArrayList<>());
     }
 
     @Override
@@ -158,5 +188,10 @@ public class ClientNode implements AssetsHolder, BroadcastingMessageConnector {
             return;
         }
         votingRecord.totalResult = result;
+    }
+
+    @Override
+    public void addVote(VoteResult result) {
+        addVote(result, true);
     }
 }

@@ -25,9 +25,10 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface VoteAcceptor {
 
-    boolean acceptVote(VoteResult newResult, String clientId, String holdersTreePath);
+    boolean acceptVote(VoteResult newResult, List<String> signatures);
 }

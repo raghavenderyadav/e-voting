@@ -19,19 +19,11 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.messaging;
+package uk.dsxt.voting.common.domain.nodes;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.utils.InternalLogicException;
 
-public interface MessagesSerializer {
+public interface NetworkMessagesSender extends BroadcastingMessagesReceiver {
 
-    String serialize(Voting voting);
-
-    Voting deserializeVoting(String message) throws InternalLogicException;
-
-    String serialize(VoteResult voteResult);
-
-    VoteResult deserializeVoteResult(String message) throws InternalLogicException;
+    void addVote(VoteResult result, String signature, String receiverId);
 }

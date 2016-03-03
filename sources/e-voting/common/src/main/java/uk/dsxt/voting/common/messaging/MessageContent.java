@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.messaging;
 
 import uk.dsxt.voting.common.utils.CryptoHelper;
 
@@ -36,12 +36,6 @@ public class MessageContent {
     private static final String FIELD_AUTHOR = "AUTHOR";
     private static final String FIELD_SIGN = "SIGN";
     private static final String FIELD_TIMESTAMP = "TIMESTAMP";
-
-    public static final String TYPE_INITIAL_MONEY_REQUEST = "MONEY_REQUEST";
-    public static final String FIELD_WALLET = "WALLET";
-
-    public static final String TYPE_VOTE_RESULT = "VOTE";
-    public static final String FIELD_VOTE_RESULT = "RESULT";
 
     private static final String CHARSET = "UTF-8";
 
@@ -66,9 +60,9 @@ public class MessageContent {
             throw new IllegalArgumentException("Message does not contain TIMESTAMP field");
     }
 
-    public boolean checkSign(PublicKey publicKey) throws GeneralSecurityException, UnsupportedEncodingException {
+    public boolean checkSign(PublicKey publicKey, CryptoHelper cryptoHelper) throws GeneralSecurityException, UnsupportedEncodingException {
         String contentString = buildContentWithoutSign(fields);
-        return CryptoHelper.verifySignature(contentString, fields.get(FIELD_SIGN), publicKey);
+        return cryptoHelper.verifySignature(contentString, fields.get(FIELD_SIGN), publicKey);
     }
 
     public String getField(String fieldName) {
@@ -87,14 +81,14 @@ public class MessageContent {
         return getField(FIELD_TYPE);
     }
 
-    public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, Map<String, String> content)
+    public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, CryptoHelper cryptoHelper, Map<String, String> content)
             throws GeneralSecurityException, UnsupportedEncodingException {
         Map<String, String> fields = content == null ? new HashMap<>() : new HashMap<>(content);
         fields.put(FIELD_TYPE, type);
         fields.put(FIELD_AUTHOR, authorId);
         fields.put(FIELD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         String contentString = buildContentWithoutSign(fields);
-        String signature = CryptoHelper.createSignature(contentString, privateKey);
+        String signature = cryptoHelper.createSignature(contentString, privateKey);
         contentString += String.format(";%s=%s", FIELD_SIGN, signature);
         return contentString.getBytes(CHARSET);
     }

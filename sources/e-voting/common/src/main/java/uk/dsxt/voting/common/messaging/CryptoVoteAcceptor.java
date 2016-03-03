@@ -25,9 +25,10 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 public interface CryptoVoteAcceptor {
 
-    void acceptVote(String newResultMessage, String clientId, String holdersTreePath, String signature) throws InternalLogicException, GeneralSecurityException, UnsupportedEncodingException;
+    void acceptVote(String newResultMessage, String clientId, List<String> signatures) throws InternalLogicException, GeneralSecurityException, UnsupportedEncodingException;
 
 }

@@ -56,6 +56,14 @@ public class VoteResult {
         status = VoteResultStatus.OK;
     }
 
+    public VoteResult(VoteResult origin, String holderId) {
+        answersByKey = new TreeMap<>(origin.answersByKey);
+        votingId = origin.votingId;
+        packetSize = origin.packetSize;
+        status = origin.status;
+        this.holderId = holderId;
+    }
+
     public VoteResult(String s) {
         answersByKey = new TreeMap<>();
         if (s == null)
