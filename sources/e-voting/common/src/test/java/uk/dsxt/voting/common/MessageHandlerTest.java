@@ -22,7 +22,7 @@
 package uk.dsxt.voting.common;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.datamodel.KeyPair;
+import uk.dsxt.voting.common.utils.KeyPair;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.networking.Message;
 import uk.dsxt.voting.common.messaging.MessageContent;

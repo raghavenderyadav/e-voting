@@ -27,6 +27,7 @@ import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
+import uk.dsxt.voting.common.nxt.NxtWalletManager;
 import uk.dsxt.voting.common.utils.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -61,7 +62,7 @@ public class VotingClientMain {
             int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-            WalletManager walletManager = useMockWallet ? new MockWalletManager() : new BaseWalletManager(properties, args, ownerId);
+            WalletManager walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, ownerId);
 
             RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
             ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);

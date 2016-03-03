@@ -2,8 +2,8 @@ package uk.dsxt.voting.common;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import uk.dsxt.voting.common.datamodel.xml.jaxb.MeetingInstruction;
-import uk.dsxt.voting.common.datamodel.xml.jaxb.MeetingNotification;
+import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
+import uk.dsxt.voting.common.iso20022.jaxb.MeetingNotification;
 
 import javax.xml.bind.*;
 import javax.xml.transform.Source;
