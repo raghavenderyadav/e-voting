@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.client.datamodel.LoginAnswerWeb;
 import uk.dsxt.voting.client.datamodel.QuestionWeb;
 import uk.dsxt.voting.client.datamodel.VotingInfoWeb;
 import uk.dsxt.voting.client.datamodel.VotingWeb;
@@ -30,6 +31,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.function.Supplier;
 
 @Log4j2
 @Path("/api")
@@ -40,42 +42,68 @@ public class VotingApiResource {
         this.manager = manager;
     }
 
-    /*private <T> T execute(String name, Supplier<T> request) {
+    private <T> T execute(String name, String params, Supplier<T> request) {
         try {
+            log.debug("{} called. params: [{}]", name, params);
             return request.get();
         } catch (Exception ex) {
-            log.error("{} failed", name, ex);
-            manager.stop();
+            log.error("{} failed. params: [{}]", name, params, ex);
             return null;
         }
-    }*/
+    }
+
+    @POST
+    @Path("/login")
+    @Produces("application/json")
+    public LoginAnswerWeb login(@FormParam("login") String login, @FormParam("password") String password) {
+        log.debug("login method called. login={};", login);
+        //TODO: implement
+        return null;
+
+    }
+
+    @POST
+    @Path("/logout")
+    @Produces("application/json")
+    public boolean logout(@FormParam("cookie") String cookie) {
+        log.debug("logout method called. cookie={};", cookie);
+        //TODO: implement
+        return true;
+    }
 
     @POST
     @Path("/votings")
     @Produces("application/json")
     public VotingWeb[] getVotings() {
-        return manager.getVotings();
+        return execute("getVotings", "", manager::getVotings);
     }
 
     @POST
     @Path("/getVoting")
     @Produces("application/json")
     public VotingInfoWeb getVoting(@FormParam("votingId") String votingId) {
-        return manager.getVoting(votingId);
+        return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId));
     }
 
     @POST
     @Path("/vote")
     @Produces("application/json")
-    public QuestionWeb[] vote(@FormParam("votingId") String votingId, @FormParam("votes") String votes) {
-        return manager.vote(votingId, votes);
+    public boolean vote(@FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
+        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, votingChoice));
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
     public QuestionWeb[] votingResults(@FormParam("votingId") String votingId) {
-        return new QuestionWeb[0];
+        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId));
+    }
+
+    @POST
+    @Path("/getTime")
+    @Produces("application/json")
+    public long getTime(@FormParam("votingId") String votingId) {
+        return execute("getTime", String.format("votingId=%s", votingId), () -> manager.getTime(votingId));
     }
 
 
