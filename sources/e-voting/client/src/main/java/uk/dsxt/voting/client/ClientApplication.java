@@ -21,8 +21,10 @@
 
 package uk.dsxt.voting.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
+import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
@@ -45,6 +47,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.io.StringReader;
 import java.security.PrivateKey;
 import java.util.Arrays;
@@ -81,9 +84,6 @@ public class ClientApplication extends ResourceConfig {
         CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
         ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
 
-        Participant[] participants = registriesServer.getParticipants();
-        Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
-
         ClientNode clientNode;
         MasterNode masterNode;
         if (isMain) {
@@ -93,6 +93,11 @@ public class ClientApplication extends ResourceConfig {
             masterNode = null;
             clientNode = new ClientNode(ownerId);
         }
+        loadClients(clientNode);
+
+
+        Participant[] participants = registriesServer.getParticipants();
+        Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
 
         MessagesSerializer messagesSerializer = new Iso20022Serializer();
         CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
@@ -125,6 +130,22 @@ public class ClientApplication extends ResourceConfig {
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi)), holderApiResource);
+    }
+
+    private void loadClients(ClientNode node) {
+        ObjectMapper mapper = new ObjectMapper();
+        String accountsJson = PropertiesHelper.getResourceString("clients.json");
+        ClientsOnTime[] clientsOnTimes;
+        try {
+            clientsOnTimes = mapper.readValue(accountsJson, ClientsOnTime[].class);
+        } catch (IOException e) {
+           log.error("loadClients failed: {}", e.getMessage());
+           return;
+        }
+        long now = System.currentTimeMillis();
+        for(ClientsOnTime clientsOnTime : clientsOnTimes) {
+            node.setClientsOnTime(now + clientsOnTime.getMinutes() * 60000, clientsOnTime.getClients());
+        }
     }
 
     public void stop() {

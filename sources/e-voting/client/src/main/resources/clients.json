@@ -1,0 +1,37 @@
+[
+  {
+    "minutes": "0",
+    "clients": [
+      {
+        "participantId": "1",
+        "packetSize": 10,
+        "clientType": "NominalHolder"
+      },
+      {
+        "participantId": "2",
+        "packetSize": 20,
+        "clientType": "Owner"
+      },
+      {
+        "participantId": "3",
+        "packetSize": 30,
+        "clientType": "ForeignNominalHolder"
+      }
+    ]
+  },
+  {
+    "minutes": "2",
+    "clients": [
+      {
+        "participantId": "1",
+        "packetSize": 10,
+        "clientType": "NominalHolder"
+      },
+      {
+        "participantId": "4",
+        "packetSize": 40,
+        "clientType": "ManagementCompany"
+      }
+    ]
+  }
+]
