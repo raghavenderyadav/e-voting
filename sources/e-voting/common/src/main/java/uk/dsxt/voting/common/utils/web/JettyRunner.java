@@ -29,27 +29,33 @@ import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.jetty.JettyHttpContainer;
 import org.glassfish.jersey.server.ContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.regex.Pattern;
 
 @Log4j2
 public class JettyRunner {
     public static Server run(ResourceConfig application, Properties properties, String portPropertyName) {
         Integer port = Integer.valueOf(properties.getProperty(portPropertyName));
-        return run(application, properties, port, "*", null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port) {
-        return run(application, properties, port, "*", null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null);
+    }
+
+    public static Server run(ResourceConfig application, Properties properties, int port, String frontendRoot, String apiPathPattern) {
+        return run(application, properties, port, "*", null, null, null, frontendRoot, apiPathPattern);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port, String originFilter,
-                             String aliasName, File keystoreFile, String password) {
+                             String aliasName, File keystoreFile, String password, String frontendRoot, String apiPathPattern) {
         try {
             QueuedThreadPool threadPool = new QueuedThreadPool(
                     Integer.valueOf(properties.getProperty("jetty.maxThreads")),
@@ -90,13 +96,18 @@ public class JettyRunner {
                 server.setConnectors(new Connector[]{http});
             }
 
-            JettyHttpContainer handler = ContainerFactory.createContainer(JettyHttpContainer.class, application);
-            if (originFilter != null) {
-                Handler proxyHandler = new CrossDomainFilter(handler, originFilter);
-                server.setHandler(proxyHandler);
-            } else {
-                server.setHandler(handler);
+            Handler handler = ContainerFactory.createContainer(JettyHttpContainer.class, application);
+            if (originFilter != null)
+                handler = new CrossDomainFilter(handler, originFilter);
+            if (frontendRoot != null) {
+                WebAppContext htmlHandler = new WebAppContext();
+                htmlHandler.setContextPath("/");
+                htmlHandler.setResourceBase(frontendRoot);
+                Map<Pattern, Handler> pathToHandler = new HashMap<>();
+                pathToHandler.put(Pattern.compile(apiPathPattern), handler);
+                handler = new RequestsRouter(htmlHandler, pathToHandler);
             }
+            server.setHandler(handler);
             server.start();
 
             while (!server.isStarted()) {

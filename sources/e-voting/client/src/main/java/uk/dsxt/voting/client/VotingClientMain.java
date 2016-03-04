@@ -52,7 +52,7 @@ public class VotingClientMain {
             boolean isMain = Boolean.valueOf(args == null || args.length < 9 ? properties.getProperty("client.isMain", "false") : args[8]);
 
             application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath);
-            jettyServer = JettyRunner.run(application, properties, jettyPort);
+            jettyServer = JettyRunner.run(application, properties, jettyPort, "./gui-public/app", "/{1}(api|holderAPI){1}/{1}.*");
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);

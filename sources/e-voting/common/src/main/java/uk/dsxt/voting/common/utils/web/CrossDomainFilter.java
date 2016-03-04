@@ -36,7 +36,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 @Log4j2
-class CrossDomainFilter implements Handler {
+class CrossDomainFilter extends ProxyHandler {
 
     private static final String ORIGIN_HEADER = "Origin";
     private static final String ACCESS_CONTROL_ALLOW_ORIGIN_HEADER = "Access-Control-Allow-Origin";
@@ -44,11 +44,10 @@ class CrossDomainFilter implements Handler {
 
     private static final Logger cspLog = LogManager.getLogger("ContentSecurityPolicy");
 
-    private final Handler handler;
     private final String filter;
 
     public CrossDomainFilter(Handler handler, String filter) {
-        this.handler = handler;
+        super(handler);
         this.filter = filter;
     }
 
@@ -86,76 +85,11 @@ class CrossDomainFilter implements Handler {
 
         try {
             long start = System.currentTimeMillis();
-            handler.handle(target, baseRequest, request, response);
+            super.handle(target, baseRequest, request, response);
             if (log.isTraceEnabled())
                 log.trace("handled target={} status={} in {} ms", target, response.getStatus(), System.currentTimeMillis() - start);
         } catch (Exception e) {
             log.error("handle failed. target={} remoteAddr={}", target, request.getRemoteAddr() == null ? "null" : request.getRemoteAddr(), e);
         }
-    }
-
-    @Override
-    public void setServer(Server server) {
-        handler.setServer(server);
-    }
-
-    @Override
-    public Server getServer() {
-        return handler.getServer();
-    }
-
-    @Override
-    public void destroy() {
-        handler.destroy();
-    }
-
-    @Override
-    public void start() throws Exception {
-        handler.start();
-    }
-
-    @Override
-    public void stop() throws Exception {
-        handler.stop();
-    }
-
-    @Override
-    public boolean isRunning() {
-        return handler.isRunning();
-    }
-
-    @Override
-    public boolean isStarted() {
-        return handler.isStarted();
-    }
-
-    @Override
-    public boolean isStarting() {
-        return handler.isStarting();
-    }
-
-    @Override
-    public boolean isStopping() {
-        return handler.isStopping();
-    }
-
-    @Override
-    public boolean isStopped() {
-        return handler.isStopped();
-    }
-
-    @Override
-    public boolean isFailed() {
-        return handler.isFailed();
-    }
-
-    @Override
-    public void addLifeCycleListener(Listener listener) {
-        handler.addLifeCycleListener(listener);
-    }
-
-    @Override
-    public void removeLifeCycleListener(Listener listener) {
-        handler.removeLifeCycleListener(listener);
     }
 }
