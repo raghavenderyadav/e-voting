@@ -141,7 +141,8 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
     @Override
     public synchronized Voting getVoting(String votingId) {
-        return votingsById.values().stream().filter(vr -> vr.voting.getId().equals(votingId)).map(vr -> vr.voting).findAny().get();
+        VotingRecord votingRecord = votingsById.get(votingId);
+        return votingRecord == null ? null : votingRecord.voting;
     }
 
     @Override
