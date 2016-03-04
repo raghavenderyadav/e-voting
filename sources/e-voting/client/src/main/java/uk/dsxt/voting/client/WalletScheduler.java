@@ -24,20 +24,16 @@ package uk.dsxt.voting.client;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.messaging.WalletManager;
 
-import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class WalletScheduler {
 
-    private final Timer walletStartStopTimer = new Timer("clientsStartStopTimer");
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    private final WalletManager manager;
-
-    public WalletScheduler(WalletManager manager) {
-        this.manager = manager;
-    }
-
-    public void run(String schedule) {
+    public WalletScheduler(WalletManager manager, String schedule) {
         if (schedule == null) {
             log.info("messagesFile not found");
             return;
@@ -58,20 +54,14 @@ public class WalletScheduler {
                     throw new IllegalArgumentException(String.format("WalletOff schedule record can not be created from string with %d terms (%s)", terms.length, period));
                 int begin = Integer.parseInt(terms[0]);
                 int end = Integer.parseInt(terms[1]);
-                walletStartStopTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        manager.stopWallet();
-                    }
-                }, begin == 0 ? 1000 : begin * 60000);
-                walletStartStopTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        manager.runWallet();
-                    }
-                }, end * 60000);
+                scheduler.schedule(() -> manager.stopWallet(), begin, TimeUnit.MINUTES);
+                scheduler.schedule(() -> manager.runWallet(), end, TimeUnit.MINUTES);
             }
         }
         log.info("WalletOff schedule loaded");
+    }
+
+    public void stop() {
+        scheduler.shutdown();
     }
 }

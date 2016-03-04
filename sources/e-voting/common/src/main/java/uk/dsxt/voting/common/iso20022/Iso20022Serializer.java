@@ -26,7 +26,7 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
-public class iso20022MessagesSerializer implements MessagesSerializer {
+public class ISO20022Serializer implements MessagesSerializer {
 
     @Override
     public String serialize(Voting voting) {

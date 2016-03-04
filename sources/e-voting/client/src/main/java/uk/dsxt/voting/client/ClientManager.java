@@ -6,6 +6,7 @@ import uk.dsxt.voting.client.datamodel.VotingInfoWeb;
 import uk.dsxt.voting.client.datamodel.VotingWeb;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 
 import java.math.BigDecimal;
@@ -20,7 +21,11 @@ public class ClientManager {
 
     MeetingInstruction participantsXml;
 
-    public ClientManager(MeetingInstruction participantsXml) {
+
+    AssetsHolder assetsHolder;
+
+    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml) {
+        this.assetsHolder = assetsHolder;
         this.participantsXml = participantsXml;
     }
 

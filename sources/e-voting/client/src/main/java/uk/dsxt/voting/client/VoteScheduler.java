@@ -26,52 +26,32 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
+import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.networking.VoteAggregation;
 import uk.dsxt.voting.common.networking.VotingClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class VoteScheduler {
 
-    @Value
-    private static class VoteRecord {
-        long sendTimestamp;
-        boolean sendToResult;
-        VoteResult voteResult;
-    }
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
-    private final VotingClient votingClient;
-    private final ResultsBuilder resultsBuilder;
-    private final VoteAggregation aggregation;
-
-    private final List<VoteRecord> recordsByTime = new ArrayList<>();
-    private final String holderId;
-    private int currentRecordIdx = 0;
-
-    private Thread scheduler;
-
-    public VoteScheduler(VotingClient votingClient, ResultsBuilder resultsBuilder, VoteAggregation aggregation, Voting[] votings,
-                         String messagesFileContent, String holderId) {
-        this.votingClient = votingClient;
-        this.resultsBuilder = resultsBuilder;
-        this.aggregation = aggregation;
-        this.holderId = holderId;
+    public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId) {
 
         if (messagesFileContent == null) {
             log.info("messagesFile not found");
             return;
         }
 
-        HashMap<String, Voting> votingsById = new HashMap<>();
-        for (Voting voting : votings) {
-            votingsById.put(voting.getId(), voting);
-            recordsByTime.add(new VoteRecord(voting.getEndTimestamp(), true, new VoteResult(voting.getId(), null)));
-        }
-
         String[] lines = messagesFileContent.split("\\r?\\n");
+        int cnt = 0, maxDelay = 0;
         for (String line : lines) {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#"))
@@ -82,61 +62,17 @@ public class VoteScheduler {
                 if (terms.length < 2 || terms.length > 3)
                     throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
                 VoteResult voteResult = new VoteResult(terms[1]);
-                Voting voting = votingsById.get(voteResult.getVotingId());
-                if (voting == null) {
-                    log.error("Can not find voting with id {}", voteResult.getVotingId());
-                    continue;
-                }
-                long sendTimestamp = voting.getBeginTimestamp() + Integer.parseInt(terms[0]) * 60 * 1000;
-                boolean sendToResult = terms.length < 3 || !terms[2].equals("-");
-                recordsByTime.add(new VoteRecord(sendTimestamp, sendToResult, voteResult));
+                int delay = Integer.parseInt(terms[0]);
+                scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.MINUTES);
+                cnt++;
+                if (maxDelay < delay)
+                    maxDelay = delay;
             }
         }
-        recordsByTime.sort((x, y) -> Long.compare(x.getSendTimestamp(), y.getSendTimestamp()));
-        log.info("{} vote records loaded", recordsByTime.size());
-    }
-
-    public void run() {
-        scheduler = new Thread(this::sendVotesOnTime, "VoteScheduler");
-        scheduler.start();
-        log.info("VoteScheduler #{} runs", holderId);
+        log.info("VoteScheduler #{} loaded {} records, maxDelay={}", holderId, cnt, maxDelay);
     }
 
     public void stop() {
-        if (scheduler != null) {
-            scheduler.interrupt();
-            scheduler = null;
-        }
+        scheduler.shutdown();
     }
-
-    private void sendVotesOnTime() {
-        while (!Thread.currentThread().isInterrupted() && currentRecordIdx < recordsByTime.size()) {
-            for (; currentRecordIdx < recordsByTime.size() && recordsByTime.get(currentRecordIdx).getSendTimestamp() < System.currentTimeMillis() + 1000; currentRecordIdx++) {
-                VoteResult voteResult = recordsByTime.get(currentRecordIdx).getVoteResult();
-                if (voteResult.getHolderId() != null) {
-                    log.info("Sending vote record {}", voteResult);
-                    if (votingClient.sendVoteResult(voteResult) && recordsByTime.get(currentRecordIdx).isSendToResult()) {
-                        resultsBuilder.addVote(voteResult.toString());
-                    }
-                } else {
-                    VoteResult result = aggregation.getResult(voteResult.getVotingId());
-                    if (result == null) {
-                        result = new VoteResult(voteResult.getVotingId(), null);
-                    }
-                    resultsBuilder.addResult(holderId, result.toString());
-                }
-            }
-            if (currentRecordIdx < recordsByTime.size()) {
-                try {
-                    Thread.sleep(recordsByTime.get(currentRecordIdx).getSendTimestamp() - System.currentTimeMillis());
-                } catch (InterruptedException e) {
-                    log.info("sendVotesOnTime interrupted");
-                    return;
-                }
-            }
-        }
-        if (!Thread.currentThread().isInterrupted())
-            log.info("All vote records sent");
-    }
-
 }

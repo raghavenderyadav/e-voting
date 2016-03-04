@@ -25,6 +25,7 @@ import org.junit.Test;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
+import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.networking.VoteAggregation;
 import uk.dsxt.voting.common.networking.VotingClient;
 
@@ -50,11 +51,11 @@ public class VoteSchedulerTest {
         String messages="0:0,1,1-1-1\r\n10:1,2,2-2-2\r\n #\r\n2:0,3,3-3-3;01:1,4,4-4-4:-\n20:1,5,5-5-5\n";
 
         List<VoteResult> sentResults = new ArrayList<>();
-        VotingClient client = mock(VotingClient.class);
+        AssetsHolder client = mock(AssetsHolder.class);
         doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
             return true;
-        }).when(client).sendVoteResult(anyObject());
+        }).when(client).addClientVote(anyObject());
 
         List<String> sentToBuilderResults = new ArrayList<>();
         List<String> sentAggregatedResults = new ArrayList<>();
@@ -71,8 +72,7 @@ public class VoteSchedulerTest {
         VoteAggregation aggregation = mock(VoteAggregation.class);
         when(aggregation.getResult("2")).thenReturn(new VoteResult("22", null));
 
-        VoteScheduler scheduler = new VoteScheduler(client, builder, aggregation, votings, messages, "001");
-        scheduler.run();
+        VoteScheduler scheduler = new VoteScheduler(client, messages, "001");
         Thread.sleep(100);
 
         assertEquals(2, sentResults.size());

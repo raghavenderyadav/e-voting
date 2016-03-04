@@ -7,6 +7,7 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
+import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.messaging.WalletMessageConnector;
@@ -21,17 +22,11 @@ public class WalletMessageConnectorWithResultBuilderClient implements NetworkMes
 
     private final ResultsBuilder resultsBuilder;
 
-    private final NetworkMessagesReceiver messageReceiver;
-
-    private final String holderId;
-
     public WalletMessageConnectorWithResultBuilderClient(ResultsBuilder resultsBuilder,
                                                          WalletManager walletManager, NetworkMessagesReceiver messageReceiver, MessagesSerializer serializer,
                                                          CryptoHelper cryptoHelper, Map<String, Participant> participantsById,
                                                          PrivateKey privateKey, String holderId, String masterId) {
         this.resultsBuilder = resultsBuilder;
-        this.messageReceiver = messageReceiver;
-        this.holderId = holderId;
         connector = new WalletMessageConnector(walletManager, new NetworkMessagesReceiver() {
             @Override
             public void addVote(VoteResult result) {
@@ -67,5 +62,9 @@ public class WalletMessageConnectorWithResultBuilderClient implements NetworkMes
     @Override
     public void addVotingTotalResult(VoteResult result) {
         connector.addVotingTotalResult(result);
+    }
+
+    public void handleNewMessage(MessageContent messageContent, String messageId) {
+        connector.handleNewMessage(messageContent, messageId);
     }
 }

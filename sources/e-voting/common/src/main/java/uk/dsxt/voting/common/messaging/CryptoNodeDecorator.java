@@ -32,11 +32,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Log4j2
 public class CryptoNodeDecorator implements CryptoVoteAcceptor {
@@ -53,13 +50,13 @@ public class CryptoNodeDecorator implements CryptoVoteAcceptor {
 
     private final CryptoHelper cryptoHelper;
 
-    public CryptoNodeDecorator(ClientNode node, CryptoVoteAcceptor parentNode, MessagesSerializer serializer, CryptoHelper cryptoProvider, Participant[] participants, PrivateKey privateKey) {
+    public CryptoNodeDecorator(ClientNode node, CryptoVoteAcceptor parentNode, MessagesSerializer serializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) {
         this.node = node;
         this.parentNode = parentNode;
         this.privateKey = privateKey;
         this.serializer = serializer;
         this.cryptoHelper = cryptoProvider;
-        participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
+        this.participantsById = participantsById;
         node.setParentHolder((newResult, signatures) -> acceptVote(newResult, signatures));
     }
 
