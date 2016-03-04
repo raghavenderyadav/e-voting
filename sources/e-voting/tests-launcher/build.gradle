@@ -12,7 +12,6 @@ repositories {
 dependencies {
     compile "com.amazonaws:aws-java-sdk:$awsVersion";
 
-    compile(project(":master-client"))
     compile(project(":client"))
     compile(project(":registries-server"))
     compile(project(":results-builder"))
