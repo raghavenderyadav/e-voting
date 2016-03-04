@@ -19,11 +19,11 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.utils;
+package uk.dsxt.voting.common.utils.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import uk.dsxt.voting.common.networking.RequestType;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import javax.ws.rs.core.Response;
 import java.io.*;

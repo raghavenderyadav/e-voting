@@ -29,7 +29,7 @@ import org.joda.time.Instant;
 import uk.dsxt.voting.client.VotingClientMain;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.networking.RegistriesServer;
-import uk.dsxt.voting.common.networking.RegistriesServerImpl;
+import uk.dsxt.voting.common.networking.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 import uk.dsxt.voting.masterclient.VotingMasterClientMain;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
@@ -140,7 +140,7 @@ public class TestsLauncher {
             }
             log.info("{} instances of {} started in {} ms", configurations.length, RegistriesServerMain.MODULE_NAME, Instant.now().getMillis() - start);
             //need to wait until voting is complete
-            RegistriesServer regServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
+            RegistriesServer regServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
             /*
             Voting[] votings = regServer.getVotings();
             if (votings.length > 1) {

@@ -23,6 +23,8 @@ package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
+import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
@@ -30,8 +32,8 @@ import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
-import uk.dsxt.voting.common.utils.CryptoHelper;
-import uk.dsxt.voting.common.utils.JettyRunner;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import javax.ws.rs.ApplicationPath;
@@ -64,8 +66,8 @@ public class ClientApplication extends ResourceConfig {
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         WalletManager walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, ownerId);
 
-        RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
-        ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
+        RegistriesServer registriesServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
+        ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
         init(registriesServer, walletManager, resultsBuilder, ownerId, ownerPrivateKey, messagesFileContent, newMessagesRequestInterval, walletOffSchedule);
 
         JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);

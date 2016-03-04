@@ -22,8 +22,8 @@
 package uk.dsxt.voting.common;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.utils.CryptoHelper;
-import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;

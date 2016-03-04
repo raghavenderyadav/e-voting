@@ -22,12 +22,13 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.WalletManager;
-import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.security.PrivateKey;
 import java.util.HashMap;

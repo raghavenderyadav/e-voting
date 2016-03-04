@@ -28,7 +28,7 @@ import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.utils.InternalLogicException;
-import uk.dsxt.voting.common.utils.JettyRunner;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import javax.ws.rs.ApplicationPath;

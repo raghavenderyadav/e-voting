@@ -22,7 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.utils.JettyRunner;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.util.Properties;

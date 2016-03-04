@@ -24,7 +24,7 @@ package uk.dsxt.voting.resultsbuilder;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
-import uk.dsxt.voting.common.networking.ResultsBuilder;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
 
 import java.util.HashMap;
 import java.util.List;

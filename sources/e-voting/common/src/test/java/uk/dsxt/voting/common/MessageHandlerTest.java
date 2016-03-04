@@ -22,14 +22,14 @@
 package uk.dsxt.voting.common;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.utils.KeyPair;
+import uk.dsxt.voting.common.utils.crypto.KeyPair;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.networking.Message;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.*;
-import uk.dsxt.voting.common.utils.CryptoHelper;
-import uk.dsxt.voting.common.utils.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

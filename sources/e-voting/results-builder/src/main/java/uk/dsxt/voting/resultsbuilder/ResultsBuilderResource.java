@@ -22,7 +22,7 @@
 package uk.dsxt.voting.resultsbuilder;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.networking.ResultsBuilder;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
 
 import javax.ws.rs.*;
 

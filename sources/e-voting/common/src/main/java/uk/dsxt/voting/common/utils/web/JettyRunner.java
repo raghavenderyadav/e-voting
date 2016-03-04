@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.utils;
+package uk.dsxt.voting.common.utils.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

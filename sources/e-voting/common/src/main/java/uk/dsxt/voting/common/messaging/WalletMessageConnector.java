@@ -28,7 +28,7 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
-import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.io.UnsupportedEncodingException;

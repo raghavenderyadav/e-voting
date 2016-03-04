@@ -19,18 +19,19 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.demo;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.utils.web.RequestType;
 import uk.dsxt.voting.common.utils.InternalLogicException;
-import uk.dsxt.voting.common.utils.HttpHelper;
+import uk.dsxt.voting.common.utils.web.HttpHelper;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
-public class ResultsBuilderImpl implements ResultsBuilder {
+public class ResultsBuilderWeb implements ResultsBuilder {
     private final static String ADD_RESULT_URL_PART = "/addResult";
     private final static String ADD_VOTE_URL_PART = "/addVote";
 
@@ -39,7 +40,7 @@ public class ResultsBuilderImpl implements ResultsBuilder {
     private final String addResultUrl;
     private final String addVoteUrl;
 
-    public ResultsBuilderImpl(String baseUrl, int connectionTimeout, int readTimeout) {
+    public ResultsBuilderWeb(String baseUrl, int connectionTimeout, int readTimeout) {
         addResultUrl = String.format("%s%s", baseUrl, ADD_RESULT_URL_PART);
         addVoteUrl = String.format("%s%s", baseUrl, ADD_VOTE_URL_PART);
 

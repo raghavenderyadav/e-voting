@@ -25,14 +25,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.utils.HttpHelper;
+import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.web.RequestType;
 
 import java.net.ConnectException;
 
 @Log4j2
 @Value
-public class RegistriesServerImpl implements RegistriesServer {
+public class RegistriesServerWeb implements RegistriesServer {
     private static final String PARTICIPANTS_URL_PART = "/participants";
 
     public static final String EMPTY_ERROR = "Empty answer";
@@ -45,7 +46,7 @@ public class RegistriesServerImpl implements RegistriesServer {
 
     private final String participantUrl;
 
-    public RegistriesServerImpl(String baseUrl, int connectionTimeout, int readTimeout) {
+    public RegistriesServerWeb(String baseUrl, int connectionTimeout, int readTimeout) {
         participantUrl = String.format("%s%s", baseUrl, PARTICIPANTS_URL_PART);
 
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);

@@ -25,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
-import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.io.UnsupportedEncodingException;

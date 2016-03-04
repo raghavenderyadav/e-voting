@@ -22,6 +22,8 @@
 package uk.dsxt.voting.masterclient;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
+import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.messaging.WalletManager;
@@ -53,8 +55,8 @@ public class VotingMasterClientMain {
             final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
             walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, "master");
 
-            RegistriesServer registriesServer = new RegistriesServerImpl(registriesServerUrl, connectionTimeout, readTimeout);
-            ResultsBuilder resultsBuilder = new ResultsBuilderImpl(resultsBuilderUrl, connectionTimeout, readTimeout);
+            RegistriesServer registriesServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
+            ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
             init(registriesServer, resultsBuilder, walletManager, newMessagesRequestInterval);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

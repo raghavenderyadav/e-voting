@@ -19,39 +19,37 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.masterclient;
+package uk.dsxt.voting.common.iso20022;
 
-import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.demo.ResultsBuilder;
-import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.messaging.WalletManager;
-import uk.dsxt.voting.common.networking.*;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
-import java.util.Timer;
-import java.util.TimerTask;
+public class iso20022MessagesSerializer implements MessagesSerializer {
 
-@Log4j2
-public class MoneyDistributor extends VotingClient {
-
-    private final Timer sendResultTimer = new Timer("sendResultTimer");
-
-    public MoneyDistributor(WalletManager walletManager, Participant[] participants,
-                            ResultsBuilder resultsBuilder, VoteAggregation voteAggregation) {
-        super(walletManager, voteAggregation, resultsBuilder, "master", null, participants);
+    @Override
+    public String serialize(Voting voting) {
+        //TODO
+        return String.format("%s\t%s\t%d\t%d\t", voting.getId(), voting.getName(), voting.getBeginTimestamp(), voting.getEndTimestamp());
     }
 
-    public void addVoting(final Voting voting) {
-        sendResultTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                VoteResult result = voteAggregation.getResult(voting.getId());
-                if (result == null) {
-                    result = new VoteResult(voting.getId(), null);
-                }
-                resultsBuilder.addResult("master", result.toString());
-            }
-        }, voting.getEndTimestamp() - System.currentTimeMillis());
+    @Override
+    public Voting deserializeVoting(String message) throws InternalLogicException {
+        //TODO
+        String[] terms = message.split("\t");
+        return new Voting(terms[0], terms[1], Long.parseLong(terms[2]), Long.parseLong(terms[3]), null);
+    }
+
+    @Override
+    public String serialize(VoteResult voteResult) {
+        //TODO
+        return voteResult.toString();
+    }
+
+    @Override
+    public VoteResult deserializeVoteResult(String message) throws InternalLogicException {
+        //TODO
+        return new VoteResult(message);
     }
 }

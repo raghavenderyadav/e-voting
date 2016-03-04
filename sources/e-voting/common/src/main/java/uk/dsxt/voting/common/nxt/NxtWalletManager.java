@@ -8,8 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import uk.dsxt.voting.common.nxt.walletapi.*;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.networking.Message;
-import uk.dsxt.voting.common.networking.RequestType;
-import uk.dsxt.voting.common.utils.HttpHelper;
+import uk.dsxt.voting.common.utils.web.RequestType;
+import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.io.File;

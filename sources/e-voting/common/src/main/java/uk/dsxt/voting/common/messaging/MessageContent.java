@@ -21,7 +21,7 @@
 
 package uk.dsxt.voting.common.messaging;
 
-import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

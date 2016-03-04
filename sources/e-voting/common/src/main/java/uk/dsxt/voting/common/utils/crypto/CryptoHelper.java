@@ -19,7 +19,7 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.utils;
+package uk.dsxt.voting.common.utils.crypto;
 
 import lombok.Getter;
 

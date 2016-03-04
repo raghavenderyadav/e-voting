@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.utils.web;
 
 public enum RequestType {
     POST,

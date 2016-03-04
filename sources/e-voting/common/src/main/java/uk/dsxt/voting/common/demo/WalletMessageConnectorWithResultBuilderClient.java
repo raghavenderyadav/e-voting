@@ -1,4 +1,4 @@
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.demo;
 
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -10,7 +10,7 @@ import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.messaging.WalletManager;
 import uk.dsxt.voting.common.messaging.WalletMessageConnector;
-import uk.dsxt.voting.common.utils.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.security.PrivateKey;
 import java.util.Map;
