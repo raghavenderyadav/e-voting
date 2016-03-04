@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
-@Path("/api")
+@Path("/holderAPI")
 public class HolderApiResource {
     private final CryptoVoteAcceptor cryptoVoteAcceptor;
 
