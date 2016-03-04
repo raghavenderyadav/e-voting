@@ -1,22 +1,22 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
 package uk.dsxt.voting.common.domain.dataModel;
@@ -25,6 +25,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import uk.dsxt.voting.common.datamodel.AnswerType;
+import uk.dsxt.voting.common.iso20022.jaxb.Vote2Choice;
+import uk.dsxt.voting.common.iso20022.jaxb.Vote4;
+import uk.dsxt.voting.common.iso20022.jaxb.VoteDetails2;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -115,7 +119,7 @@ public class VoteResult {
     public boolean equals(Object otherObject) {
         if (!(otherObject instanceof VoteResult))
             return false;
-        VoteResult other = (VoteResult)otherObject;
+        VoteResult other = (VoteResult) otherObject;
         if (!votingId.equals(other.getVotingId()))
             return false;
         if ((holderId == null) != (other.getHolderId() == null) || holderId != null && !holderId.equals(other.getHolderId()))
@@ -124,7 +128,7 @@ public class VoteResult {
             return false;
         if (answersByKey.size() != other.getAnswers().size())
             return false;
-        for(VotedAnswer otherAnswer: other.getAnswers()) {
+        for (VotedAnswer otherAnswer : other.getAnswers()) {
             VotedAnswer answer = answersByKey.get(otherAnswer.getKey());
             if (answer == null || answer.getVoteAmount().compareTo(otherAnswer.getVoteAmount()) != 0)
                 return false;
@@ -179,5 +183,35 @@ public class VoteResult {
                 return String.format("Question %d sum amount %s is more than packet size %s", questionAmount.getKey(), questionAmount.getValue(), packetSize);
         }
         return null;
+    }
+
+    public VoteDetails2 convertToXML() throws IllegalArgumentException {
+        Vote2Choice voteChoice = new Vote2Choice();
+        List<Vote4> voteInstr = voteChoice.getVoteInstr();
+        for (Map.Entry<String, VotedAnswer> entry : answersByKey.entrySet()) {
+            Vote4 v = new Vote4();
+            v.setIssrLabl(entry.getKey());
+            AnswerType type = AnswerType.getType(entry.getValue().getAnswerId());
+            if (type == null)
+                throw new IllegalArgumentException(String.format("vote answer %s is unknown)", entry.getValue().getAnswerId()));
+            switch (type) {
+                case FOR: {
+                    v.setFor(entry.getValue().getVoteAmount());
+                    break;
+                }
+                case AGAINST: {
+                    v.setAgnst(entry.getValue().getVoteAmount());
+                    break;
+                }
+                case ABSTAIN: {
+                    v.setAbstn(entry.getValue().getVoteAmount());
+                    break;
+                }
+            }
+            voteInstr.add(v);
+        }
+        VoteDetails2 voteDetails = new VoteDetails2();
+        voteDetails.setVoteInstrForAgndRsltn(voteChoice);
+        return voteDetails;
     }
 }

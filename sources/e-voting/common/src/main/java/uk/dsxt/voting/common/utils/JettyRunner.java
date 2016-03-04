@@ -40,13 +40,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 @Log4j2
 public class JettyRunner {
     public static Server run(ResourceConfig application, Properties properties, String portPropertyName) {
-        return run(application, properties, portPropertyName, "*", null, null, null);
+        Integer port = Integer.valueOf(properties.getProperty(portPropertyName));
+        return run(application, properties, port, "*", null, null, null);
     }
 
-    public static Server run(ResourceConfig application, Properties properties, String portPropertyName, String originFilter,
+    public static Server run(ResourceConfig application, Properties properties, int port) {
+        return run(application, properties, port, "*", null, null, null);
+    }
+
+    public static Server run(ResourceConfig application, Properties properties, int port, String originFilter,
                              String aliasName, File keystoreFile, String password) {
         try {
-            Integer port = Integer.valueOf(properties.getProperty(portPropertyName));
             QueuedThreadPool threadPool = new QueuedThreadPool(
                     Integer.valueOf(properties.getProperty("jetty.maxThreads")),
                     Integer.valueOf(properties.getProperty("jetty.minThreads")),

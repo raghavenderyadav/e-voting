@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -70,6 +71,10 @@ public class PropertiesHelper {
     }
 
     public static String getResourceString(String name) {
+        return getResourceString(name, "utf-8");
+    }
+
+    public static String getResourceString(String name, String encoding) {
         if (name == null || name.isEmpty())
             return "";
         try {
@@ -78,7 +83,7 @@ public class PropertiesHelper {
                 try {
                     byte[] encoded = Files.readAllBytes(Paths.get(resourceFile.getPath()));
                     log.debug("getResourceString. Resource ({}) found: {}", name, resourceFile.getAbsolutePath());
-                    return new String(encoded);
+                    return new String(encoded, Charset.forName(encoding));
                 } catch (IOException e) {
                     log.warn("getResourceString. Couldn't read resource from file: {}. error={}", resourceFile.getAbsolutePath(), e.getMessage());
                 }
@@ -90,7 +95,7 @@ public class PropertiesHelper {
                 log.warn("getResourceString. Couldn't load resource from jar file: {}.", name);
                 return "";
             }
-            return IOUtils.toString(resource.openStream());
+            return IOUtils.toString(resource.openStream(), Charset.forName(encoding));
         } catch (Exception e) {
             log.error("getResourceString. Couldn't read a resource file.", e);
         }
