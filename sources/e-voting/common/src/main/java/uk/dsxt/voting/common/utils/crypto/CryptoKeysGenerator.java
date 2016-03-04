@@ -39,7 +39,7 @@ public class CryptoKeysGenerator {
     }
 
     public static KeyPair generateKeyPair(CryptoHelper cryptoHelper) throws Exception {
-        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
+        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         keyGen.initialize(512);
         final java.security.KeyPair pair = keyGen.generateKeyPair();
         String pubKey = savePublicKey(cryptoHelper, pair.getPublic());
@@ -48,7 +48,7 @@ public class CryptoKeysGenerator {
     }
 
     public static String savePrivateKey(CryptoHelper cryptoHelper, PrivateKey privateKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgoritm());
+        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgorithm());
         PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey, PKCS8EncodedKeySpec.class);
         byte[] packed = spec.getEncoded();
         String key64 = Base64.getEncoder().encodeToString(packed);
@@ -57,7 +57,7 @@ public class CryptoKeysGenerator {
     }
 
     public static String savePublicKey(CryptoHelper cryptoHelper, PublicKey publicKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgoritm());
+        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgorithm());
         X509EncodedKeySpec spec = fact.getKeySpec(publicKey, X509EncodedKeySpec.class);
         return Base64.getEncoder().encodeToString(spec.getEncoded());
     }

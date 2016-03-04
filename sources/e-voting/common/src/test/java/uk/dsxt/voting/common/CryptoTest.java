@@ -38,10 +38,10 @@ public class CryptoTest {
     private final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
     @Test
-    public void testCryptoKeys() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
+    public void testSignature() throws Exception {
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         KeyPair pair = gen.generateKeyPair();
-        final String originalText = "Text to be encrypted";
+        final String originalText = "Text for signature";
         String signature = cryptoHelper.createSignature(originalText, pair.getPrivate());
         assertTrue(cryptoHelper.verifySignature(originalText, signature, pair.getPublic()));
 
@@ -58,5 +58,28 @@ public class CryptoTest {
         assertTrue(cryptoHelper.verifySignature(originalText, signatureSaved, publicSaved));
 
         assertEquals(signature, signatureSaved);
+    }
+
+    @Test
+    public void testEncoding() throws Exception {
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+        KeyPair pair = gen.generateKeyPair();
+        final String originalText = "Text to be encrypted";
+        String encryptedText = cryptoHelper.encrypt(originalText, pair.getPublic());
+        String decryptedText = cryptoHelper.decrypt(encryptedText, pair.getPrivate());
+        assertEquals(originalText, decryptedText);
+
+        //convert public key to string
+        String publicKey = CryptoKeysGenerator.savePublicKey(cryptoHelper, pair.getPublic());
+        //convert public key back to Public key from string
+        PublicKey publicSaved = cryptoHelper.loadPublicKey(publicKey);
+        //convert private key to string
+        String privateKey = CryptoKeysGenerator.savePrivateKey(cryptoHelper, pair.getPrivate());
+        //convert private key back to Public key from string
+        PrivateKey privateSaved = cryptoHelper.loadPrivateKey(privateKey);
+
+        String encryptedTextSaved = cryptoHelper.encrypt(originalText, publicSaved);
+        String decryptedTextSaved = cryptoHelper.decrypt(encryptedTextSaved, privateSaved);
+        assertEquals(originalText, decryptedTextSaved);
     }
 }

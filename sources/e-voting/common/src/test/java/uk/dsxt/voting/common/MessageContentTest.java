@@ -30,9 +30,7 @@ import java.security.KeyPairGenerator;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class MessageContentTest {
 
@@ -40,7 +38,7 @@ public class MessageContentTest {
 
     @Test
     public void testValidMessage() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         KeyPair pair = gen.generateKeyPair();
         String originalText = "xxx";
         String ownerId = "007";
@@ -63,7 +61,7 @@ public class MessageContentTest {
 
     @Test
     public void testEscapedSymbols() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         KeyPair pair = gen.generateKeyPair();
         String originalText = " abc=x;y!o!!p";
 
@@ -79,7 +77,7 @@ public class MessageContentTest {
 
     @Test
     public void testWrongSignature() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgoritm());
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         KeyPair pair = gen.generateKeyPair();
 
         byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", "007a", pair.getPrivate(), cryptoHelper, null);
