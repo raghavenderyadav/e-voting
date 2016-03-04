@@ -33,6 +33,7 @@ public class VotingClientMain {
     public static final String MODULE_NAME = "client";
 
     private static org.eclipse.jetty.server.Server jettyServer;
+    private static ClientApplication application;
 
     public static void main(String[] args) {
         try {
@@ -40,7 +41,7 @@ public class VotingClientMain {
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             args = args == null || args.length == 0 ? null : args;
             int jettyPort = Integer.valueOf(args == null ? properties.getProperty("client.web.port") : args[7]);
-            ClientApplication application = new ClientApplication(properties, args);
+            application = new ClientApplication(properties, args);
             jettyServer = JettyRunner.run(application, properties, jettyPort);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
@@ -53,6 +54,10 @@ public class VotingClientMain {
             jettyServer.stop();
             jettyServer.destroy();
             jettyServer = null;
+        }
+        if (application != null) {
+            application.stop();
+            application = null;
         }
     }
 }

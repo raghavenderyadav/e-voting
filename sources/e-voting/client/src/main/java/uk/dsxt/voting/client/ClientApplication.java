@@ -58,6 +58,11 @@ import java.util.stream.Collectors;
 @ApplicationPath("")
 public class ClientApplication extends ResourceConfig {
 
+    private final VoteScheduler voteScheduler;
+    private final WalletScheduler walletScheduler;
+    private final MessageHandler messageHandler;
+    private final WalletManager walletManager;
+
     public ClientApplication(Properties properties, String[] args) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
         String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
@@ -74,7 +79,7 @@ public class ClientApplication extends ResourceConfig {
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-        WalletManager walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, ownerId);
+        walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, ownerId);
 
         RegistriesServer registriesServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
         CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
@@ -90,10 +95,10 @@ public class ClientApplication extends ResourceConfig {
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
                 walletManager, clientNode, new ISO20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, "0");
 
-        MessageHandler messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
+        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 
-        VoteScheduler voteScheduler = new VoteScheduler(clientNode, messagesFileContent, ownerId);
-        WalletScheduler walletScheduler = new WalletScheduler(walletManager, walletOffSchedule);
+        voteScheduler = new VoteScheduler(clientNode, messagesFileContent, ownerId);
+        walletScheduler = new WalletScheduler(walletManager, walletOffSchedule);
 
         messageHandler.run(newMessagesRequestInterval);
 
@@ -107,5 +112,12 @@ public class ClientApplication extends ResourceConfig {
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi)), holderApiResource);
+    }
+
+    public void stop() {
+        voteScheduler.stop();
+        walletScheduler.stop();
+        messageHandler.stop();
+        walletManager.stopWallet();
     }
 }
