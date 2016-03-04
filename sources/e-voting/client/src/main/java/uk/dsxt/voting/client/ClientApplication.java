@@ -99,8 +99,14 @@ public class ClientApplication extends ResourceConfig {
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
                 walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
-        if (masterNode != null)
+        if (masterNode != null) {
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
+            String votingFiles = properties.getProperty("voting.files", "");
+            for(String votingFile : votingFiles.split(",")) {
+                String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
+                masterNode.addNewVoting(messagesSerializer.deserializeVoting(votingMessage));
+            }
+        }
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 
