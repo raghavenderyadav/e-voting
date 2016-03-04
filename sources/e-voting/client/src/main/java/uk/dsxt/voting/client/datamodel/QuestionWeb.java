@@ -24,6 +24,10 @@ package uk.dsxt.voting.client.datamodel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import uk.dsxt.voting.common.domain.dataModel.Question;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Value
 public class QuestionWeb {
@@ -50,5 +54,13 @@ public class QuestionWeb {
         this.answers = answers;
         this.canSelectMultiple = canSelectMultiple;
         this.multiplicator = multiplicator;
+    }
+
+    public QuestionWeb(Question q) {
+        this.id = q.getId();
+        this.question = q.getQuestion();
+        this.answers = Arrays.stream(q.getAnswers()).map(AnswerWeb::new).collect(Collectors.toList()).toArray(new AnswerWeb[q.getAnswers().length]);
+        this.canSelectMultiple = q.isCanSelectMultiple();
+        this.multiplicator = q.getMultiplicator();
     }
 }

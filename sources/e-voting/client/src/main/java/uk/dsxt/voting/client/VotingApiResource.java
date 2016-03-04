@@ -22,10 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.client.datamodel.LoginAnswerWeb;
-import uk.dsxt.voting.client.datamodel.QuestionWeb;
-import uk.dsxt.voting.client.datamodel.VotingInfoWeb;
-import uk.dsxt.voting.client.datamodel.VotingWeb;
+import uk.dsxt.voting.client.datamodel.*;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -89,14 +86,16 @@ public class VotingApiResource {
     @Path("/vote")
     @Produces("application/json")
     public boolean vote(@FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
-        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, votingChoice));
+        String clientId = ""; // TODO Get it from auth.
+        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, clientId, votingChoice));
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
     public QuestionWeb[] votingResults(@FormParam("votingId") String votingId) {
-        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId));
+        String clientId = ""; // TODO Get client ID from auth.
+        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, clientId));
     }
 
     @POST
@@ -106,5 +105,10 @@ public class VotingApiResource {
         return execute("getTime", String.format("votingId=%s", votingId), () -> manager.getTime(votingId));
     }
 
-
+    @POST
+    @Path("/getConfirmedClientVotes")
+    @Produces("application/json")
+    public VoteResultWeb[] getConfirmedClientVotes(@FormParam("votingId") String votingId) {
+        return execute("getConfirmedClientVotes", String.format("votingId=%s", votingId), () -> manager.getConfirmedClientVotes(votingId));
+    }
 }

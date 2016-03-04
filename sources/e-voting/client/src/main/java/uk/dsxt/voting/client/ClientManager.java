@@ -3,18 +3,21 @@ package uk.dsxt.voting.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.client.datamodel.QuestionWeb;
-import uk.dsxt.voting.client.datamodel.VotingChoice;
-import uk.dsxt.voting.client.datamodel.VotingInfoWeb;
-import uk.dsxt.voting.client.datamodel.VotingWeb;
+import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Value
@@ -36,14 +39,16 @@ public class ClientManager {
     }
 
     public VotingWeb[] getVotings() {
-        return votingsById.values().toArray(new VotingWeb[0]);
+        final Collection<Voting> votings = assetsHolder.getVotings();
+        return votings.stream().map(VotingWeb::new).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]);
     }
 
     public VotingInfoWeb getVoting(String votingId) {
+        // TODO Use assetsHolder method.
         return new VotingInfoWeb(votingsById.get(votingId) == null ? null : votingsById.get(votingId).getQuestions(), new BigDecimal(500));
     }
 
-    public boolean vote(String votingId, String votingChoice) {
+    public boolean vote(String votingId, String clientId, String votingChoice) {
         try {
             VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
             return true;
@@ -53,11 +58,20 @@ public class ClientManager {
         }
     }
 
-    public QuestionWeb[] votingResults(String votingId) {
+    // TODO Correct objects model (use VoteResult class)
+    public QuestionWeb[] votingResults(String votingId, String clientId) {
+        // TODO get assetsHolder.getClientVote(votingId, clientId) and merge with voting structure from get voting.
         return new QuestionWeb[0];
     }
 
     public long getTime(String votingId) {
-        return 0;
+        return 0; // TODO Implement.
+    }
+
+    public VoteResultWeb[] getConfirmedClientVotes(String votingId) {
+        List<VoteResultWeb> results = new ArrayList<>();
+        final Collection<VoteResult> votes = assetsHolder.getConfirmedClientVotes(votingId);
+        results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
+        return results.toArray(new VoteResultWeb[results.size()]);
     }
 }

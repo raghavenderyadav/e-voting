@@ -28,6 +28,8 @@ import java.util.Collection;
 
 public interface AssetsHolder extends VoteAcceptor {
 
+    Voting getVoting(String votingId);
+
     Collection<Voting> getVotings();
 
     VoteResult getTotalVotingResult(String votingId);
@@ -39,6 +41,4 @@ public interface AssetsHolder extends VoteAcceptor {
     VoteResult getClientVote(String votingId, String clientId);
 
     void addClientVote(VoteResult result);
-
-
 }

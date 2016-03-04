@@ -24,6 +24,7 @@ package uk.dsxt.voting.client.datamodel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import uk.dsxt.voting.common.domain.dataModel.Answer;
 
 @Value
 public class AnswerWeb {
@@ -34,5 +35,10 @@ public class AnswerWeb {
     public AnswerWeb(@JsonProperty("id") int id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public AnswerWeb(Answer a) {
+        this.id = a.getId();
+        this.name = a.getName();
     }
 }
