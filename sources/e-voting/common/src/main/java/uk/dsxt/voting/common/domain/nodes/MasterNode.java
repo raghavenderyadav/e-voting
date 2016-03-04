@@ -21,6 +21,7 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
@@ -34,19 +35,22 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class MasterNode extends ClientNode {
 
-    private final NetworkMessagesSender network;
+    @Setter
+    private NetworkMessagesSender network;
 
     private final ScheduledExecutorService calculateResultsService;
 
-    public MasterNode(NetworkMessagesSender network, Voting[] votings) {
-        super("0");
-        this.network = network;
+    public static String MASTER_HOLDER_ID = "00";
+
+    public MasterNode() {
+        super(MASTER_HOLDER_ID);
         calculateResultsService = Executors.newScheduledThreadPool(10);
-        for(Voting voting : votings) {
-            network.addVoting(voting);
-            calculateResultsService.schedule(() -> calculateResults(voting.getId()), voting.getEndTimestamp() - System.currentTimeMillis()+60000, TimeUnit.MILLISECONDS);
-            log.info("Voting added. votingId={}", voting.getId());
-        }
+    }
+
+    public void addNewVoting(Voting voting) {
+        network.addVoting(voting);
+        calculateResultsService.schedule(() -> calculateResults(voting.getId()), voting.getEndTimestamp() - System.currentTimeMillis()+60000, TimeUnit.MILLISECONDS);
+        log.info("Voting added. votingId={}", voting.getId());
     }
 
     private void calculateResults(String votingId) {
@@ -76,6 +80,4 @@ public class MasterNode extends ClientNode {
         }
         return false;
     }
-
-
 }

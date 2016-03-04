@@ -31,7 +31,6 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.networking.RegistriesServer;
 import uk.dsxt.voting.common.networking.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
-import uk.dsxt.voting.masterclient.VotingMasterClientMain;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
@@ -123,7 +122,6 @@ public class TestsLauncher {
             nxtProperties.setProperty("nxt.evt.sendNxtBlackList", String.format("%s", masterAccount));
 
             final String propertiesPath = createWalletPropertiesFile(MASTER_NAME, 7872, nxtProperties, allowedHosts);
-            startSingleModule(VotingMasterClientMain.MODULE_NAME, () -> VotingMasterClientMain.main(new String[]{propertiesPath, masterAccount, masterPassword}));
             //starting clients
             long start = Instant.now().getMillis();
             log.debug("Starting {} instances of {}", configurations.length, VotingClientMain.MODULE_NAME);
@@ -159,8 +157,6 @@ public class TestsLauncher {
             //stop jetty servers
             RegistriesServerMain.shutdown();
             ResultsBuilderMain.shutdown();
-            //stop other modules
-            VotingMasterClientMain.shutdown();
             log.info("Testing finished");
         } catch (Exception e) {
             log.error("Error occurred in module {}", MODULE_NAME, e);
@@ -194,7 +190,7 @@ public class TestsLauncher {
         final String password = nxtAccounts[idx].getPassword();
         if (startClientsAsProcesses) {
             startProcess("Client" + idx, CLIENT_JAR_PATH, new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(),
-                    conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod)});
+                    conf.getVote() == null || conf.getVote().isEmpty() ? "#" : conf.getVote(), walletOffSchedule, String.valueOf(clientAggregationPeriod), idx == 0 ? "true" : "false"});
         } else {
             VotingClientMain.main(new String[]{clientPropertiesPath, masterAccount, password, conf.getHolderId(), conf.getPrivateKey(), conf.getVote(),
                     walletOffSchedule, String.valueOf(clientAggregationPeriod)});

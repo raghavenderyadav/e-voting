@@ -26,10 +26,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
-import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
+import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.iso20022.ISO20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.messaging.CryptoNodeDecorator;
@@ -63,23 +62,20 @@ public class ClientApplication extends ResourceConfig {
     private final MessageHandler messageHandler;
     private final WalletManager walletManager;
 
-    public ClientApplication(Properties properties, String[] args) throws Exception {
+    public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
+                             String mainAddress, String passphrase, String nxtPropertiesPath) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
-        String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
-        PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(args == null ? properties.getProperty("owner.private_key") : args[4]);
-        String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
-        String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
-
         String registriesServerUrl = properties.getProperty("register.server.url");
         String resultsBuilderUrl = properties.getProperty("results.builder.url");
         String parentHolderUrl = properties.getProperty("parent.holder.url");
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
+        PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-        walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, args, ownerId);
+        walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase);
 
         RegistriesServer registriesServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
         CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
@@ -88,12 +84,23 @@ public class ClientApplication extends ResourceConfig {
         Participant[] participants = registriesServer.getParticipants();
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
 
-        ClientNode clientNode = new ClientNode(ownerId);
+        ClientNode clientNode;
+        MasterNode masterNode;
+        if (isMain) {
+            masterNode = new MasterNode();
+            clientNode = masterNode;
+        } else {
+            masterNode = null;
+            clientNode = new ClientNode(ownerId);
+        }
+
         MessagesSerializer messagesSerializer = new ISO20022Serializer();
         CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
-                walletManager, clientNode, new ISO20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, "0");
+                walletManager, clientNode, new ISO20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+        if (masterNode != null)
+            masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 

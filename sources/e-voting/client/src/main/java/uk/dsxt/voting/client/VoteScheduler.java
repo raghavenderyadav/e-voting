@@ -21,19 +21,10 @@
 
 package uk.dsxt.voting.client;
 
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
-import uk.dsxt.voting.common.networking.VoteAggregation;
-import uk.dsxt.voting.common.networking.VotingClient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

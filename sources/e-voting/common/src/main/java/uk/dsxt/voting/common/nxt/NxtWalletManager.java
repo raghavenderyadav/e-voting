@@ -26,7 +26,6 @@ public class NxtWalletManager implements WalletManager {
 
     private final File workingDir;
     private final String jarPath;
-    private final String nxtPropertiesPath;
     private final ObjectMapper mapper;
     private final String mainAddress;
     private final String port;
@@ -37,13 +36,17 @@ public class NxtWalletManager implements WalletManager {
     private String accountId;
     private String selfAccount;
     private String name;
+    private String nxtPropertiesPath;
 
     private Process nxtProcess;
     private boolean isForgeNow = false;
     private boolean isInitialized = false;
 
-    public NxtWalletManager(Properties properties, String[] args, String name) {
+    public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase) {
+        this.nxtPropertiesPath = nxtPropertiesPath;
         this.name = name;
+        this.mainAddress = mainAddress;
+        this.passphrase = passphrase;
         workingDir = new File(System.getProperty("user.dir"));
         log.info("Working directory (user.dir): {}", workingDir.getAbsolutePath());
 
@@ -63,32 +66,23 @@ public class NxtWalletManager implements WalletManager {
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        nxtPropertiesPath = args != null && args.length > 0 ? args[0] : properties.getProperty("nxt.properties.path");
         Properties nxtProperties = PropertiesHelper.loadPropertiesFromPath(nxtPropertiesPath);
-        if (args != null && args.length > 0) {
-            mainAddress = args[1];
-            passphrase = args[2];
-            port = nxtProperties.getProperty("nxt.apiServerPort");
-        } else {
-            mainAddress = properties.getProperty("nxt.main.address");
-            passphrase = properties.getProperty("nxt.account.passphrase");
-            port = properties.getProperty("nxt.apiServerPort");
-            nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
-            nxtProperties.setProperty("nxt.apiServerPort", port);
-            nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
-            nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
-            nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
-            nxtProperties.setProperty("nxt.defaultTestnetPeers", properties.getProperty("nxt.defaultTestnetPeers"));
-            nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
-            nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
-            nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
-            try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
-                nxtProperties.store(fos, "");
-            } catch (Exception e) {
-                String errorMessage = String.format("Can't save wallet. Error: %s", e.getMessage());
-                log.error(errorMessage, e);
-                throw new RuntimeException(errorMessage);
-            }
+        port = properties.getProperty("nxt.apiServerPort");
+        nxtProperties.setProperty("nxt.peerServerPort", properties.getProperty("nxt.peerServerPort"));
+        nxtProperties.setProperty("nxt.apiServerPort", port);
+        nxtProperties.setProperty("nxt.dbDir", properties.getProperty("nxt.dbDir"));
+        nxtProperties.setProperty("nxt.testDbDir", properties.getProperty("nxt.dbDir"));
+        nxtProperties.setProperty("nxt.defaultPeers", properties.getProperty("nxt.defaultPeers"));
+        nxtProperties.setProperty("nxt.defaultTestnetPeers", properties.getProperty("nxt.defaultTestnetPeers"));
+        nxtProperties.setProperty("nxt.isOffline", properties.getProperty("nxt.isOffline"));
+        nxtProperties.setProperty("nxt.isTestnet", properties.getProperty("nxt.isTestnet"));
+        nxtProperties.setProperty("nxt.timeMultiplier", properties.getProperty("nxt.timeMultiplier"));
+        try (FileOutputStream fos = new FileOutputStream(nxtPropertiesPath)) {
+            nxtProperties.store(fos, "");
+        } catch (Exception e) {
+            String errorMessage = String.format("Can't save wallet. Error: %s", e.getMessage());
+            log.error(errorMessage, e);
+            throw new RuntimeException(errorMessage);
         }
     }
 

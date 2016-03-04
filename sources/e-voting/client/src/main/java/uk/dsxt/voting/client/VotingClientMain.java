@@ -40,8 +40,18 @@ public class VotingClientMain {
             log.info("Starting module {}...", MODULE_NAME.toUpperCase());
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             args = args == null || args.length == 0 ? null : args;
+
+            String nxtPropertiesPath = args == null ? properties.getProperty("nxt.properties.path") : args[0];
+            String mainAddress = args == null ? properties.getProperty("nxt.main.address") : args[1];
+            String passphrase = args == null ? properties.getProperty("nxt.account.passphrase") : args[2];
+            String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
+            String privateKey = args == null ? properties.getProperty("owner.private_key") : args[4];
+            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
+            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
             int jettyPort = Integer.valueOf(args == null ? properties.getProperty("client.web.port") : args[7]);
-            application = new ClientApplication(properties, args);
+            boolean isMain = Boolean.valueOf(args == null || args.length < 9 ? properties.getProperty("client.isMain", "false") : args[8]);
+
+            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath);
             jettyServer = JettyRunner.run(application, properties, jettyPort);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

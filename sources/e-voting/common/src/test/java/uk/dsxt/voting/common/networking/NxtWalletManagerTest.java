@@ -44,7 +44,7 @@ public class NxtWalletManagerTest {
         properties.setProperty("nxt.isOffline", "false");
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "10");
-        wm1 = new NxtWalletManager(properties, null, "11");
+        wm1 = new NxtWalletManager(properties, null, "11", null, null);
         wm1.runWallet();
         Thread.sleep(3000);
         properties.setProperty("nxt.peerServerPort", "7973");
@@ -54,7 +54,7 @@ public class NxtWalletManagerTest {
         properties.setProperty("nxt.register.password", "master_password");
         properties.setProperty("nxt.defaultTestnetPeers", "127.0.0.1:7873;");
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
-        WalletManager wm2 = new NxtWalletManager(properties, null, "2");
+        WalletManager wm2 = new NxtWalletManager(properties, null, "2", null, null);
         wm2.runWallet();
         Thread.sleep(1000);
         String messageId = null;
