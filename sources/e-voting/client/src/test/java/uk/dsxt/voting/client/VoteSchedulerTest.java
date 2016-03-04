@@ -24,7 +24,6 @@ package uk.dsxt.voting.client;
 import org.junit.Test;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class VoteSchedulerTest {
@@ -46,7 +44,7 @@ public class VoteSchedulerTest {
         votings[1] = new Voting("1", "name1", now - 600000, now + 700000, null);
         votings[2] = new Voting("2", "name2", now - 600000, now - 100000, null);
 
-        String messages="0:0,1,1-1-1\r\n10:1,2,2-2-2\r\n #\r\n2:0,3,3-3-3;01:1,4,4-4-4:-\n20:1,5,5-5-5\n";
+        String messages="10:0,1,1,1-1-1\r\n0:1,2,2,2-2-2\r\n #\r\n2:0,3,3,3-3-3;0:1,4,4,4-4-4:-\n20:1,5,10,5-5-5\n";
 
         List<VoteResult> sentResults = new ArrayList<>();
         AssetsHolder client = mock(AssetsHolder.class);
@@ -55,28 +53,11 @@ public class VoteSchedulerTest {
             return true;
         }).when(client).addClientVote(anyObject());
 
-        List<String> sentToBuilderResults = new ArrayList<>();
-        List<String> sentAggregatedResults = new ArrayList<>();
-        ResultsBuilder builder = mock(ResultsBuilder.class);
-        doAnswer(invocation -> {
-            sentToBuilderResults.add((String) invocation.getArguments()[0]);
-            return null;
-        }).when(builder).addVote(anyString());
-        doAnswer(invocation -> {
-            sentAggregatedResults.add((String) invocation.getArguments()[1]);
-            return null;
-        }).when(builder).addResult(anyString(), anyString());
-
         VoteScheduler scheduler = new VoteScheduler(client, messages, "001");
         Thread.sleep(100);
 
         assertEquals(2, sentResults.size());
-        assertEquals("4", sentResults.get(0).getHolderId());
-        assertEquals("2", sentResults.get(1).getHolderId());
-        assertEquals(1, sentToBuilderResults.size());
-        assertEquals("2", new VoteResult(sentToBuilderResults.get(0)).getHolderId());
-        assertEquals(1, sentAggregatedResults.size());
-        assertEquals(null, new VoteResult(sentAggregatedResults.get(0)).getHolderId());
-        assertEquals("22", new VoteResult(sentAggregatedResults.get(0)).getVotingId());
+        assertEquals("2", sentResults.get(0).getHolderId());
+        assertEquals("4", sentResults.get(1).getHolderId());
     }
 }

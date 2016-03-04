@@ -54,7 +54,10 @@ public class VoteScheduler {
                     throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
                 VoteResult voteResult = new VoteResult(terms[1]);
                 int delay = Integer.parseInt(terms[0]);
-                scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.MINUTES);
+                if (delay <= 0)
+                    assetsHolder.addClientVote(voteResult);
+                else
+                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.MINUTES);
                 cnt++;
                 if (maxDelay < delay)
                     maxDelay = delay;

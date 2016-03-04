@@ -139,6 +139,7 @@ public class VoteResult {
     public void add(VoteResult other) {
         if (other == null)
             return;
+        packetSize = packetSize.add(other.getPacketSize());
         addAnswers(answersByKey, other.getAnswers());
     }
 
