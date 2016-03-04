@@ -1,0 +1,13 @@
+<p>{{question.question}}</p>
+<ul>
+  <li ng-repeat="answer in question.answers">
+    <p ng-if="question.canSelectMultiple">
+      <span>{{answer.name}}</span>
+      <span><input type="text" name="question-{{question.id}}-answer-{{answer.id}}" id="question-{{question.id}}-answer-{{answer.id}}" ng-model="votingChoice[question.id][answer.id]"/></span>
+    </p>
+    <p ng-if="!question.canSelectMultiple">
+      <span><input type="radio" name="question-{{question.id}}" id="question-{{question.id}}-answer-{{answer.id}}" ng-model="votingChoice[question.id][answer.id]" ng-value="totalVotes"/></span>
+      <span>{{answer.name}}</span>
+    </p>
+  </li>
+</ul>

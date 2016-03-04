@@ -1,0 +1,34 @@
+{
+  "name": "e-voting",
+  "description": "e-voting web interface",
+  "version": "0.0.0",
+  "homepage": "",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.0",
+    "angular-dynamic-locale": "~0.1.30",
+    "angular-i18n": "~1.5.0",
+    "angular-route": "~1.4.0",
+    "angular-loader": "~1.4.0",
+    "angular-mocks": "~1.4.0",
+    "angular-resource": "~1.5.0",
+    "angular-ui-router": "^0.2.18",
+    "jquery": "~2.2.1",
+    "ng-i18n": "~1.1.2",
+    "ngstorage": "~0.3.10"
+  },
+  "authors": [
+    "dk <dk@dsxt.uk>"
+  ],
+  "main": "",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ]
+}

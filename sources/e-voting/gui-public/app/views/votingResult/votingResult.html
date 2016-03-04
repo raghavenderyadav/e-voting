@@ -1,0 +1,14 @@
+<ul>
+  <li ng-repeat="question in vrc.votingResult">
+    <p>{{question.question}}</p>
+    <ul>
+      <li ng-repeat="answer in question.answers" ng-class="{'is-answer': answer.votes > 0}">
+        <p>
+          <span>{{answer.name}}</span>
+          <span ng-if="question.canSelectMultiple">{{answer.votes}}</span>
+        </p>
+      </li>
+    </ul>
+  </li>
+</ul>
+<button ng-click="vrc.cancel()">Cancel</button>

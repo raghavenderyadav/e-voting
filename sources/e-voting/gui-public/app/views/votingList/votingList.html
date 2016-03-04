@@ -1,0 +1,12 @@
+<table>
+  <thead></thead>
+  <tbody>
+  <tr ng-repeat="voting in vlc.votingList">
+    <td>{{voting.name}}</td>
+    <td>{{voting.beginTimestamp | date: 'shortDate'}} {{voting.beginTimestamp | date: 'mediumTime'}}</td>
+    <td>{{voting.endTimestamp | date: 'shortDate'}} {{voting.endTimestamp | date: 'mediumTime'}}</td>
+    <td ng-if="voting.active"><button ng-click="voting.canVote && vlc.vote(voting.id)">Vote</button></td>
+    <td ng-if="!voting.active"><button ng-click="vlc.showResults(voting.id)">Show Results</button></td>
+  </tr>
+  </tbody>
+</table>

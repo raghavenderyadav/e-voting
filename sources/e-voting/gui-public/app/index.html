@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html lang="en" ng-app="e-voting" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html lang="en" ng-app="e-voting" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html lang="en" ng-app="e-voting" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="e-voting" class="no-js"> <!--<![endif]-->
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My AngularJS App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+  your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div ng-include="'components/header/header.html'" ng-controller="HeaderController as hc" class="header"></div>
+<div ui-view class="body"></div>
+
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+-->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/ngstorage/ngStorage.js"></script>
+<script src="components/apiRequests/api-properties.js"></script>
+<script src="components/apiRequests/server-properties.js"></script>
+<script src="components/apiRequests/api-requests.js"></script>
+<script src="components/header/header-controller.js"></script>
+<script src="components/routing/state-config.js"></script>
+<script src="components/auth/user-info.js"></script>
+<script src="components/auth/sign-in.js"></script>
+<script src="components/auth/sign-out.js"></script>
+<script src="components/auth/auth.js"></script>
+<script src="components/voting/voting-list.js"></script>
+<script src="components/voting/voting-question.js"></script>
+<script src="components/voting/voting-question-directive.js"></script>
+<script src="components/voting/voting-result.js"></script>
+<script src="components/voting/voting.js"></script>
+<script src="app.js"></script>
+<script src="views/votingList/votingList.js"></script>
+<script src="views/signIn/signIn.js"></script>
+<script src="views/votingResult/votingResult.js"></script>
+<script src="views/voting/voting.js"></script>
+</body>
+</html>

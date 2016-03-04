@@ -1,0 +1,5 @@
+<ul>
+  <li ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice"></li>
+</ul>
+<button ng-click="vc.cancel()">Cancel</button>
+<button ng-click="vc.vote()">Vote</button>
