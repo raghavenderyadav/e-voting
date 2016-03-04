@@ -29,7 +29,7 @@ import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
-import uk.dsxt.voting.common.iso20022.ISO20022Serializer;
+import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.messaging.CryptoNodeDecorator;
 import uk.dsxt.voting.common.messaging.CryptoVoteAcceptorWeb;
@@ -94,11 +94,11 @@ public class ClientApplication extends ResourceConfig {
             clientNode = new ClientNode(ownerId);
         }
 
-        MessagesSerializer messagesSerializer = new ISO20022Serializer();
+        MessagesSerializer messagesSerializer = new Iso20022Serializer();
         CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
-                walletManager, clientNode, new ISO20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+                walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
         if (masterNode != null)
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
 
