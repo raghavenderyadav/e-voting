@@ -41,6 +41,7 @@ import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
+import uk.dsxt.voting.common.registries.FileRegisterServer;
 import uk.dsxt.voting.common.registries.RegistriesServer;
 import uk.dsxt.voting.common.registries.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
@@ -80,11 +81,12 @@ public class ClientApplication extends ResourceConfig {
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
 
-        PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase);
 
-        RegistriesServer registriesServer = new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
+        final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
+        RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
+
         CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
         ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
 
@@ -103,6 +105,7 @@ public class ClientApplication extends ResourceConfig {
         Participant[] participants = registriesServer.getParticipants();
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
 
+        PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
         MessagesSerializer messagesSerializer = new Iso20022Serializer();
         CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
 

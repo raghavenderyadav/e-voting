@@ -32,7 +32,7 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 import java.util.*;
 
 @Log4j2
-public class SimpleRegisterServer {
+public class SimpleRegisterServer implements RegistriesServer {
 
     private final Participant[] participants;
 

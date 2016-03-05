@@ -129,7 +129,8 @@ public class PropertiesHelper {
 
     public static <T> T loadResource(Properties properties, String subdirectory, String propertyName, Class<T> clazz) throws InternalLogicException {
         String path = properties.getProperty(propertyName);
-        path = String.format(path, subdirectory == null ? "" : subdirectory);
+        if (subdirectory != null)
+            path = String.format(path, subdirectory);
         String resourceJson = PropertiesHelper.getResourceString(path);
         if (resourceJson.isEmpty())
             throw new InternalLogicException(String.format("Couldn't find file for %s property with value '%s'.", propertyName, path));

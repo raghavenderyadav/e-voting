@@ -34,10 +34,10 @@ import java.util.function.Supplier;
 @Log4j2
 @Path("/voting-api")
 public class RegistriesServerResource implements RegistriesServer {
-    private final SimpleRegisterServer manager;
+    private final RegistriesServer server;
 
-    public RegistriesServerResource(SimpleRegisterServer manager) {
-        this.manager = manager;
+    public RegistriesServerResource(RegistriesServer server) {
+        this.server = server;
     }
 
     private <T> T execute(String name, Supplier<T> request) {
@@ -60,6 +60,6 @@ public class RegistriesServerResource implements RegistriesServer {
     @Path("/participants")
     @Produces("application/json")
     public Participant[] getParticipants() {
-        return execute("getParticipants", manager::getParticipants);
+        return execute("getParticipants", server::getParticipants);
     }
 }
