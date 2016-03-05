@@ -140,4 +140,15 @@ public class PropertiesHelper {
             throw new InternalLogicException(String.format("Couldn't parse '%s' file for type %s due to %s", path, clazz, ex.getMessage()));
         }
     }
+
+    public static <T> T loadResource(String path, Class<T> clazz) throws InternalLogicException {
+        String resourceJson = PropertiesHelper.getResourceString(path);
+        if (resourceJson.isEmpty())
+            throw new InternalLogicException(String.format("Couldn't find file in the path '%s'.", path));
+        try {
+            return mapper.readValue(resourceJson, clazz);
+        } catch (Exception ex) {
+            throw new InternalLogicException(String.format("Couldn't parse '%s' file for type %s due to %s", path, clazz, ex.getMessage()));
+        }
+    }
 }

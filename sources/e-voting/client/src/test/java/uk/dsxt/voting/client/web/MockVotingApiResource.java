@@ -21,7 +21,7 @@
 
 package uk.dsxt.voting.client.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.datamodel.*;
@@ -41,6 +41,8 @@ public class MockVotingApiResource implements VotingAPI {
 
     private static final Map<String, VotingWeb> votings;
 
+    //private static final ObjectMapper mapper = new ObjectMapper();
+
     static {
         votings = new HashMap<>();
         votings.put("voting_1", new VotingWeb("voting_1", "voting_1", Instant.now().getMillis(), Instant.now().plus(600000).getMillis(), true, false, null));
@@ -50,8 +52,6 @@ public class MockVotingApiResource implements VotingAPI {
         votings.put("voting_5", new VotingWeb("voting_5", "voting_5", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), false, false, null));
         votings.put("voting_6", new VotingWeb("voting_6", "voting_6", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), false, false, null));
     }
-
-    final ObjectMapper mapper = new ObjectMapper();
 
     @POST
     @Path("/login")
@@ -105,7 +105,7 @@ public class MockVotingApiResource implements VotingAPI {
     public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
         try {
             log.debug("vote method called. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice);
-            VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
+            //VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
             return true;
         } catch (Exception e) {
             log.error("vote method failed. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice, e);

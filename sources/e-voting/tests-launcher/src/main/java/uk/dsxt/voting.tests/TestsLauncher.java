@@ -21,7 +21,6 @@
 
 package uk.dsxt.voting.tests;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +66,6 @@ public class TestsLauncher {
     public static void main(String[] args) {
         try {
             log.debug("Starting module {}...", MODULE_NAME);
-            ObjectMapper mapper = new ObjectMapper();
             //delete old files
             deleteNxtFiles();
             //read configuration
@@ -85,14 +83,11 @@ public class TestsLauncher {
             masterAccount = properties.getProperty("master.address");
             masterPassword = properties.getProperty("master.passphrase");
 
-            String accountsJson = PropertiesHelper.getResourceString("json/nxtAccounts.json");
-            NXTAccount[] nxtAccounts = mapper.readValue(accountsJson, NXTAccount[].class);
+            NXTAccount[] nxtAccounts = PropertiesHelper.loadResource("json/nxtAccounts.json", NXTAccount[].class);
             log.info("Found {} accounts.", nxtAccounts.length);
 
             //json file configuration for clients
-            String configFileName = properties.getProperty("client.config.file");
-            String resourceJson = PropertiesHelper.getResourceString(String.format(configFileName, testingType));
-            ClientConfiguration[] configurations = mapper.readValue(resourceJson, ClientConfiguration[].class);
+            ClientConfiguration[] configurations = PropertiesHelper.loadResource(properties, null, "client.config.file", ClientConfiguration[].class);
             startClientsAsProcesses = Boolean.parseBoolean(properties.getProperty("testing.clients_as_processes"));
 
             StringBuilder builder = new StringBuilder();

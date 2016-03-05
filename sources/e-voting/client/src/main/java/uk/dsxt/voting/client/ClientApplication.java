@@ -21,7 +21,6 @@
 
 package uk.dsxt.voting.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.client.auth.AuthManager;
@@ -44,6 +43,7 @@ import uk.dsxt.voting.common.nxt.NxtWalletManager;
 import uk.dsxt.voting.common.registries.FileRegisterServer;
 import uk.dsxt.voting.common.registries.RegistriesServer;
 import uk.dsxt.voting.common.registries.RegistriesServerWeb;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -144,12 +144,10 @@ public class ClientApplication extends ResourceConfig {
     }
 
     private void loadClients(ClientNode node) {
-        ObjectMapper mapper = new ObjectMapper();
-        String accountsJson = PropertiesHelper.getResourceString("clients.json");
         ClientsOnTime[] clientsOnTimes;
         try {
-            clientsOnTimes = mapper.readValue(accountsJson, ClientsOnTime[].class);
-        } catch (IOException e) {
+            clientsOnTimes = PropertiesHelper.loadResource("clients.json", ClientsOnTime[].class);
+        } catch (InternalLogicException e) {
            log.error("loadClients failed: {}", e.getMessage());
            return;
         }
