@@ -19,25 +19,19 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.client.datamodel;
+package uk.dsxt.voting.client.web;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.Value;
+import lombok.extern.log4j.Log4j2;
+import org.glassfish.jersey.server.ResourceConfig;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 
-import java.util.Map;
+import javax.ws.rs.ApplicationPath;
 
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class VotingChoice {
-    @JsonUnwrapped
-    Map<String, QuestionChoice> questionChoices;
-
-    @JsonCreator
-    public VotingChoice(Map<String, QuestionChoice> questionChoices) {
-        this.questionChoices = questionChoices;
+@Log4j2
+@ApplicationPath("")
+public class MockVotingAPIApplication extends ResourceConfig {
+    public MockVotingAPIApplication() {
+        JettyRunner.configureMapper(this);
+        this.registerInstances(new MockVotingApiResource());
     }
 }

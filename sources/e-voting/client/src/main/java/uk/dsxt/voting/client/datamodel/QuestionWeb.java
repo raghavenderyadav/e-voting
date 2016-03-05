@@ -37,6 +37,7 @@ public class QuestionWeb {
     boolean canSelectMultiple;
     int multiplicator;
 
+    @Deprecated // TODO Remove it (canSelectMultiple and multiplicator hardcoded).
     @JsonCreator
     public QuestionWeb(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers) {
         this.id = id;

@@ -19,25 +19,30 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.client.datamodel;
+package uk.dsxt.voting.client.web;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.Value;
+import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 
-import java.util.Map;
+import java.util.Properties;
 
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class VotingChoice {
-    @JsonUnwrapped
-    Map<String, QuestionChoice> questionChoices;
+@Log4j2
+public class MockVotingAPILauncher {
 
-    @JsonCreator
-    public VotingChoice(Map<String, QuestionChoice> questionChoices) {
-        this.questionChoices = questionChoices;
+    public static void main(String[] args) {
+        try {
+            log.info("Starting MockVotingAPILauncher...");
+            Properties properties = new Properties();
+            properties.put("port", "9000");
+            properties.put("jetty.maxThreads", "5000");
+            properties.put("jetty.minThreads", "2000");
+            properties.put("jetty.maxQueueSize", "10000");
+            properties.put("jetty.idleTimeout", "100000");
+            MockVotingAPIApplication application = new MockVotingAPIApplication();
+            JettyRunner.run(application, properties, "port");
+            log.info("MockVotingAPILauncher is successfully started");
+        } catch (Exception e) {
+            log.error("MockVotingAPILauncher failed.", e);
+        }
     }
 }

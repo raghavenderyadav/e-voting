@@ -26,19 +26,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 import uk.dsxt.voting.common.domain.dataModel.Answer;
 
+import java.math.BigDecimal;
+
 @Value
 public class AnswerWeb {
     int id;
     String name;
+    BigDecimal votes;
 
     @JsonCreator
-    public AnswerWeb(@JsonProperty("id") int id, @JsonProperty("name") String name) {
+    public AnswerWeb(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("votes") BigDecimal votes) {
         this.id = id;
         this.name = name;
+        this.votes = votes;
     }
 
     public AnswerWeb(Answer a) {
         this.id = a.getId();
         this.name = a.getName();
+        this.votes = BigDecimal.ZERO; // TODO Implement.
     }
 }

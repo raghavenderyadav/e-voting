@@ -23,6 +23,7 @@ package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.client.datamodel.*;
+import uk.dsxt.voting.client.web.VotingAPI;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
 
 @Log4j2
 @Path("/api")
-public class VotingApiResource {
+public class VotingApiResource implements VotingAPI {
     private final ClientManager manager;
 
     public VotingApiResource(ClientManager manager) {
@@ -71,21 +72,21 @@ public class VotingApiResource {
     @POST
     @Path("/votings")
     @Produces("application/json")
-    public VotingWeb[] getVotings() {
+    public VotingWeb[] getVotings(@FormParam("cookie") String cookie) {
         return execute("getVotings", "", manager::getVotings);
     }
 
     @POST
     @Path("/getVoting")
     @Produces("application/json")
-    public VotingInfoWeb getVoting(@FormParam("votingId") String votingId) {
+    public VotingInfoWeb getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId));
     }
 
     @POST
     @Path("/vote")
     @Produces("application/json")
-    public boolean vote(@FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
+    public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
         String clientId = ""; // TODO Get it from auth.
         return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, clientId, votingChoice));
     }
@@ -93,7 +94,7 @@ public class VotingApiResource {
     @POST
     @Path("/votingResults")
     @Produces("application/json")
-    public QuestionWeb[] votingResults(@FormParam("votingId") String votingId) {
+    public QuestionWeb[] votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         String clientId = ""; // TODO Get client ID from auth.
         return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, clientId));
     }
@@ -101,14 +102,14 @@ public class VotingApiResource {
     @POST
     @Path("/getTime")
     @Produces("application/json")
-    public long getTime(@FormParam("votingId") String votingId) {
+    public long getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return execute("getTime", String.format("votingId=%s", votingId), () -> manager.getTime(votingId));
     }
 
     @POST
     @Path("/getConfirmedClientVotes")
     @Produces("application/json")
-    public VoteResultWeb[] getConfirmedClientVotes(@FormParam("votingId") String votingId) {
+    public VoteResultWeb[] getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return execute("getConfirmedClientVotes", String.format("votingId=%s", votingId), () -> manager.getConfirmedClientVotes(votingId));
     }
 }
