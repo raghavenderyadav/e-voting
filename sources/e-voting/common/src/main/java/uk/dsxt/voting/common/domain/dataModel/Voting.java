@@ -24,6 +24,7 @@ package uk.dsxt.voting.common.domain.dataModel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 @Value
 public class Voting {
@@ -41,5 +42,22 @@ public class Voting {
         this.beginTimestamp = beginTimestamp;
         this.endTimestamp = endTimestamp;
         this.questions = questions;
+    }
+
+    public void validate() throws InternalLogicException {
+        if (id == null || id.isEmpty() || name == null || name.isEmpty() || questions == null || questions.length == 0)
+            throw new InternalLogicException(String.format("validateVotings failed. One of the voting fields are incorrect"));
+
+        for (int j = 0; j < questions.length; j++) {
+            Question q = questions[j];
+            if (q == null || q.getId() <= 0 || q.getQuestion() == null || q.getAnswers() == null || q.getAnswers().length == 0)
+                throw new InternalLogicException(String.format("validateVotings failed. One of the question fields are incorrect. question index=%d", j));
+
+            for (int k = 0; k < q.getAnswers().length; k++) {
+                Answer a = q.getAnswers()[k];
+                if (a == null || a.getId() <= 0 || a.getName() == null)
+                    throw new InternalLogicException(String.format("validateVotings failed. One of the answer fields. question index=%d, answer index=%d", j, k));
+            }
+        }
     }
 }
