@@ -2,30 +2,14 @@
 <MeetingInstruction>
 	<Document>
 		<MtgInstr>
-			<Id>
-				<Id>02</Id>
-			     <CreDtTm>2017-03-12T14:00:00</CreDtTm>
-			</Id>
 			<MtgRef>
 				<MtgId>000001</MtgId>
-				<MtgDtAndTm>2017-03-30T12:00:00</MtgDtAndTm>
+				<MtgDtAndTm>2014-03-30T12:00:00</MtgDtAndTm>
 				<Tp>GMET</Tp>
 				<Clssfctn>
 					<Cd>AMET</Cd>
 				</Clssfctn>
 			</MtgRef>
-			<InstgPty>
-				<PrtryId>
-					<Id>ML1111111111</Id>
-					<Issr>NSDR</Issr>
-				</PrtryId>
-			</InstgPty>
-			<SctyId>
-				<Id>
-					<ISIN>RU1111111111</ISIN>
-				</Id>
-				<Desc>RU1111111111#RU#1-11-00111-A#ОАО «BBBBB</Desc>
-			</SctyId>
 			<Instr>
 				<InstrId>1</InstrId>
 				<VoteExctnConf>false</VoteExctnConf>
@@ -42,21 +26,6 @@
 						</Id>
 						</SfkpgPlc>
 					</InstdBal>
-					<RghtsHldr>
-						<NmAndAdr>
-							<Nm>Иванов Иван Иванович </Nm>
-							<Adr>
-								<AdrLine>asdfasdfasdfasdf</AdrLine>
-								<Ctry>RU</Ctry>
-							</Adr>
-						</NmAndAdr>
-					</RghtsHldr>
-					<RghtsHldr>
-						<PrtryId>
-							<Id>4444 444444</Id>
-							<Issr>CCPT</Issr>
-						</PrtryId>
-					</RghtsHldr>
 				</AcctDtls>
 				<VoteDtls>
 					<VoteInstrForAgndRsltn>
