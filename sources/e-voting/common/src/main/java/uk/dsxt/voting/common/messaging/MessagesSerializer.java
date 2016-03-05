@@ -34,4 +34,8 @@ public interface MessagesSerializer {
     String serialize(VoteResult voteResult);
 
     VoteResult deserializeVoteResult(String message) throws InternalLogicException;
+
+    VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException;
+
+    VoteResult adaptVoteResultFromXML(VoteResult result, Voting voting) throws InternalLogicException;
 }

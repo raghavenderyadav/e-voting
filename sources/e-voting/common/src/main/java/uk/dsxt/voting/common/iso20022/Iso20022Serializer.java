@@ -227,6 +227,61 @@ public class Iso20022Serializer implements MessagesSerializer {
         return voteResult;
     }
 
+    @Override
+    public VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException {
+        Map<String, Question> questionsById = new HashMap<>();
+        for (Question q : voting.getQuestions()) {
+            questionsById.put(q.getId(), q);
+            if (q.isCanSelectMultiple()) {
+                for (Answer a : q.getAnswers()) {
+                    questionsById.put(a.getId(), q);
+                }
+            }
+        }
+        VoteResult adaptedResult = new VoteResult(result.getVotingId(), result.getHolderId(), result.getPacketSize());
+        for (VotedAnswer va : result.getAnswers()) {
+            Question question = questionsById.get(va.getQuestionId());
+            if (question.isCanSelectMultiple()) {
+                //cumulative question
+                VotedAnswer answer = new VotedAnswer(va.getAnswerId(), AnswerType.FOR.getCode(), va.getVoteAmount());
+                adaptedResult.getAnswersByKey().put(answer.getKey(), answer);
+            } else {
+                // not cumulative question
+                adaptedResult.getAnswersByKey().put(va.getKey(), va);
+            }
+        }
+        return adaptedResult;
+    }
+
+    @Override
+    public VoteResult adaptVoteResultFromXML(VoteResult result, Voting voting) throws InternalLogicException {
+        Map<String, Question> questionsById = new HashMap<>();
+        for (Question q : voting.getQuestions()) {
+            questionsById.put(q.getId(), q);
+            if (q.isCanSelectMultiple()) {
+                for (Answer a : q.getAnswers()) {
+                    questionsById.put(a.getId(), q);
+                }
+            }
+        }
+        VoteResult adaptedResult = new VoteResult(result.getVotingId(), result.getHolderId(), result.getPacketSize());
+        for (VotedAnswer va : result.getAnswers()) {
+            Question question = questionsById.get(va.getQuestionId());
+            if (question != null) {
+                if (question.isCanSelectMultiple()) {
+                    VotedAnswer answer = new VotedAnswer(question.getId(), va.getQuestionId(), va.getVoteAmount());
+                    adaptedResult.getAnswersByKey().put(answer.getKey(), answer);
+                } else
+                    //we found question so this is not cumulative question
+                    adaptedResult.getAnswersByKey().put(va.getKey(), va);
+            } else {
+                //unknown question
+                throw new InternalLogicException(String.format("Unknown answer %s.", va));
+            }
+        }
+        return adaptedResult;
+    }
+
     private List<Question> convertResolutions(List<Resolution2> resolutions) {
         //TODO: get multiplicator
         List<Question> questions = new ArrayList<>();
@@ -320,5 +375,4 @@ public class Iso20022Serializer implements MessagesSerializer {
         }
         return resolutions;
     }
-
 }

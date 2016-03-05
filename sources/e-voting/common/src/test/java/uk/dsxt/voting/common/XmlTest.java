@@ -2,6 +2,7 @@ package uk.dsxt.voting.common;
 
 import org.junit.Test;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
@@ -22,14 +23,14 @@ public class XmlTest {
         //deserialization
         JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
         Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
-        String miXml = PropertiesHelper.getResourceString("mi.xml","windows-1251");
+        String miXml = PropertiesHelper.getResourceString("mi.xml", "windows-1251");
         StringReader miReader = new StringReader(miXml);
         MeetingInstruction mi = (MeetingInstruction) JAXBIntrospector.getValue(miUnmarshaller.unmarshal(miReader));
         assertNotNull(mi);
 
         JAXBContext mnContext = JAXBContext.newInstance(MeetingNotification.class);
         Unmarshaller mnUnmarshaller = mnContext.createUnmarshaller();
-        String mnXml = PropertiesHelper.getResourceString("mn.xml","windows-1251");
+        String mnXml = PropertiesHelper.getResourceString("mn.xml", "windows-1251");
         Source mnSource = new StreamSource(new StringReader(mnXml));
         JAXBElement<MeetingNotification> mnRoot = mnUnmarshaller.unmarshal(mnSource, MeetingNotification.class);
         MeetingNotification mn = mnRoot.getValue();
@@ -50,14 +51,14 @@ public class XmlTest {
     }
 
     @Test
-    public void testVotingSerialization() throws Exception {
+    public void testSimpleVotingSerialization() throws Exception {
         //deserialization from xml file
         Iso20022Serializer serializer = new Iso20022Serializer();
-        String votingXml = PropertiesHelper.getResourceString("voting_simple.xml","windows-1251");
+        String votingXml = PropertiesHelper.getResourceString("voting_simple.xml", "windows-1251");
         Voting voting = serializer.deserializeVoting(votingXml);
         assertNotNull(voting);
 
-        assertEquals("123456",voting.getId());
+        assertEquals("123456", voting.getId());
         assertNotNull(voting.getName());
 
         assertEquals(4, voting.getQuestions().length);
@@ -83,25 +84,93 @@ public class XmlTest {
     }
 
     @Test
-    public void testVoteResultSerialization() throws Exception {
+    public void testSimpleVoteResultSerialization() throws Exception {
         //deserialization from xml file
         Iso20022Serializer serializer = new Iso20022Serializer();
-        String voteResultXml = PropertiesHelper.getResourceString("voteResult_simple.xml","windows-1251");
+        String voteResultXml = PropertiesHelper.getResourceString("voteResult_simple.xml", "windows-1251");
         VoteResult voteResult = serializer.deserializeVoteResult(voteResultXml);
         assertNotNull(voteResult);
 
-        assertEquals("МХ1",voteResult.getHolderId());
-        assertEquals("000001",voteResult.getVotingId());
+        assertEquals("МХ1", voteResult.getHolderId());
+        assertEquals("000001", voteResult.getVotingId());
 
         assertEquals(4, voteResult.getAnswers().size());
-        /*assertEquals("1.1", voting.getQuestions()[0].getId());
+
+        //serialization result to string
+        String result = serializer.serialize(voteResult);
+        assertNotNull(result);
+        System.out.println(result);
+
+        //deserialization from serialized object
+        VoteResult serializedVoteResult = serializer.deserializeVoteResult(result);
+        assertNotNull(serializedVoteResult);
+        //check that resulted object equals voting deserialized from file
+        assertEquals(voteResult, serializedVoteResult);
+    }
+
+    @Test
+    public void testCumulativeVotingSerialization() throws Exception {
+        //deserialization from xml file
+        Iso20022Serializer serializer = new Iso20022Serializer();
+        String votingXml = PropertiesHelper.getResourceString("voting_cumulative.xml", "windows-1251");
+        Voting voting = serializer.deserializeVoting(votingXml);
+        assertNotNull(voting);
+
+        assertEquals("123456", voting.getId());
+        assertNotNull(voting.getName());
+
+        assertEquals(5, voting.getQuestions().length);
+        assertEquals("1.1", voting.getQuestions()[0].getId());
         assertEquals(3, voting.getQuestions()[0].getAnswers().length);
         assertEquals("1.2", voting.getQuestions()[1].getId());
         assertEquals(3, voting.getQuestions()[1].getAnswers().length);
         assertEquals("2.1", voting.getQuestions()[2].getId());
         assertEquals(3, voting.getQuestions()[2].getAnswers().length);
-        assertEquals("3.1", voting.getQuestions()[3].getId());
-        assertEquals(3, voting.getQuestions()[3].getAnswers().length);*/
+        assertEquals("2.1.multi", voting.getQuestions()[3].getId());
+        assertEquals(3, voting.getQuestions()[3].getAnswers().length);
+        assertEquals("3.1", voting.getQuestions()[4].getId());
+        assertEquals(3, voting.getQuestions()[4].getAnswers().length);
+
+        //serialization result to string
+        String result = serializer.serialize(voting);
+        assertNotNull(result);
+        System.out.println(result);
+
+        //deserialization from serialized object
+        Voting serializedVoting = serializer.deserializeVoting(result);
+        assertNotNull(serializedVoting);
+        //check that resulted object equals voting deserialized from file
+        assertEquals(voting, serializedVoting);
+    }
+
+    @Test
+    public void testCumulativeVoteResultSerialization() throws Exception {
+        Iso20022Serializer serializer = new Iso20022Serializer();
+        //deserialize voting
+        String votingXml = PropertiesHelper.getResourceString("voting_cumulative.xml", "windows-1251");
+        Voting voting = serializer.deserializeVoting(votingXml);
+        assertNotNull(voting);
+
+        //deserialization from xml file
+        String voteResultXml = PropertiesHelper.getResourceString("voteResult_cumulative.xml", "windows-1251");
+        VoteResult voteResult = serializer.deserializeVoteResult(voteResultXml);
+        assertNotNull(voteResult);
+
+        assertEquals("МХ1", voteResult.getHolderId());
+        assertEquals("000001", voteResult.getVotingId());
+        assertEquals(6, voteResult.getAnswers().size());
+        //all question id are different
+        assertEquals(6, voteResult.getAnswers().stream().map(VotedAnswer::getQuestionId).distinct().count());
+
+        //adapt vote result for our scheme with multiple answer's questions
+        VoteResult adaptedVoteResult = serializer.adaptVoteResultFromXML(voteResult, voting);
+        //answer for cumulative questions joined
+        assertEquals(4, adaptedVoteResult.getAnswers().stream().map(VotedAnswer::getQuestionId).distinct().count());
+
+        //convert back for xml scheme
+        VoteResult xmlVoteResult = serializer.adaptVoteResultForXML(adaptedVoteResult, voting);
+        //check that two conversions resulted in the same object
+        assertEquals(voteResult, xmlVoteResult);
 
         //serialization result to string
         String result = serializer.serialize(voteResult);
