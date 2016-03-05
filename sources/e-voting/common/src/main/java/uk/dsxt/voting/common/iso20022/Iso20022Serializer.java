@@ -37,10 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Iso20022Serializer implements MessagesSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
@@ -59,7 +56,10 @@ public class Iso20022Serializer implements MessagesSerializer {
             DateFormat2Choice voteDdln = new DateFormat2Choice();
             GregorianCalendar gcalEnd = new GregorianCalendar();
             gcalEnd.setTimeInMillis(voting.getEndTimestamp());
+            gcalEnd.setTimeZone(TimeZone.getTimeZone("GMT-0"));
             XMLGregorianCalendar xmlCalEnd = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcalEnd);
+            xmlCalEnd.setTimezone(Integer.MIN_VALUE);
+            xmlCalEnd.setMillisecond(Integer.MIN_VALUE);
             voteDdln.setDt(xmlCalEnd);
 
             VoteParameters3 vote = new VoteParameters3();
@@ -70,7 +70,10 @@ public class Iso20022Serializer implements MessagesSerializer {
             GregorianCalendar gcalStart = new GregorianCalendar();
             gcalStart.setTimeInMillis(voting.getBeginTimestamp());
             XMLGregorianCalendar xmlCalStart = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcalStart);
+            xmlCalStart.setTimezone(Integer.MIN_VALUE);
+            xmlCalStart.setTime(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
             mtg.setAnncmntDt(xmlCalStart);
+            mtg.setTp(MeetingType2Code.valueOf(voting.getName().split("_")[0]));
 
             mtgNtfctn.setMtg(mtg);
             mtgNtfctn.setVote(vote);
@@ -107,9 +110,13 @@ public class Iso20022Serializer implements MessagesSerializer {
         String id = mn.getDocument().getMtgNtfctn().getMtg().getMtgId();
         LocalDate startDate = LocalDate.parse(mn.getDocument().getMtgNtfctn().getMtg().getAnncmntDt().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         long beginTimestamp = startDate.atTime(0, 0, 0).toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
-        LocalDateTime endDate = LocalDateTime.parse(mn.getDocument().getMtgNtfctn().getVote().getVoteDdln().getDt().toString());
+
+        XMLGregorianCalendar end = mn.getDocument().getMtgNtfctn().getVote().getVoteDdln() == null
+                ? mn.getDocument().getMtgNtfctn().getVote().getVoteMktDdln().getDt()
+                : mn.getDocument().getMtgNtfctn().getVote().getVoteDdln().getDt();
+        LocalDateTime endDate = LocalDateTime.parse(end.toString());
         long endTimestamp = endDate.toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
-        String name = String.format("%s #%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId());
+        String name = String.format("%s_%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId());
         List<Question> questions = convertResolutions(mn.getDocument().getMtgNtfctn().getRsltn());
         return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]));
     }
@@ -122,7 +129,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         List<Vote4> voteInstr = voteChoice.getVoteInstr();
         for (Map.Entry<String, VotedAnswer> entry : voteResult.getAnswersByKey().entrySet()) {
             Vote4 v = new Vote4();
-            v.setIssrLabl(entry.getKey());
+            v.setIssrLabl(entry.getValue().getQuestionId());
             AnswerType type = AnswerType.getType(String.valueOf(entry.getValue().getAnswerId()));
             if (type == null)
                 throw new IllegalArgumentException(String.format("vote answer %s is unknown)", entry.getValue().getAnswerId()));
@@ -159,7 +166,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         instruction.setAcctDtls(accDtl);
 
         MeetingReference4 mtgRef = new MeetingReference4();
-        mtgRef.setIssrMtgId(voteResult.getVotingId());
+        mtgRef.setMtgId(voteResult.getVotingId());
 
         MeetingInstructionV04 mtgInstr = new MeetingInstructionV04();
         mtgInstr.setMtgRef(mtgRef);
@@ -287,7 +294,7 @@ public class Iso20022Serializer implements MessagesSerializer {
                 Resolution2 resolution = new Resolution2();
                 resolution.setForInfOnly(false);
                 resolution.setIssrLabl(question.getId());
-                resolution.setDesc(question.getId());
+                resolution.setDesc(question.getQuestion());
                 resolution.setTitl(SINGLE_ANSWER_TITLE);
                 for (Answer answer : question.getAnswers()) {
                     AnswerType type = AnswerType.getType(answer.getId());
