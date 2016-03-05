@@ -24,6 +24,7 @@ package uk.dsxt.voting.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.glassfish.jersey.server.ResourceConfig;
+import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
@@ -129,7 +130,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager()), holderApiResource);
     }
 
     private void loadClients(ClientNode node) {

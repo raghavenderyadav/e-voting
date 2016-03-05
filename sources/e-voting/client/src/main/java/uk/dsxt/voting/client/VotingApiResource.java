@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.client.web.VotingAPI;
 
@@ -34,10 +35,18 @@ import java.util.function.Supplier;
 @Log4j2
 @Path("/api")
 public class VotingApiResource implements VotingAPI {
-    private final ClientManager manager;
 
-    public VotingApiResource(ClientManager manager) {
+    /*@FunctionalInterface
+    protected interface ClientIdRequest<T> {
+        T get(String clientId) throws Exception;
+    }*/
+
+    private final ClientManager manager;
+    private final AuthManager authManager;
+
+    public VotingApiResource(ClientManager manager, AuthManager authManager) {
         this.manager = manager;
+        this.authManager = authManager;
     }
 
     private <T> T execute(String name, String params, Supplier<T> request) {
@@ -50,14 +59,25 @@ public class VotingApiResource implements VotingAPI {
         }
     }
 
+    // TODO Check and use helper method executeClientId.
+    /*protected <T> T executeClientId(String cookie, String name, String params, ClientIdRequest<T> request) {
+        return execute(name, params, () -> {
+            try {
+                final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+                return request.get(loggedUser.getClientId());
+            } catch (Exception e) {
+                log.error("{} failed. params: [{}]", name, params, e);
+                return null;
+            }
+        });
+    }*/
+
     @POST
     @Path("/login")
     @Produces("application/json")
     public LoginAnswerWeb login(@FormParam("login") String login, @FormParam("password") String password) {
         log.debug("login method called. login={};", login);
-        //TODO: implement
-        return null;
-
+        return authManager.login(login, password);
     }
 
     @POST
@@ -65,8 +85,7 @@ public class VotingApiResource implements VotingAPI {
     @Produces("application/json")
     public boolean logout(@FormParam("cookie") String cookie) {
         log.debug("logout method called. cookie={};", cookie);
-        //TODO: implement
-        return true;
+        return authManager.logout(cookie);
     }
 
     @POST
