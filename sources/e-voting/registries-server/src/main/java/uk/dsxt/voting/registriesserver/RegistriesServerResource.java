@@ -44,7 +44,12 @@ public class RegistriesServerResource implements RegistriesServer {
             return request.get();
         } catch (Exception ex) {
             log.error("{} failed", name, ex);
-            manager.stop();
+            try {
+                log.warn("stop called.");
+                RegistriesServerMain.shutdown();
+            } catch (Exception e) {
+                log.error("stop failed. unable to stop module.", e);
+            }
             return null;
         }
     }

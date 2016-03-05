@@ -30,16 +30,6 @@ public class RegistriesServerManagerTest {
     }
 
     @Test(expected=InternalLogicException.class)
-    public void testValidateVotingsNull() throws InternalLogicException {
-        manager.validateVotings(null);
-    }
-
-    @Test(expected=InternalLogicException.class)
-    public void testValidateVotingsEmpty() throws InternalLogicException {
-        manager.validateVotings(new Voting[0]);
-    }
-
-    @Test(expected=InternalLogicException.class)
     public void testValidateAndMapParticipantsNull() throws Exception {
         manager.validateParticipants(null);
     }
