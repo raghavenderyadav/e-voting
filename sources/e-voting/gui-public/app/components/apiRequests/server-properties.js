@@ -2,6 +2,6 @@ angular
   .module('e-voting.api-requests.server-properties', [])
   .constant('serverProperties',
     {
-      "serverUrl": "/",
-      "pathToApi": "public"
+      "serverUrl": "http://localhost:9000/",
+      "pathToApi": "api"
     });
