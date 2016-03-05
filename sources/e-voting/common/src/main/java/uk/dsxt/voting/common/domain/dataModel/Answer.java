@@ -27,11 +27,11 @@ import lombok.Value;
 
 @Value
 public class Answer {
-    int id;
+    String id;
     String name;
 
     @JsonCreator
-    public Answer(@JsonProperty("id") int id, @JsonProperty("name") String name) {
+    public Answer(@JsonProperty("id") String id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }

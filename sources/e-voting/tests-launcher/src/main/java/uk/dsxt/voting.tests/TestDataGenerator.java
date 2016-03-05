@@ -32,7 +32,9 @@ import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestDataGenerator {
@@ -171,8 +173,8 @@ public class TestDataGenerator {
         VoteResult vote = new VoteResult(voting.getId(), clients[i].getParticipantId());
         BigDecimal totalSum = BigDecimal.ZERO;
         for (int j = 0; j < voting.getQuestions().length; j++) {
-            int questionId = voting.getQuestions()[j].getId();
-            int answerId = randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1;
+            String questionId = voting.getQuestions()[j].getId();
+            String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
             BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, clients[i].getPacketSize().subtract(totalSum).intValue()));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
@@ -183,21 +185,21 @@ public class TestDataGenerator {
     private static Voting generateVoting(long startTime, long endTime) throws Exception {
         Question[] questions = new Question[3];
         Answer[] answers = new Answer[3];
-        answers[0] = new Answer(1, "Temnov");
-        answers[1] = new Answer(2, "Svetlov");
-        answers[2] = new Answer(3, "Vertev");
-        questions[0] = new Question(1, "New member", answers);
+        answers[0] = new Answer("1", "Temnov");
+        answers[1] = new Answer("2", "Svetlov");
+        answers[2] = new Answer("3", "Vertev");
+        questions[0] = new Question("1", "New member", answers);
 
         answers = new Answer[3];
-        answers[0] = new Answer(1, "Tsrev");
-        answers[1] = new Answer(2, "Bronev");
-        answers[2] = new Answer(3, "Steklov");
-        questions[1] = new Question(2, "New vice-president", answers);
+        answers[0] = new Answer("1", "Tsrev");
+        answers[1] = new Answer("2", "Bronev");
+        answers[2] = new Answer("3", "Steklov");
+        questions[1] = new Question("2", "New vice-president", answers);
         answers = new Answer[3];
-        answers[0] = new Answer(1, "Ivanov");
-        answers[1] = new Answer(2, "Petrov");
-        answers[2] = new Answer(3, "Sidorov");
-        questions[2] = new Question(3, "New chairman", answers);
+        answers[0] = new Answer("1", "Ivanov");
+        answers[1] = new Answer("2", "Petrov");
+        answers[2] = new Answer("3", "Sidorov");
+        questions[2] = new Question("3", "New chairman", answers);
         return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions);
 
     }

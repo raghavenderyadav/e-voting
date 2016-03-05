@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Value
 public class QuestionWeb {
-    int id;
+    String id;
     String question;
     AnswerWeb[] answers;
     boolean canSelectMultiple;
@@ -39,7 +39,7 @@ public class QuestionWeb {
 
     @Deprecated // TODO Remove it (canSelectMultiple and multiplicator hardcoded).
     @JsonCreator
-    public QuestionWeb(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers) {
+    public QuestionWeb(@JsonProperty("id") String id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers) {
         this.id = id;
         this.question = question;
         this.answers = answers;
@@ -48,7 +48,7 @@ public class QuestionWeb {
     }
 
     @JsonCreator
-    public QuestionWeb(@JsonProperty("id") int id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers,
+    public QuestionWeb(@JsonProperty("id") String id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers,
                        @JsonProperty("canSelectMultiple") boolean canSelectMultiple, @JsonProperty("multiplicator") int multiplicator) {
         this.id = id;
         this.question = question;

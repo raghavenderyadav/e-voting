@@ -25,10 +25,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import uk.dsxt.voting.common.datamodel.AnswerType;
-import uk.dsxt.voting.common.iso20022.jaxb.Vote2Choice;
-import uk.dsxt.voting.common.iso20022.jaxb.Vote4;
-import uk.dsxt.voting.common.iso20022.jaxb.VoteDetails2;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -52,12 +48,16 @@ public class VoteResult {
     @Getter
     private final SortedMap<String, VotedAnswer> answersByKey;
 
-    public VoteResult(String votingId, String holderId) {
+    public VoteResult(String votingId, String holderId, BigDecimal packetSize) {
         answersByKey = new TreeMap<>();
         this.votingId = votingId;
         this.holderId = holderId;
-        packetSize = BigDecimal.ZERO;
+        this.packetSize = packetSize;
         status = VoteResultStatus.OK;
+    }
+
+    public VoteResult(String votingId, String holderId) {
+        this(votingId, holderId, BigDecimal.ZERO);
     }
 
     public VoteResult(VoteResult origin, String holderId) {
@@ -83,7 +83,7 @@ public class VoteResult {
         votingId = terms[0];
         holderId = terms[1].length() == 0 ? null : terms[1];
         packetSize = new BigDecimal(terms[2]);
-        for(int i = 3; i < terms.length; i++) {
+        for (int i = 3; i < terms.length; i++) {
             VotedAnswer answer = new VotedAnswer(terms[i]);
             answersByKey.put(answer.getKey(), answer);
         }
@@ -108,7 +108,7 @@ public class VoteResult {
         }
         sb.append(',');
         sb.append(packetSize);
-        for(VotedAnswer answer : answersByKey.values()) {
+        for (VotedAnswer answer : answersByKey.values()) {
             sb.append(',');
             sb.append(answer);
         }
@@ -150,7 +150,7 @@ public class VoteResult {
     }
 
     private void addAnswers(SortedMap<String, VotedAnswer> answers, Collection<VotedAnswer> newAnswers) {
-        for(VotedAnswer otherAnswer: newAnswers) {
+        for (VotedAnswer otherAnswer : newAnswers) {
             VotedAnswer answer = answers.get(otherAnswer.getKey());
             if (answer == null) {
                 answers.put(otherAnswer.getKey(), otherAnswer);
@@ -160,59 +160,30 @@ public class VoteResult {
         }
     }
 
-    public BigDecimal getSumQuestionAmount(int questionId) {
-        return answersByKey.values().stream().filter(a -> a.getQuestionId() == questionId).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+    public BigDecimal getSumQuestionAmount(String questionId) {
+        return answersByKey.values().stream().filter(a -> a.getQuestionId().equals(questionId)).map(VotedAnswer::getVoteAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
     public String findError(Voting voting) {
         if (packetSize.signum() <= 0)
             return String.format("Result has nonpositive packet size %s", packetSize);
-        Map<Integer, BigDecimal> amountsByQuestionId = new HashMap<>();
-        for(VotedAnswer answer : answersByKey.values()) {
+        Map<String, BigDecimal> amountsByQuestionId = new HashMap<>();
+        for (VotedAnswer answer : answersByKey.values()) {
             if (answer.getVoteAmount().signum() <= 0)
                 return String.format("Answer %s has nonpositive amount %s", answer.getKey(), answer.getVoteAmount());
-            Optional<Question> question = Arrays.stream(voting.getQuestions()).filter(q -> q.getId() == answer.getQuestionId()).findFirst();
+            Optional<Question> question = Arrays.stream(voting.getQuestions()).filter(q -> q.getId().equals(answer.getQuestionId())).findFirst();
             if (!question.isPresent())
-                return String.format("Answer %s has unknown question %d", answer.getKey(), answer.getQuestionId());
-            if (!Arrays.stream(question.get().getAnswers()).filter(a -> a.getId() == answer.getAnswerId()).findFirst().isPresent())
-                return String.format("Answer %s has unknown answer %d", answer.getKey(), answer.getAnswerId());
+                return String.format("Answer %s has unknown question %s", answer.getKey(), answer.getQuestionId());
+            if (!Arrays.stream(question.get().getAnswers()).filter(a -> a.getId().equals(answer.getAnswerId())).findFirst().isPresent())
+                return String.format("Answer %s has unknown answer %s", answer.getKey(), answer.getAnswerId());
             BigDecimal sum = amountsByQuestionId.get(answer.getQuestionId());
             amountsByQuestionId.put(answer.getQuestionId(), sum == null ? answer.getVoteAmount() : sum.add(answer.getVoteAmount()));
         }
-        for(Map.Entry<Integer, BigDecimal> questionAmount : amountsByQuestionId.entrySet()) {
+        for (Map.Entry<String, BigDecimal> questionAmount : amountsByQuestionId.entrySet()) {
             if (questionAmount.getValue().compareTo(packetSize) > 0)
-                return String.format("Question %d sum amount %s is more than packet size %s", questionAmount.getKey(), questionAmount.getValue(), packetSize);
+                return String.format("Question %s sum amount %s is more than packet size %s", questionAmount.getKey(), questionAmount.getValue(), packetSize);
         }
         return null;
     }
 
-    public VoteDetails2 convertToXML() throws IllegalArgumentException {
-        Vote2Choice voteChoice = new Vote2Choice();
-        List<Vote4> voteInstr = voteChoice.getVoteInstr();
-        for (Map.Entry<String, VotedAnswer> entry : answersByKey.entrySet()) {
-            Vote4 v = new Vote4();
-            v.setIssrLabl(entry.getKey());
-            AnswerType type = AnswerType.getType(entry.getValue().getAnswerId());
-            if (type == null)
-                throw new IllegalArgumentException(String.format("vote answer %s is unknown)", entry.getValue().getAnswerId()));
-            switch (type) {
-                case FOR: {
-                    v.setFor(entry.getValue().getVoteAmount());
-                    break;
-                }
-                case AGAINST: {
-                    v.setAgnst(entry.getValue().getVoteAmount());
-                    break;
-                }
-                case ABSTAIN: {
-                    v.setAbstn(entry.getValue().getVoteAmount());
-                    break;
-                }
-            }
-            voteInstr.add(v);
-        }
-        VoteDetails2 voteDetails = new VoteDetails2();
-        voteDetails.setVoteInstrForAgndRsltn(voteChoice);
-        return voteDetails;
-    }
 }

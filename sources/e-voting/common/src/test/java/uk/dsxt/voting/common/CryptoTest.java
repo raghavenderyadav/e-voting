@@ -39,6 +39,8 @@ public class CryptoTest {
 
     @Test
     public void testSignature() throws Exception {
+
+
         KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
         KeyPair pair = gen.generateKeyPair();
         final String originalText = "Text for signature";

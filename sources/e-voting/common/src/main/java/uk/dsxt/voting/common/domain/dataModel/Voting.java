@@ -50,12 +50,12 @@ public class Voting {
 
         for (int j = 0; j < questions.length; j++) {
             Question q = questions[j];
-            if (q == null || q.getId() <= 0 || q.getQuestion() == null || q.getAnswers() == null || q.getAnswers().length == 0)
+            if (q == null || q.getQuestion() == null || q.getAnswers() == null || q.getAnswers().length == 0)
                 throw new InternalLogicException(String.format("validateVotings failed. One of the question fields are incorrect. question index=%d", j));
 
             for (int k = 0; k < q.getAnswers().length; k++) {
                 Answer a = q.getAnswers()[k];
-                if (a == null || a.getId() <= 0 || a.getName() == null)
+                if (a == null || a.getName() == null)
                     throw new InternalLogicException(String.format("validateVotings failed. One of the answer fields. question index=%d, answer index=%d", j, k));
             }
         }

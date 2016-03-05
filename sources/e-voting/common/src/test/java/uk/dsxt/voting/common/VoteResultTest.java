@@ -50,11 +50,11 @@ public class VoteResultTest {
 
         List<VotedAnswer> answers = new ArrayList<>(result.getAnswers());
         assertEquals(2, answers.size());
-        assertEquals(3, answers.get(0).getQuestionId());
-        assertEquals(4, answers.get(0).getAnswerId());
+        assertEquals("3", answers.get(0).getQuestionId());
+        assertEquals("4", answers.get(0).getAnswerId());
         assertBigDecimal(5, answers.get(0).getVoteAmount());
-        assertEquals(6, answers.get(1).getQuestionId());
-        assertEquals(7, answers.get(1).getAnswerId());
+        assertEquals("6", answers.get(1).getQuestionId());
+        assertEquals("7", answers.get(1).getAnswerId());
         assertBigDecimal("0.8", answers.get(1).getVoteAmount());
 
         assertTrue(result.equals(new VoteResult(result.toString())));

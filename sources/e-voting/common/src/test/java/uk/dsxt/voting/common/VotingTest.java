@@ -22,14 +22,10 @@
 package uk.dsxt.voting.common;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.domain.dataModel.*;
+import uk.dsxt.voting.common.domain.dataModel.Answer;
+import uk.dsxt.voting.common.domain.dataModel.Question;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.utils.InternalLogicException;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class VotingTest {
 
@@ -64,39 +60,23 @@ public class VotingTest {
     }
 
     @Test(expected=InternalLogicException.class)
-    public void testValidateVotingsNullQuestionId() throws InternalLogicException {
-        final Question[] questions = new Question[1];
-        questions[0] = new Question(-1, "question", new Answer[1]);
-        new Voting("voting_id", "voting_name", 0, 0, questions).validate();
-    }
-
-    @Test(expected=InternalLogicException.class)
     public void testValidateVotingsNullQuestion() throws InternalLogicException {
         final Question[] questions = new Question[1];
-        questions[0] = new Question(1, null, new Answer[1]);
+        questions[0] = new Question("1", null, new Answer[1]);
         new Voting("voting_id", "voting_name", 0, 0, questions).validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsQuestionNullAnswers() throws InternalLogicException {
         final Question[] questions = new Question[1];
-        questions[0] = new Question(1, "question", null);
+        questions[0] = new Question("1", "question", null);
         new Voting("voting_id", "voting_name", 0, 0, questions).validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsQuestionEmptyAnswers() throws InternalLogicException {
         final Question[] questions = new Question[1];
-        questions[0] = new Question(1, "question", new Answer[0]);
-        new Voting("voting_id", "voting_name", 0, 0, questions).validate();
-    }
-
-    @Test(expected=InternalLogicException.class)
-    public void testValidateVotingsQuestionAnswersId() throws InternalLogicException {
-        final Question[] questions = new Question[1];
-        final Answer[] answers = new Answer[1];
-        answers[0] = new Answer(-1, "answer");
-        questions[0] = new Question(1, "question", answers);
+        questions[0] = new Question("1", "question", new Answer[0]);
         new Voting("voting_id", "voting_name", 0, 0, questions).validate();
     }
 
@@ -104,8 +84,8 @@ public class VotingTest {
     public void testValidateVotingsQuestionAnswersName() throws InternalLogicException {
         final Question[] questions = new Question[1];
         final Answer[] answers = new Answer[1];
-        answers[0] = new Answer(1, null);
-        questions[0] = new Question(1, "question", answers);
+        answers[0] = new Answer("1", null);
+        questions[0] = new Question("1", "question", answers);
         new Voting("voting_id", "voting_name", 0, 0, questions).validate();
     }
 

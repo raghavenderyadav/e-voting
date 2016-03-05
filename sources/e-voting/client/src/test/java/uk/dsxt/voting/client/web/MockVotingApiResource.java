@@ -82,20 +82,20 @@ public class MockVotingApiResource implements VotingAPI {
     public VotingInfoWeb getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("getVoting method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[5];
-        answers1[0] = new AnswerWeb(1, "answer_1_1", null);
-        answers1[1] = new AnswerWeb(2, "answer_1_2", null);
-        answers1[2] = new AnswerWeb(3, "answer_1_3", null);
-        answers1[3] = new AnswerWeb(4, "answer_1_4", null);
-        answers1[4] = new AnswerWeb(5, "answer_1_5", null);
+        answers1[0] = new AnswerWeb("1", "answer_1_1", null);
+        answers1[1] = new AnswerWeb("2", "answer_1_2", null);
+        answers1[2] = new AnswerWeb("3", "answer_1_3", null);
+        answers1[3] = new AnswerWeb("4", "answer_1_4", null);
+        answers1[4] = new AnswerWeb("5", "answer_1_5", null);
 
         final AnswerWeb[] answers2 = new AnswerWeb[3];
-        answers2[0] = new AnswerWeb(1, "answer_2_1", null);
-        answers2[1] = new AnswerWeb(2, "answer_2_2", null);
-        answers2[2] = new AnswerWeb(3, "answer_2_3", null);
+        answers2[0] = new AnswerWeb("1", "answer_2_1", null);
+        answers2[1] = new AnswerWeb("2", "answer_2_2", null);
+        answers2[2] = new AnswerWeb("3", "answer_2_3", null);
 
         final QuestionWeb[] questions = new QuestionWeb[2];
-        questions[0] = new QuestionWeb(1, "question_1", answers1);
-        questions[1] = new QuestionWeb(2, "question_2", answers2);
+        questions[0] = new QuestionWeb("1", "question_1", answers1);
+        questions[1] = new QuestionWeb("2", "question_2", answers2);
         return new VotingInfoWeb(questions, new BigDecimal(500));
     }
 
@@ -119,20 +119,20 @@ public class MockVotingApiResource implements VotingAPI {
     public QuestionWeb[] votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingResults method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[5];
-        answers1[0] = new AnswerWeb(1, "answer_1", BigDecimal.TEN);
-        answers1[1] = new AnswerWeb(2, "answer_2", BigDecimal.ONE);
-        answers1[2] = new AnswerWeb(3, "answer_3", BigDecimal.TEN);
-        answers1[3] = new AnswerWeb(4, "answer_4", BigDecimal.ONE);
-        answers1[4] = new AnswerWeb(5, "answer_5", BigDecimal.TEN);
+        answers1[0] = new AnswerWeb("1", "answer_1", BigDecimal.TEN);
+        answers1[1] = new AnswerWeb("2", "answer_2", BigDecimal.ONE);
+        answers1[2] = new AnswerWeb("3", "answer_3", BigDecimal.TEN);
+        answers1[3] = new AnswerWeb("4", "answer_4", BigDecimal.ONE);
+        answers1[4] = new AnswerWeb("5", "answer_5", BigDecimal.TEN);
 
-        final AnswerWeb[] answers2 = new AnswerWeb[3];
-        answers2[0] = new AnswerWeb(1, "yes", BigDecimal.TEN);
-        answers2[1] = new AnswerWeb(2, "no", BigDecimal.ZERO);
-        answers2[2] = new AnswerWeb(3, "vozderzhalsya", BigDecimal.ZERO);
+        final AnswerWeb[] answers2 = new AnswerWeb[5];
+        answers2[0] = new AnswerWeb("1", "yes", BigDecimal.TEN);
+        answers2[1] = new AnswerWeb("2", "no", BigDecimal.ZERO);
+        answers2[2] = new AnswerWeb("3", "vozderzhalsya", BigDecimal.ZERO);
 
         final QuestionWeb[] questions = new QuestionWeb[2];
-        questions[0] = new QuestionWeb(1, "question_1_multi", answers1, true, 1);
-        questions[1] = new QuestionWeb(2, "question_2_yes_no", answers2, false, 1);
+        questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
+        questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
         return questions;
     }
 

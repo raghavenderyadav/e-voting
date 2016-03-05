@@ -28,17 +28,17 @@ import java.math.BigDecimal;
 public class VotedAnswer {
 
     @Getter
-    private final int questionId;
+    private final String questionId;
 
     @Getter
-    private final int answerId;
+    private final String answerId;
 
     @Getter
     private final BigDecimal voteAmount;
 
     @Override
     public String toString() {
-        return String.format("%d-%d-%s", questionId, answerId, voteAmount);
+        return String.format("%s-%s-%s", questionId, answerId, voteAmount);
     }
 
     public VotedAnswer(String s) {
@@ -47,20 +47,20 @@ public class VotedAnswer {
         String[] terms = s.split("-");
         if (terms.length != 3)
             throw new IllegalArgumentException(String.format("VotedAnswer can not be created from string with %d terms (%s)", terms.length, s));
-        questionId = Integer.parseInt(terms[0]);
-        answerId = Integer.parseInt(terms[1]);
+        questionId = terms[0];
+        answerId = terms[1];
         voteAmount = new BigDecimal(terms[2]);
     }
 
 
-    public VotedAnswer(int questionId, int answerId, BigDecimal voteAmount) {
+    public VotedAnswer(String questionId, String answerId, BigDecimal voteAmount) {
         this.questionId = questionId;
         this.answerId = answerId;
         this.voteAmount = voteAmount;
     }
 
     public String getKey() {
-        return String.format("%d-%d", questionId, answerId);
+        return String.format("%s-%s", questionId, answerId);
     }
 
 }

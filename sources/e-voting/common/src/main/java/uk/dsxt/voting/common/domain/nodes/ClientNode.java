@@ -24,7 +24,10 @@ package uk.dsxt.voting.common.domain.nodes;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.*;
+import uk.dsxt.voting.common.domain.dataModel.Client;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.util.*;
 import java.util.function.Function;
@@ -83,6 +86,8 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("acceptVote. Voting not found {}. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
+        //TODO adaptVoteResult
+
         if (votingRecord.allClientResultsByClientPath.containsKey(holdersTreePath)) {
             log.warn("acceptVote. Duplicate holdersTreePath. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;

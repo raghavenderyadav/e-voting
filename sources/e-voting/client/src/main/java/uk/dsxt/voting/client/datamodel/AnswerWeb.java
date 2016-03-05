@@ -30,12 +30,12 @@ import java.math.BigDecimal;
 
 @Value
 public class AnswerWeb {
-    int id;
+    String id;
     String name;
     BigDecimal votes;
 
     @JsonCreator
-    public AnswerWeb(@JsonProperty("id") int id, @JsonProperty("name") String name, @JsonProperty("votes") BigDecimal votes) {
+    public AnswerWeb(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("votes") BigDecimal votes) {
         this.id = id;
         this.name = name;
         this.votes = votes;
