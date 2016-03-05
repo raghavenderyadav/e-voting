@@ -27,6 +27,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.registries.FileRegisterServer;
+import uk.dsxt.voting.common.registries.SimpleRegisterServer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -38,8 +40,6 @@ import java.util.Properties;
 @ApplicationPath("")
 public class RegistriesServerApplication extends ResourceConfig {
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     public RegistriesServerApplication(Properties properties, String[] args) throws InternalLogicException {
         //loading properties
         String subdirectory = null;
@@ -49,32 +49,11 @@ public class RegistriesServerApplication extends ResourceConfig {
             votingDuration = Integer.valueOf(args[1]);
             log.info(String.format("Testing mode. subdirectory: '%s'. votingDuration: %s minutes", subdirectory, votingDuration));
         }
-        Participant[] participants = loadResource(properties, subdirectory, "participants.filepath", Participant[].class);
-        Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
 
-        if (votingDuration != null) {
-            long now = Instant.now().getMillis();
-            for (int i = 0; i < votings.length; i++) {
-                votings[i] = new Voting(votings[i].getId(), votings[i].getName(), now, now + votingDuration * 60000, votings[i].getQuestions());
-            }
-        }
         //initialization
-        RegistriesServerManager manager = new RegistriesServerManager(participants);
+        SimpleRegisterServer manager = new FileRegisterServer(properties, subdirectory);
         JettyRunner.configureMapper(this);
         this.registerInstances(new RegistriesServerResource(manager));
-    }
-
-    private <T> T loadResource(Properties properties, String subdirectory, String propertyName, Class<T> clazz) throws InternalLogicException {
-        String path = properties.getProperty(propertyName);
-        path = String.format(path, subdirectory == null ? "" : subdirectory);
-        String resourceJson = PropertiesHelper.getResourceString(path);
-        if (resourceJson.isEmpty())
-            throw new InternalLogicException(String.format("Couldn't find file for %s property with value '%s'.", propertyName, path));
-        try {
-            return mapper.readValue(resourceJson, clazz);
-        } catch (Exception ex) {
-            throw new InternalLogicException(String.format("Couldn't parse '%s' file for type %s due to %s", path, clazz, ex.getMessage()));
-        }
     }
 
 }

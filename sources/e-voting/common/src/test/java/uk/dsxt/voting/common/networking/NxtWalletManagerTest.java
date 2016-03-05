@@ -2,7 +2,7 @@ package uk.dsxt.voting.common.networking;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.dsxt.voting.common.messaging.WalletManager;
+import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
 
 import java.nio.charset.StandardCharsets;

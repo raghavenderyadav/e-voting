@@ -19,7 +19,7 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.registries;
 
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
@@ -32,23 +32,17 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 import java.util.*;
 
 @Log4j2
-@Value
-public class RegistriesServerManager {
+public class SimpleRegisterServer {
 
-    Participant[] participants;
+    private final Participant[] participants;
 
-    public RegistriesServerManager(Participant[] participants) throws InternalLogicException {
-        validateData(participants);
-
+    public SimpleRegisterServer(Participant[] participants) throws InternalLogicException {
         this.participants = participants;
+        validateParticipants(participants);
     }
 
     public Participant[] getParticipants() {
         return participants;
-    }
-
-    private void validateData(Participant[] participants) throws InternalLogicException {
-        validateParticipants(participants);
     }
 
     void validateParticipants(Participant[] participants) throws InternalLogicException {

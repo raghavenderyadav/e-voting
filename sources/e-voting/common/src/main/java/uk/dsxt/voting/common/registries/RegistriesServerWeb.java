@@ -19,7 +19,7 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.registries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;

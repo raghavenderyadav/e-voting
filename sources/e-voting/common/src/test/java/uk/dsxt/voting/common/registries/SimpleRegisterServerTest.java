@@ -1,18 +1,16 @@
-package uk.dsxt.voting.registriesserver;
+package uk.dsxt.voting.common.registries;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import uk.dsxt.voting.common.domain.dataModel.Answer;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.domain.dataModel.Question;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.registries.SimpleRegisterServer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import static org.junit.Assert.*;
 
-public class RegistriesServerManagerTest {
+public class SimpleRegisterServerTest {
 
-    private static RegistriesServerManager manager;
+    private static SimpleRegisterServer manager;
 
     private static Participant[] participants;
 
@@ -20,7 +18,7 @@ public class RegistriesServerManagerTest {
     public static void setUp() throws InternalLogicException {
         participants = new Participant[1];
         participants[0] = new Participant("id", "name", "public_key");
-        manager = new RegistriesServerManager(participants);
+        manager = new SimpleRegisterServer(participants);
     }
 
     @Test

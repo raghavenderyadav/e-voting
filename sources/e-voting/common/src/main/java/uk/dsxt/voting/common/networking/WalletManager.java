@@ -21,8 +21,17 @@
 
 package uk.dsxt.voting.common.networking;
 
-import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.messaging.Message;
 
-public interface RegistriesServer {
-    Participant[] getParticipants();
+import java.util.List;
+
+public interface WalletManager {
+
+    void runWallet();
+
+    void stopWallet();
+
+    String sendMessage(byte[] body);
+
+    List<Message> getNewMessages(long timestamp);
 }

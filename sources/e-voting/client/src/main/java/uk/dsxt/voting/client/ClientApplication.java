@@ -30,16 +30,19 @@ import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
-import uk.dsxt.voting.common.messaging.CryptoNodeDecorator;
-import uk.dsxt.voting.common.messaging.CryptoVoteAcceptorWeb;
+import uk.dsxt.voting.common.cryptoVote.CryptoNodeDecorator;
+import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
-import uk.dsxt.voting.common.messaging.WalletManager;
+import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
+import uk.dsxt.voting.common.registries.RegistriesServer;
+import uk.dsxt.voting.common.registries.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
@@ -107,10 +110,14 @@ public class ClientApplication extends ResourceConfig {
                 walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
         if (masterNode != null) {
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
+            //Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
             String votingFiles = properties.getProperty("voting.files", "");
             for(String votingFile : votingFiles.split(",")) {
+                long now = System.currentTimeMillis();
                 String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
-                masterNode.addNewVoting(messagesSerializer.deserializeVoting(votingMessage));
+                Voting voting = messagesSerializer.deserializeVoting(votingMessage);
+                voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp()-voting.getBeginTimestamp(), voting.getQuestions());
+                masterNode.addNewVoting(voting);
             }
         }
 

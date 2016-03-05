@@ -22,19 +22,12 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.client.datamodel.QuestionWeb;
-import uk.dsxt.voting.client.datamodel.VotingInfoWeb;
-import uk.dsxt.voting.client.datamodel.VotingWeb;
-import uk.dsxt.voting.common.messaging.CryptoVoteAcceptor;
-import uk.dsxt.voting.common.messaging.CryptoVoteAcceptorWeb;
+import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptor;
+import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2

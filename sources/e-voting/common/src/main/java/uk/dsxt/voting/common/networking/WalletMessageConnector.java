@@ -19,7 +19,7 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.messaging;
+package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +28,8 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
+import uk.dsxt.voting.common.messaging.MessageContent;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 

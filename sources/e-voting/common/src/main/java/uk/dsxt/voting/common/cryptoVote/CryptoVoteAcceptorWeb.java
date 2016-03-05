@@ -19,10 +19,9 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.messaging;
+package uk.dsxt.voting.common.cryptoVote;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.web.RequestType;

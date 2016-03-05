@@ -23,7 +23,8 @@ package uk.dsxt.voting.registriesserver;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.networking.RegistriesServer;
+import uk.dsxt.voting.common.registries.RegistriesServer;
+import uk.dsxt.voting.common.registries.SimpleRegisterServer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,9 +34,9 @@ import java.util.function.Supplier;
 @Log4j2
 @Path("/voting-api")
 public class RegistriesServerResource implements RegistriesServer {
-    private final RegistriesServerManager manager;
+    private final SimpleRegisterServer manager;
 
-    public RegistriesServerResource(RegistriesServerManager manager) {
+    public RegistriesServerResource(SimpleRegisterServer manager) {
         this.manager = manager;
     }
 

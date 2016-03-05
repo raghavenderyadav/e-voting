@@ -1,6 +1,6 @@
 package uk.dsxt.voting.common.networking;
 
-import uk.dsxt.voting.common.messaging.WalletManager;
+import uk.dsxt.voting.common.messaging.Message;
 
 import java.util.ArrayList;
 import java.util.List;

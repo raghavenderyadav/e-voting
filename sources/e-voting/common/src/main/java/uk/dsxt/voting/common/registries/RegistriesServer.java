@@ -19,14 +19,10 @@
  *                                                                            *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.registries;
 
-import lombok.Value;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 
-@Value
-public class Message {
-
-    String id;
-
-    byte[] body;
+public interface RegistriesServer {
+    Participant[] getParticipants();
 }

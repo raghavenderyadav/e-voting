@@ -21,6 +21,7 @@
 
 package uk.dsxt.voting.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 
@@ -36,6 +37,8 @@ import java.util.Properties;
 
 @Log4j2
 public class PropertiesHelper {
+
+    private static ObjectMapper mapper = new ObjectMapper();
 
     public static Properties loadPropertiesFromPath(String nxtPropertiesPath) {
         try {
@@ -122,5 +125,18 @@ public class PropertiesHelper {
             }
         }
         return getResource(fileName);
+    }
+
+    public static <T> T loadResource(Properties properties, String subdirectory, String propertyName, Class<T> clazz) throws InternalLogicException {
+        String path = properties.getProperty(propertyName);
+        path = String.format(path, subdirectory == null ? "" : subdirectory);
+        String resourceJson = PropertiesHelper.getResourceString(path);
+        if (resourceJson.isEmpty())
+            throw new InternalLogicException(String.format("Couldn't find file for %s property with value '%s'.", propertyName, path));
+        try {
+            return mapper.readValue(resourceJson, clazz);
+        } catch (Exception ex) {
+            throw new InternalLogicException(String.format("Couldn't parse '%s' file for type %s due to %s", path, clazz, ex.getMessage()));
+        }
     }
 }

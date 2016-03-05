@@ -9,8 +9,8 @@ import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
-import uk.dsxt.voting.common.messaging.WalletManager;
-import uk.dsxt.voting.common.messaging.WalletMessageConnector;
+import uk.dsxt.voting.common.networking.WalletManager;
+import uk.dsxt.voting.common.networking.WalletMessageConnector;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.security.PrivateKey;

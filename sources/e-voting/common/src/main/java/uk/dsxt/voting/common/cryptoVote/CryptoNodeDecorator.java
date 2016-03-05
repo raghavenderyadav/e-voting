@@ -19,12 +19,13 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.messaging;
+package uk.dsxt.voting.common.cryptoVote;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
