@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptor;
 import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.Arrays;
@@ -51,7 +52,7 @@ public class HolderApiResource {
 
     @POST
     @Path("/acceptVote")
-    public void acceptVote(String newResultMessage, String clientId, String joinedSignatures) {
+    public void acceptVote(@FormParam("newResultMessage") String newResultMessage, @FormParam("clientId") String clientId, @FormParam("joinedSignatures") String joinedSignatures) {
         try {
             String[] signatures = joinedSignatures.split(CryptoVoteAcceptorWeb.SIGNATURE_SEPARATOR);
             cryptoVoteAcceptor.acceptVote(newResultMessage, clientId, Arrays.stream(signatures).collect(Collectors.toList()));
