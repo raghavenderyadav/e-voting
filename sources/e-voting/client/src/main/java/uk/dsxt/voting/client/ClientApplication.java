@@ -52,7 +52,6 @@ import javax.ws.rs.ApplicationPath;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
 import java.io.StringReader;
 import java.security.PrivateKey;
 import java.util.Arrays;
@@ -71,16 +70,15 @@ public class ClientApplication extends ResourceConfig {
     private final WalletManager walletManager;
 
     public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
-                             String mainAddress, String passphrase, String nxtPropertiesPath) throws Exception {
+                             String mainAddress, String passphrase, String nxtPropertiesPath, 
+                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
         String registriesServerUrl = properties.getProperty("register.server.url");
         String resultsBuilderUrl = properties.getProperty("results.builder.url");
-        String parentHolderUrl = properties.getProperty("parent.holder.url");
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
-        final String credentialsFilePath = properties.getProperty("credentials.filepath");
 
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase);
@@ -100,7 +98,7 @@ public class ClientApplication extends ResourceConfig {
             masterNode = null;
             clientNode = new ClientNode(ownerId);
         }
-        loadClients(clientNode);
+        loadClients(clientNode, clientsFilePath);
 
 
         Participant[] participants = registriesServer.getParticipants();
@@ -144,10 +142,10 @@ public class ClientApplication extends ResourceConfig {
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager(credentialsFilePath)), holderApiResource);
     }
 
-    private void loadClients(ClientNode node) {
+    private void loadClients(ClientNode node, String clientsFilePath) {
         ClientsOnTime[] clientsOnTimes;
         try {
-            clientsOnTimes = PropertiesHelper.loadResource("clients.json", ClientsOnTime[].class);
+            clientsOnTimes = PropertiesHelper.loadResource(clientsFilePath, ClientsOnTime[].class);
         } catch (InternalLogicException e) {
            log.error("loadClients failed: {}", e.getMessage());
            return;
