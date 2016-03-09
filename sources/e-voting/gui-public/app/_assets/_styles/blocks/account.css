@@ -1,0 +1,80 @@
+.account {
+  position: relative;
+  padding-left: 80px;
+}
+
+.account-prefs {
+  float: left;
+  width: 64px;
+  height: 64px;
+  margin-left: -80px;
+  position: relative;
+  border-radius: 64px;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.account-prefs-link {
+  position: absolute;
+  bottom: 0;
+  height: 64px;
+  border-radius: 64px;
+  overflow: hidden;
+
+
+  text-align: center;
+  font-size: 9px;
+  line-height: 1;
+  text-decoration: none !important;
+  color: #fff !important;
+  background: rgba(0,0,0,.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: opacity .2s;
+  opacity: 0;
+
+  &:hover {
+    opacity: 1;
+
+    span {
+       transform: translateY(0);
+    }
+  }
+
+   &:active {
+    opacity: 0.75;
+
+    span {
+       transform: translateY(0);
+    }
+  }
+
+  span {
+    transform: translateY(40px);
+    transition: transform .1s .1s;
+  }
+}
+
+.account-desc {
+  overflow: hidden;
+}
+
+.account-name {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 10px 0 8px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-small {
+  font-size: 12px;
+  margin: 0;
+}
