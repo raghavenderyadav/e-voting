@@ -11,12 +11,12 @@ function votingQuestion($injector) {
     restrict: 'EA',
     scope: {
       votingQuestion: "=",
-      votingChoice: "="
+      votingChoice: "=",
+      totalVotes: "="
     }
   };
 
   function link(scope, element, attrs) {
-    scope.totalVotes = $injector.get("$sessionStorage").totalVotes;
     scope.question = scope.votingQuestion;
   }
 }
