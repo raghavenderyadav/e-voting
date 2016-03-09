@@ -14,17 +14,20 @@ cp /home/ubuntu/e-voting/src/e-voting/sources/e-voting/libs/nxt.jar /home/ubuntu
 cp /home/ubuntu/e-voting/src/e-voting/sources/e-voting/libs/nxt.jar /home/ubuntu/e-voting/build/lib/nxt.jar
 cp -r /home/ubuntu/e-voting/src/e-voting/sources/e-voting/tests-launcher/src/main/resources/json/* /home/ubuntu/e-voting/build/bin/json/
 cp -r /home/ubuntu/e-voting/src/e-voting/sources/e-voting/registries-server/src/main/resources/json/* /home/ubuntu/e-voting/build/bin/json/
+cp /home/ubuntu/e-voting/build/libs/client.jar /home/ubuntu/e-voting/build/nsd/
+cp /home/ubuntu/e-voting/build/libs/client.jar /home/ubuntu/e-voting/build/nsd1/
+cp /home/ubuntu/e-voting/build/libs/client.jar /home/ubuntu/e-voting/build/nsd2/
 echo build of frontend
 cp -r /home/ubuntu/e-voting/src/e-voting/sources/e-voting/gui-public/* /home/ubuntu/e-voting/build/gui-public/;
 cd /home/ubuntu/e-voting/build/gui-public/;
 npm update;
 bower update;
-sed -i s/\<base href=\"\/\"\>/\<base href=\"\/nsd\/\"\>/g /home/ubuntu/e-voting/build/gui-public/app/index.html
+sed -i 's/\<base href=\"\/\"\>/\<base href=\"\/nsd\/\"\>/g' /home/ubuntu/e-voting/build/gui-public/app/index.html
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"http://localhost:9000/\", \"pathToApi\": \"nsd/api\" });" > /home/ubuntu/e-voting/build/gui-public/app/server-peroperties.js;
 cp -r /home/ubuntu/e-voting/build/gui-public/* /home/ubuntu/e-voting/build/gui-public1/;
-sed -i s/\<base href=\"\/nsd\/\"\>/\<base href=\"\/nsd1\/\"\>/g /home/ubuntu/e-voting/build/gui-public/app/index.html
+sed -i 's/\<base href=\"\/nsd\/\"\>/\<base href=\"\/nsd1\/\"\>/g' /home/ubuntu/e-voting/build/gui-public/app/index.html
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"pathToApi\": \"nsd1/api\" });" > /home/ubuntu/e-voting/build/gui-public/app/server-peroperties.js;
 cp -r /home/ubuntu/e-voting/build/gui-public/* /home/ubuntu/e-voting/build/gui-public2/;
-sed -i s/\<base href=\"\/nsd\/\"\>/\<base href=\"\/nsd2\/\"\>/g /home/ubuntu/e-voting/build/gui-public/app/index.html
+sed -i 's/\<base href=\"\/nsd\/\"\>/\<base href=\"\/nsd2\/\"\>/g' /home/ubuntu/e-voting/build/gui-public/app/index.html
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"pathToApi\": \"nsd2/api\" });" > /home/ubuntu/e-voting/build/gui-public/app/server-peroperties.js;
 echo Build process is finished successfully
