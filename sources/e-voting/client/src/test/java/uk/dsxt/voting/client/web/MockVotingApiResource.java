@@ -100,9 +100,9 @@ public class MockVotingApiResource implements VotingAPI {
         answers3[2] = new AnswerWeb("3", "answer_3_3", null);
 
         final QuestionWeb[] questions = new QuestionWeb[3];
-        questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1);
-        questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1);
-        questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1);
+        questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1, BigDecimal.ONE);
+        questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1, BigDecimal.ONE);
+        questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1, BigDecimal.ONE);
         return new VotingInfoWeb(questions, new BigDecimal(500));
     }
 
@@ -141,8 +141,8 @@ public class MockVotingApiResource implements VotingAPI {
         answers2[2] = new AnswerWeb("3", "vozderzhalsya", BigDecimal.ZERO);
 
         final QuestionWeb[] questions = new QuestionWeb[2];
-        questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
-        questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
+        questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1, BigDecimal.ONE);
+        questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1, BigDecimal.ONE);
         return questions;
     }
 
