@@ -1,4 +1,116 @@
 <div ng-if="hc.isLoggedIn">
-  <p class="display-inline">{{hc.userInfo.account}}</p>
-  <button ng-click="hc.signOut()" class="display-inline">Logout</button>
+  <header class="navbar navbar-default">
+    <div class="header-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-3">
+            <a class="brand" href="#">
+              <img alt="национальный расчетный депозитарий" src="http://aalexeev.ru/work/dsx_e-voting/logo_gray.png"></a>
+          </div>
+          <div class="col-xs-6">
+            <div class="account clearfix">
+              <div class="account-prefs">
+                <img src="http://aalexeev.ru/work/dsx_e-voting/account.png" alt="Прохоренко Сергей Никифорович" />
+                <a href="#" class="account-prefs-link">
+                  <span>Настройки профиля</span>
+                </a>
+              </div>
+              <div class="account-desc">
+                <p class="account-name">{{hc.userInfo.account}}</p>
+                <p class="account-small">Коммерческий Волжский социальный банк (ООО)</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-3 text-right">
+            <button type="button" class="btn btn-default" ng-click="hc.signOut()">Выход</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <li>
+          <a href="#">Корпоративные действия</a>
+        </li>
+        <li>
+          <a href="#">Уведомления</a>
+        </li>
+        <li>
+          <a href="#">Сообщения</a>
+        </li>
+        <li>
+          <a href="#">Инструкции</a>
+        </li>
+        <li class="has-sub">
+          <a href="#">Справочники</a>
+          <ul class="submenu">
+            <li>
+              <a href="#">Клиенты</a>
+            </li>
+            <li>
+              <a href="#">Допустимый уровень каскадирования</a>
+            </li>
+            <li>
+              <a href="#">Контрагенты</a>
+            </li>
+            <li>
+              <a href="#">Типы КД</a>
+            </li>
+            <li>
+              <a href="#">Типы счетов</a>
+            </li>
+            <li>
+              <a href="#">Справочник параметров безопасности</a>
+            </li>
+            <li>
+              <a href="#">Типы внешних пользователей</a>
+            </li>
+            <li>
+              <a href="#">Контактные лица</a>
+            </li>
+            <li>
+              <a href="#">Типы сообщений</a>
+            </li>
+            <li>
+              <a href="#">Типы отчётов НРД</a>
+            </li>
+            <li>
+              <a href="#">Типы договоров</a>
+            </li>
+            <li>
+              <a href="#">Список договоров</a>
+            </li>
+            <li>
+              <a href="#">Описание элементов инструкций в XSL</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="#">Каскадирование</a>
+        </li>
+        <li class="has-sub">
+          <a href="#">Администрирование</a>
+          <ul class="submenu submenu-right">
+            <li>
+              <a href="#">Документы о правах пользователей</a>
+            </li>
+            <li>
+              <a href="#">Пользователи</a>
+            </li>
+            <li>
+              <a href="#">Видимость КД по эмитентам</a>
+            </li>
+            <li>
+              <a href="#">Роли</a>
+            </li>
+            <li>
+              <a href="#">Журналы аудита</a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </header>
+
 </div>
