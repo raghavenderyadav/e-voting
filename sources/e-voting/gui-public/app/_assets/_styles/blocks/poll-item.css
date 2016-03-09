@@ -1,0 +1,15 @@
+.poll-item {
+  display: block;
+  margin: 0 0 24px;
+  padding-left: 24px;
+}
+
+
+.poll-item-title {
+  display: block;
+  font-size: $fz_big;
+  font-weight: 700;
+  margin: 16px 0;
+  position: relative;
+  right: 24px;
+}
