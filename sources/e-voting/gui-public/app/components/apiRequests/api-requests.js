@@ -10,9 +10,11 @@ angular
       return angular.isObject(data) && String(data) !== '[object File]' ? $.param(data) : data;
     }];
   }])
-  .service('apiRequestsUrlHelper', ['serverProperties', 'apiProperties', function (serverProperties, apiProperties) {
+  .service('apiRequestsUrlHelper', ['serverProperties', 'apiProperties', '$location', function (serverProperties, apiProperties, $location) {
     function constructApiUrl() {
-      return serverProperties.serverUrl + serverProperties.pathToApi;
+      var serverPort = $location.port();
+      serverPort = angular.isUndefined(serverPort) ? ":" + serverProperties.serverPort + "/" : ":" + serverPort + "/";
+      return serverProperties.serverUrl + serverPort + serverProperties.pathToApi;
     }
 
     function constructMethodUrl(methodUrl) {
