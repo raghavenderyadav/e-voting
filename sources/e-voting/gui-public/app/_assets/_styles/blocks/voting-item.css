@@ -1,11 +1,11 @@
-.poll-item {
+.voting-item {
   display: block;
   margin: 0 0 24px;
   padding-left: 24px;
 }
 
 
-.poll-item-title {
+.voting-item-title {
   display: block;
   font-size: $fz_big;
   font-weight: 700;
