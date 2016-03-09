@@ -51,7 +51,7 @@
               </div>
             </div>
             <div ng-if="!question.canSelectMultiple">
-              <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)" ng-class="{'text-success text-bold': answer.votes > 0}">
+              <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)" ng-class="{'text-success text-bold': answer.votes > 0, 'text-muted': answer.votes <= 0}">
                 {{answer.name}}
               </div>
             </div>
