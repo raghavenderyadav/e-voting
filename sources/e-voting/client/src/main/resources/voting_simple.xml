@@ -5,7 +5,7 @@
 			<Mtg>
 				<MtgId>123456</MtgId>
 				<Tp>GMET</Tp>
-				<AnncmntDt>2014-03-05</AnncmntDt>
+				<AnncmntDt>2016-03-10</AnncmntDt>
 			</Mtg>
 			<Rsltn>
 				<IssrLabl>1.1</IssrLabl>
@@ -60,7 +60,7 @@
 				<PrtlVoteAllwd>false</PrtlVoteAllwd>
 				<SpltVoteAllwd>false</SpltVoteAllwd>
 				<VoteMktDdln>
-					<Dt>2017-03-25T21:00:00</Dt>
+					<Dt>2016-03-10T00:01:00</Dt>
 				</VoteMktDdln>
 			</Vote>
 		</MtgNtfctn>
