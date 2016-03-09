@@ -11,7 +11,7 @@
 }
 
 .countdown-expired {
-  color: #d9534f;
+  color: $c_error;
 
 
 }
