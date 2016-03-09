@@ -70,11 +70,17 @@ public class MasterNode extends ClientNode {
         if (super.acceptVote(newResult, signatures)) {
             String[] holderIds = newResult.getHolderId().split(ClientNode.PATH_SEPARATOR);
             String holderPath = null;
+            if (signatures.size() < holderIds.length-1 || signatures.size() > holderIds.length) {
+                log.error("acceptVote.holderIds.length={} but signatures.size()={}", holderIds.length, signatures.size());
+                return false;
+            }
             for(int i = 0; i < holderIds.length; i++) {
                 int idx = holderIds.length-i-1;
                 String holderId = holderIds[idx];
                 holderPath = i == 0 ? holderId : holderId + ClientNode.PATH_SEPARATOR + holderPath;
-                network.addVote(newResult, signatures.get(idx), holderId);
+                if (idx < signatures.size()) {
+                    network.addVote(newResult, signatures.get(idx), holderId);
+                }
             }
             return true;
         }
