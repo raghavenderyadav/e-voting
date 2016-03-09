@@ -27,6 +27,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -101,11 +105,20 @@ public class JettyRunner {
                 handler = new CrossDomainFilter(handler, originFilter);
             if (frontendRoot != null) {
                 WebAppContext htmlHandler = new WebAppContext();
-                htmlHandler.setContextPath("/");
                 htmlHandler.setResourceBase(frontendRoot);
                 htmlHandler.setCopyWebDir(copyWebDir);
                 Map<Pattern, Handler> pathToHandler = new HashMap<>();
                 pathToHandler.put(Pattern.compile(apiPathPattern), handler);
+
+                SessionManager sm = new HashSessionManager();
+                SessionHandler sh = new SessionHandler(sm);
+                htmlHandler.setSessionHandler(sh);
+
+                DefaultServlet defaultServlet = new DefaultServlet();
+                ServletHolder holder = new ServletHolder(defaultServlet);
+                holder.setInitParameter("useFileMappedBuffer", Boolean.toString(!copyWebDir));
+                htmlHandler.addServlet(holder, "/");
+                
                 handler = new RequestsRouter(htmlHandler, pathToHandler, frontendRoot);
             }
             server.setHandler(handler);
