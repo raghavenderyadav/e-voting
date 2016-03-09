@@ -71,7 +71,7 @@ public class TestDataGenerator {
         Voting voting = generateVoting(startTime, endTime);
         Voting[] votings = new Voting[]{voting};
         //generating keys
-        KeyPair[] keys = CryptoKeysGenerator.generateKeys(cryptoHelper, PARTICIPANTS_COUNT);
+        KeyPair[] keys = cryptoHelper.createCryptoKeysGenerator().generateKeys(PARTICIPANTS_COUNT);
         //generating participants
         Participant[] participants = new Participant[PARTICIPANTS_COUNT];
         for (int i = 0; i < PARTICIPANTS_COUNT; i++) {

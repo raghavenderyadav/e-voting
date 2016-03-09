@@ -24,9 +24,9 @@ package uk.dsxt.voting.common;
 import org.junit.Test;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class MessageContentTest {
 
     @Test
     public void testValidMessage() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
         KeyPair pair = gen.generateKeyPair();
         String originalText = "xxx";
         String ownerId = "007";
@@ -46,7 +46,7 @@ public class MessageContentTest {
         Map<String, String> fields = new HashMap<>();
         fields.put("TTT", originalText);
         long minTime = System.currentTimeMillis();
-        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", ownerId, pair.getPrivate(), cryptoHelper, fields);
+        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", ownerId, cryptoHelper.loadPrivateKey(pair.getPrivateKey()), cryptoHelper, fields);
         long maxTime = System.currentTimeMillis();
 
         MessageContent content = new MessageContent(body);
@@ -56,18 +56,18 @@ public class MessageContentTest {
         assertEquals(originalText, content.getField("TTT"));
         assertTrue(minTime <= content.getFieldTimestamp());
         assertTrue(maxTime >= content.getFieldTimestamp());
-        assertTrue(content.checkSign(pair.getPublic(), cryptoHelper));
+        assertTrue(content.checkSign(cryptoHelper.loadPublicKey(pair.getPublicKey()), cryptoHelper));
     }
 
     @Test
     public void testEscapedSymbols() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
         KeyPair pair = gen.generateKeyPair();
         String originalText = " abc=x;y!o!!p";
 
         Map<String, String> fields = new HashMap<>();
         fields.put("TTT", originalText);
-        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", "007a", pair.getPrivate(), cryptoHelper, fields);
+        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", "007a", cryptoHelper.loadPrivateKey(pair.getPrivateKey()), cryptoHelper, fields);
 
         MessageContent content = new MessageContent(body);
 
@@ -77,13 +77,13 @@ public class MessageContentTest {
 
     @Test
     public void testWrongSignature() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
         KeyPair pair = gen.generateKeyPair();
 
-        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", "007a", pair.getPrivate(), cryptoHelper, null);
+        byte[] body = MessageContent.buildOutputMessage("MSG_TYPE", "007a", cryptoHelper.loadPrivateKey(pair.getPrivateKey()), cryptoHelper, null);
 
         MessageContent content = new MessageContent(body);
 
-        assertFalse(content.checkSign(gen.generateKeyPair().getPublic(), cryptoHelper));
+        assertFalse(content.checkSign(cryptoHelper.loadPublicKey(pair.getPublicKey()), cryptoHelper));
     }
 }

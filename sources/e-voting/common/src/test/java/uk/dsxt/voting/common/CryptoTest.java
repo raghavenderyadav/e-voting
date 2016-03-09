@@ -24,9 +24,8 @@ package uk.dsxt.voting.common;
 import org.junit.Test;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -39,20 +38,18 @@ public class CryptoTest {
 
     @Test
     public void testSignature() throws Exception {
-
-
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
         KeyPair pair = gen.generateKeyPair();
         final String originalText = "Text for signature";
-        String signature = cryptoHelper.createSignature(originalText, pair.getPrivate());
-        assertTrue(cryptoHelper.verifySignature(originalText, signature, pair.getPublic()));
+        String signature = cryptoHelper.createSignature(originalText, cryptoHelper.loadPrivateKey(pair.getPrivateKey()));
+        assertTrue(cryptoHelper.verifySignature(originalText, signature, cryptoHelper.loadPublicKey(pair.getPublicKey())));
 
         //convert public key to string
-        String publicKey = CryptoKeysGenerator.savePublicKey(cryptoHelper, pair.getPublic());
+        String publicKey = pair.getPublicKey();
         //convert public key back to Public key from string
         PublicKey publicSaved = cryptoHelper.loadPublicKey(publicKey);
         //convert private key to string
-        String privateKey = CryptoKeysGenerator.savePrivateKey(cryptoHelper, pair.getPrivate());
+        String privateKey = pair.getPrivateKey();
         //convert private key back to Public key from string
         PrivateKey privateSaved = cryptoHelper.loadPrivateKey(privateKey);
 
@@ -63,20 +60,46 @@ public class CryptoTest {
     }
 
     @Test
-    public void testEncoding() throws Exception {
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
+    public void testEncodingShort() throws Exception {
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
         KeyPair pair = gen.generateKeyPair();
         final String originalText = "Text to be encrypted";
-        String encryptedText = cryptoHelper.encrypt(originalText, pair.getPublic());
-        String decryptedText = cryptoHelper.decrypt(encryptedText, pair.getPrivate());
+        String encryptedText = cryptoHelper.encrypt(originalText, cryptoHelper.loadPublicKey(pair.getPublicKey()));
+        String decryptedText = cryptoHelper.decrypt(encryptedText, cryptoHelper.loadPrivateKey(pair.getPrivateKey()));
         assertEquals(originalText, decryptedText);
 
         //convert public key to string
-        String publicKey = CryptoKeysGenerator.savePublicKey(cryptoHelper, pair.getPublic());
+        String publicKey = pair.getPublicKey();
         //convert public key back to Public key from string
         PublicKey publicSaved = cryptoHelper.loadPublicKey(publicKey);
         //convert private key to string
-        String privateKey = CryptoKeysGenerator.savePrivateKey(cryptoHelper, pair.getPrivate());
+        String privateKey = pair.getPrivateKey();
+        //convert private key back to Public key from string
+        PrivateKey privateSaved = cryptoHelper.loadPrivateKey(privateKey);
+
+        String encryptedTextSaved = cryptoHelper.encrypt(originalText, publicSaved);
+        String decryptedTextSaved = cryptoHelper.decrypt(encryptedTextSaved, privateSaved);
+        assertEquals(originalText, decryptedTextSaved);
+    }
+
+    @Test
+    public void testEncodingLong() throws Exception {
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
+        KeyPair pair = gen.generateKeyPair();
+        String originalText = "Text to be encrypted";
+        for(int i = 0; i < 10; i++) {
+            originalText = originalText + originalText;
+        }
+        String encryptedText = cryptoHelper.encrypt(originalText, cryptoHelper.loadPublicKey(pair.getPublicKey()));
+        String decryptedText = cryptoHelper.decrypt(encryptedText, cryptoHelper.loadPrivateKey(pair.getPrivateKey()));
+        assertEquals(originalText, decryptedText);
+
+        //convert public key to string
+        String publicKey = pair.getPublicKey();
+        //convert public key back to Public key from string
+        PublicKey publicSaved = cryptoHelper.loadPublicKey(publicKey);
+        //convert private key to string
+        String privateKey = pair.getPrivateKey();
         //convert private key back to Public key from string
         PrivateKey privateSaved = cryptoHelper.loadPrivateKey(privateKey);
 

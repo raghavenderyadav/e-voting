@@ -22,6 +22,8 @@
 package uk.dsxt.voting.common.utils.crypto;
 
 
+import lombok.Value;
+
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -30,25 +32,34 @@ import java.util.Base64;
 
 public class CryptoKeysGenerator {
 
-    public static KeyPair[] generateKeys(CryptoHelper cryptoHelper, int count) throws Exception{
+    private final String algorithm;
+
+    private final int keyLength;
+    
+    public CryptoKeysGenerator(String algorithm, int keyLength) {
+        this.algorithm = algorithm;
+        this.keyLength = keyLength;
+    }
+
+    public KeyPair[] generateKeys(int count) throws Exception{
         KeyPair[] keys = new KeyPair[count];
         for (int i = 0; i < keys.length; i++) {
-            keys[i] = generateKeyPair(cryptoHelper);
+            keys[i] = generateKeyPair();
         }
         return keys;
     }
 
-    public static KeyPair generateKeyPair(CryptoHelper cryptoHelper) throws Exception {
-        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(cryptoHelper.getAlgorithm());
-        keyGen.initialize(512);
+    public KeyPair generateKeyPair() throws Exception {
+        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(algorithm);
+        keyGen.initialize(keyLength);
         final java.security.KeyPair pair = keyGen.generateKeyPair();
-        String pubKey = savePublicKey(cryptoHelper, pair.getPublic());
-        String privateKey = savePrivateKey(cryptoHelper, pair.getPrivate());
+        String pubKey = savePublicKey(pair.getPublic());
+        String privateKey = savePrivateKey(pair.getPrivate());
         return new KeyPair(pubKey, privateKey);
     }
 
-    public static String savePrivateKey(CryptoHelper cryptoHelper, PrivateKey privateKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgorithm());
+    public String savePrivateKey(PrivateKey privateKey) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance(algorithm);
         PKCS8EncodedKeySpec spec = fact.getKeySpec(privateKey, PKCS8EncodedKeySpec.class);
         byte[] packed = spec.getEncoded();
         String key64 = Base64.getEncoder().encodeToString(packed);
@@ -56,8 +67,8 @@ public class CryptoKeysGenerator {
         return key64;
     }
 
-    public static String savePublicKey(CryptoHelper cryptoHelper, PublicKey publicKey) throws GeneralSecurityException {
-        KeyFactory fact = KeyFactory.getInstance(cryptoHelper.getAlgorithm());
+    public String savePublicKey(PublicKey publicKey) throws GeneralSecurityException {
+        KeyFactory fact = KeyFactory.getInstance(algorithm);
         X509EncodedKeySpec spec = fact.getKeySpec(publicKey, X509EncodedKeySpec.class);
         return Base64.getEncoder().encodeToString(spec.getEncoded());
     }

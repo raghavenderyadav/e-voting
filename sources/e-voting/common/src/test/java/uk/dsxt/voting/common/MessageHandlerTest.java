@@ -44,7 +44,7 @@ public class MessageHandlerTest {
 
     @Test
     public void testMessageFilter() throws Exception {
-        KeyPair[] keys = CryptoKeysGenerator.generateKeys(cryptoHelper, 3);
+        KeyPair[] keys = cryptoHelper.createCryptoKeysGenerator().generateKeys(3);
 
         Participant[] participants = new Participant[3];
         participants[0] = new Participant("00", "name00", keys[0].getPublicKey());
