@@ -62,6 +62,7 @@ public class MasterNode extends ClientNode {
         }
         VoteResult totalResult = new VoteResult(votingId, null);
         votingRecord.sumClientResultsByClientId.values().stream().filter(r -> r.getStatus() == VoteResultStatus.OK).forEach(r -> totalResult.add(r));
+        log.info("calculateResults. totalResult={}", totalResult);
         network.addVotingTotalResult(totalResult);
     }
 

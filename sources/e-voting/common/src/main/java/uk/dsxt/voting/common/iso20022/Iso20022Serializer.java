@@ -21,6 +21,8 @@
 
 package uk.dsxt.voting.common.iso20022;
 
+import lombok.extern.log4j.Log4j2;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.datamodel.AnswerType;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.jaxb.*;
@@ -39,6 +41,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Log4j2
 public class Iso20022Serializer implements MessagesSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
     private static final String SINGLE_ANSWER_TITLE = "resolution";
@@ -118,6 +121,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         long endTimestamp = endDate.toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
         String name = String.format("%s_%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId());
         List<Question> questions = convertResolutions(mn.getDocument().getMtgNtfctn().getRsltn());
+        log.debug("deserializeVoting id={} name={} begin={} end={} questionsLength={}", id, name, new Instant(beginTimestamp), new Instant(endTimestamp), questions.size());
         return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]));
     }
 

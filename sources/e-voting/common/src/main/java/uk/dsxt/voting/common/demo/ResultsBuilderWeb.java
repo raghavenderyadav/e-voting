@@ -51,9 +51,9 @@ public class ResultsBuilderWeb implements ResultsBuilder {
         try {
             httpHelper.request(url, parameters, RequestType.POST);
         } catch (IOException e) {
-            log.error("{} failed. url={} error={}", name, url, e);
+            log.error("ResultsBuilderWeb: {} failed. url={} error={}", name, url, e);
         } catch (InternalLogicException e) {
-            log.error("{} failed. url={}", name, url, e);
+            log.error("ResultsBuilderWeb: {} failed. url={}", name, url, e);
         }
      }
 

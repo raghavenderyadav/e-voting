@@ -81,18 +81,18 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         String resultMessage = serializer.serialize(result);
         Participant participant = participantsById.get(receiverId);
         if (participant == null) {
-            log.error("addVote. receiver {} not found");
+            log.error("addVote. receiver {} not found holderId={}", receiverId, holderId);
             return;
         }
         if (participant.getPublicKey() == null) {
-            log.error("addVote. receiver {} does not have public key");
+            log.error("addVote. receiver {} does not have public key holderId={}", receiverId, holderId);
             return;
         }
         String encryptedMessage;
         try {
             encryptedMessage = cryptoHelper.encrypt(resultMessage, cryptoHelper.loadPublicKey(participant.getPublicKey()));
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            log.error("addVote. can not encrypt message. receiverId={}. error={}", receiverId, e.getMessage());
+            log.error("addVote. can not encrypt message. receiverId={}. error={} holderId={}", receiverId, e.getMessage(), holderId);
             return;
         }
         Map<String, String> fields = new HashMap<>();
@@ -111,11 +111,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             String id = walletManager.sendMessage(MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields));
             if (id == null)
-                log.error("send {} fails", messageType);
+                log.error("send {} fails. holderId={}", messageType, holderId);
             else
                 log.info("{} sent", messageType);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            log.error("send {} fails: {}", messageType, e.getMessage());
+            log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
         }
     }
 
@@ -123,12 +123,12 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         if (messageReceiver == null)
             return;
         if (!masterId.equals(messageContent.getAuthor())) {
-            log.error("message {} author {} is not master {}", messageId, messageContent.getAuthor(), masterId);
+            log.error("message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
             return;
         }
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
-        log.debug("handleNewMessage. message type={} messageId={}", type, messageId);
+        log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
         try {
             switch (type) {
                 case TYPE_VOTE:
@@ -136,16 +136,16 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     try {
                         decryptedBody = cryptoHelper.decrypt(body, privateKey);
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                        log.debug("Undecrypted message {}", messageId);
+                        log.debug("Undecrypted VOTE message {}. holderId={}", messageId, holderId);
                         break;
                     }
                     String signature = messageContent.getField(FIELD_VOTE_SIGNATURE);
                     if (signature == null) {
-                        log.error("VOTE message {} without signature", messageId);
+                        log.error("VOTE message {} without signature. holderId={}", messageId, holderId);
                         break;
                     }
                     if (signature.equals(cryptoHelper.createSignature(decryptedBody, privateKey))) {
-                        log.error("VOTE message {} has invalid signature", messageId);
+                        log.error("VOTE message {} has invalid signature. holderId={}", messageId, holderId);
                         break;
                     }
                     messageReceiver.addVote(serializer.deserializeVoteResult(decryptedBody));
@@ -157,10 +157,10 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     messageReceiver.addVotingTotalResult(serializer.deserializeVoteResult(body));
                     break;
                 default:
-                    log.warn("handleNewMessage. Unknown message type: {} messageId={}", type, messageId);
+                    log.warn("handleNewMessage. Unknown message type: {} messageId={} holderId={}", type, messageId, holderId);
             }
         } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
-            log.error("handleNewMessage fails. message type={} messageId={}", type, messageId, e);
+            log.error("handleNewMessage fails. message type={} messageId={} holderId={}", type, messageId, holderId, e);
         }
     }
 }
