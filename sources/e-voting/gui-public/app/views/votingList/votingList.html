@@ -1,11 +1,11 @@
 <div class="container">
-  <h2 class="page-title">Корпоративные действия</h2>
+  <h2 class="page-title">Votings list</h2>
   <table class="table table-striped table-custom">
     <tr>
-      <th>Голосование:</th>
-      <th>Начало:</th>
-      <th>Окончание:</th>
-      <th>Действие:</th>
+      <th>Name:</th>
+      <th>Begin:</th>
+      <th>End:</th>
+      <th>Action:</th>
     </tr>
     <tr ng-repeat="voting in vlc.votingList">
       <td>
@@ -27,7 +27,7 @@
           class="voting-btn btn-sm btn btn-success"
           ng-disabled="!voting.canVote"
           ng-click="voting.canVote && vlc.vote(voting.id)">
-          Проголосовать
+          Vote
         </button>
       </td>
       <td ng-if="!voting.active">
@@ -35,7 +35,7 @@
           type="button"
           class="voting-btn btn-sm btn btn-default"
           ng-click="vlc.showResults(voting.id)">
-          Результаты
+          Results
         </button>
       </td>
     </tr>
