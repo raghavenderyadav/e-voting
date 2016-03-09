@@ -3,14 +3,14 @@
     <div class="header-top">
       <div class="container">
         <div class="row">
-          <div class="col-xs-3">
+          <div class="col-xs-4">
             <a class="brand" href="#">
-              <img alt="национальный расчетный депозитарий" src="http://aalexeev.ru/work/dsx_e-voting/logo_gray.png"></a>
+              <img alt="logo" src="images/logo.png"></a>
           </div>
           <div class="col-xs-6" ng-if="hc.isLoggedIn">
             <div class="account clearfix">
               <div class="account-prefs">
-                <img src="http://aalexeev.ru/work/dsx_e-voting/account.png" alt="Прохоренко Сергей Никифорович" />
+                <img src="images/account.png" alt="Прохоренко Сергей Никифорович" />
                 <a href="#" class="account-prefs-link">
                   <span>Настройки профиля</span>
                 </a>
@@ -21,7 +21,7 @@
               </div>
             </div>
           </div>
-          <div class="col-xs-3 text-right" ng-if="hc.isLoggedIn">
+          <div class="col-xs-2 text-right" ng-if="hc.isLoggedIn">
             <button type="button" class="btn btn-default" ng-click="hc.signOut()">Выход</button>
           </div>
         </div>
