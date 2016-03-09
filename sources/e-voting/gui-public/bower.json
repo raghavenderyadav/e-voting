@@ -16,7 +16,8 @@
     "angular-ui-router": "^0.2.18",
     "jquery": "~2.2.1",
     "ng-i18n": "~1.1.2",
-    "ngstorage": "~0.3.10"
+    "ngstorage": "~0.3.10",
+    "bootstrap": "^3.3.6"
   },
   "authors": [
     "dk <dk@dsxt.uk>"
