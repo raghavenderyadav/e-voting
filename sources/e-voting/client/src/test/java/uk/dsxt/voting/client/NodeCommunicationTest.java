@@ -52,7 +52,7 @@ public class NodeCommunicationTest {
             "false",
             "true",
             "./gui-public/app",
-            "127.0.0.1:9000/holderAPI",
+            "http://127.0.0.1:9000/holderAPI",
             "credentials5.json",
             "clients5.json",
         });

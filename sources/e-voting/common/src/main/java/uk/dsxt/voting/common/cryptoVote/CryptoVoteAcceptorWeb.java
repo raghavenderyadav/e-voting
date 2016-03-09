@@ -36,7 +36,7 @@ import java.util.Map;
 @Log4j2
 public class CryptoVoteAcceptorWeb implements CryptoVoteAcceptor {
 
-    public final static String SIGNATURE_SEPARATOR = "|";
+    public final static String SIGNATURE_SEPARATOR = ";";
 
     private final static String ACCEPT_VOTE_URL_PART = "/acceptVote";
 
@@ -64,7 +64,7 @@ public class CryptoVoteAcceptorWeb implements CryptoVoteAcceptor {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("newResultMessage", newResultMessage);
         parameters.put("clientId", clientId);
-        parameters.put("signatures", String.join(SIGNATURE_SEPARATOR, signatures));
+        parameters.put("joinedSignatures", String.join(SIGNATURE_SEPARATOR, signatures));
         execute("acceptVote", acceptVoteUrl, parameters);
     }
 }
