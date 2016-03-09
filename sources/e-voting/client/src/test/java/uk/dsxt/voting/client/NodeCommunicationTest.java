@@ -30,7 +30,7 @@ public class NodeCommunicationTest {
             "client_password",
             "00",
             "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlNntpENmQzCyPx+M3D1RZypdxkfFF2+60CSDtqCSvsi/MLsPEu87CDYxuBmTtLY5zBP2HcNIvT9cB699nRNFAQIDAQABAkBAk4sViGgFHks2N2nU4oU+TJMCQoCu+joBstWxlVgUjDYGk/QHEMhx60kZ3L2Pw8k8uFZVCDXy0/uemuIp8vABAiEA7xlJWC8bCDYqVggQgK9yzAuL7P1T0+dUF080P8kR7nECIQCfX4epGtFSWJFOK+CGly/mLyhZrn6g0cu7jKCw5BgnkQIhAJFihNCURBGoLfIGEVLOXDVqR/kgyNou7VkHFjQ65SZhAiAf79fSpmId+0ua+6XxsqhRm0+dsR8FASWvfr3Q1NSWUQIgGfqAUV4I0nG8sIz3UE7rf+tzQaScDYOoCNu4amJjxEI=",
-            null,
+            "3:123456,1,8,1.2-1-8",
             null,
             "9000",
             "true",

@@ -1,6 +1,6 @@
 [
   {
-    "minutes": "-2000",
+    "minutes": "-20000",
     "clients": [
       {
         "participantId": "1",
@@ -36,6 +36,11 @@
         "participantId": "4",
         "packetSize": 40,
         "clientType": "ManagementCompany"
+      },
+      {
+        "participantId": "5",
+        "packetSize": 100,
+        "clientType": "NominalHolder"
       }
     ]
   }
