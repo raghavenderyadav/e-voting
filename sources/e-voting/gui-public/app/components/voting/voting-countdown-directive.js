@@ -5,7 +5,15 @@ angular
   .directive('votingCountdown', votingCountdown);
 
 function votingCountdown($injector) {
-  var countdownRefreshRate = 1000;
+  var countdownRefreshRate = 1000,
+      countdownServerUpdateRate = 30000,
+      countdownRefreshInterval = {},
+      countdownServerUpdateInterval = {},
+      interval = $injector.get("$interval"),
+      votingInfo = $injector.get("votingInfo"),
+      stateParams = $injector.get("$stateParams"),
+      timeout = $injector.get("$timeout");
+
   function timestampToTime(timestamp) {
     var result = {
       days: 0,
@@ -39,14 +47,33 @@ function votingCountdown($injector) {
   };
 
   function link(scope, element, attrs) {
-    var interval = $injector.get("$interval");
-
     scope.timer = timestampToTime(scope.votingCountdown);
     scope.votingCountdownInitial = angular.copy(scope.votingCountdown);
+    scope.isServerUpdateInProcess = false;
 
-    interval(function() {
+    countdownRefreshInterval = interval(function() {
       scope.votingCountdown -= countdownRefreshRate;
-      scope.timer = timestampToTime(scope.votingCountdown);
+      if(scope.votingCountdown < 0) {
+        interval.cancel(countdownRefreshInterval);
+      } else {
+        scope.timer = timestampToTime(scope.votingCountdown);
+      }
     }, countdownRefreshRate);
+
+    countdownServerUpdateInterval = interval(function() {
+      scope.isServerUpdateInProcess = true;
+      votingInfo.getTimer(stateParams.id, getTimerComplete)
+    }, countdownServerUpdateRate);
+
+    function getTimerComplete(data) {
+      if(scope.votingCountdown < 0) {
+        interval.cancel(countdownServerUpdateInterval);
+      } else {
+        scope.votingCountdown = data;
+      }
+      timeout(function() {
+        scope.isServerUpdateInProcess = false;
+      }, 500)
+    }
   }
 }
