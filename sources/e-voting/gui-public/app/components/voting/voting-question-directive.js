@@ -4,7 +4,7 @@ angular
   .module('e-voting.voting.voting-question-directive', [])
   .directive('votingQuestion', votingQuestion);
 
-function votingQuestion($injector) {
+function votingQuestion() {
   return {
     link: link,
     templateUrl: 'components/voting/voting-question-directive.html',

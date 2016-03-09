@@ -6,7 +6,8 @@ angular
     function (apiRequests) {
       return {
         getVoting: getVoting,
-        vote: vote
+        vote: vote,
+        getTimer: getTimer
       };
       function getVoting(votingId, getVotingComplete) {
         return apiRequests.postCookieRequest(
@@ -38,6 +39,22 @@ angular
         );
 
         function voteFailed(data) {
+          console.log('XHR Failed for getVotingResult.' + data.error);
+        }
+      }
+
+      function getTimer(votingId, getTimerComplete) {
+        return apiRequests.postCookieRequest(
+          'getTime',
+          {
+            votingId: votingId
+          },
+          getTimerComplete,
+          getTimerFailed,
+          null
+        );
+
+        function getTimerFailed(data) {
           console.log('XHR Failed for getVotingResult.' + data.error);
         }
       }
