@@ -122,7 +122,7 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote));
         }
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId));
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId), 0);
     }
 
     public long getTime(String votingId) {

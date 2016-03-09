@@ -112,7 +112,7 @@ public class VotingApiResource implements VotingAPI {
         final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
         if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
             log.warn("Incorrect cookie: {}", cookie);
-            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO);
+            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO, 0);
         }
         return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, loggedUser.getClientId()));
     }
