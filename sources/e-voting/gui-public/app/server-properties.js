@@ -1,5 +1,5 @@
 angular
-  .module('e-voting.api-requests.server-properties', [])
+  .module('e-voting.server-properties', [])
   .constant('serverProperties',
     {
       "serverUrl": "http://localhost:9000/",

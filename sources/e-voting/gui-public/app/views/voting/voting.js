@@ -35,6 +35,7 @@ angular
       }, voteComplete);
 
       function voteComplete() {
+        alert("Vote accepted");
         cancel();
       }
     }

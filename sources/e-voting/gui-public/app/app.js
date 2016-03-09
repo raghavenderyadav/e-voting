@@ -8,5 +8,6 @@ angular
     'e-voting.auth',
     'e-voting.voting',
     'e-voting.header',
+    'e-voting.server-properties',
     'e-voting.api-requests'
   ]);

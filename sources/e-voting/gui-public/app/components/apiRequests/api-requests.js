@@ -1,6 +1,5 @@
 angular
   .module('e-voting.api-requests', [
-    'e-voting.api-requests.server-properties',
     'e-voting.api-requests.api-properties',
     'ngStorage'
   ])

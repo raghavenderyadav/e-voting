@@ -26,6 +26,7 @@
           <button
             type="button"
             class="voting-btn btn-sm btn btn-success"
+            ng-disabled="!voting.canVote"
             ng-click="voting.canVote && vlc.vote(voting.id)">
             Проголосовать
           </button>
