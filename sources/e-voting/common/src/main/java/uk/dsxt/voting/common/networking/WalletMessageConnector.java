@@ -92,7 +92,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             encryptedMessage = cryptoHelper.encrypt(resultMessage, cryptoHelper.loadPublicKey(participant.getPublicKey()));
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            log.error("addVote. can not encrypt message. receiverId={}", receiverId);
+            log.error("addVote. can not encrypt message. receiverId={}. error={}", receiverId, e.getMessage());
             return;
         }
         Map<String, String> fields = new HashMap<>();
