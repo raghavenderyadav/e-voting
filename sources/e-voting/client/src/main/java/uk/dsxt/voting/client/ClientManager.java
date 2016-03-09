@@ -62,7 +62,7 @@ public class ClientManager {
             return null;
         }
         BigDecimal amount = assetsHolder.getClientPacketSize(votingId, clientId);
-        return new VotingInfoWeb(voting, amount);
+        return new VotingInfoWeb(voting, amount, getTime(votingId));
     }
 
     public boolean vote(String votingId, String clientId, String votingChoice) {
