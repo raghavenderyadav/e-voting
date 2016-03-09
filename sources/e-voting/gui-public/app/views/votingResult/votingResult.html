@@ -1,4 +1,4 @@
-<ul>
+<!-- <ul>
   <li ng-repeat="question in vrc.votingResult">
     <p>{{question.question}}</p>
     <ul>
@@ -11,4 +11,56 @@
     </ul>
   </li>
 </ul>
-<button ng-click="vrc.cancel()">Cancel</button>
+<button ng-click="vrc.cancel()">Cancel</button> -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Voting result</h3>
+        </div>
+        <div class="panel-body">
+          <div ng-repeat="question in vrc.votingResult.questions" class="voting-item">
+            <strong class="voting-item-title">{{question.question}}</strong>
+            <div ng-if="question.canSelectMultiple">
+              <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <br>
+                    {{answer.name}}
+                  </div>
+                  <div class="col-xs-9">
+                    <span>Votes: {{answer.votes}} / {{vrc.votingResult.amount}}</span>
+                    <div class="progress">
+                      <div
+                        class="progress-bar"
+                        role="progressbar"
+                        ng-class="{'progress-bar-success': answer.votes > 0}"
+                        aria-valuenow="{{answer.votes}}"
+                        aria-valuemin="{{answer.votes}}"
+                        aria-valuemax="{{question.totalVotes}}"
+                        style="width: {{answer.votes / vrc.votingResult.amount * 100 | number: 2}}%;">
+                        <span ng-if={{answer.votes > 0}}>
+                          {{answer.votes / vrc.votingResult.amount * 100 | number: 2}}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div ng-if="!question.canSelectMultiple">
+              <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)" ng-class="{'text-success text-bold': answer.votes > 0}">
+                {{answer.name}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer text-center">
+          <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vrc.cancel()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
