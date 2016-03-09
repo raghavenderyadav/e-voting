@@ -148,6 +148,11 @@ public class VoteResult {
         addAnswers(answers, other.getAnswers());
         return new VoteResult(votingId, holderId, packetSize.add(other.getPacketSize()), status, answers);
     }
+    
+    public void setAnswer(String questionId, String answerId, BigDecimal amount) {
+        VotedAnswer answer = new VotedAnswer(questionId, answerId, amount);
+        answersByKey.put(answer.getKey(), amount == null ? null : answer);
+    }
 
     private void addAnswers(SortedMap<String, VotedAnswer> answers, Collection<VotedAnswer> newAnswers) {
         for (VotedAnswer otherAnswer : newAnswers) {

@@ -14,7 +14,7 @@ angular
         return userInfo;
       }
       function setInfo(info) {
-        userInfo.account = info.account;
+        userInfo.userName = info.userName;
         $sessionStorage.header = userInfo;
         $sessionStorage.cookie = info.cookie;
       }

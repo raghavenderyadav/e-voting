@@ -105,7 +105,7 @@ public class JettyRunner {
                 htmlHandler.setResourceBase(frontendRoot);
                 Map<Pattern, Handler> pathToHandler = new HashMap<>();
                 pathToHandler.put(Pattern.compile(apiPathPattern), handler);
-                handler = new RequestsRouter(htmlHandler, pathToHandler);
+                handler = new RequestsRouter(htmlHandler, pathToHandler, frontendRoot);
             }
             server.setHandler(handler);
             server.start();

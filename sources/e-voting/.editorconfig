@@ -15,3 +15,6 @@ trim_trailing_whitespace = false
 [*.java]
 indent_size = 4
 trim_trailing_whitespace = false
+
+[*.js]
+tab_size = 2
