@@ -23,11 +23,11 @@ cd /home/ubuntu/e-voting/build/gui-public/;
 npm update;
 bower update;
 sed -i 's/base href=\"\/\"/base href=\"\/nsd\/\"/g' /home/ubuntu/e-voting/build/gui-public/app/index.html
-echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"pathToApi\": \"nsd/api\" });" > /home/ubuntu/e-voting/build/gui-public/app/server-properties.js;
+echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"serverPort\": \"443\", \"pathToApi\": \"nsd/api\" });" > /home/ubuntu/e-voting/build/gui-public/app/server-properties.js;
 cp -r /home/ubuntu/e-voting/build/gui-public/* /home/ubuntu/e-voting/build/gui-public1/;
 sed -i 's/base href=\"\/nsd\/\"\/\"/base href=\"\/nsd1\/\"/g' /home/ubuntu/e-voting/build/gui-public1/app/index.html
-echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"pathToApi\": \"nsd1/api\" });" > /home/ubuntu/e-voting/build/gui-public1/app/server-properties.js;
+echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"serverPort\": \"443\", \"pathToApi\": \"nsd1/api\" });" > /home/ubuntu/e-voting/build/gui-public1/app/server-properties.js;
 cp -r /home/ubuntu/e-voting/build/gui-public/* /home/ubuntu/e-voting/build/gui-public2/;
 sed -i 's/base href=\"\/nsd\/\"/base href=\"\/nsd2\/\"/g' /home/ubuntu/e-voting/build/gui-public2/app/index.html
-echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"pathToApi\": \"nsd2/api\" });" > /home/ubuntu/e-voting/build/gui-public2/app/server-properties.js;
+echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"\/\", \"serverPort\": \"443\", \"pathToApi\": \"nsd2/api\" });" > /home/ubuntu/e-voting/build/gui-public2/app/server-properties.js;
 echo Build process is finished successfully
