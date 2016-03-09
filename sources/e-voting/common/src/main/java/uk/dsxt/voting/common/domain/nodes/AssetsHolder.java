@@ -24,6 +24,7 @@ package uk.dsxt.voting.common.domain.nodes;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 public interface AssetsHolder extends VoteAcceptor {
@@ -41,4 +42,6 @@ public interface AssetsHolder extends VoteAcceptor {
     VoteResult getClientVote(String votingId, String clientId);
 
     void addClientVote(VoteResult result);
+
+    BigDecimal getClientPacketSize(String votingId, String clientId);
 }

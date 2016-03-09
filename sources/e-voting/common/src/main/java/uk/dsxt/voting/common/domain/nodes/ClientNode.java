@@ -29,6 +29,7 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,7 +75,6 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
     }
 
     private boolean addVote(VoteResult newResult, boolean isConfirmed) {
-        Map<String, Client> clients = null;
         String holdersTreePath = newResult.getHolderId();
         String[] clientIds = holdersTreePath.split(PATH_SEPARATOR);
         if (clientIds.length < 1) {
@@ -100,19 +100,9 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("acceptVote. Voting {} already ends. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
-        for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
-            if (clientsEntry.getKey() <= votingRecord.voting.getBeginTimestamp()) {
-                clients = clientsEntry.getValue();
-            } else {
-                break;
-            }
-        }
-        if (clients == null) {
-            log.warn("acceptVote. Clients not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
-            return false;
-        }
+
         String clientId = clientIds[0];
-        Client client = clients.get(clientId);
+        Client client =  getClient(votingRecord.voting, clientIds[0]);
         if (client == null) {
             log.warn("acceptVote. Client not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
@@ -162,26 +152,41 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
     }
 
     @Override
-    public Collection<VoteResult> getAllClientVotes(String votingId) {
+    public synchronized Collection<VoteResult> getAllClientVotes(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
         return votingRecord == null ? null : votingRecord.allClientResultsByClientPath.values();
     }
 
     @Override
-    public Collection<VoteResult> getConfirmedClientVotes(String votingId) {
+    public synchronized Collection<VoteResult> getConfirmedClientVotes(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
         return votingRecord == null ? null : votingRecord.confirmedClientResultsByClientPath.values();
     }
 
     @Override
-    public VoteResult getClientVote(String votingId, String clientId) {
+    public synchronized VoteResult getClientVote(String votingId, String clientId) {
         VotingRecord votingRecord = votingsById.get(votingId);
         return votingRecord == null ? null : votingRecord.allClientResultsByClientPath.get(clientId);
     }
 
     @Override
-    public void addClientVote(VoteResult result) {
+    public synchronized void addClientVote(VoteResult result) {
         acceptVote(result, new ArrayList<>());
+    }
+
+    @Override
+    public synchronized BigDecimal getClientPacketSize(String votingId, String clientId) {
+        VotingRecord votingRecord = votingsById.get(votingId);
+        if (votingRecord == null) {
+            log.warn("acceptVote. Voting not found {}. clientId={}", votingId, clientId);
+            return null;
+        }
+        Client client =  getClient(votingRecord.voting, clientId);
+        if (client == null) {
+            log.warn("acceptVote. Client not found on voting begin. votingId={} clientId={}", votingId, clientId);
+            return null;
+        }
+        return client.getPacketSize();
     }
 
     @Override
@@ -202,7 +207,23 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
     }
 
     @Override
-    public void addVote(VoteResult result) {
+    public synchronized void addVote(VoteResult result) {
         addVote(result, true);
+    }
+
+    private synchronized Client getClient(Voting voting, String clientId) {
+        Map<String, Client> clients = null;
+        for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
+            if (clientsEntry.getKey() <= voting.getBeginTimestamp()) {
+              clients = clientsEntry.getValue();
+            } else {
+              break;
+            }
+        }
+        if (clients == null) {
+            log.warn("Clients not found on voting begin. votingId={}");
+            return null;
+        }
+        return clients.get(clientId);
     }
 }

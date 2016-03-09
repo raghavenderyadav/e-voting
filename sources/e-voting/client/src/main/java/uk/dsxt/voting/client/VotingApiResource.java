@@ -87,7 +87,7 @@ public class VotingApiResource implements VotingAPI {
             log.warn("Incorrect cookie: {}", cookie);
             return null;
         }
-        return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId));
+        return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId, loggedUser.getClientId()));
     }
 
     @POST

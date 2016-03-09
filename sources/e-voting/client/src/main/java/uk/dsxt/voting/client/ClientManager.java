@@ -62,13 +62,13 @@ public class ClientManager {
         return votings.stream().map(VotingWeb::new).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]);
     }
 
-    public VotingInfoWeb getVoting(String votingId) {
+    public VotingInfoWeb getVoting(String votingId, String clientId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.error("getVoting. Couldn't find voting with id [{}].", votingId);
             return null;
         }
-        BigDecimal amount = new BigDecimal(500); // TODO Get client's amount from client's details.
+        BigDecimal amount = assetsHolder.getClientPacketSize(votingId, clientId);
         return new VotingInfoWeb(voting, amount);
     }
 
