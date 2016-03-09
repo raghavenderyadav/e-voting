@@ -58,7 +58,9 @@ public class CryptoNodeDecorator implements CryptoVoteAcceptor {
         this.serializer = serializer;
         this.cryptoHelper = cryptoProvider;
         this.participantsById = participantsById;
-        node.setParentHolder((newResult, signatures) -> acceptVote(newResult, signatures));
+        if (parentNode != null) {
+            node.setParentHolder((newResult, signatures) -> acceptVote(newResult, signatures));
+        }
     }
 
     @Override
