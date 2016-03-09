@@ -1,0 +1,17 @@
+[
+  {
+    "minutes": "-2000",
+    "clients": [
+      {
+        "participantId": "6",
+        "packetSize": 10,
+        "clientType": "NominalHolder"
+      },
+      {
+        "participantId": "7",
+        "packetSize": 20,
+        "clientType": "Owner"
+      }
+    ]
+  }
+]

@@ -5,7 +5,7 @@
       {
         "participantId": "1",
         "packetSize": 10,
-        "clientType": "NominalHolder"
+        "clientType": "Owner"
       },
       {
         "participantId": "2",
@@ -16,6 +16,11 @@
         "participantId": "3",
         "packetSize": 30,
         "clientType": "ForeignNominalHolder"
+      },
+      {
+        "participantId": "5",
+        "packetSize": 100,
+        "clientType": "NominalHolder"
       }
     ]
   },

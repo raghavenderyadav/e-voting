@@ -92,6 +92,8 @@ public class ClientApplication extends ResourceConfig {
 
         ClientNode clientNode;
         MasterNode masterNode;
+        if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
+            throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             masterNode = new MasterNode();
             clientNode = masterNode;
@@ -126,9 +128,6 @@ public class ClientApplication extends ResourceConfig {
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 
-        voteScheduler = new VoteScheduler(clientNode, messagesFileContent, ownerId);
-        walletScheduler = new WalletScheduler(walletManager, walletOffSchedule);
-
         messageHandler.run(newMessagesRequestInterval);
 
 
@@ -141,6 +140,9 @@ public class ClientApplication extends ResourceConfig {
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager(credentialsFilePath)), holderApiResource);
+
+        voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
+        walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);
     }
 
     private void loadClients(ClientNode node, String clientsFilePath) {
@@ -158,8 +160,10 @@ public class ClientApplication extends ResourceConfig {
     }
 
     public void stop() {
-        voteScheduler.stop();
-        walletScheduler.stop();
+        if (voteScheduler != null)
+            voteScheduler.stop();
+        if (walletScheduler != null)
+            walletScheduler.stop();
         messageHandler.stop();
         walletManager.stopWallet();
     }

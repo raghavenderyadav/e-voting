@@ -157,7 +157,7 @@ public class TestDataGenerator {
         credentials.add(new ClientCredentials("user9",  "1234"));
         credentials.add(new ClientCredentials("user10", "1234"));
         final String string = mapper.writeValueAsString(credentials);
-        FileUtils.writeStringToFile(new File("credentials.json"), string);
+        FileUtils.writeStringToFile(new File("credentials00.json"), string);
     }
 
     private static void makeCollusion(int i, ClientConfiguration[] clientConfs, Voting voting, Client[] clients) {

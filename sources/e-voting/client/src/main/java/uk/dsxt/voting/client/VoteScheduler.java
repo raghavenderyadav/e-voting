@@ -57,7 +57,7 @@ public class VoteScheduler {
                 if (delay <= 0)
                     assetsHolder.addClientVote(voteResult);
                 else
-                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.MINUTES);
+                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.SECONDS);
                 cnt++;
                 if (maxDelay < delay)
                     maxDelay = delay;

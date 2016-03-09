@@ -122,7 +122,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     public void handleNewMessage(MessageContent messageContent, String messageId) {
         if (messageReceiver == null)
             return;
-        if (masterId.equals(messageContent.getAuthor())) {
+        if (!masterId.equals(messageContent.getAuthor())) {
             log.error("message {} author {} is not master {}", messageId, messageContent.getAuthor(), masterId);
             return;
         }
