@@ -19,7 +19,7 @@ public class JettyRunnerTest {
         testProperties.setProperty("jetty.idleTimeout", "5000");
         testProperties.setProperty("jetty.maxQueueSize", "1000");
         Server run = JettyRunner.run(new TestClientApplication(), testProperties, 8888,
-                "../gui-public/app", "/{1}(api|holderAPI){1}/{1}.*");
+                "../gui-public/app", "/{1}(api|holderAPI){1}/{1}.*", true);
         run.join();
     }
 

@@ -43,19 +43,19 @@ import java.util.regex.Pattern;
 public class JettyRunner {
     public static Server run(ResourceConfig application, Properties properties, String portPropertyName) {
         Integer port = Integer.valueOf(properties.getProperty(portPropertyName));
-        return run(application, properties, port, "*", null, null, null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null, false);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port) {
-        return run(application, properties, port, "*", null, null, null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null, false);
     }
 
-    public static Server run(ResourceConfig application, Properties properties, int port, String frontendRoot, String apiPathPattern) {
-        return run(application, properties, port, "*", null, null, null, frontendRoot, apiPathPattern);
+    public static Server run(ResourceConfig application, Properties properties, int port, String frontendRoot, String apiPathPattern, boolean copyWebDir) {
+        return run(application, properties, port, "*", null, null, null, frontendRoot, apiPathPattern, copyWebDir);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port, String originFilter,
-                             String aliasName, File keystoreFile, String password, String frontendRoot, String apiPathPattern) {
+                             String aliasName, File keystoreFile, String password, String frontendRoot, String apiPathPattern, boolean copyWebDir) {
         try {
             QueuedThreadPool threadPool = new QueuedThreadPool(
                     Integer.valueOf(properties.getProperty("jetty.maxThreads")),
@@ -103,6 +103,7 @@ public class JettyRunner {
                 WebAppContext htmlHandler = new WebAppContext();
                 htmlHandler.setContextPath("/");
                 htmlHandler.setResourceBase(frontendRoot);
+                htmlHandler.setCopyWebDir(copyWebDir);
                 Map<Pattern, Handler> pathToHandler = new HashMap<>();
                 pathToHandler.put(Pattern.compile(apiPathPattern), handler);
                 handler = new RequestsRouter(htmlHandler, pathToHandler, frontendRoot);
