@@ -6,20 +6,22 @@
              <div class="panel-heading">
               <h3 class="panel-title">Login</h3>
              </div>
-             <div class="panel-body">
-               <form action="">
-                 <div class="form-group">
-                   <label for="login">Login:</label>
-                   <input type="text" class="form-control" id="login" name="login" ng-model="sic.login">
+             <div class="panel-body form-horizontal">
+               <div class="form-group">
+                 <label for="login" class="col-xs-3 control-label text-left">Login:</label>
+                 <div class="col-xs-9">
+                  <input type="text" class="form-control" id="login" name="login" ng-model="sic.login">
                  </div>
-                 <div class="form-group">
-                    <label for="password">Password:</label>
+               </div>
+               <div class="form-group">
+                  <label for="password" class="col-xs-3 control-label text-left">Password:</label>
+                  <div class="col-xs-9">
                     <input type="password" class="form-control" id="password" name="password" ng-model="sic.password">
                   </div>
-                 <div class="form-group text-center">
-                    <button type="button" class="btn btn-default" ng-click="sic.signIn(sic.login, sic.password)">Login</button>
-                 </div>
-               </form>
+                </div>
+             </div>
+             <div class="panel-footer text-center">
+                <button type="button" class="btn btn-primary" ng-click="sic.signIn(sic.login, sic.password)">Login</button>
              </div>
           </div>
         </div>

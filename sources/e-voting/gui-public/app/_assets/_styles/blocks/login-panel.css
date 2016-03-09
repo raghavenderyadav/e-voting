@@ -1,3 +1,13 @@
 .login-panel {
   margin: 100px auto;
+
+  .panel-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .form-group {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
 }
