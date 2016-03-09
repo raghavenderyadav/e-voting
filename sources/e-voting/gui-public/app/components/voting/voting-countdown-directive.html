@@ -1,15 +1,16 @@
-<div class="countdown" ng-class="{'countdown-expired': votingCountdown <= 0}">
+<div class="countdown" ng-class="{'countdown-expired': votingCountdown <= 0, 'countdown-loading': (!isServerUpdateInProcess && votingCountdown > 0)}">
   <span class="countdown-text" ng-if="votingCountdown > 0">До окончания голосования осталось:</span>
   <span class="countdown-text" ng-if="votingCountdown <= 0">Голосование окончено</span>
 
-  <img src="images/alarm.png" ng-if="votingCountdown > 0" width="30" height="30" class="countdown-img">
-  <img src="images/alarm-red.png" ng-if="votingCountdown <= 0" width="30" height="30" class="countdown-img">
+  <div class="countdown-timer">
+    <span class="countdown-digit">{{timer.days}}</span>
+    <span class="countdown-divider">:</span>
+    <span class="countdown-digit">{{timer.hours}}</span>
+    <span class="countdown-divider">:</span>
+    <span class="countdown-digit">{{timer.minutes}}</span>
+    <span class="countdown-divider">:</span>
+    <span class="countdown-digit">{{timer.seconds}}</span>
+    <img src="images/loader-dots.svg" class="countdown-loader" width="60" height="15">
+  </div>
 
-  <span class="countdown-digit">{{timer.days}}</span>
-  <span class="countdown-divider">:</span>
-  <span class="countdown-digit">{{timer.hours}}</span>
-  <span class="countdown-divider">:</span>
-  <span class="countdown-digit">{{timer.minutes}}</span>
-  <span class="countdown-divider">:</span>
-  <span class="countdown-digit">{{timer.seconds}}</span>
 </div>

@@ -13,15 +13,41 @@
 .countdown-expired {
   color: $c_error;
 
-
+  .countdown-timer:before {
+    background-image: url('../images/alarm-red.png')
+  }
 }
 
-.countdown-img {
+.countdown-loading {
+
+  .countdown-timer:before,
+  .countdown-digit,
+  .countdown-divider {
+    opacity: .3;
+  }
+
+  .countdown-loader {
+    display: block;
+    opacity: 1;
+  }
+}
+
+.countdown-timer {
   display: inline-block;
   vertical-align: top;
+  min-height: 30px;
   position: relative;
-  top: 1px;
-  margin-right: 6px;
+
+
+  &:before {
+    content: '';
+    display: inline-block;
+    vertical-align: top;
+    width: 30px;
+    height: 30px;
+    background: url('../images/alarm.png') 0 0 no-repeat;
+    margin-right: 4px;
+  }
 }
 
 .countdown-text {
@@ -38,12 +64,27 @@
   text-align: right;
 
   font-size: 24px;
+  transition: opacity .2s;
 }
 
 .countdown-divider {
   display: inline-block;
   vertical-align: top;
+  margin-top: 4px;
 
-  font-size: 25px;
+  font-size: 20px;
   margin-left: 4px;
+  transition: opacity .2s;
+}
+
+.countdown-loader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  display: none;
+  opacity: 0;
+  transition: opacity .2s;
 }
