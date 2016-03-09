@@ -36,11 +36,6 @@ import java.util.function.Supplier;
 @Path("/api")
 public class VotingApiResource implements VotingAPI {
 
-    /*@FunctionalInterface
-    protected interface ClientIdRequest<T> {
-        T get(String clientId) throws Exception;
-    }*/
-
     private final ClientManager manager;
     private final AuthManager authManager;
 
@@ -58,19 +53,6 @@ public class VotingApiResource implements VotingAPI {
             return null;
         }
     }
-
-    // TODO Check and use helper method executeClientId.
-    /*protected <T> T executeClientId(String cookie, String name, String params, ClientIdRequest<T> request) {
-        return execute(name, params, () -> {
-            try {
-                final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
-                return request.get(loggedUser.getClientId());
-            } catch (Exception e) {
-                log.error("{} failed. params: [{}]", name, params, e);
-                return null;
-            }
-        });
-    }*/
 
     @POST
     @Path("/login")
@@ -106,16 +88,24 @@ public class VotingApiResource implements VotingAPI {
     @Path("/vote")
     @Produces("application/json")
     public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
-        String clientId = ""; // TODO Get it from auth.
-        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, clientId, votingChoice));
+        // TODO Move cookie checks into execute method.
+        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            return false;
+        }
+        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, loggedUser.getClientId(), votingChoice));
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
     public QuestionWeb[] votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        String clientId = ""; // TODO Get client ID from auth.
-        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, clientId));
+        // TODO Move cookie checks into execute method.
+        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            return new QuestionWeb[0];
+        }
+        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, loggedUser.getClientId()));
     }
 
     @POST

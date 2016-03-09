@@ -22,9 +22,12 @@
 package uk.dsxt.voting.client.auth;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.client.datamodel.LoggedUser;
 import uk.dsxt.voting.client.datamodel.LoginAnswerWeb;
 import uk.dsxt.voting.client.datamodel.SessionInfoWeb;
+import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,17 +37,26 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AuthManager {
 
-    public static final HashMap<String, String> userCredentials; // TODO Read user details from configuration file.
-    static {
-        userCredentials = new HashMap<>();
-        userCredentials.put("user1", "1234");
-        userCredentials.put("user2", "1234");
-        userCredentials.put("user3", "1234");
-        userCredentials.put("user4", "1234");
-        userCredentials.put("user5", "1234");
-    }
+    public HashMap<String, String> userCredentials = new HashMap<>();
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
+
+    public AuthManager(String credentialsFilepath) {
+        log.debug("Initializing AuthManager...");
+        try {
+            ClientCredentials[] credentials = PropertiesHelper.loadResource(credentialsFilepath, ClientCredentials[].class);
+            log.debug("Found {} client credentials.", credentials.length);
+
+            if (credentials.length > 0) {
+                for (ClientCredentials c : credentials) {
+                    userCredentials.put(c.getClientId(), c.getPassword());
+                }
+            }
+            log.info("{} client credentials loaded.", userCredentials.size());
+        } catch (InternalLogicException e) {
+            log.error("Couldn't initialize AuthManager", e);
+        }
+    }
 
     public LoginAnswerWeb login(String clientId, String password) {
         if (userCredentials.containsKey(clientId)) {

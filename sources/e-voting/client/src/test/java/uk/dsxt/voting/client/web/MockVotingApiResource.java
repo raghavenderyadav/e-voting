@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client.web;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.datamodel.*;
@@ -41,7 +42,7 @@ public class MockVotingApiResource implements VotingAPI {
 
     private static final Map<String, VotingWeb> votings;
 
-    //private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
         votings = new HashMap<>();
@@ -93,9 +94,15 @@ public class MockVotingApiResource implements VotingAPI {
         answers2[1] = new AnswerWeb("2", "answer_2_2", null);
         answers2[2] = new AnswerWeb("3", "answer_2_3", null);
 
-        final QuestionWeb[] questions = new QuestionWeb[2];
-        questions[0] = new QuestionWeb("1", "question_1", answers1);
-        questions[1] = new QuestionWeb("2", "question_2", answers2);
+        final AnswerWeb[] answers3 = new AnswerWeb[3];
+        answers3[0] = new AnswerWeb("1", "answer_3_1", null);
+        answers3[1] = new AnswerWeb("2", "answer_3_2", null);
+        answers3[2] = new AnswerWeb("3", "answer_3_3", null);
+
+        final QuestionWeb[] questions = new QuestionWeb[3];
+        questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1);
+        questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1);
+        questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1);
         return new VotingInfoWeb(questions, new BigDecimal(500));
     }
 
@@ -105,7 +112,10 @@ public class MockVotingApiResource implements VotingAPI {
     public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
         try {
             log.debug("vote method called. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice);
-            //VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
+            VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
+            for (String question : choice.getQuestionChoices().keySet()) {
+                log.debug("Question: {}, Answer: {}", question, choice.getQuestionChoices().get(question));
+            }
             return true;
         } catch (Exception e) {
             log.error("vote method failed. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice, e);

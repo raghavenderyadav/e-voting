@@ -80,6 +80,7 @@ public class ClientApplication extends ResourceConfig {
         String parentHolderUrl = properties.getProperty("parent.holder.url");
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
+        final String credentialsFilePath = properties.getProperty("credentials.filepath");
 
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase);
@@ -140,7 +141,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager()), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager(credentialsFilePath)), holderApiResource);
     }
 
     private void loadClients(ClientNode node) {

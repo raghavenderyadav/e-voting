@@ -22,8 +22,10 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
+import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
@@ -31,12 +33,14 @@ import uk.dsxt.voting.common.utils.crypto.KeyPair;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Log4j2
 public class TestDataGenerator {
     private final static ObjectMapper mapper = new ObjectMapper();
 
@@ -130,6 +134,30 @@ public class TestDataGenerator {
         dataPath = String.format("%s/%s/%s", TestsLauncher.MODULE_NAME, dirPath, TESTING_TYPE);
         String clientConfigurationJson = mapper.writeValueAsString(clientConfs);
         FileUtils.writeStringToFile(new File(String.format("%s/clientSettings.json", dataPath)), clientConfigurationJson);
+    }
+
+    public static void main(String[] args) {
+        try {
+            generateCredentialsJSON();
+        } catch (IOException e) {
+            log.error(e);
+        }
+    }
+
+    private static void generateCredentialsJSON() throws IOException {
+        List<ClientCredentials> credentials = new ArrayList<>();
+        credentials.add(new ClientCredentials("user1",  "1234"));
+        credentials.add(new ClientCredentials("user2",  "1234"));
+        credentials.add(new ClientCredentials("user3",  "1234"));
+        credentials.add(new ClientCredentials("user4",  "1234"));
+        credentials.add(new ClientCredentials("user5",  "1234"));
+        credentials.add(new ClientCredentials("user6",  "1234"));
+        credentials.add(new ClientCredentials("user7",  "1234"));
+        credentials.add(new ClientCredentials("user8",  "1234"));
+        credentials.add(new ClientCredentials("user9",  "1234"));
+        credentials.add(new ClientCredentials("user10", "1234"));
+        final String string = mapper.writeValueAsString(credentials);
+        FileUtils.writeStringToFile(new File("credentials.json"), string);
     }
 
     private static void makeCollusion(int i, ClientConfiguration[] clientConfs, Voting voting, Client[] clients) {
