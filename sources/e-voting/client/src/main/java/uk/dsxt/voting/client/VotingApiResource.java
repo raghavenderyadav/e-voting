@@ -30,6 +30,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.math.BigDecimal;
 import java.util.function.Supplier;
 
 @Log4j2
@@ -106,12 +107,12 @@ public class VotingApiResource implements VotingAPI {
     @POST
     @Path("/votingResults")
     @Produces("application/json")
-    public QuestionWeb[] votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public VotingInfoWeb votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         // TODO Move cookie checks into execute method.
         final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
         if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
             log.warn("Incorrect cookie: {}", cookie);
-            return new QuestionWeb[0];
+            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO);
         }
         return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, loggedUser.getClientId()));
     }

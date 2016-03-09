@@ -103,7 +103,7 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1);
         questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1);
-        return new VotingInfoWeb(questions, new BigDecimal(500));
+        return new VotingInfoWeb(questions, new BigDecimal(500), getTime(cookie, votingId));
     }
 
     @POST
@@ -126,7 +126,7 @@ public class MockVotingApiResource implements VotingAPI {
     @POST
     @Path("/votingResults")
     @Produces("application/json")
-    public QuestionWeb[] votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public VotingInfoWeb votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingResults method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[5];
         answers1[0] = new AnswerWeb("1", "answer_1", BigDecimal.TEN);
@@ -143,7 +143,7 @@ public class MockVotingApiResource implements VotingAPI {
         final QuestionWeb[] questions = new QuestionWeb[2];
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
-        return questions;
+        return new VotingInfoWeb(questions, BigDecimal.ONE, -1);
     }
 
     @POST

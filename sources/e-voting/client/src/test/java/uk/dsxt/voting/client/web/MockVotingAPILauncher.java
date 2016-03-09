@@ -40,7 +40,7 @@ public class MockVotingAPILauncher {
             properties.put("jetty.idleTimeout", "100000");
             MockVotingAPIApplication application = new MockVotingAPIApplication();
             //JettyRunner.run(application, properties, "port");
-            JettyRunner.run(application, properties, 9000, "./gui-public/app", "/{1}(api|holderAPI){1}/{1}.*");
+            JettyRunner.run(application, properties, 9000, "./gui-public/app", "/{1}(api|holderAPI){1}/{1}.*", true);
             log.info("MockVotingAPILauncher is successfully started");
         } catch (Exception e) {
             log.error("MockVotingAPILauncher failed.", e);

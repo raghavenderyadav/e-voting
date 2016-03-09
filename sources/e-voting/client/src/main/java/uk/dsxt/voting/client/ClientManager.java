@@ -62,7 +62,7 @@ public class ClientManager {
             return null;
         }
         BigDecimal amount = assetsHolder.getClientPacketSize(votingId, clientId);
-        return new VotingInfoWeb(voting, amount);
+        return new VotingInfoWeb(voting, amount, getTime(votingId));
     }
 
     public boolean vote(String votingId, String clientId, String votingChoice) {
@@ -106,23 +106,23 @@ public class ClientManager {
         }
     }
 
-    public QuestionWeb[] votingResults(String votingId, String clientId) {
+    public VotingInfoWeb votingResults(String votingId, String clientId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("votingResults. Voting with id={} not found.", votingId);
-            return new QuestionWeb[0];
+            return null;
         }
         final VoteResult clientVote = assetsHolder.getClientVote(votingId, clientId);
         if (clientVote == null) {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
-            return new QuestionWeb[0];
+            return null;
         }
 
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote));
         }
-        return results.toArray(new QuestionWeb[results.size()]);
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId));
     }
 
     public long getTime(String votingId) {

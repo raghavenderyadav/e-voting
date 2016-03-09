@@ -33,19 +33,22 @@ import java.util.Arrays;
 public class VotingInfoWeb {
     QuestionWeb[] questions;
     BigDecimal amount;
+    long timer;
 
     @JsonCreator
-    public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount) {
+    public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount, @JsonProperty("timer") long timer) {
         this.questions = questions;
         this.amount = amount;
+        this.timer = timer;
     }
 
-    public VotingInfoWeb(Voting voting, BigDecimal amount) {
+    public VotingInfoWeb(Voting voting, BigDecimal amount, long timer) {
         if (voting == null || voting.getQuestions().length <= 0) {
             questions = new QuestionWeb[0];
         } else {
             questions = Arrays.stream(voting.getQuestions()).map(QuestionWeb::new).toArray(QuestionWeb[]::new);
         }
         this.amount = amount;
+        this.timer = timer;
     }
 }

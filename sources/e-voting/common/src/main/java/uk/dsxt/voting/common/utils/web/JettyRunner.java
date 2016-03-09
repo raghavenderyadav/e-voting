@@ -27,6 +27,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -43,19 +47,19 @@ import java.util.regex.Pattern;
 public class JettyRunner {
     public static Server run(ResourceConfig application, Properties properties, String portPropertyName) {
         Integer port = Integer.valueOf(properties.getProperty(portPropertyName));
-        return run(application, properties, port, "*", null, null, null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null, false);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port) {
-        return run(application, properties, port, "*", null, null, null, null, null);
+        return run(application, properties, port, "*", null, null, null, null, null, false);
     }
 
-    public static Server run(ResourceConfig application, Properties properties, int port, String frontendRoot, String apiPathPattern) {
-        return run(application, properties, port, "*", null, null, null, frontendRoot, apiPathPattern);
+    public static Server run(ResourceConfig application, Properties properties, int port, String frontendRoot, String apiPathPattern, boolean copyWebDir) {
+        return run(application, properties, port, "*", null, null, null, frontendRoot, apiPathPattern, copyWebDir);
     }
 
     public static Server run(ResourceConfig application, Properties properties, int port, String originFilter,
-                             String aliasName, File keystoreFile, String password, String frontendRoot, String apiPathPattern) {
+                             String aliasName, File keystoreFile, String password, String frontendRoot, String apiPathPattern, boolean copyWebDir) {
         try {
             QueuedThreadPool threadPool = new QueuedThreadPool(
                     Integer.valueOf(properties.getProperty("jetty.maxThreads")),
@@ -101,10 +105,20 @@ public class JettyRunner {
                 handler = new CrossDomainFilter(handler, originFilter);
             if (frontendRoot != null) {
                 WebAppContext htmlHandler = new WebAppContext();
-                htmlHandler.setContextPath("/");
                 htmlHandler.setResourceBase(frontendRoot);
+                htmlHandler.setCopyWebDir(copyWebDir);
                 Map<Pattern, Handler> pathToHandler = new HashMap<>();
                 pathToHandler.put(Pattern.compile(apiPathPattern), handler);
+
+                SessionManager sm = new HashSessionManager();
+                SessionHandler sh = new SessionHandler(sm);
+                htmlHandler.setSessionHandler(sh);
+
+                DefaultServlet defaultServlet = new DefaultServlet();
+                ServletHolder holder = new ServletHolder(defaultServlet);
+                holder.setInitParameter("useFileMappedBuffer", Boolean.toString(!copyWebDir));
+                htmlHandler.addServlet(holder, "/");
+                
                 handler = new RequestsRouter(htmlHandler, pathToHandler, frontendRoot);
             }
             server.setHandler(handler);

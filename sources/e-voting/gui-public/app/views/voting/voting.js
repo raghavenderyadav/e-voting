@@ -34,8 +34,12 @@ angular
         votingChoice: vc.votingChoice
       }, voteComplete);
 
-      function voteComplete() {
-        alert("Vote accepted");
+      function voteComplete(response) {
+        if(response) {
+          alert("Vote accepted");
+        } else {
+          alert("Vote failed");
+        }
         cancel();
       }
     }

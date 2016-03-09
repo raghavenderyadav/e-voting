@@ -35,7 +35,7 @@ public interface VotingAPI {
 
     boolean vote(String cookie, String votingId, String votingChoice);
 
-    QuestionWeb[] votingResults(String cookie, String votingId);
+    VotingInfoWeb votingResults(String cookie, String votingId);
 
     long getTime(String cookie, String votingId);
 }
