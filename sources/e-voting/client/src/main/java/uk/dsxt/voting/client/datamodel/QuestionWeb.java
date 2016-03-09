@@ -78,8 +78,10 @@ public class QuestionWeb {
         for (Answer answer : q.getAnswers()) {
             final String key = String.format("%s-%s", q.getId(), answer.getId());
             final VotedAnswer votedAnswer = vr.getAnswerByKey(key);
-            AnswerWeb answerWeb = new AnswerWeb(answer, votedAnswer == null ? BigDecimal.ZERO : votedAnswer.getVoteAmount());
-            answers.add(answerWeb);
+            if (votedAnswer != null && votedAnswer.getVoteAmount().compareTo(BigDecimal.ZERO) > 0) {
+                AnswerWeb answerWeb = new AnswerWeb(answer, votedAnswer.getVoteAmount());
+                answers.add(answerWeb);
+            }
         }
         this.answers = answers.toArray(new AnswerWeb[answers.size()]);
         this.canSelectMultiple = q.isCanSelectMultiple();
