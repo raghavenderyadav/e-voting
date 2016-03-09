@@ -6,3 +6,4 @@ gradlew.bat
 gradlew
 /sources/e-voting/master-client/src/main/resources/master-client.properties
 /sources/e-voting/client/src/main/resources/client.properties
+_design
