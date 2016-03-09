@@ -163,7 +163,15 @@ public class ClientManager {
     }
 
     public long getTime(String votingId) {
-        return 0; // TODO Implement.
+        final Voting voting = assetsHolder.getVoting(votingId);
+        if (voting == null) {
+            log.debug("votingResults. Voting with id={} not found.", votingId);
+            return -1;
+        }
+        long now = System.currentTimeMillis();
+        if (now < voting.getBeginTimestamp() || now > voting.getEndTimestamp())
+            return -1;
+        return voting.getEndTimestamp() - now;
     }
 
     public VoteResultWeb[] getConfirmedClientVotes(String votingId) {
