@@ -1,0 +1,14 @@
+.table-custom {
+  border: 1px solid $c_bd_table;
+  width: 100%;
+  table-layout: auto;
+
+  td {
+    vertical-align: middle;
+    padding: 10px 30px !important;
+  }
+
+  th {
+    padding: 15px 30px !important;
+  }
+}

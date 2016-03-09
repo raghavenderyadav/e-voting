@@ -1,0 +1,17 @@
+.voting-title {
+  display: block;
+  font-weight: 700;
+}
+
+.voting-date {
+  display: block;
+}
+
+.voting-title,
+.voting-date {
+  padding: 5px;
+}
+
+.voting-btn {
+  min-width: 110px;
+}
