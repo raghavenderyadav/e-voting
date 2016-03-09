@@ -49,11 +49,15 @@ public class VotingClientMain {
             String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
             String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
             int jettyPort = Integer.valueOf(args == null ? properties.getProperty("client.web.port") : args[7]);
-            boolean isMain = Boolean.valueOf(args == null || args.length < 9 ? properties.getProperty("client.isMain", "false") : args[8]);
-            boolean copyWebDir = Boolean.valueOf(args == null || args.length < 10 ? properties.getProperty("client.web.copyWebDir", "true") : args[9]);
-            String webDir = args == null || args.length < 11 ? properties.getProperty("client.web.webDir", "./gui-public/app") : args[10];
+            boolean isMain = Boolean.valueOf(args == null ? properties.getProperty("client.isMain", "false") : args[8]);
+            boolean copyWebDir = Boolean.valueOf(args == null ? properties.getProperty("client.web.copyWebDir", "true") : args[9]);
+            String webDir = args == null ? properties.getProperty("client.web.webDir", "./gui-public/app") : args[10];
+            String parentHolderUrl = args == null ? properties.getProperty("parent.holder.url") : args[11];
+            String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[12];
+            String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[13];
 
-            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath);
+            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath,
+                parentHolderUrl, credentialsFilePath, clientsFilePath);
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
