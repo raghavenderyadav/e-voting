@@ -1,3 +1,8 @@
+.header {
+  position: relative;
+  z-index: $z_header;
+}
+
 .header-top {
   padding: 15px 0 10px;
 

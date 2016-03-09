@@ -26,7 +26,10 @@
 <![endif]-->
 
 <div ng-include="'components/header/header.html'" ng-controller="HeaderController as hc" class="header"></div>
-<div ui-view class="body"></div>
+
+<main class="page-content">
+  <div ui-view></div>
+</main>
 
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
