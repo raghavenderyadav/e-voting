@@ -1,10 +1,21 @@
 {
-  "name": "angular-seed",
-  "private": true,
-  "version": "0.0.0",
-  "description": "A starter project for AngularJS",
-  "repository": "https://github.com/angular/angular-seed",
-  "license": "MIT",
+  "name": "e-voting",
+  "version": "0.0.1",
+  "description": "Blockchain based e-proxy voting system",
+  "main": "app/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsx-tech/e-voting.git"
+  },
+  "author": "",
+  "license": " GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/dsx-tech/e-voting/issues"
+  },
+  "homepage": "https://github.com/dsx-tech/e-voting#readme",
   "devDependencies": {
     "autoprefixer": "^6.3.1",
     "browser-sync": "^2.11.1",
