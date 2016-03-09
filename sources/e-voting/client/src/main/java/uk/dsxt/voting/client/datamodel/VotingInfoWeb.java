@@ -21,12 +21,31 @@
 
 package uk.dsxt.voting.client.datamodel;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 @Value
 public class VotingInfoWeb {
     QuestionWeb[] questions;
     BigDecimal amount;
+
+    @JsonCreator
+    public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount) {
+        this.questions = questions;
+        this.amount = amount;
+    }
+
+    public VotingInfoWeb(Voting voting, BigDecimal amount) {
+        if (voting == null || voting.getQuestions().length <= 0) {
+            questions = new QuestionWeb[0];
+        } else {
+            questions = Arrays.stream(voting.getQuestions()).map(QuestionWeb::new).toArray(QuestionWeb[]::new);
+        }
+        this.amount = amount;
+    }
 }

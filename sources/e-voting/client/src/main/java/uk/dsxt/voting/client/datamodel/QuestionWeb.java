@@ -24,10 +24,14 @@ package uk.dsxt.voting.client.datamodel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
+import uk.dsxt.voting.common.domain.dataModel.Answer;
 import uk.dsxt.voting.common.domain.dataModel.Question;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Value
 public class QuestionWeb {
@@ -60,7 +64,22 @@ public class QuestionWeb {
     public QuestionWeb(Question q) {
         this.id = q.getId();
         this.question = q.getQuestion();
-        this.answers = Arrays.stream(q.getAnswers()).map(AnswerWeb::new).collect(Collectors.toList()).toArray(new AnswerWeb[q.getAnswers().length]);
+        this.answers = new AnswerWeb[0];
+        this.canSelectMultiple = q.isCanSelectMultiple();
+        this.multiplicator = q.getMultiplicator();
+    }
+
+    public QuestionWeb(Question q, VoteResult vr) {
+        this.id = q.getId();
+        this.question = q.getQuestion();
+        List<AnswerWeb> answers = new ArrayList<>();
+        for (Answer answer : q.getAnswers()) {
+            final String key = String.format("%s-%s", q.getId(), answer.getId());
+            final VotedAnswer votedAnswer = vr.getAnswerByKey(key);
+            AnswerWeb answerWeb = new AnswerWeb(answer, votedAnswer == null ? BigDecimal.ZERO : votedAnswer.getVoteAmount());
+            answers.add(answerWeb);
+        }
+        this.answers = answers.toArray(new AnswerWeb[answers.size()]);
         this.canSelectMultiple = q.isCanSelectMultiple();
         this.multiplicator = q.getMultiplicator();
     }

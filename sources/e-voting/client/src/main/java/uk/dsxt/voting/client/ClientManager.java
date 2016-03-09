@@ -21,13 +21,13 @@
 
 package uk.dsxt.voting.client;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.datamodel.AnswerType;
-import uk.dsxt.voting.common.domain.dataModel.Client;
-import uk.dsxt.voting.common.domain.dataModel.Participant;
+import uk.dsxt.voting.common.domain.dataModel.Question;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
@@ -41,17 +41,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Log4j2
 @Value
 public class ClientManager {
-    ConcurrentMap<String, Participant> participantsById = new ConcurrentHashMap<>();
-    ConcurrentMap<String, Client> clientsById = new ConcurrentHashMap<>();
-    ConcurrentMap<String, VotingWeb> votingsById = new ConcurrentHashMap<>();
-
     private final ObjectMapper mapper = new ObjectMapper();
 
     MeetingInstruction participantsXml;
@@ -69,31 +63,38 @@ public class ClientManager {
     }
 
     public VotingInfoWeb getVoting(String votingId) {
-        // TODO Use assetsHolder method.
-        return new VotingInfoWeb(votingsById.get(votingId) == null ? null : votingsById.get(votingId).getQuestions(), new BigDecimal(500));
+        final Voting voting = assetsHolder.getVoting(votingId);
+        if (voting == null) {
+            log.error("getVoting. Couldn't find voting with id [{}].", votingId);
+            return null;
+        }
+        BigDecimal amount = new BigDecimal(500); // TODO Get client's amount from client's details.
+        return new VotingInfoWeb(voting, amount);
     }
 
     public boolean vote(String votingId, String clientId, String votingChoice) {
         try {
-            VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
-            VotingWeb voting = votingsById.get(votingId);
+            final Voting voting = assetsHolder.getVoting(votingId);
             if (voting == null) {
-                log.error("vote failed. votingId is unknown. votingId=() votingChoice={}", votingId, votingChoice);
+                log.error("vote method failed. Couldn't find voting with id [{}]", votingId);
                 return false;
             }
+
+            VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
+            log.debug("Vote for voting [{}] from client [{}] received.", votingId, clientId);
 
             Vote2Choice voteChoice = new Vote2Choice();
             List<Vote4> voteInstr = voteChoice.getVoteInstr();
             for (Map.Entry<String, QuestionChoice> entry : choice.getQuestionChoices().entrySet()) {
-                QuestionWeb question = null;
-                for (QuestionWeb q : voting.getQuestions()) {
+                Question question = null;
+                for (Question q : voting.getQuestions()) {
                     if (q.getId().equals(entry.getKey())) {
                         question = q;
                         break;
                     }
                 }
                 if (question == null) {
-                    log.error("vote failed. question is unknown. votingId=() votingChoice={} questionId={}", votingId, votingChoice, entry.getKey());
+                    log.error("vote method failed. Couldn't find question with id={} in votingId={}.", entry.getKey(), votingId);
                     return false;
                 }
                 for (Map.Entry<String, BigDecimal> answer : entry.getValue().getAnswerChoices().entrySet()) {
@@ -133,16 +134,32 @@ public class ClientManager {
             voteDetails.setVoteInstrForAgndRsltn(voteChoice);
             //TODO: get additional info and generate MeetingInstruction
             return true;
+        } catch (JsonMappingException je) {
+            log.error("vote method failed. Couldn't parse votingChoice JSON. votingId: {}, votingChoice: {}", votingId, votingChoice, je.getMessage());
+            return false;
         } catch (Exception e) {
-            log.error("vote failed. Couldn't deserialize votingChoice. votingId=() votingChoice={}", votingId, votingChoice, e.getMessage());
+            log.error("vote method failed. Couldn't process votingChoice. votingId: {}, votingChoice: {}", votingId, votingChoice, e);
             return false;
         }
     }
 
-    // TODO Correct objects model (use VoteResult class)
     public QuestionWeb[] votingResults(String votingId, String clientId) {
-        // TODO get assetsHolder.getClientVote(votingId, clientId) and merge with voting structure from get voting.
-        return new QuestionWeb[0];
+        final Voting voting = assetsHolder.getVoting(votingId);
+        if (voting == null) {
+            log.debug("votingResults. Voting with id={} not found.", votingId);
+            return new QuestionWeb[0];
+        }
+        final VoteResult clientVote = assetsHolder.getClientVote(votingId, clientId);
+        if (clientVote == null) {
+            log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
+            return new QuestionWeb[0];
+        }
+
+        List<QuestionWeb> results = new ArrayList<>();
+        for (Question question : voting.getQuestions()) {
+            results.add(new QuestionWeb(question, clientVote));
+        }
+        return results.toArray(new QuestionWeb[results.size()]);
     }
 
     public long getTime(String votingId) {
