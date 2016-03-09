@@ -41,9 +41,9 @@ public class AnswerWeb {
         this.votes = votes;
     }
 
-    public AnswerWeb(Answer a) {
+    public AnswerWeb(Answer a, BigDecimal voteAmount) {
         this.id = a.getId();
         this.name = a.getName();
-        this.votes = BigDecimal.ZERO; // TODO Implement.
+        this.votes = voteAmount;
     }
 }

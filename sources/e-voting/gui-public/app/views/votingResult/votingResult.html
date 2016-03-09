@@ -2,7 +2,7 @@
   <li ng-repeat="question in vrc.votingResult">
     <p>{{question.question}}</p>
     <ul>
-      <li ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)" ng-class="{'is-answer': answer.votes > 0}">
+      <li ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)" ng-class="{'selected-answer': answer.votes > 0}">
         <p>
           <span>{{answer.name}}</span>
           <span ng-if="question.canSelectMultiple">&nbsp;&nbsp;&nbsp;[Votes: {{answer.votes}}]</span>

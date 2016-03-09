@@ -81,6 +81,12 @@ public class VotingApiResource implements VotingAPI {
     @Path("/getVoting")
     @Produces("application/json")
     public VotingInfoWeb getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        // TODO Move cookie checks into execute method.
+        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            log.warn("Incorrect cookie: {}", cookie);
+            return null;
+        }
         return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId));
     }
 
@@ -91,6 +97,7 @@ public class VotingApiResource implements VotingAPI {
         // TODO Move cookie checks into execute method.
         final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
         if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            log.warn("Incorrect cookie: {}", cookie);
             return false;
         }
         return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, loggedUser.getClientId(), votingChoice));
@@ -103,6 +110,7 @@ public class VotingApiResource implements VotingAPI {
         // TODO Move cookie checks into execute method.
         final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
         if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            log.warn("Incorrect cookie: {}", cookie);
             return new QuestionWeb[0];
         }
         return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, loggedUser.getClientId()));
