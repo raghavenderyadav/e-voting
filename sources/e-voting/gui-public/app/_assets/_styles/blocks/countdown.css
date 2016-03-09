@@ -1,0 +1,49 @@
+.countdown {
+  margin: 12px 0 24px;
+  padding: 8px 16px;
+  border: 1px solid $c_bd_table;
+  background: $bg_gray;
+
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0;
+  text-align: center;
+}
+
+.countdown-expired {
+  color: #d9534f;
+
+
+}
+
+.countdown-img {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  top: 1px;
+  margin-right: 6px;
+}
+
+.countdown-text {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.countdown-digit {
+  display: inline-block;
+  vertical-align: top;
+  min-width: 32px;
+  text-align: right;
+
+  font-size: 24px;
+}
+
+.countdown-divider {
+  display: inline-block;
+  vertical-align: top;
+
+  font-size: 25px;
+  margin-left: 4px;
+}

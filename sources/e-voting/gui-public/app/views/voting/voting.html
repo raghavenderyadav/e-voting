@@ -4,9 +4,9 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Voting</h3>
-          <div voting-countdown="vc.votingCountdown"></div>
         </div>
         <div class="panel-body">
+          <div voting-countdown="vc.votingCountdown"></div>
           <div ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice" total-votes="vc.totalVotes"></div>
         </div>
         <div class="panel-footer text-center">

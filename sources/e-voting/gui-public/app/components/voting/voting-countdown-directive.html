@@ -1,6 +1,15 @@
-<div>
-  <span ng-show="timer.days != '00'">{{timer.days}} :</span>
-  <span ng-show="timer.hours != '00'">{{timer.hours}} :</span>
-  <span ng-show="timer.minutes != '00'">{{timer.minutes}} :</span>
-  <span ng-show="timer.seconds != '00'">{{timer.seconds}}</span>
+<div class="countdown" ng-class="{'countdown-expired': votingCountdown <= 0}">
+  <span class="countdown-text" ng-if="votingCountdown > 0">До окончания голосования осталось:</span>
+  <span class="countdown-text" ng-if="votingCountdown <= 0">Голосование окончено</span>
+
+  <img src="images/alarm.png" ng-if="votingCountdown > 0" width="30" height="30" class="countdown-img">
+  <img src="images/alarm-red.png" ng-if="votingCountdown <= 0" width="30" height="30" class="countdown-img">
+
+  <span class="countdown-digit">{{timer.days}}</span>
+  <span class="countdown-divider">:</span>
+  <span class="countdown-digit">{{timer.hours}}</span>
+  <span class="countdown-divider">:</span>
+  <span class="countdown-digit">{{timer.minutes}}</span>
+  <span class="countdown-divider">:</span>
+  <span class="countdown-digit">{{timer.seconds}}</span>
 </div>
