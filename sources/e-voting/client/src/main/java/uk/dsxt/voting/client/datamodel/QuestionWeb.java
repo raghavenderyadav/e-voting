@@ -31,7 +31,9 @@ import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Value
 public class QuestionWeb {
@@ -64,7 +66,7 @@ public class QuestionWeb {
     public QuestionWeb(Question q) {
         this.id = q.getId();
         this.question = q.getQuestion();
-        this.answers = new AnswerWeb[0];
+        this.answers = Arrays.stream(q.getAnswers()).map(AnswerWeb::new).collect(Collectors.toList()).toArray(new AnswerWeb[q.getAnswers().length]);
         this.canSelectMultiple = q.isCanSelectMultiple();
         this.multiplicator = q.getMultiplicator();
     }
