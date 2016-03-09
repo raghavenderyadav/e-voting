@@ -144,8 +144,9 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                         log.error("VOTE message {} without signature. holderId={}", messageId, holderId);
                         break;
                     }
-                    if (signature.equals(cryptoHelper.createSignature(decryptedBody, privateKey))) {
-                        log.error("VOTE message {} has invalid signature. holderId={}", messageId, holderId);
+                    VoteResult result = serializer.deserializeVoteResult(decryptedBody);
+                    if (!cryptoHelper.verifySignature(decryptedBody, signature, cryptoHelper.loadPublicKey(participantsById.get(holderId).getPublicKey()))) {
+                        log.error("VOTE message {} has invalid signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                         break;
                     }
                     messageReceiver.addVote(serializer.deserializeVoteResult(decryptedBody));
