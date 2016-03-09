@@ -40,7 +40,6 @@ public class QuestionWeb {
     String id;
     String question;
     AnswerWeb[] answers;
-    BigDecimal amount;
     boolean canSelectMultiple;
     int multiplicator;
 
@@ -52,19 +51,16 @@ public class QuestionWeb {
         this.answers = answers;
         this.canSelectMultiple = false;
         this.multiplicator = 1;
-        this.amount = null;
     }
 
     @JsonCreator
     public QuestionWeb(@JsonProperty("id") String id, @JsonProperty("question") String question, @JsonProperty("answers") AnswerWeb[] answers,
-                       @JsonProperty("canSelectMultiple") boolean canSelectMultiple, @JsonProperty("multiplicator") int multiplicator, 
-                       @JsonProperty("amount") BigDecimal amount) {
+                       @JsonProperty("canSelectMultiple") boolean canSelectMultiple, @JsonProperty("multiplicator") int multiplicator) {
         this.id = id;
         this.question = question;
         this.answers = answers;
         this.canSelectMultiple = canSelectMultiple;
         this.multiplicator = multiplicator;
-        this.amount = amount;
     }
 
     public QuestionWeb(Question q) {
@@ -73,7 +69,6 @@ public class QuestionWeb {
         this.answers = Arrays.stream(q.getAnswers()).map(AnswerWeb::new).collect(Collectors.toList()).toArray(new AnswerWeb[q.getAnswers().length]);
         this.canSelectMultiple = q.isCanSelectMultiple();
         this.multiplicator = q.getMultiplicator();
-        this.amount = null;
     }
 
     public QuestionWeb(Question q, VoteResult vr) {
@@ -89,6 +84,5 @@ public class QuestionWeb {
         this.answers = answers.toArray(new AnswerWeb[answers.size()]);
         this.canSelectMultiple = q.isCanSelectMultiple();
         this.multiplicator = q.getMultiplicator();
-        this.amount = vr.getSumQuestionAmount(q.getId());
     }
 }
