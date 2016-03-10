@@ -67,7 +67,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
     @Override
     public synchronized boolean acceptVote(VoteResult newResult, List<String> signatures) {
-        if (!addVote(newResult, false))
+        if (!addVote(newResult, parentHolder == null))
             return false;
         if (parentHolder != null)
             parentHolder.acceptVote(new VoteResult(newResult, participantId + PATH_SEPARATOR + newResult.getHolderId()), signatures);
