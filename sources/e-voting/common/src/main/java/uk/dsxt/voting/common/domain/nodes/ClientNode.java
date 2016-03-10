@@ -102,13 +102,13 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
         }
 
         String clientId = clientIds[0];
-        Client client =  getClient(votingRecord.voting, clientIds[0]);
-        if (client == null) {
-            log.warn("acceptVote. Client not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
-            return false;
-        }
+        if (!isConfirmed && newResult.getStatus() == VoteResultStatus.OK) {
+            Client client =  getClient(votingRecord.voting, clientIds[0]);
+            if (client == null) {
+                log.warn("acceptVote. Client not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
+                return false;
+            }
 
-        if (newResult.getStatus() == VoteResultStatus.OK) {
             String resutError = newResult.findError(votingRecord.voting);
             if (resutError != null) {
                 log.warn("acceptVote. VoteResult has errors. votingId={} holdersTreePath={} error={}", newResult.getVotingId(), holdersTreePath, resutError);
@@ -126,7 +126,9 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
                     votingRecord.sumClientResultsByClientId.put(clientId, clientResult);
                 }
             }
-
+        }
+        if (clientId.equals(participantId) && clientIds.length > 0) {
+            holdersTreePath = holdersTreePath.substring(holdersTreePath.indexOf(PATH_SEPARATOR) + 1);
         }
         votingRecord.allClientResultsByClientPath.put(holdersTreePath, newResult);
         if (isConfirmed)
