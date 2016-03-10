@@ -2,7 +2,7 @@
 
 angular
   .module('e-voting.voting.voting-question-view', [])
-  .controller('VotingController',['votingInfo', '$state', '$interval', function (votingInfo, $state, $interval) {
+  .controller('VotingController',['$scope', 'votingInfo', '$state', '$interval', function ($scope, votingInfo, $state, $interval) {
     var vc = this;
 
     vc.voting = [];
@@ -57,4 +57,11 @@ angular
     function cancel() {
       $state.go('votingList');
     }
+    $scope.$watch(function() {
+      return vc.votingChoice;
+    }, function(newValue, oldValue) {
+      if((newValue !== oldValue) && (oldValue != undefined) && !angular.equals(oldValue, {}) && votingInfo.isNormal(oldValue)) {
+        vc.votingChoice = votingInfo.normalizeAnswers(newValue, oldValue, vc.voting)
+      }
+    }, true)
   }]);
