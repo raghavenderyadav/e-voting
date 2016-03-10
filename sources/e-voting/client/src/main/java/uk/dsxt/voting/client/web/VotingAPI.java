@@ -38,4 +38,6 @@ public interface VotingAPI {
     VotingInfoWeb votingResults(String cookie, String votingId);
 
     long getTime(String cookie, String votingId);
+
+    VoteResultWeb[] getConfirmedClientVotes(String cookie, String votingId);
 }
