@@ -128,12 +128,11 @@ public class MockVotingApiResource implements VotingAPI {
     @Produces("application/json")
     public VotingInfoWeb votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingResults method called. votingId={}", votingId);
-        final AnswerWeb[] answers1 = new AnswerWeb[5];
+        final AnswerWeb[] answers1 = new AnswerWeb[4];
         answers1[0] = new AnswerWeb("1", "answer_1", BigDecimal.TEN);
         answers1[1] = new AnswerWeb("2", "answer_2", BigDecimal.ONE);
         answers1[2] = new AnswerWeb("3", "answer_3", BigDecimal.TEN);
         answers1[3] = new AnswerWeb("4", "answer_4", BigDecimal.ONE);
-        answers1[4] = new AnswerWeb("5", "answer_5", BigDecimal.ZERO);
 
         final AnswerWeb[] answers2 = new AnswerWeb[1];
         answers2[0] = new AnswerWeb("1", "yes", BigDecimal.TEN);
