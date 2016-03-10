@@ -84,6 +84,6 @@ public class MessageContentTest {
 
         MessageContent content = new MessageContent(body);
 
-        assertFalse(content.checkSign(cryptoHelper.loadPublicKey(pair.getPublicKey()), cryptoHelper));
+        assertFalse(content.checkSign(cryptoHelper.loadPublicKey(gen.generateKeyPair().getPublicKey()), cryptoHelper));
     }
 }
