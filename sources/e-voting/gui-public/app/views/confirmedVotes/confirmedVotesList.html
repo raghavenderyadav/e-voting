@@ -1,0 +1,17 @@
+<div class="container">
+  <h2 class="page-title">Confirmed votes list</h2>
+  <table class="table table-striped table-custom">
+    <tr>
+      <th>Name</th>
+      <th>Client</th>
+    </tr>
+    <tr ng-repeat="voting in cvlc.confirmedVotesList">
+      <td>
+        <span class="voting-title">{{voting.votingName}}</span>
+      </td>
+      <td>
+        <span class="voting-title">{{voting.clientName}}</span>
+      </td>
+    </tr>
+  </table>
+</div>

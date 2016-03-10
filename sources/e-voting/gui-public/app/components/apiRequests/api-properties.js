@@ -10,6 +10,7 @@ angular
         "getVoting": "/getVoting",
         "getTime": "/getTime",
         "votingResults": "/votingResults",
+        "confirmedVotes": "/getConfirmedClientVotes",
         "signResult": "/signResult",
         "vote": "/vote",
         "logout": "/logout"

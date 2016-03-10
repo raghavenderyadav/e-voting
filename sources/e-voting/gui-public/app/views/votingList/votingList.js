@@ -6,6 +6,7 @@ angular
     var vlc = this;
     vlc.votingList = [];
     vlc.showResults = showResults;
+    vlc.showConfirmedVotes = showConfirmedVotes;
     vlc.vote = vote;
 
     activate();
@@ -21,6 +22,9 @@ angular
 
     function showResults(votingId) {
       $state.go('votingResult', {id: votingId});
+    }
+    function showConfirmedVotes(votingId) {
+      $state.go('confirmedVotes', {id: votingId});
     }
     function vote(votingId) {
       $state.go('voting', {id: votingId});

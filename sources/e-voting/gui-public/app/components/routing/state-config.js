@@ -53,6 +53,20 @@ angular.module('e-voting.routing', [
             id: undefined
           }
         })
+        .state('confirmedVotes', {
+          url: '/confirmedVotes/:locale/?id',
+          templateUrl: 'views/confirmedVotes/confirmedVotesList.html',
+          controller: 'ConfirmedVotesListController',
+          controllerAs: 'cvrc',
+          params: {
+            isLoginRequired: false,
+            locale: {
+              value: 'en-gb',
+              squash: true
+            },
+            id: undefined
+          }
+        })
         .state('voting', {
           url: '/voting/:locale/?id',
           templateUrl: 'views/voting/voting.html',
