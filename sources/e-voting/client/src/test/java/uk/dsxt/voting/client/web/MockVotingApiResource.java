@@ -140,9 +140,14 @@ public class MockVotingApiResource implements VotingAPI {
         answers2[1] = new AnswerWeb("2", "no", BigDecimal.ZERO);
         answers2[2] = new AnswerWeb("3", "vozderzhalsya", BigDecimal.ZERO);
 
-        final QuestionWeb[] questions = new QuestionWeb[2];
+        final AnswerWeb[] answers3 = new AnswerWeb[2];
+        answers3[0] = new AnswerWeb("1", "yes", BigDecimal.ZERO);
+        answers3[1] = new AnswerWeb("2", "no", BigDecimal.ZERO);        
+
+        final QuestionWeb[] questions = new QuestionWeb[3];
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
+        questions[2] = new QuestionWeb("3", "question_3_no_vote", answers3, false, 1);
         return new VotingInfoWeb(questions, new BigDecimal(22), -1);
     }
 
