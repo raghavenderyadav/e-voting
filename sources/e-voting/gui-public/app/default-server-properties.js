@@ -4,5 +4,6 @@ angular
     {
       "serverUrl": "http://localhost",
       "serverPort": "9000",
-      "pathToApi": "api"
+      "pathToApi": "api",
+      "readPortFromUrl": true
     });

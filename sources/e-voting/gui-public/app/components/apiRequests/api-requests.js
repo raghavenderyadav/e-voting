@@ -13,7 +13,7 @@ angular
   .service('apiRequestsUrlHelper', ['serverProperties', 'apiProperties', '$location', function (serverProperties, apiProperties, $location) {
     function constructApiUrl() {
       var serverPort = $location.port();
-      serverPort = angular.isUndefined(serverPort) ? ":" + serverProperties.serverPort + "/" : ":" + serverPort + "/";
+      serverPort = (!serverProperties.readPortFromUrl || angular.isUndefined(serverPort)) ? ":" + serverProperties.serverPort + "/" : ":" + serverPort + "/";
       return serverProperties.serverUrl + serverPort + serverProperties.pathToApi;
     }
 
