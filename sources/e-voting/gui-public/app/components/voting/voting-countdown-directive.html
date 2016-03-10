@@ -1,4 +1,4 @@
-<div class="countdown" ng-class="{'countdown-expired': votingCountdown <= 0, 'countdown-loading': (!isServerUpdateInProcess && votingCountdown > 0)}">
+<div class="countdown" ng-class="{'countdown-expired': votingCountdown <= 0, 'countdown-loading': (isServerUpdateInProcess && votingCountdown > 0)}">
   <span class="countdown-text" ng-if="votingCountdown > 0">До окончания голосования осталось:</span>
   <span class="countdown-text" ng-if="votingCountdown <= 0">Голосование окончено</span>
 
