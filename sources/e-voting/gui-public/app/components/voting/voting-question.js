@@ -61,6 +61,16 @@ angular
         }
       }
 
+      function getKeyByValue(arrObj, targetValue, targetValueKey) {
+        var result = null;
+        angular.forEach(arrObj, function(value, key) {
+          if(value[targetValueKey] === targetValue) {
+            result = key;
+          }
+        });
+        return result;
+      }
+
       function normalizeAnswers(newAnswers, oldAnswers, questionList) {
         var differenceId = null;
         angular.forEach(newAnswers, function(value, key) {
@@ -76,21 +86,13 @@ angular
           });
         }
         return newAnswers;
-
-        function getKeyByValue(arrObj, targetValue, targetValueKey) {
-          var result = null;
-          angular.forEach(arrObj, function(value, key) {
-            if(value[targetValueKey] === targetValue) {
-              result = key;
-            }
-          });
-          return result;
-        }
       }
-      function isNormal(answers) {
+      function isNormal(answers, questionList) {
         var result = true;
-        angular.forEach(answers, function(value) {
-          result = result ? checkEquality(value) : result;
+        angular.forEach(answers, function(value, key) {
+          if(!questionList[getKeyByValue(questionList, key, "id")].canSelectMultiple) {
+            result = result ? checkEquality(value) : result;
+          }
         });
         return result;
 

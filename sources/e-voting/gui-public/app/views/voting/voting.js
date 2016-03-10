@@ -60,7 +60,7 @@ angular
     $scope.$watch(function() {
       return vc.votingChoice;
     }, function(newValue, oldValue) {
-      if((newValue !== oldValue) && (oldValue != undefined) && !angular.equals(oldValue, {}) && votingInfo.isNormal(oldValue)) {
+      if((newValue !== oldValue) && (oldValue != undefined) && !angular.equals(oldValue, {}) && votingInfo.isNormal(oldValue, vc.voting)) {
         vc.votingChoice = votingInfo.normalizeAnswers(newValue, oldValue, vc.voting)
       }
     }, true)
