@@ -11,7 +11,7 @@
         </div>
         <div class="panel-footer text-center">
           <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vc.cancel()">Cancel</button>
-          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="vc.vote()">Vote</button>
+          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.votingCountdown > 0) && vc.vote()" ng-disabled="vc.votingCountdown <= 0">Vote</button>
         </div>
       </div>
     </div>
