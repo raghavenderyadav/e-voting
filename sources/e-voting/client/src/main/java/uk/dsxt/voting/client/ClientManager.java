@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.domain.dataModel.Question;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -45,9 +46,12 @@ public class ClientManager {
 
     AssetsHolder assetsHolder;
 
-    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml) {
+    Logger audit;
+
+    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit) {
         this.assetsHolder = assetsHolder;
         this.participantsXml = participantsXml;
+        this.audit = audit;
     }
 
     public VotingWeb[] getVotings() {

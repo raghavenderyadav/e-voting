@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
@@ -71,7 +72,7 @@ public class ClientApplication extends ResourceConfig {
 
     public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
                              String mainAddress, String passphrase, String nxtPropertiesPath, 
-                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath) throws Exception {
+                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath, Logger audit) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
@@ -139,7 +140,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi), new AuthManager(credentialsFilePath)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit), new AuthManager(credentialsFilePath, audit)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
         walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);

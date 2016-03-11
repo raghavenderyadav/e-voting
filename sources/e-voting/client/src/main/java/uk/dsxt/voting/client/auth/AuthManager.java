@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client.auth;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.client.datamodel.LoggedUser;
 import uk.dsxt.voting.client.datamodel.LoginAnswerWeb;
@@ -40,9 +41,12 @@ public class AuthManager {
     public HashMap<String, String> userCredentials = new HashMap<>();
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
+    
+    private Logger audit;
 
-    public AuthManager(String credentialsFilepath) {
+    public AuthManager(String credentialsFilepath, Logger audit) {
         log.debug("Initializing AuthManager...");
+        this.audit = audit;
         try {
             ClientCredentials[] credentials = PropertiesHelper.loadResource(credentialsFilepath, ClientCredentials[].class);
             log.debug("Found {} client credentials.", credentials.length);
@@ -64,11 +68,14 @@ public class AuthManager {
                 LoggedUser loggedUser = new LoggedUser(clientId);
                 String cookie = generateCookieAndLogin(loggedUser);
                 String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
+                audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
                 return new LoginAnswerWeb(new SessionInfoWeb(userName, cookie), null);
             } else {
+                audit.info("[Voting WEB APP] User login FAILED (INCORRECT PASSWORD). User ID: {}.", clientId);
                 return new LoginAnswerWeb(null, "INCORRECT_PASSWORD");
             }
         } else {
+            audit.info("[Voting WEB APP] User login FAILED (LOGIN NOT FOUND). Login: {}.", clientId);
             return new LoginAnswerWeb(null, "LOGIN_NOT_FOUND");
         }
     }
@@ -79,6 +86,7 @@ public class AuthManager {
             log.trace(String.format("UUID is already in use: %s", cookie));
             cookie = UUID.randomUUID().toString();
         }
+        audit.info("[Voting WEB APP] New cookie generated for user with ID: {}. Cookie: {}.", user.getClientId(), cookie);
         return cookie;
     }
 
@@ -97,7 +105,11 @@ public class AuthManager {
             log.debug("logout. found {} sessions for client with id={}", cookiesToDelete.size(), loggedUser.getClientId());
             cookiesToDelete.forEach(loggedUsers::remove);
             log.debug("logout method executed successfully for client with id={}.", loggedUser.getClientId());
-            return !loggedUsers.containsKey(cookie);
+            final boolean loggedOut = !loggedUsers.containsKey(cookie);
+            if (loggedOut) {
+                audit.info("[Voting WEB APP] User is LOGGED OUT SUCCESSFULLY. User ID: {}.", loggedUser.getClientId());
+            }
+            return loggedOut;
         }
         log.warn("logout. Couldn't find user by cookie to logout. Cookie: {}", cookie);
         return false;
