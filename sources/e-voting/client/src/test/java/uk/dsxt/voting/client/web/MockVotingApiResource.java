@@ -21,7 +21,6 @@
 
 package uk.dsxt.voting.client.web;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
@@ -166,6 +165,48 @@ public class MockVotingApiResource implements VotingAPI {
         results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
         results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
         results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(222222.12345678), VoteResultStatus.ERROR);
+        
         return results;
+    }
+
+    @POST
+    @Path("/getAllClientVotes")
+    @Produces("application/json")
+    public VoteResultWeb[] getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        final VoteResultWeb[] results = new VoteResultWeb[10];
+
+        results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
+        results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
+        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
+        results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
+        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.ERROR);        
+        results[5] = new VoteResultWeb(votingId, "Voting Name 2016", "client_6", "Mr. Kak", BigDecimal.ONE, VoteResultStatus.OK);
+        results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.ERROR);
+        results[7] = new VoteResultWeb(votingId, "Voting Name 2016", "client_8", "Mr. Smith", BigDecimal.ZERO, VoteResultStatus.OK);
+        results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.ERROR);
+        results[9] = new VoteResultWeb(votingId, "Voting Name 2016", "client_10", "Mr. Kalinin", new BigDecimal(5632626), VoteResultStatus.OK);
+        
+        return results;
+    }
+
+    @POST
+    @Path("/votingTotalResults")
+    @Produces("application/json")
+    public VotingInfoWeb votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        log.debug("votingTotalResults method called. votingId={}", votingId);
+        final AnswerWeb[] answers1 = new AnswerWeb[4];
+        answers1[0] = new AnswerWeb("1", "answer_1", new BigDecimal(100000));
+        answers1[1] = new AnswerWeb("2", "answer_2", new BigDecimal(999999));
+        answers1[2] = new AnswerWeb("3", "answer_3", new BigDecimal(777777777.77777777));
+        answers1[3] = new AnswerWeb("4", "answer_4", new BigDecimal(0.42353242));
+
+        final AnswerWeb[] answers2 = new AnswerWeb[1];
+        answers2[0] = new AnswerWeb("1", "yes", new BigDecimal(123546547));
+
+        final QuestionWeb[] questions = new QuestionWeb[3];
+        questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
+        questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
+        questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
+        return new VotingInfoWeb(questions, BigDecimal.ZERO, -1);
     }
 }

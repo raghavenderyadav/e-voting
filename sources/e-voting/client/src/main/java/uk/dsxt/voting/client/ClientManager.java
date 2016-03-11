@@ -143,4 +143,30 @@ public class ClientManager {
         results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
         return results.toArray(new VoteResultWeb[results.size()]);
     }
+
+    public VoteResultWeb[] getAllClientVotes(String votingId) {
+        List<VoteResultWeb> results = new ArrayList<>();
+        final Collection<VoteResult> votes = assetsHolder.getAllClientVotes(votingId);
+        results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
+        return results.toArray(new VoteResultWeb[results.size()]);
+    }
+
+    public VotingInfoWeb votingTotalResults(String votingId) {
+        final Voting voting = assetsHolder.getVoting(votingId);
+        if (voting == null) {
+            log.debug("votingTotalResults. Voting with id={} not found.", votingId);
+            return null;
+        }
+        final VoteResult voteResults = assetsHolder.getTotalVotingResult(votingId);
+        if (voteResults == null) {
+            log.debug("votingTotalResults. Total results for voting with id={} not found.", votingId);
+            return null;
+        }
+
+        List<QuestionWeb> results = new ArrayList<>();
+        for (Question question : voting.getQuestions()) {
+            results.add(new QuestionWeb(question, voteResults));
+        }
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0);
+    }
 }
