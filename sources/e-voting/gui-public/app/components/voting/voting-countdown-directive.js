@@ -41,7 +41,7 @@ function votingCountdown($injector) {
       hours: 0,
       minutes: 0,
       seconds: 0
-    }
+    };
     result.days = Math.floor(timestamp/24/60/60/1000);
     result.hours = Math.floor(timestamp/60/60/1000 - result.days*24);
     result.minutes = Math.floor(timestamp/60/1000 - result.days*24*60 - result.hours*60);
@@ -58,16 +58,7 @@ function votingCountdown($injector) {
     return result;
   }
 
-  return {
-    link: link,
-    templateUrl: 'components/voting/voting-countdown-directive.html',
-    restrict: 'EA',
-    scope: {
-      votingCountdown: "="
-    }
-  };
-
-  function link(scope, element, attrs) {
+  function link(scope) {
     scope.timer = timestampToTime(scope.votingCountdown);
     scope.votingCountdownInitial = angular.copy(scope.votingCountdown);
     scope.isServerUpdateInProcess = false;
@@ -97,4 +88,13 @@ function votingCountdown($injector) {
       }, 500)
     }
   }
+
+  return {
+    link: link,
+    templateUrl: 'components/voting/voting-countdown-directive.html',
+    restrict: 'EA',
+    scope: {
+      votingCountdown: "="
+    }
+  };
 }
