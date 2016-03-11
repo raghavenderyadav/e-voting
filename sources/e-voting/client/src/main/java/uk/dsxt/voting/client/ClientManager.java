@@ -120,7 +120,7 @@ public class ClientManager {
 
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
-            results.add(new QuestionWeb(question, clientVote));
+            results.add(new QuestionWeb(question, clientVote, false));
         }
         return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId), 0);
     }
@@ -165,7 +165,7 @@ public class ClientManager {
 
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
-            results.add(new QuestionWeb(question, voteResults));
+            results.add(new QuestionWeb(question, voteResults, true));
         }
         return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0);
     }

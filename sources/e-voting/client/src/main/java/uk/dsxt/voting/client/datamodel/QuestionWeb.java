@@ -71,14 +71,14 @@ public class QuestionWeb {
         this.multiplicator = q.getMultiplicator();
     }
 
-    public QuestionWeb(Question q, VoteResult vr) {
+    public QuestionWeb(Question q, VoteResult vr, boolean includeZeroAnswers) {
         this.id = q.getId();
         this.question = q.getQuestion();
         List<AnswerWeb> answers = new ArrayList<>();
         for (Answer answer : q.getAnswers()) {
             final String key = String.format("%s-%s", q.getId(), answer.getId());
             final VotedAnswer votedAnswer = vr.getAnswerByKey(key);
-            if (votedAnswer != null && votedAnswer.getVoteAmount().compareTo(BigDecimal.ZERO) > 0) {
+            if (votedAnswer != null && (votedAnswer.getVoteAmount().compareTo(BigDecimal.ZERO) > 0 || (includeZeroAnswers && votedAnswer.getVoteAmount().compareTo(BigDecimal.ZERO) == 0))) {
                 AnswerWeb answerWeb = new AnswerWeb(answer, votedAnswer.getVoteAmount());
                 answers.add(answerWeb);
             }

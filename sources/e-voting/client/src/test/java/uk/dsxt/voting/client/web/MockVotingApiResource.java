@@ -194,19 +194,27 @@ public class MockVotingApiResource implements VotingAPI {
     @Produces("application/json")
     public VotingInfoWeb votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingTotalResults method called. votingId={}", votingId);
-        final AnswerWeb[] answers1 = new AnswerWeb[4];
+        final AnswerWeb[] answers1 = new AnswerWeb[5];
         answers1[0] = new AnswerWeb("1", "answer_1", new BigDecimal(100000));
         answers1[1] = new AnswerWeb("2", "answer_2", new BigDecimal(999999));
         answers1[2] = new AnswerWeb("3", "answer_3", new BigDecimal(777777777.77777777));
         answers1[3] = new AnswerWeb("4", "answer_4", new BigDecimal(0.42353242));
+        answers1[4] = new AnswerWeb("5", "answer_5", BigDecimal.ZERO);
 
-        final AnswerWeb[] answers2 = new AnswerWeb[1];
+        final AnswerWeb[] answers2 = new AnswerWeb[3];
         answers2[0] = new AnswerWeb("1", "yes", new BigDecimal(123546547));
+        answers2[1] = new AnswerWeb("2", "no", new BigDecimal(789987342.324));
+        answers2[2] = new AnswerWeb("3", "vozderzhalsya", BigDecimal.ZERO);
+
+        final AnswerWeb[] answers3 = new AnswerWeb[3];
+        answers3[0] = new AnswerWeb("1", "yes", new BigDecimal(6547));
+        answers3[1] = new AnswerWeb("2", "no", new BigDecimal(987342.324));
+        answers3[2] = new AnswerWeb("3", "ne sderzhalsya", BigDecimal.ZERO);
 
         final QuestionWeb[] questions = new QuestionWeb[3];
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
-        questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
-        questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
+        questions[1] = new QuestionWeb("2", "question_2_yes_no_1", answers2, false, 1);
+        questions[2] = new QuestionWeb("3", "question_3_yes_no_2", answers3, false, 1);
         return new VotingInfoWeb(questions, BigDecimal.ZERO, -1);
     }
 }
