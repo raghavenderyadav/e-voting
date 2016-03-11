@@ -22,21 +22,21 @@
 'use strict';
 
 angular
-  .module('e-voting', [
-    'ui.router',
-    'e-voting.routing',
-    'e-voting.auth',
-    'e-voting.voting',
-    'e-voting.header',
-    'e-voting.server-properties',
-    'e-voting.api-requests',
-    'e-voting.role-manager'
-  ])
-  .run(['$rootScope', 'roleManager', function ($rootScope, roleManager) {
-    $rootScope.$on('$stateChangeStart',
-        function (event, toState, toParams, fromState, fromParams) {
-          roleManager.checkAccess(event, toState, toParams, fromState, fromParams);
+  .module('e-voting.role-manager', [])
+  .service('roleManager', ['$sessionStorage', '$state',
+    function ($sessionStorage, $state) {
+      return {
+        checkAccess: checkAccess
+      };
+      function checkAccess(event, toState, toParams, fromState, fromParams) {
+        if (toState.access !== undefined) {
+          if (toState.access.loginRequired !== undefined && toState.access.loginRequired) {
+            if (angular.isUndefined($sessionStorage.cookie)) {
+              event.preventDefault();
+              $state.go('signIn', {location: "replace", reload: false, inherit: false, notify: false});
+            }
+          }
         }
-      );
+      }
     }
-  ])
+  ]);

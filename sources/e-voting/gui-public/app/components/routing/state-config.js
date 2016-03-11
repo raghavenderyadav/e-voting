@@ -21,7 +21,8 @@
 
 'use strict';
 
-angular.module('e-voting.routing', [
+angular
+  .module('e-voting.routing', [
     'ngResource'
   ])
   .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$resourceProvider',
@@ -53,11 +54,13 @@ angular.module('e-voting.routing', [
           controller: 'VotingListController',
           controllerAs: 'vlc',
           params: {
-            isLoginRequired: false,
             locale: {
               value: 'en-gb',
               squash: true
             }
+          },
+          access: {
+            loginRequired: true
           }
         })
         .state('votingResult', {
@@ -66,12 +69,14 @@ angular.module('e-voting.routing', [
           controller: 'VotingResultController',
           controllerAs: 'vrc',
           params: {
-            isLoginRequired: false,
             locale: {
               value: 'en-gb',
               squash: true
             },
             id: undefined
+          },
+          access: {
+            loginRequired: true
           }
         })
         .state('confirmedVotes', {
@@ -80,12 +85,14 @@ angular.module('e-voting.routing', [
           controller: 'ConfirmedVotesListController',
           controllerAs: 'cvlc',
           params: {
-            isLoginRequired: false,
             locale: {
               value: 'en-gb',
               squash: true
             },
             id: undefined
+          },
+          access: {
+            loginRequired: true
           }
         })
         .state('voting', {
@@ -94,12 +101,14 @@ angular.module('e-voting.routing', [
           controller: 'VotingController',
           controllerAs: 'vc',
           params: {
-            isLoginRequired: false,
             locale: {
               value: 'en-gb',
               squash: true
             },
             id: undefined
+          },
+          access: {
+            loginRequired: false
           }
         })
         .state('signIn', {
@@ -108,11 +117,13 @@ angular.module('e-voting.routing', [
           controller: 'SignInController',
           controllerAs: 'sic',
           params: {
-            isLoginRequired: false,
             locale: {
               value: 'en-gb',
               squash: true
             }
+          },
+          access: {
+            loginRequired: false
           }
         });
       $locationProvider.html5Mode(true).hashPrefix('!');
