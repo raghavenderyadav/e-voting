@@ -26,7 +26,7 @@
           type="button"
           class="voting-btn btn-sm btn btn-success"
           ng-disabled="!voting.canVote"
-          ng-click="voting.canVote && vlc.vote(voting.id)">
+          ng-click="voting.canVote && vlc.showVoteRelatedPage('voting', voting.id)">
           Vote
         </button>
       </td>
@@ -34,14 +34,20 @@
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
-          ng-click="vlc.showResults(voting.id)">
+          ng-click="vlc.showVoteRelatedPage('votingResult', voting.id)">
           Results
         </button>
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
-          ng-click="vlc.showConfirmedVotes(voting.id)">
+          ng-click="vlc.showVoteRelatedPage('confirmedVotes', voting.id)">
           Confirmed votes
+        </button>
+        <button
+          type="button"
+          class="voting-btn btn-sm btn btn-default"
+          ng-click="vlc.showVoteRelatedPage('votingTotalResult', voting.id)">
+          Total votes
         </button>
       </td>
     </tr>

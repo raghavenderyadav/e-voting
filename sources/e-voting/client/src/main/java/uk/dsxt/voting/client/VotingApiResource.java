@@ -130,4 +130,24 @@ public class VotingApiResource implements VotingAPI {
     public VoteResultWeb[] getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return execute("getConfirmedClientVotes", String.format("votingId=%s", votingId), () -> manager.getConfirmedClientVotes(votingId));
     }
+
+    @POST
+    @Path("/getAllClientVotes")
+    @Produces("application/json")
+    public VoteResultWeb[] getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return execute("getAllClientVotes", String.format("votingId=%s", votingId), () -> manager.getAllClientVotes(votingId));
+    }
+
+    @POST
+    @Path("/votingTotalResults")
+    @Produces("application/json")
+    public VotingInfoWeb votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        // TODO Move cookie checks into execute method.
+        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+            log.warn("votingTotalResults. Incorrect cookie: {}", cookie);
+            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO, 0);
+        }
+        return execute("votingTotalResults", String.format("votingId=%s", votingId), () -> manager.votingTotalResults(votingId));
+    }
 }

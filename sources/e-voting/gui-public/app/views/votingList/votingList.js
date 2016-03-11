@@ -26,9 +26,7 @@ angular
   .controller('VotingListController', ['votingListInfo', '$state', function (votingListInfo, $state) {
     var vlc = this;
     vlc.votingList = [];
-    vlc.showResults = showResults;
-    vlc.showConfirmedVotes = showConfirmedVotes;
-    vlc.vote = vote;
+    vlc.showVoteRelatedPage = showVoteRelatedPage;
 
     activate();
 
@@ -41,13 +39,7 @@ angular
       }
     }
 
-    function showResults(votingId) {
-      $state.go('votingResult', {id: votingId});
-    }
-    function showConfirmedVotes(votingId) {
-      $state.go('confirmedVotes', {id: votingId});
-    }
-    function vote(votingId) {
-      $state.go('voting', {id: votingId});
+    function showVoteRelatedPage(page, votingId) {
+      $state.go(page, {id: votingId});
     }
   }]);

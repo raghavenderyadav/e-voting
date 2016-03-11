@@ -36,8 +36,12 @@ public interface VotingAPI {
     boolean vote(String cookie, String votingId, String votingChoice);
 
     VotingInfoWeb votingResults(String cookie, String votingId);
+    
+    VotingInfoWeb votingTotalResults(String cookie, String votingId);
 
     long getTime(String cookie, String votingId);
 
     VoteResultWeb[] getConfirmedClientVotes(String cookie, String votingId);
+    
+    VoteResultWeb[] getAllClientVotes(String cookie, String votingId);
 }

@@ -32,5 +32,7 @@ angular
     'e-voting.voting.voting-question-directive',
     'e-voting.voting.confirmed-votes-list-model',
     'e-voting.voting.confirmed-votes-list-view',
-    'e-voting.voting.voting-countdown-directive'
+    'e-voting.voting.voting-countdown-directive',
+    'e-voting.voting.voting-total-result-model',
+    'e-voting.voting.voting-total-result-view'
   ]);
