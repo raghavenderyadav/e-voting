@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Voting result</h3>
+        </div>
+        <div class="panel-body">
+          <div ng-repeat="question in vtrc.votingTotalResult.questions" class="voting-item">
+            <strong class="voting-item-title">{{question.question}}</strong>
+            <div>
+              <div ng-repeat="answer in question.answers">
+                <div class="row">
+                  <div class="col-xs-3">
+                    <br>
+                    {{answer.name}}
+                  </div>
+                  <div class="col-xs-9">
+                    <span>Votes: {{answer.votes}} / {{vtrc.votingTotalResult.amount}}</span>
+                    <div class="progress">
+                      <div
+                        class="progress-bar"
+                        role="progressbar"
+                        ng-class="{'progress-bar-success': answer.votes > 0}"
+                        aria-valuenow="{{answer.votes}}"
+                        aria-valuemin="{{answer.votes}}"
+                        aria-valuemax="{{vtrc.votingTotalResult.amount}}"
+                        style="width: {{answer.votes / vtrc.votingTotalResult.amount * 100 | number: 2}}%;">
+                        <span ng-if="answer.votes > 0">
+                          {{answer.votes / vtrc.votingTotalResult.amount * 100 | number: 2}}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer text-center">
+          <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vtrc.cancel()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

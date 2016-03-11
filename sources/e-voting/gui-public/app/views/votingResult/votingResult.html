@@ -39,7 +39,7 @@
                         ng-class="{'progress-bar-success': answer.votes > 0}"
                         aria-valuenow="{{answer.votes}}"
                         aria-valuemin="{{answer.votes}}"
-                        aria-valuemax="{{question.totalVotes}}"
+                        aria-valuemax="{{vrc.votingResult.amount}}"
                         style="width: {{answer.votes / vrc.votingResult.amount * 100 | number: 2}}%;">
                         <span ng-if="answer.votes > 0">
                           {{answer.votes / vrc.votingResult.amount * 100 | number: 2}}%

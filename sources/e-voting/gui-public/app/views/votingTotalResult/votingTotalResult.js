@@ -22,26 +22,24 @@
 'use strict';
 
 angular
-  .module('e-voting.voting.voting-result-model', [])
-  .service('votingResultInfo', ['apiRequests',
-    function (apiRequests) {
-      return {
-        getVotingResult: getVotingResult
-      };
-      function getVotingResult(votingId, getVotingResultComplete) {
-        return apiRequests.postCookieRequest(
-          'votingResults',
-          {
-            votingId: votingId
-          },
-          getVotingResultComplete,
-          getVotingResultFailed,
-          null
-        );
+  .module('e-voting.voting.voting-total-result-view', [])
+  .controller('VotingTotalResultController',['votingTotalResultInfo', '$state', function (votingTotalResultInfo, $state) {
+    var vtrc = this;
+    vtrc.votingTotalResult = [];
+    vtrc.cancel = cancel;
 
-        function getVotingResultFailed(data) {
-          console.log('XHR Failed for getVotingResult.' + data.error);
-        }
+    activate();
+
+    function activate() {
+      return votingTotalResultInfo.getVotingTotalResult($state.params.id, getVotingTotalResultComplete);
+
+      function getVotingTotalResultComplete(data) {
+        vtrc.votingTotalResult = data;
+        return vtrc.votingTotalResult;
       }
     }
-  ]);
+
+    function cancel() {
+      $state.go('votingList');
+    }
+  }]);

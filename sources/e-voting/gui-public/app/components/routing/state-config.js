@@ -102,6 +102,20 @@ angular.module('e-voting.routing', [
             id: undefined
           }
         })
+        .state('votingTotalResult', {
+          url: '/votingTotalResult/:locale/?id',
+          templateUrl: 'views/votingTotalResult/votingTotalResult.html',
+          controller: 'VotingTotalResultController',
+          controllerAs: 'vtrc',
+          params: {
+            isLoginRequired: false,
+            locale: {
+              value: 'en-gb',
+              squash: true
+            },
+            id: undefined
+          }
+        })
         .state('signIn', {
           url: '/:locale/',
           templateUrl: 'views/signIn/signIn.html',
