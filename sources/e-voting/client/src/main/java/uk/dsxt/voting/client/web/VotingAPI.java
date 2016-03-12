@@ -21,27 +21,27 @@
 
 package uk.dsxt.voting.client.web;
 
-import uk.dsxt.voting.client.datamodel.*;
+import uk.dsxt.voting.client.datamodel.RequestResult;
 
 public interface VotingAPI {
 
-    LoginAnswerWeb login(String login, String password);
+    RequestResult login(String login, String password);
 
-    boolean logout(String cookie);
+    RequestResult logout(String cookie);
 
-    VotingWeb[] getVotings(String cookie);
+    RequestResult getVotings(String cookie);
 
-    VotingInfoWeb getVoting(String cookie, String votingId);
+    RequestResult getVoting(String cookie, String votingId);
 
-    boolean vote(String cookie, String votingId, String votingChoice);
+    RequestResult vote(String cookie, String votingId, String votingChoice);
 
-    VotingInfoWeb votingResults(String cookie, String votingId);
-    
-    VotingInfoWeb votingTotalResults(String cookie, String votingId);
+    RequestResult votingResults(String cookie, String votingId);
 
-    long getTime(String cookie, String votingId);
+    RequestResult votingTotalResults(String cookie, String votingId);
 
-    VoteResultWeb[] getConfirmedClientVotes(String cookie, String votingId);
-    
-    VoteResultWeb[] getAllClientVotes(String cookie, String votingId);
+    RequestResult getTime(String cookie, String votingId);
+
+    RequestResult getConfirmedClientVotes(String cookie, String votingId);
+
+    RequestResult getAllClientVotes(String cookie, String votingId);
 }

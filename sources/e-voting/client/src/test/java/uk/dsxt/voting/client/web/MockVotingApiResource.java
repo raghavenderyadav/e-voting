@@ -56,30 +56,30 @@ public class MockVotingApiResource implements VotingAPI {
     @POST
     @Path("/login")
     @Produces("application/json")
-    public LoginAnswerWeb login(@FormParam("login") String login, @FormParam("password") String password) {
+    public RequestResult login(@FormParam("login") String login, @FormParam("password") String password) {
         log.debug("login method called. login={};", login);
-        return new LoginAnswerWeb(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1"), null);
+        return new RequestResult<>(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1"), null);
     }
 
     @POST
     @Path("/logout")
     @Produces("application/json")
-    public boolean logout(@FormParam("cookie") String cookie) {
+    public RequestResult logout(@FormParam("cookie") String cookie) {
         log.debug("logout method called. cookie={};", cookie);
-        return true;
+        return new RequestResult<>(true, null);
     }
 
     @POST
     @Path("/votings")
     @Produces("application/json")
-    public VotingWeb[] getVotings(@FormParam("cookie") String cookie) {
-        return votings.values().toArray(new VotingWeb[votings.size()]);
+    public RequestResult getVotings(@FormParam("cookie") String cookie) {
+        return new RequestResult<>(votings.values().toArray(new VotingWeb[votings.size()]), null);
     }
 
     @POST
     @Path("/getVoting")
     @Produces("application/json")
-    public VotingInfoWeb getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("getVoting method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[5];
         answers1[0] = new AnswerWeb("1", "answer_1_1", null);
@@ -102,30 +102,30 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1);
         questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1);
-        return new VotingInfoWeb(questions, new BigDecimal(500), getTime(cookie, votingId));
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(500), (long)getTime(cookie, votingId).getResult()), null);
     }
 
     @POST
     @Path("/vote")
     @Produces("application/json")
-    public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
+    public RequestResult vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
         try {
             log.debug("vote method called. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice);
             VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
             for (String question : choice.getQuestionChoices().keySet()) {
                 log.debug("Question: {}, Answer: {}", question, choice.getQuestionChoices().get(question));
             }
-            return true;
+            return new RequestResult<>(true, null);
         } catch (Exception e) {
             log.error("vote method failed. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice, e);
-            return false;
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
-    public VotingInfoWeb votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingResults method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[4];
         answers1[0] = new AnswerWeb("1", "answer_1", BigDecimal.TEN);
@@ -140,24 +140,24 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-        return new VotingInfoWeb(questions, new BigDecimal(22), -1);
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), -1), null);
     }
 
     @POST
     @Path("/getTime")
     @Produces("application/json")
-    public long getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("getTime method called. votingId={};", votingId);
         if (votings.containsKey(votingId)) {
-            return votings.get(votingId).getEndTimestamp() - Instant.now().getMillis();
+            return new RequestResult<>(votings.get(votingId).getEndTimestamp() - Instant.now().getMillis(), null);
         }
-        return 0;
+        return new RequestResult<>(APIException.VOTING_NOT_FOUND);
     }
 
     @POST
     @Path("/getConfirmedClientVotes")
     @Produces("application/json")
-    public VoteResultWeb[] getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         final VoteResultWeb[] results = new VoteResultWeb[5];
 
         results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
@@ -165,34 +165,34 @@ public class MockVotingApiResource implements VotingAPI {
         results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
         results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
         results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(222222.12345678), VoteResultStatus.ERROR);
-        
-        return results;
+
+        return new RequestResult<>(results, null);
     }
 
     @POST
     @Path("/getAllClientVotes")
     @Produces("application/json")
-    public VoteResultWeb[] getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         final VoteResultWeb[] results = new VoteResultWeb[10];
 
         results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
         results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
         results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
         results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.ERROR);        
+        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.ERROR);
         results[5] = new VoteResultWeb(votingId, "Voting Name 2016", "client_6", "Mr. Kak", BigDecimal.ONE, VoteResultStatus.OK);
         results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.ERROR);
         results[7] = new VoteResultWeb(votingId, "Voting Name 2016", "client_8", "Mr. Smith", BigDecimal.ZERO, VoteResultStatus.OK);
         results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.ERROR);
         results[9] = new VoteResultWeb(votingId, "Voting Name 2016", "client_10", "Mr. Kalinin", new BigDecimal(5632626), VoteResultStatus.OK);
-        
-        return results;
+
+        return new RequestResult<>(results, null); 
     }
 
     @POST
     @Path("/votingTotalResults")
     @Produces("application/json")
-    public VotingInfoWeb votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         log.debug("votingTotalResults method called. votingId={}", votingId);
         final AnswerWeb[] answers1 = new AnswerWeb[5];
         answers1[0] = new AnswerWeb("1", "answer_1", new BigDecimal(100000));
@@ -215,6 +215,6 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no_1", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_yes_no_2", answers3, false, 1);
-        return new VotingInfoWeb(questions, BigDecimal.ZERO, -1);
+        return new RequestResult<>(new VotingInfoWeb(questions, BigDecimal.ZERO, -1), null);
     }
 }
