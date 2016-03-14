@@ -4,11 +4,10 @@ package uk.dsxt.voting.client.datamodel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestResult<T> {
-    @JsonUnwrapped
+    @JsonProperty("result")
     private final T result;
     
     @JsonProperty("error")
