@@ -22,14 +22,15 @@
 package uk.dsxt.voting.client.auth;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.client.datamodel.ClientCredentials;
-import uk.dsxt.voting.client.datamodel.LoggedUser;
-import uk.dsxt.voting.client.datamodel.LoginAnswerWeb;
-import uk.dsxt.voting.client.datamodel.SessionInfoWeb;
+import org.apache.logging.log4j.Logger;
+import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -41,8 +42,11 @@ public class AuthManager {
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
 
-    public AuthManager(String credentialsFilepath) {
+    private Logger audit;
+
+    public AuthManager(String credentialsFilepath, Logger audit) {
         log.debug("Initializing AuthManager...");
+        this.audit = audit;
         try {
             ClientCredentials[] credentials = PropertiesHelper.loadResource(credentialsFilepath, ClientCredentials[].class);
             log.debug("Found {} client credentials.", credentials.length);
@@ -58,18 +62,21 @@ public class AuthManager {
         }
     }
 
-    public LoginAnswerWeb login(String clientId, String password) {
+    public RequestResult login(String clientId, String password) {
         if (userCredentials.containsKey(clientId)) {
             if (userCredentials.get(clientId).equals(password)) {
                 LoggedUser loggedUser = new LoggedUser(clientId);
                 String cookie = generateCookieAndLogin(loggedUser);
                 String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
-                return new LoginAnswerWeb(new SessionInfoWeb(userName, cookie), null);
+                audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
+                return new RequestResult<>(new SessionInfoWeb(userName, cookie), null);
             } else {
-                return new LoginAnswerWeb(null, "INCORRECT_PASSWORD");
+                audit.info("[Voting WEB APP] User login FAILED (INCORRECT PASSWORD). User ID: {}.", clientId);
+                return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
             }
         } else {
-            return new LoginAnswerWeb(null, "LOGIN_NOT_FOUND");
+            audit.info("[Voting WEB APP] User login FAILED (LOGIN NOT FOUND). Login: {}.", clientId);
+            return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
         }
     }
 
@@ -79,6 +86,7 @@ public class AuthManager {
             log.trace(String.format("UUID is already in use: %s", cookie));
             cookie = UUID.randomUUID().toString();
         }
+        audit.info("[Voting WEB APP] New cookie generated for user with ID: {}. Cookie: {}.", user.getClientId(), cookie);
         return cookie;
     }
 
@@ -89,7 +97,7 @@ public class AuthManager {
         return user;
     }
 
-    public boolean logout(String cookie) {
+    public RequestResult logout(String cookie) {
         log.debug("logout method called. cookie={}", cookie);
         final LoggedUser loggedUser = tryGetLoggedUser(cookie);
         if (loggedUser != null) {
@@ -97,10 +105,14 @@ public class AuthManager {
             log.debug("logout. found {} sessions for client with id={}", cookiesToDelete.size(), loggedUser.getClientId());
             cookiesToDelete.forEach(loggedUsers::remove);
             log.debug("logout method executed successfully for client with id={}.", loggedUser.getClientId());
-            return !loggedUsers.containsKey(cookie);
+            final boolean loggedOut = !loggedUsers.containsKey(cookie);
+            if (loggedOut) {
+                audit.info("[Voting WEB APP] User is LOGGED OUT SUCCESSFULLY. User ID: {}.", loggedUser.getClientId());
+            }
+            return new RequestResult<>(true, null);
         }
         log.warn("logout. Couldn't find user by cookie to logout. Cookie: {}", cookie);
-        return false;
+        return new RequestResult<>(APIException.WRONG_COOKIE);
     }
 
 }

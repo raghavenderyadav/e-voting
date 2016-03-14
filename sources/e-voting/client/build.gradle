@@ -8,12 +8,13 @@ repositories {
 }
 
 dependencies {
+    compile "com.lmax:disruptor:3.3.4";
     compile(project(":common"))
 }
 
 jar {
     from files(sourceSets.main.output.classesDir)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
+    from { configurations.compile.collect { zipTree(it) } }
     manifest { attributes "Main-Class": "uk.dsxt.voting.client.VotingClientMain" }
 }

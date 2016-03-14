@@ -23,14 +23,15 @@ package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.client.auth.AuthManager;
-import uk.dsxt.voting.client.datamodel.*;
+import uk.dsxt.voting.client.datamodel.APIException;
+import uk.dsxt.voting.client.datamodel.LoggedUser;
+import uk.dsxt.voting.client.datamodel.RequestResult;
 import uk.dsxt.voting.client.web.VotingAPI;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.math.BigDecimal;
 import java.util.function.Supplier;
 
 @Log4j2
@@ -45,109 +46,99 @@ public class VotingApiResource implements VotingAPI {
         this.authManager = authManager;
     }
 
-    private <T> T execute(String name, String params, Supplier<T> request) {
+    @FunctionalInterface
+    private interface ClientIdRequest {
+        RequestResult get(String clientId);
+    }
+
+    private RequestResult execute(String name, String params, Supplier<RequestResult> request) {
         try {
             log.debug("{} called. params: [{}]", name, params);
             return request.get();
         } catch (Exception ex) {
             log.error("{} failed. params: [{}]", name, params, ex);
-            return null;
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
+    }
+
+    private RequestResult executeClient(String cookie, String name, String params, ClientIdRequest request) {
+        return execute(name, params, () -> {
+            final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
+            if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
+                log.warn("Incorrect cookie: {}", cookie);
+                return new RequestResult<>(APIException.WRONG_COOKIE);
+            }
+            return request.get(loggedUser.getClientId());
+        });
     }
 
     @POST
     @Path("/login")
     @Produces("application/json")
-    public LoginAnswerWeb login(@FormParam("login") String login, @FormParam("password") String password) {
-        log.debug("login method called. login={};", login);
-        return authManager.login(login, password);
+    public RequestResult login(@FormParam("login") String login, @FormParam("password") String password) {
+        return execute("login", String.format("login=%s", login), () -> authManager.login(login, password));
     }
 
     @POST
     @Path("/logout")
     @Produces("application/json")
-    public boolean logout(@FormParam("cookie") String cookie) {
-        log.debug("logout method called. cookie={};", cookie);
-        return authManager.logout(cookie);
+    public RequestResult logout(@FormParam("cookie") String cookie) {
+        return execute("logout", "", () -> authManager.logout(cookie));
     }
 
     @POST
     @Path("/votings")
     @Produces("application/json")
-    public VotingWeb[] getVotings(@FormParam("cookie") String cookie) {
-        return execute("getVotings", "", manager::getVotings);
+    public RequestResult getVotings(@FormParam("cookie") String cookie) {
+        return executeClient(cookie, "getVotings", "", manager::getVotings);
     }
 
     @POST
     @Path("/getVoting")
     @Produces("application/json")
-    public VotingInfoWeb getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        // TODO Move cookie checks into execute method.
-        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
-        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
-            log.warn("Incorrect cookie: {}", cookie);
-            return null;
-        }
-        return execute("getVoting", String.format("votingId=%s", votingId), () -> manager.getVoting(votingId, loggedUser.getClientId()));
+    public RequestResult getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "getVoting", String.format("votingId=%s", votingId), (clientId) -> manager.getVoting(votingId, clientId));
     }
 
     @POST
     @Path("/vote")
     @Produces("application/json")
-    public boolean vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
-        // TODO Move cookie checks into execute method.
-        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
-        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
-            log.warn("Incorrect cookie: {}", cookie);
-            return false;
-        }
-        return execute("vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), () -> manager.vote(votingId, loggedUser.getClientId(), votingChoice));
+    public RequestResult vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
+        return executeClient(cookie, "vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), (clientId) -> manager.vote(votingId, clientId, votingChoice));
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
-    public VotingInfoWeb votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        // TODO Move cookie checks into execute method.
-        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
-        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
-            log.warn("Incorrect cookie: {}", cookie);
-            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO, 0);
-        }
-        return execute("votingResults", String.format("votingId=%s", votingId), () -> manager.votingResults(votingId, loggedUser.getClientId()));
+    public RequestResult votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "votingResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingResults(votingId, clientId));
     }
 
     @POST
     @Path("/getTime")
     @Produces("application/json")
-    public long getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return execute("getTime", String.format("votingId=%s", votingId), () -> manager.getTime(votingId));
+    public RequestResult getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "getTime", String.format("votingId=%s", votingId), (clientId) -> manager.getTime(votingId));
     }
 
     @POST
     @Path("/getConfirmedClientVotes")
     @Produces("application/json")
-    public VoteResultWeb[] getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return execute("getConfirmedClientVotes", String.format("votingId=%s", votingId), () -> manager.getConfirmedClientVotes(votingId));
+    public RequestResult getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "getConfirmedClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getConfirmedClientVotes(votingId));
     }
 
     @POST
     @Path("/getAllClientVotes")
     @Produces("application/json")
-    public VoteResultWeb[] getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return execute("getAllClientVotes", String.format("votingId=%s", votingId), () -> manager.getAllClientVotes(votingId));
+    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllClientVotes(votingId));
     }
 
     @POST
     @Path("/votingTotalResults")
     @Produces("application/json")
-    public VotingInfoWeb votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        // TODO Move cookie checks into execute method.
-        final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
-        if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
-            log.warn("votingTotalResults. Incorrect cookie: {}", cookie);
-            return new VotingInfoWeb(new QuestionWeb[0], BigDecimal.ZERO, 0);
-        }
-        return execute("votingTotalResults", String.format("votingId=%s", votingId), () -> manager.votingTotalResults(votingId));
+    public RequestResult votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClient(cookie, "votingTotalResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingTotalResults(votingId));
     }
 }

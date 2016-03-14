@@ -22,8 +22,10 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.utils.web.JettyRunner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
+import uk.dsxt.voting.common.utils.web.JettyRunner;
 
 import java.util.Properties;
 
@@ -31,13 +33,18 @@ import java.util.Properties;
 public class VotingClientMain {
 
     public static final String MODULE_NAME = "client";
-
+    
     private static org.eclipse.jetty.server.Server jettyServer;
     private static ClientApplication application;
 
+    private final static String AUDIT_LOGGER_NAME = "AUDIT";
+    private static final Logger audit = LogManager.getLogger(AUDIT_LOGGER_NAME);
+    
     public static void main(String[] args) {
-        try {
-            log.info("Starting module {}...", MODULE_NAME.toUpperCase());
+        try {                       
+            log.info("Starting module {}...", MODULE_NAME.toUpperCase());            
+            audit.info("Starting module {}...", MODULE_NAME.toUpperCase());
+            
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             args = args == null || args.length == 0 ? null : args;
 
@@ -57,7 +64,7 @@ public class VotingClientMain {
             String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[13];
 
             application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath,
-                parentHolderUrl, credentialsFilePath, clientsFilePath);
+                parentHolderUrl, credentialsFilePath, clientsFilePath, audit);
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

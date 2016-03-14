@@ -18,3 +18,9 @@ trim_trailing_whitespace = false
 
 [*.js]
 tab_size = 2
+
+[*.xml]
+indent_size = 2
+
+[*.gradle]
+indent_size = 4

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.domain.dataModel.Question;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -45,38 +46,42 @@ public class ClientManager {
 
     AssetsHolder assetsHolder;
 
-    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml) {
+    Logger audit;
+
+    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit) {
         this.assetsHolder = assetsHolder;
         this.participantsXml = participantsXml;
+        this.audit = audit;
     }
 
-    public VotingWeb[] getVotings() {
+    public RequestResult getVotings(String clientId) {
         final Collection<Voting> votings = assetsHolder.getVotings();
-        return votings.stream().map(VotingWeb::new).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]);
+        return new RequestResult<>(votings.stream().map(VotingWeb::new).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]), null);
     }
 
-    public VotingInfoWeb getVoting(String votingId, String clientId) {
+    public RequestResult getVoting(String votingId, String clientId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.error("getVoting. Couldn't find voting with id [{}].", votingId);
             return null;
         }
         BigDecimal amount = assetsHolder.getClientPacketSize(votingId, clientId);
-        return new VotingInfoWeb(voting, amount, getTime(votingId));
+        long time = (long) getTime(votingId).getResult();
+        return new RequestResult<>(new VotingInfoWeb(voting, amount, time), null);
     }
 
-    public boolean vote(String votingId, String clientId, String votingChoice) {
+    public RequestResult vote(String votingId, String clientId, String votingChoice) {
         try {
             final Voting voting = assetsHolder.getVoting(votingId);
             if (voting == null) {
                 log.error("vote method failed. Couldn't find voting with id [{}]", votingId);
-                return false;
+                return new RequestResult<>(APIException.VOTING_NOT_FOUND);
             }
-            
+
             BigDecimal packetSize = assetsHolder.getClientPacketSize(votingId, clientId);
             if (packetSize == null) {
                 log.error("vote method failed. Client not found or can not vote. votingId [{}] clientId [{}]", votingId, clientId);
-                return false;
+                return new RequestResult<>(APIException.CLIENT_NOT_FOUND);
             }
 
             VotingChoice choice = mapper.readValue(votingChoice, VotingChoice.class);
@@ -87,7 +92,7 @@ public class ClientManager {
                 Optional<Question> question = Arrays.stream(voting.getQuestions()).filter(q -> q.getId().equals(entry.getKey())).findAny();
                 if (!question.isPresent()) {
                     log.error("vote method failed. Couldn't find question with id={} in votingId={}.", entry.getKey(), votingId);
-                    return false;
+                    return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
                 }
                 for (Map.Entry<String, BigDecimal> answer : entry.getValue().getAnswerChoices().entrySet()) {
                     if (answer.getValue().signum() == 0)
@@ -96,77 +101,77 @@ public class ClientManager {
                 }
             }
             assetsHolder.addClientVote(result);
-            return true;
+            return new RequestResult<>(true, null);
         } catch (JsonMappingException je) {
             log.error("vote method failed. Couldn't parse votingChoice JSON. votingId: {}, votingChoice: {}", votingId, votingChoice, je.getMessage());
-            return false;
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             log.error("vote method failed. Couldn't process votingChoice. votingId: {}, votingChoice: {}", votingId, votingChoice, e);
-            return false;
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }
 
-    public VotingInfoWeb votingResults(String votingId, String clientId) {
+    public RequestResult votingResults(String votingId, String clientId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("votingResults. Voting with id={} not found.", votingId);
-            return null;
+            return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
         final VoteResult clientVote = assetsHolder.getClientVote(votingId, clientId);
         if (clientVote == null) {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
-            return null;
+            return new RequestResult<>(APIException.VOTE_NOT_FOUND);
         }
 
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
-            results.add(new QuestionWeb(question, clientVote));
+            results.add(new QuestionWeb(question, clientVote, false));
         }
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId), 0);
+        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId), 0), null);
     }
 
-    public long getTime(String votingId) {
+    public RequestResult getTime(String votingId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("votingResults. Voting with id={} not found.", votingId);
-            return -1;
+            return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
         long now = System.currentTimeMillis();
         if (now < voting.getBeginTimestamp() || now > voting.getEndTimestamp())
-            return -1;
-        return voting.getEndTimestamp() - now;
+            return new RequestResult<>(-1, null);
+        return new RequestResult<>(voting.getEndTimestamp() - now, null);
     }
 
-    public VoteResultWeb[] getConfirmedClientVotes(String votingId) {
+    public RequestResult getConfirmedClientVotes(String votingId) {
         List<VoteResultWeb> results = new ArrayList<>();
         final Collection<VoteResult> votes = assetsHolder.getConfirmedClientVotes(votingId);
         results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
-        return results.toArray(new VoteResultWeb[results.size()]);
+        return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
     }
 
-    public VoteResultWeb[] getAllClientVotes(String votingId) {
+    public RequestResult getAllClientVotes(String votingId) {
         List<VoteResultWeb> results = new ArrayList<>();
         final Collection<VoteResult> votes = assetsHolder.getAllClientVotes(votingId);
         results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
-        return results.toArray(new VoteResultWeb[results.size()]);
+        return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
     }
 
-    public VotingInfoWeb votingTotalResults(String votingId) {
+    public RequestResult votingTotalResults(String votingId) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("votingTotalResults. Voting with id={} not found.", votingId);
-            return null;
+            return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
         final VoteResult voteResults = assetsHolder.getTotalVotingResult(votingId);
         if (voteResults == null) {
             log.debug("votingTotalResults. Total results for voting with id={} not found.", votingId);
-            return null;
+            return new RequestResult<>(APIException.VOTE_RESULTS_NOT_FOUND);
         }
 
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
-            results.add(new QuestionWeb(question, voteResults));
+            results.add(new QuestionWeb(question, voteResults, true));
         }
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0);
+        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0), null);
     }
 }
