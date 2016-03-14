@@ -40,13 +40,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Log4j2
-public class TestsLauncher {
-    public static final String MODULE_NAME = "tests-launcher";
-
-    private static final String MASTER_NAME = "nxt";
-    private static final String DEFAULT_TESTNET_PEERS = "127.0.0.1:7873";
-
-    private static final String CLIENT_JAR_PATH = "../libs/client.jar";
+public class TestsLauncher implements BaseTestsLauncher {
 
     private static Map<String, Process> processesByName = new HashMap<>();
 
@@ -54,9 +48,6 @@ public class TestsLauncher {
 
     private static String masterAccount;
     private static String masterPassword;
-
-    private static final String LOGS_FOLDER = "logs";
-    private static final String DB_FOLDER = "nxt-db";
 
     @FunctionalInterface
     public interface SimpleRequest {
