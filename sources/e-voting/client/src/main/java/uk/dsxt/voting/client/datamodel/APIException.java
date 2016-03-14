@@ -5,6 +5,7 @@ public enum APIException {
     
     WRONG_COOKIE,
     INCORRECT_LOGIN_OR_PASSWORD,
+    INCORRECT_RIGHTS,
     
     VOTING_NOT_FOUND,
     CLIENT_NOT_FOUND,

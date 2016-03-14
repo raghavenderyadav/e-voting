@@ -21,18 +21,18 @@
 
 package uk.dsxt.voting.client.datamodel;
 
-import lombok.Getter;
+import lombok.Value;
 import org.joda.time.Instant;
 
+@Value
 public class LoggedUser {
-    @Getter
-    private final String clientId;
+    String clientId;
+    Instant loginTime;
+    UserRole role;
 
-    @Getter
-    private final Instant loginTime;
-
-    public LoggedUser(String clientId) {
+    public LoggedUser(String clientId, UserRole role) {
         this.clientId = clientId;
         this.loginTime = Instant.now();
+        this.role = role;
     }
 }

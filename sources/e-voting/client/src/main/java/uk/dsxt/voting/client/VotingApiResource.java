@@ -26,6 +26,7 @@ import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.APIException;
 import uk.dsxt.voting.client.datamodel.LoggedUser;
 import uk.dsxt.voting.client.datamodel.RequestResult;
+import uk.dsxt.voting.client.datamodel.UserRole;
 import uk.dsxt.voting.client.web.VotingAPI;
 
 import javax.ws.rs.FormParam;
@@ -51,6 +52,11 @@ public class VotingApiResource implements VotingAPI {
         RequestResult get(String clientId);
     }
 
+    @FunctionalInterface
+    private interface ClientRequest {
+        RequestResult get(String clientId, UserRole role);
+    }
+
     private RequestResult execute(String name, String params, Supplier<RequestResult> request) {
         try {
             log.debug("{} called. params: [{}]", name, params);
@@ -61,14 +67,28 @@ public class VotingApiResource implements VotingAPI {
         }
     }
 
-    private RequestResult executeClient(String cookie, String name, String params, ClientIdRequest request) {
+    private RequestResult executeClient(String cookie, String name, String params, ClientRequest request) {
         return execute(name, params, () -> {
             final LoggedUser loggedUser = authManager.tryGetLoggedUser(cookie);
             if (loggedUser == null || loggedUser.getClientId().isEmpty()) {
-                log.warn("Incorrect cookie: {}", cookie);
+                log.warn("{} failed. Incorrect cookie: {}", name, cookie);
                 return new RequestResult<>(APIException.WRONG_COOKIE);
             }
-            return request.get(loggedUser.getClientId());
+            return request.get(loggedUser.getClientId(), loggedUser.getRole());
+        });
+    }
+
+    private RequestResult executeClientId(String cookie, String name, String params, ClientIdRequest request) {
+        return executeClient(cookie, name, params, (clientId, role) -> request.get(clientId));
+    }
+
+    private RequestResult executeClientWithRole(String cookie, String name, String params, UserRole expectedRole, ClientIdRequest request) {
+        return executeClient(cookie, name, params, (clientId, userRole) -> {
+            if (userRole != expectedRole) {
+                log.warn("{} failed. Incorrect rights {} for client id {}. Expected right {}", name, userRole, clientId, expectedRole);
+                return new RequestResult<>(APIException.INCORRECT_RIGHTS);
+            }
+            return request.get(clientId);
         });
     }
 
@@ -83,62 +103,63 @@ public class VotingApiResource implements VotingAPI {
     @Path("/logout")
     @Produces("application/json")
     public RequestResult logout(@FormParam("cookie") String cookie) {
-        return execute("logout", "", () -> authManager.logout(cookie));
+        return executeClientId(cookie, "logout", "", (clientId) -> authManager.logout(cookie));
     }
 
     @POST
     @Path("/votings")
     @Produces("application/json")
     public RequestResult getVotings(@FormParam("cookie") String cookie) {
-        return executeClient(cookie, "getVotings", "", manager::getVotings);
+        return executeClientId(cookie, "getVotings", "", manager::getVotings);
     }
 
     @POST
     @Path("/getVoting")
     @Produces("application/json")
     public RequestResult getVoting(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "getVoting", String.format("votingId=%s", votingId), (clientId) -> manager.getVoting(votingId, clientId));
+        return executeClientWithRole(cookie, "getVoting", String.format("votingId=%s", votingId), UserRole.VOTER, (clientId) -> manager.getVoting(votingId, clientId));
     }
 
     @POST
     @Path("/vote")
     @Produces("application/json")
     public RequestResult vote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("votingChoice") String votingChoice) {
-        return executeClient(cookie, "vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), (clientId) -> manager.vote(votingId, clientId, votingChoice));
+        return executeClientWithRole(cookie, "vote", String.format("votingId=%s, votingChoice=%s", votingId, votingChoice), UserRole.VOTER,
+            (clientId) -> manager.vote(votingId, clientId, votingChoice));
     }
 
     @POST
     @Path("/votingResults")
     @Produces("application/json")
     public RequestResult votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "votingResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingResults(votingId, clientId));
+        return executeClientId(cookie, "votingResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingResults(votingId, clientId));
     }
 
     @POST
     @Path("/getTime")
     @Produces("application/json")
     public RequestResult getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "getTime", String.format("votingId=%s", votingId), (clientId) -> manager.getTime(votingId));
+        return executeClientId(cookie, "getTime", String.format("votingId=%s", votingId), (clientId) -> manager.getTime(votingId));
     }
 
     @POST
     @Path("/getConfirmedClientVotes")
     @Produces("application/json")
     public RequestResult getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "getConfirmedClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getConfirmedClientVotes(votingId));
+        return executeClientId(cookie, "getConfirmedClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getConfirmedClientVotes(votingId));
     }
 
     @POST
     @Path("/getAllClientVotes")
     @Produces("application/json")
     public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllClientVotes(votingId));
+        return executeClientId(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllClientVotes(votingId));
     }
 
     @POST
     @Path("/votingTotalResults")
     @Produces("application/json")
     public RequestResult votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClient(cookie, "votingTotalResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingTotalResults(votingId));
+        return executeClientId(cookie, "votingTotalResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingTotalResults(votingId));
     }
 }

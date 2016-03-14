@@ -10,10 +10,16 @@ import lombok.Value;
 public class ClientCredentials {
     String clientId;
     String password;
+    UserRole role;
 
     @JsonCreator
-    public ClientCredentials(@JsonProperty("clientId") String clientId, @JsonProperty("password") String password) {
+    public ClientCredentials(@JsonProperty("clientId") String clientId, @JsonProperty("password") String password, @JsonProperty("role") UserRole role) {
         this.clientId = clientId;
         this.password = password;
+        this.role = role == null ? UserRole.VOTER : role;
+    }
+
+    public ClientCredentials(String clientId, String password) {
+        this(clientId, password, null);
     }
 }

@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class AuthManager {
-
-    public HashMap<String, String> userCredentials = new HashMap<>();
+    public HashMap<String, ClientCredentials> userCredentials = new HashMap<>();
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
 
@@ -50,11 +49,12 @@ public class AuthManager {
         try {
             ClientCredentials[] credentials = PropertiesHelper.loadResource(credentialsFilepath, ClientCredentials[].class);
             log.debug("Found {} client credentials.", credentials.length);
-
             if (credentials.length > 0) {
                 for (ClientCredentials c : credentials) {
-                    userCredentials.put(c.getClientId(), c.getPassword());
+                    userCredentials.put(c.getClientId(), c);
                 }
+                //TODO: added default admin role
+                userCredentials.put("admin", new ClientCredentials("admin", "admin", UserRole.ADMIN));
             }
             log.info("{} client credentials loaded.", userCredentials.size());
         } catch (InternalLogicException e) {
@@ -64,12 +64,13 @@ public class AuthManager {
 
     public RequestResult login(String clientId, String password) {
         if (userCredentials.containsKey(clientId)) {
-            if (userCredentials.get(clientId).equals(password)) {
-                LoggedUser loggedUser = new LoggedUser(clientId);
+            ClientCredentials clientCrls = userCredentials.get(clientId);
+            if (clientCrls.getPassword().equals(password)) {
+                LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
                 String cookie = generateCookieAndLogin(loggedUser);
                 String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
                 audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
-                return new RequestResult<>(new SessionInfoWeb(userName, cookie), null);
+                return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
             } else {
                 audit.info("[Voting WEB APP] User login FAILED (INCORRECT PASSWORD). User ID: {}.", clientId);
                 return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);

@@ -58,7 +58,7 @@ public class MockVotingApiResource implements VotingAPI {
     @Produces("application/json")
     public RequestResult login(@FormParam("login") String login, @FormParam("password") String password) {
         log.debug("login method called. login={};", login);
-        return new RequestResult<>(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1"), null);
+        return new RequestResult<>(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1", UserRole.VOTER), null);
     }
 
     @POST
