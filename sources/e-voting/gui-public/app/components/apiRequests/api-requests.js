@@ -74,15 +74,15 @@ angular
        */
       function sendRequest (url, parameters, serverSuccessCallback, serverErrorCallback, finallyCallback) {
         function onHttpPostSuccess(response) {
-          if (angular.isUndefined(response.data.success) || response.data.success) {
+          if (angular.isUndefined(response.data.error)) {
             if (!angular.isUndefined(serverSuccessCallback))
-              serverSuccessCallback(response.data);
+              serverSuccessCallback(response.data.result);
           }
           else {
             if (angular.isUndefined(serverErrorCallback)) {
               if (response.data.error !== "WRONG_COOKIE") throw {message: response.data.error, source: "server"};
             } else {
-              serverErrorCallback(response.data);
+              serverErrorCallback(response.data.result);
             }
           }
         }

@@ -41,7 +41,7 @@ angular
         );
 
         function signInComplete(data) {
-          userInfo.setInfo(data.result);
+          userInfo.setInfo(data);
           $state.go('votingList')
         }
 
