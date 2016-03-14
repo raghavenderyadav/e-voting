@@ -26,8 +26,8 @@
           type="radio"
           name="question-{{question.id}}"
           id="question-{{question.id}}-answer-{{answer.id}}"
-          ng-model="votingChoice[question.id][answer.id]"
-          ng-value="totalVotes"/>
+          ng-model="votingChoice[question.id]"
+          ng-value="answer.id"/>
         {{answer.name}}
       </label>
     </div>

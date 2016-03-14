@@ -29,8 +29,7 @@ angular
         getVoting: getVoting,
         vote: vote,
         getTimer: getTimer,
-        normalizeAnswers: normalizeAnswers,
-        isNormal: isNormal
+        normalizeAnswers: normalizeAnswers
       };
       function getVoting(votingId, getVotingComplete) {
         return apiRequests.postCookieRequest(
@@ -92,42 +91,15 @@ angular
         return result;
       }
 
-      function normalizeAnswers(newAnswers, oldAnswers, questionList) {
-        var differenceId = null;
-        angular.forEach(newAnswers, function(value, key) {
-          if(!angular.equals(value, oldAnswers[key])) {
-           differenceId = key;
-          }
-        });
-        if(differenceId !== null && !questionList[getKeyByValue(questionList, differenceId, "id")].canSelectMultiple) {
-          angular.forEach(newAnswers[differenceId], function(value, key) {
-            if(value === oldAnswers[differenceId][key]) {
-             newAnswers[differenceId][key] = 0;
-            }
-          });
-        }
-        return newAnswers;
-      }
-      function isNormal(answers, questionList) {
-        var result = true;
+      function normalizeAnswers(answers, questionList, totalVotes) {
         angular.forEach(answers, function(value, key) {
           if(!questionList[getKeyByValue(questionList, key, "id")].canSelectMultiple) {
-            result = result ? checkEquality(value) : result;
+            var resultObj = {};
+            resultObj[value] = totalVotes;
+            answers[key] = resultObj;
           }
         });
-        return result;
-
-        function checkEquality(obj) {
-          var result = true;
-          angular.forEach(obj, function(needle, needleKey) {
-            angular.forEach(obj, function(value, valueKey) {
-              if((needle !== 0) && (needle === value) && (needleKey !== valueKey)) {
-                result = false;
-              }
-            });
-          });
-          return result;
-        }
+        return answers;
       }
     }
   ]);

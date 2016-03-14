@@ -23,7 +23,7 @@
 
 angular
   .module('e-voting.voting.voting-question-view', [])
-  .controller('VotingController',['$scope', 'votingInfo', '$state', '$interval', function ($scope, votingInfo, $state, $interval) {
+  .controller('VotingController',['votingInfo', '$state', function (votingInfo, $state) {
     var vc = this;
 
     vc.voting = [];
@@ -43,27 +43,21 @@ angular
         vc.totalVotes = data.amount;
         vc.votingCountdown = data.timer;
         angular.forEach(vc.voting, function(question) {
-          vc.votingChoice[question.id] = {};
-          angular.forEach(question.answers, function(answer) {
-            vc.votingChoice[question.id][answer.id] = 0;
-          });
+          if(question.canSelectMultiple) {
+            vc.votingChoice[question.id] = {};
+            angular.forEach(question.answers, function (answer) {
+              vc.votingChoice[question.id][answer.id] = 0;
+            });
+          }
         });
         return vc.voting;
-      }
-
-      function getTimerComplete(data) {
-        if(vc.votingCountdown < 0) {
-          interval.cancel(countdownInterval);
-        } else {
-          vc.votingCountdown = data;
-        }
       }
     }
 
     function vote() {
       votingInfo.vote({
         votingId: $state.params.id,
-        votingChoice: vc.votingChoice
+        votingChoice: votingInfo.normalizeAnswers(vc.votingChoice, vc.voting, vc.totalVotes)
       }, voteComplete);
 
       function voteComplete(response) {
@@ -78,11 +72,4 @@ angular
     function cancel() {
       $state.go('votingList');
     }
-    $scope.$watch(function() {
-      return vc.votingChoice;
-    }, function(newValue, oldValue) {
-      if((newValue !== oldValue) && (oldValue != undefined) && !angular.equals(oldValue, {}) && votingInfo.isNormal(oldValue, vc.voting)) {
-        vc.votingChoice = votingInfo.normalizeAnswers(newValue, oldValue, vc.voting)
-      }
-    }, true)
   }]);
