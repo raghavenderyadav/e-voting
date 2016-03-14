@@ -1,5 +1,10 @@
 <div class="container">
-  <h2 class="page-title">Confirmed votes list</h2>
+  <h2 class="page-title">
+    <input type="radio" ng-model="volc.votesType" value="confirmed" id="confirmed-votes" ng-change="volc.getVotes(volc.votesType)">
+    <label for="confirmed-votes">Confirmed votes list</label>
+    <input type="radio" ng-model="volc.votesType" value="all" id="all-votes" ng-change="volc.getVotes(volc.votesType)">
+    <label for="all-votes">All votes list</label>
+  </h2>
   <table class="table table-striped table-custom">
     <tr>
       <th>Voting</th>
@@ -7,7 +12,7 @@
       <th>Packet size</th>
       <th>Status</th>
     </tr>
-    <tr ng-repeat="voting in cvlc.confirmedVotesList">
+    <tr ng-repeat="voting in volc.votesList">
       <td>
         <span class="voting-title">{{voting.votingId}}</span>
       </td>

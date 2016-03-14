@@ -34,6 +34,7 @@ angular
         "getTime": "/getTime",
         "votingResults": "/votingResults",
         "confirmedVotes": "/getConfirmedClientVotes",
+        "allVotes": "/getAllClientVotes",
         "votingTotalResults": "/votingTotalResults",
         "signResult": "/signResult",
         "vote": "/vote",
