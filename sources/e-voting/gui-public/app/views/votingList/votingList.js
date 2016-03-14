@@ -23,10 +23,11 @@
 
 angular
   .module('e-voting.voting.voting-list-view', [])
-  .controller('VotingListController', ['votingListInfo', '$state', function (votingListInfo, $state) {
+  .controller('VotingListController', ['votingListInfo', '$state', 'roleEnums', function (votingListInfo, $state, roleEnums) {
     var vlc = this;
     vlc.votingList = [];
     vlc.showVoteRelatedPage = showVoteRelatedPage;
+    vlc.roleEnums = roleEnums;
 
     activate();
 

@@ -1,32 +1,37 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- * *
+ *                                                                            *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- * *
+ *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- * *
+ *                                                                            *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- * *
+ *                                                                            *
  * Removal or modification of this copyright notice is prohibited.            *
- * *
+ *                                                                            *
  ******************************************************************************/
 
 'use strict';
 
 angular
   .module('e-voting.routing', [
-    'ngResource'
+    'ui.router',
+    'ngResource',
+    'e-voting.routing.404-view'
   ])
   .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$resourceProvider',
     function ($stateProvider, $urlRouterProvider, $locationProvider, $resourceProvider) {
+
+      var injector = angular.injector(['ng', 'e-voting.role-management']),
+        roleEnums = injector.get('roleEnums');
 
       $urlRouterProvider.rule(function ($injector, $location) {
         var path = $location.path(), search = $location.search();
@@ -42,11 +47,11 @@ angular
           }
         }
       });
-      //$urlRouterProvider.otherwise(function ($injector) {
-      //  $injector.get("$timeout")(function () {
-      //    $("<form action='/404/" + $injector.get("$sessionStorage").locale + "/' target='_self'/></form>").appendTo("body").submit();
-      //  }, 0);
-      //});
+
+      $urlRouterProvider.otherwise(function ($injector) {
+        $state.go('404', {locale: $injector.get("$sessionStorage").locale});
+      });
+
       $stateProvider
         .state('votingList', {
           url: '/votingList/:locale/',
@@ -92,7 +97,8 @@ angular
             id: undefined
           },
           access: {
-            loginRequired: true
+            loginRequired: true,
+            permissionsRequired: [roleEnums.roles.admin]
           }
         })
         .state('voting', {
@@ -108,7 +114,8 @@ angular
             id: undefined
           },
           access: {
-            loginRequired: false
+            loginRequired: false,
+            permissionsRequired: [roleEnums.roles.user]
           }
         })
         .state('votingTotalResult', {
@@ -123,6 +130,21 @@ angular
               squash: true
             },
             id: undefined
+          }
+        })
+        .state('404', {
+          url: '/404/:locale/',
+          templateUrl: 'views/404/404.html',
+          controller: 'NotFoundController',
+          controllerAs: 'nfc',
+          params: {
+            locale: {
+              value: 'en-gb',
+              squash: true
+            }
+          },
+          access: {
+            loginRequired: false
           }
         })
         .state('signIn', {

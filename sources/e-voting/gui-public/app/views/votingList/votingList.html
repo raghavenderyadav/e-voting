@@ -26,6 +26,7 @@
           type="button"
           class="voting-btn btn-sm btn btn-success"
           ng-disabled="!voting.canVote"
+          access="vlc.roleEnums.roles.user" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="voting.canVote && vlc.showVoteRelatedPage('voting', voting.id)">
           Vote
         </button>
@@ -40,6 +41,7 @@
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
+          access="vlc.roleEnums.roles.admin" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('confirmedVotes', voting.id)">
           Confirmed votes
         </button>

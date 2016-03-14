@@ -27,47 +27,65 @@ angular
     function ($sessionStorage, $state, userInfo, roleEnums) {
       return {
         checkAccess: checkAccess,
-        checkAuth: checkAuth
+        checkPagePermission: checkPagePermission
       };
-      function checkAuth(event, toState) {
-        if (toState.access !== undefined) {
+      function checkPagePermission(event, toState) {
+        var roles = userInfo.getInfo().roles;
+        if (!angular.isUndefined(toState.access)) {
           if (toState.access.loginRequired !== undefined && toState.access.loginRequired) {
             if (angular.isUndefined($sessionStorage.cookie)) {
               event.preventDefault();
-              $state.go('signIn', {location: "replace", reload: false, inherit: false, notify: false});
+              $state.go('signIn', {}, {location: "replace", reload: false, inherit: false, notify: false});
+            }
+          }
+          if (!angular.isUndefined(toState.access.permissionsRequired)) {
+            if (toState.access.permissionsRequired.length != intersect(toState.access.permissionsRequired, roles).length) {
+              event.preventDefault();
+              $state.go('404', {locale: $state.params.locale}, {location: "replace", reload: true, inherit: true, notify: true});
             }
           }
         }
+
+        function intersect(a, b) {
+          var t;
+          if (b.length > a.length) { // indexOf to loop over shorter
+            t = b;
+            b = a;
+            a = t
+          }
+          return a.filter(function (e) {
+            if (b.indexOf(e) !== -1) return true;
+          });
+        }
+
       }
+
       function checkAccess(loginRequired, roles, permissionType) {
         var result = roleEnums.permissions.granted,
-            user = $sessionStorage.cookie,
-            loweredPermissions = [],
-            hasPermission = true,
-            permission, i;
+          user = {},
+          hasPermission = true,
+          permission, i;
 
+        user.cookie = $sessionStorage.cookie;
+        user.permissions = userInfo.getInfo().roles;
         permissionType = permissionType || roleEnums.permissionTypes.atLeastOne;
-        if (loginRequired === true && user === undefined) {
+        if (loginRequired === true && user.cookie === undefined) {
           result = roleEnums.permissions.denied;
-        } else if ((loginRequired === true && user !== undefined) &&
+        } else if ((loginRequired === true && user.cookie !== undefined) &&
           (roles === undefined || roles.length === 0)) {
-          result = roleEnums.permissions.denied;
+          result = roleEnums.permissions.granted;
         } else if (roles) {
-          loweredPermissions = [];
-          angular.forEach(user.permissions, function (permission) {
-            loweredPermissions.push(permission.toLowerCase());
-          });
 
           for (i = 0; i < roles.length; i += 1) {
             permission = roles[i].toLowerCase();
 
             if (permissionType === roleEnums.permissionTypes.multiple) {
-              hasPermission = hasPermission && loweredPermissions.indexOf(permission) > -1;
+              hasPermission = hasPermission && user.permissions.indexOf(permission) > -1;
               if (hasPermission === false) {
                 break;
               }
             } else if (permissionType === roleEnums.permissionTypes.atLeastOne) {
-              hasPermission = loweredPermissions.indexOf(permission) > -1;
+              hasPermission = user.permissions.indexOf(permission) > -1;
               if (hasPermission) {
                 break;
               }

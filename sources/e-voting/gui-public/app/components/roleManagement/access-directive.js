@@ -28,10 +28,11 @@ angular
 function access($injector) {
 
   var roleManager = $injector.get('roleManager'),
-      permissions = $injector.get('roleEnums').permissions;
+    permissions = $injector.get('roleEnums').permissions,
+    $compile = $injector.get('$compile');
 
-  function compile(scope, element, attrs) {
-    var roles = attrs.access.split(',');
+  function link(scope, element) {
+    var roles = scope.access.split(',');
 
     function makeHidden() {
       element.attr('ng-if', 'false');
@@ -40,7 +41,7 @@ function access($injector) {
     function determineVisibility() {
       var result;
 
-      result = roleManager.checkAccess(true, roles, attrs.accessPermissionType);
+      result = roleManager.checkAccess(true, roles, scope.accessPermissionType);
       if (result === permissions.denied) {
         makeHidden();
       }
@@ -59,6 +60,10 @@ function access($injector) {
   return {
     priority: 10000,
     restrict: 'A',
-    compile: compile
+    link: link,
+    scope: {
+      access: '=',
+      accessPermissionType: '='
+    }
   }
 }

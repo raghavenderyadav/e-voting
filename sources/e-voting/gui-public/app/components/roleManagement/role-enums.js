@@ -23,7 +23,7 @@
 
 angular
   .module('e-voting.role-management.role-enums', [])
-  .service('roleEnums', function() {
+  .service('roleEnums', function () {
     return {
       roles: {
         user: 'user',

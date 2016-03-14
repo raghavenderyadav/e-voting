@@ -23,8 +23,8 @@
 
 angular
   .module('e-voting.auth.user-info', [])
-  .service('userInfo', ['$sessionStorage',
-    function ($sessionStorage) {
+  .service('userInfo', ['$sessionStorage', 'rightsRolesMap',
+    function ($sessionStorage, rightsRolesMap) {
       var userInfo = angular.isUndefined($sessionStorage.header) ? {} : $sessionStorage.header;
       return {
         setInfo: setInfo,
@@ -34,14 +34,27 @@ angular
       function getInfo() {
         return userInfo;
       }
+
       function setInfo(info) {
         userInfo.userName = info.userName;
+        userInfo.roles = configRoles(info.rights);
         $sessionStorage.header = userInfo;
         $sessionStorage.cookie = info.cookie;
+
+        function configRoles(rights) {
+          var result = [];
+          for (var i = 0; i < rights.length; i++) {
+            if (rights[i] === '1') {
+              result.push(rightsRolesMap[i]);
+            }
+          }
+          return result;
+        }
       }
+
       function deleteInfo() {
-        angular.forEach($sessionStorage, function(value, key) {
-          if($sessionStorage.hasOwnProperty(key)) {
+        angular.forEach($sessionStorage, function (value, key) {
+          if ($sessionStorage.hasOwnProperty(key)) {
             delete $sessionStorage[key];
           }
         });

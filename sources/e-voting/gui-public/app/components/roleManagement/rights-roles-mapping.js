@@ -22,9 +22,10 @@
 'use strict';
 
 angular
-  .module('e-voting.role-management', [
-    'e-voting.role-management.access-directive',
-    'e-voting.role-management.role-manager',
-    'e-voting.role-management.role-enums',
-    'e-voting.role-management.right-roles-mapping'
-  ]);
+  .module('e-voting.role-management.right-roles-mapping', [])
+  .service('rightsRolesMap', ['roleEnums', function (roleEnums) {
+    return {
+      0: roleEnums.roles.user,
+      1: roleEnums.roles.admin
+    }
+  }]);

@@ -23,7 +23,6 @@
 
 angular
   .module('e-voting', [
-    'ui.router',
     'e-voting.routing',
     'e-voting.auth',
     'e-voting.voting',
@@ -35,7 +34,7 @@ angular
   .run(['$rootScope', 'roleManager', function ($rootScope, roleManager) {
     $rootScope.$on('$stateChangeStart',
         function (event, toState) {
-          roleManager.checkAuth(event, toState);
+          roleManager.checkPagePermission(event, toState);
         }
       );
     }
