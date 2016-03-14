@@ -104,7 +104,7 @@ public class ClientManager {
             return new RequestResult<>(true, null);
         } catch (JsonMappingException je) {
             log.error("vote method failed. Couldn't parse votingChoice JSON. votingId: {}, votingChoice: {}", votingId, votingChoice, je.getMessage());
-            return new RequestResult<>(APIException.INCORRECT_VOTE_FORMAT);
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             log.error("vote method failed. Couldn't process votingChoice. votingId: {}, votingChoice: {}", votingId, votingChoice, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
