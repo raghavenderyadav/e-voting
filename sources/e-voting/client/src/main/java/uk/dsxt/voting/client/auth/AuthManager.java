@@ -63,21 +63,26 @@ public class AuthManager {
     }
 
     public RequestResult login(String clientId, String password) {
-        if (userCredentials.containsKey(clientId)) {
-            ClientCredentials clientCrls = userCredentials.get(clientId);
-            if (clientCrls.getPassword().equals(password)) {
-                LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
-                String cookie = generateCookieAndLogin(loggedUser);
-                String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
-                audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
-                return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
+        try {
+            if (userCredentials.containsKey(clientId)) {
+                ClientCredentials clientCrls = userCredentials.get(clientId);
+                if (clientCrls.getPassword().equals(password)) {
+                    LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
+                    String cookie = generateCookieAndLogin(loggedUser);
+                    String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
+                    audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
+                    return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
+                } else {
+                    audit.info("[Voting WEB APP] User login FAILED (INCORRECT PASSWORD). User ID: {}.", clientId);
+                    return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
+                }
             } else {
-                audit.info("[Voting WEB APP] User login FAILED (INCORRECT PASSWORD). User ID: {}.", clientId);
+                audit.info("[Voting WEB APP] User login FAILED (LOGIN NOT FOUND). Login: {}.", clientId);
                 return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
             }
-        } else {
-            audit.info("[Voting WEB APP] User login FAILED (LOGIN NOT FOUND). Login: {}.", clientId);
-            return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
+        } catch (InternalLogicException e) {
+            log.error("login failed. clientId {}", clientId, e);
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }
 

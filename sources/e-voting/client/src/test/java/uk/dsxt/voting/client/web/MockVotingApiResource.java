@@ -57,8 +57,13 @@ public class MockVotingApiResource implements VotingAPI {
     @Path("/login")
     @Produces("application/json")
     public RequestResult login(@FormParam("login") String login, @FormParam("password") String password) {
-        log.debug("login method called. login={};", login);
-        return new RequestResult<>(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1", UserRole.VOTER), null);
+        try {
+            log.debug("login method called. login={};", login);
+            return new RequestResult<>(new SessionInfoWeb("Петров Иван Васильевич", "cookie_1", UserRole.VOTER), null);
+        } catch (Exception e) {
+            log.error("login method failed. login={};", login, e);
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
+        }
     }
 
     @POST

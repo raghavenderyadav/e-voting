@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client.datamodel;
 
 import lombok.Value;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 @Value
 public class SessionInfoWeb {
@@ -29,21 +30,23 @@ public class SessionInfoWeb {
     String cookie;
     String rights;
 
-    public SessionInfoWeb(String userName, String cookie, UserRole role) {
+    public SessionInfoWeb(String userName, String cookie, UserRole role) throws InternalLogicException {
         this.userName = userName;
         this.cookie = cookie;
         this.rights = getRights(role);
     }
 
-    private String getRights(UserRole role) {
-        if (role != null) {
-            switch (role) {
-                case VOTER:
-                    return "10";
-                case ADMIN:
-                    return "01";
-            }
+    private String getRights(UserRole role) throws InternalLogicException {
+        if (role == null)
+            throw new InternalLogicException("role is null");
+
+        switch (role) {
+            case VOTER:
+                return "10";
+            case ADMIN:
+                return "01";
+            default:
+                throw new InternalLogicException(String.format("unknown role %s", role));
         }
-        return "00";
     }
 }
