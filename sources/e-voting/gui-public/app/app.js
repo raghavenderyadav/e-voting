@@ -29,7 +29,8 @@ angular
     'e-voting.header',
     'e-voting.server-properties',
     'e-voting.api-requests',
-    'e-voting.role-management'
+    'e-voting.role-management',
+    'e-voting.crypto'
   ])
   .run(['$rootScope', 'roleManager', function ($rootScope, roleManager) {
     $rootScope.$on('$stateChangeStart',

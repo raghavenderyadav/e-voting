@@ -23,13 +23,14 @@
 
 angular
   .module('e-voting.voting.voting-question-model', [])
-  .service('votingInfo', ['apiRequests',
-    function (apiRequests) {
+  .service('votingInfo', ['apiRequests', 'cryptoHelper',
+    function (apiRequests, cryptoHelper) {
       return {
         getVoting: getVoting,
         vote: vote,
         getTimer: getTimer,
-        normalizeAnswers: normalizeAnswers
+        normalizeAnswers: normalizeAnswers,
+        signVote: signVote
       };
       function getVoting(votingId, getVotingComplete) {
         return apiRequests.postCookieRequest(
@@ -83,8 +84,8 @@ angular
 
       function getKeyByValue(arrObj, targetValue, targetValueKey) {
         var result = null;
-        angular.forEach(arrObj, function(value, key) {
-          if(value[targetValueKey] === targetValue) {
+        angular.forEach(arrObj, function (value, key) {
+          if (value[targetValueKey] === targetValue) {
             result = key;
           }
         });
@@ -92,14 +93,18 @@ angular
       }
 
       function normalizeAnswers(answers, questionList, totalVotes) {
-        angular.forEach(answers, function(value, key) {
-          if(!questionList[getKeyByValue(questionList, key, "id")].canSelectMultiple) {
+        angular.forEach(answers, function (value, key) {
+          if (!questionList[getKeyByValue(questionList, key, "id")].canSelectMultiple) {
             var resultObj = {};
             resultObj[value] = totalVotes;
             answers[key] = resultObj;
           }
         });
         return answers;
+      }
+
+      function signVote(key, data, signDataComplete) {
+        cryptoHelper.signData(key, data, signDataComplete);
       }
     }
   ]);
