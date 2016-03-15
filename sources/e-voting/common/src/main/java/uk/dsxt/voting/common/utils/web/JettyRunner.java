@@ -117,6 +117,7 @@ public class JettyRunner {
                 DefaultServlet defaultServlet = new DefaultServlet();
                 ServletHolder holder = new ServletHolder(defaultServlet);
                 holder.setInitParameter("useFileMappedBuffer", Boolean.toString(!copyWebDir));
+                holder.setInitParameter("cacheControl", "no-store,no-cache,must-revalidate,max-age=-1,public");
                 htmlHandler.addServlet(holder, "/");
                 
                 handler = new RequestsRouter(htmlHandler, pathToHandler, frontendRoot);
