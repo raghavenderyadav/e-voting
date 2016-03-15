@@ -31,10 +31,14 @@ import uk.dsxt.voting.common.domain.dataModel.Question;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
+import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -42,11 +46,17 @@ import java.util.stream.Collectors;
 public class ClientManager {
     private final ObjectMapper mapper = new ObjectMapper();
 
+    Iso20022Serializer serializer = new Iso20022Serializer();
+
     MeetingInstruction participantsXml;
 
     AssetsHolder assetsHolder;
 
     Logger audit;
+
+    ConcurrentMap<String, String> documentByKey = new ConcurrentHashMap<>();
+
+    CryptoHelper helper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
     public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit) {
         this.assetsHolder = assetsHolder;
@@ -100,8 +110,16 @@ public class ClientManager {
                     result.setAnswer(question.get().getId(), answer.getKey(), answer.getValue());
                 }
             }
+            //TODO: move method to signVote
             assetsHolder.addClientVote(result);
-            return new RequestResult<>(true, null);
+            //generate xml body and get vote results
+            VotingInfoWeb infoWeb = getVotingResults(result, voting);
+            VoteResult adaptedResult = serializer.adaptVoteResultForXML(result, voting);
+            String xmlBody = serializer.serialize(adaptedResult);
+            //TODO: send xml string without header (and handle correctly send time)
+            documentByKey.put(generateKeyForDocument(clientId, votingId), xmlBody);
+            infoWeb.setXmlBody(xmlBody);
+            return new RequestResult<>(infoWeb, null);
         } catch (JsonMappingException je) {
             log.error("vote method failed. Couldn't parse votingChoice JSON. votingId: {}, votingChoice: {}", votingId, votingChoice, je.getMessage());
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
@@ -109,6 +127,37 @@ public class ClientManager {
             log.error("vote method failed. Couldn't process votingChoice. votingId: {}, votingChoice: {}", votingId, votingChoice, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
+    }
+
+    public RequestResult signVote(String votingId, String clientId, String signature) {
+        final Voting voting = assetsHolder.getVoting(votingId);
+        if (voting == null) {
+            log.debug("signVote. Voting with id={} not found.", votingId);
+            return new RequestResult<>(APIException.VOTING_NOT_FOUND);
+        }
+        String documentString = documentByKey.get(generateKeyForDocument(clientId, votingId));
+        if (documentString == null) {
+            log.error("signVote failed. Client {} doesn't have vote for voting {}", clientId, votingId);
+            return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
+        }
+        try {
+            //TODO: get public key
+            boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey("public key"));
+            if (!result) {
+                log.error("signVote failed. Incorrect signature {} for client {} and voting {}", signature, clientId, votingId);
+                return new RequestResult<>(APIException.INVALID_SIGNATURE);
+            }
+        } catch (Exception e) {
+            log.error("signVote failed. Failed to check signature {} for client {} and voting {}", signature, clientId, votingId, e.getMessage());
+            return new RequestResult<>(APIException.INVALID_SIGNATURE);
+        }
+        audit.info("signVote. Client {} successfully signed voting {}", clientId, votingId);
+        //TODO: send result here assetsHolder.addClientVote(result);
+        return new RequestResult<>(true, null);
+    }
+
+    private String generateKeyForDocument(String clientId, String votingId) {
+        return String.format("%s_%s", clientId, votingId);
     }
 
     public RequestResult votingResults(String votingId, String clientId) {
@@ -122,12 +171,15 @@ public class ClientManager {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
             return new RequestResult<>(APIException.VOTE_NOT_FOUND);
         }
+        return new RequestResult<>(getVotingResults(clientVote, voting), null);
+    }
 
+    private VotingInfoWeb getVotingResults(VoteResult clientVote, Voting voting) {
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote, false));
         }
-        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(votingId, clientId), 0), null);
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), 0, null);
     }
 
     public RequestResult getTime(String votingId) {
@@ -172,6 +224,8 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, voteResults, true));
         }
-        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0), null);
+        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0, null), null);
     }
+
+
 }

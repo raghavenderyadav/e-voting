@@ -129,6 +129,14 @@ public class VotingApiResource implements VotingAPI {
     }
 
     @POST
+    @Path("/signVote")
+    @Produces("application/json")
+    public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("signature") String signature) {
+        return executeClientWithRole(cookie, "signVote", String.format("votingId=%s, signature=%s", votingId, signature), UserRole.VOTER,
+            (clientId) -> manager.signVote(votingId, clientId, signature));
+    }
+
+    @POST
     @Path("/votingResults")
     @Produces("application/json")
     public RequestResult votingResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {

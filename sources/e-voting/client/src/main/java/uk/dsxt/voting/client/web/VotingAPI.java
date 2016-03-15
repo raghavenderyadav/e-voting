@@ -35,6 +35,8 @@ public interface VotingAPI {
 
     RequestResult vote(String cookie, String votingId, String votingChoice);
 
+    RequestResult signVote(String cookie, String votingId, String signature);
+
     RequestResult votingResults(String cookie, String votingId);
 
     RequestResult votingTotalResults(String cookie, String votingId);

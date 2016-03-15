@@ -21,8 +21,6 @@
 
 package uk.dsxt.voting.common.utils.crypto;
 
-import lombok.Getter;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -49,7 +47,7 @@ public class CryptoHelper {
 
     private final SecureRandom random = new SecureRandom();
 
-    public static final CryptoHelper DEFAULT_CRYPTO_HELPER = new CryptoHelper("RSA", "AES", "MD5WithRSA", 2048, 128);
+    public static final CryptoHelper DEFAULT_CRYPTO_HELPER = new CryptoHelper("RSA", "AES", "SHA1WithRSA", 2048, 128);
 
     public CryptoHelper(String asymmetricAlgorithm, String symmetricAlgorithm, String signatureAlgorithm, int asymmetricKeyLength, int symmetricKeyLength) {
         this.asymmetricAlgorithm = asymmetricAlgorithm;
@@ -76,7 +74,7 @@ public class CryptoHelper {
     }
 
     public String createSignature(String originalText, PrivateKey privateKey)
-            throws GeneralSecurityException, UnsupportedEncodingException {
+        throws GeneralSecurityException, UnsupportedEncodingException {
         byte[] data = originalText.getBytes(ENCODING);
         Signature sig = Signature.getInstance(signatureAlgorithm);
         sig.initSign(privateKey);
@@ -86,7 +84,7 @@ public class CryptoHelper {
     }
 
     public boolean verifySignature(String originalText, String signature, PublicKey publicKey)
-            throws GeneralSecurityException, UnsupportedEncodingException {
+        throws GeneralSecurityException, UnsupportedEncodingException {
         byte[] data = originalText.getBytes(ENCODING);
         Signature sig = Signature.getInstance(signatureAlgorithm);
         sig.initVerify(publicKey);
@@ -113,7 +111,7 @@ public class CryptoHelper {
 
     public String decrypt(String cipherText, PrivateKey key) throws GeneralSecurityException, UnsupportedEncodingException {
         String[] keyAndText = cipherText.split("@");
-        
+
         Cipher keyCipher = Cipher.getInstance(asymmetricAlgorithm);
         keyCipher.init(Cipher.DECRYPT_MODE, key);
         byte[] cipherKeyBytes = Base64.getDecoder().decode(keyAndText[0].getBytes());
@@ -126,7 +124,7 @@ public class CryptoHelper {
         byte[] decryptedTextBytes = textCipher.doFinal(cipherTextBytes);
         return new String(decryptedTextBytes);
     }
-    
+
     public CryptoKeysGenerator createCryptoKeysGenerator() {
         return new CryptoKeysGenerator(asymmetricAlgorithm, asymmetricKeyLength);
     }
