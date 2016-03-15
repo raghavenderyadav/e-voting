@@ -86,9 +86,9 @@ angular
         })
         .state('confirmedVotes', {
           url: '/confirmedVotes/:locale/?id',
-          templateUrl: 'views/confirmedVotes/confirmedVotesList.html',
-          controller: 'ConfirmedVotesListController',
-          controllerAs: 'cvlc',
+          templateUrl: 'views/votes/votesList.html',
+          controller: 'VotesListController',
+          controllerAs: 'volc',
           params: {
             locale: {
               value: 'en-gb',

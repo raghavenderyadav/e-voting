@@ -4,6 +4,8 @@ apply plugin: 'application'
 mainClassName = "uk.dsxt.voting.tests.TestsLauncher"
 
 ext.awsVersion = "1.10.58"
+ext.jcraftVersion = "0.1.53"
+
 
 repositories {
     mavenCentral()
@@ -11,6 +13,7 @@ repositories {
 
 dependencies {
     compile "com.amazonaws:aws-java-sdk:$awsVersion";
+    compile "com.jcraft:jsch:$jcraftVersion";
 
     compile(project(":client"))
     compile(project(":registries-server"))
