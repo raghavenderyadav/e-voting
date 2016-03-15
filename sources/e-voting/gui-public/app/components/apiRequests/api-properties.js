@@ -38,6 +38,7 @@ angular
         "votingTotalResults": "/votingTotalResults",
         "signResult": "/signResult",
         "vote": "/vote",
+        "sign": "/sign",
         "logout": "/logout"
       }
     }

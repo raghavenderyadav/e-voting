@@ -39,9 +39,27 @@ angular
       }
       return bytes;
     }
+    function _base64ToArrayBuffer(base64) {
+      var binary_string =  window.atob(base64);
+      var len = binary_string.length;
+      var bytes = new Uint8Array( len );
+      for (var i = 0; i < len; i++)        {
+        bytes[i] = binary_string.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+    function _arrayBufferToBase64( buffer ) {
+      var binary = '';
+      var bytes = new Uint8Array( buffer );
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+      }
+      return window.btoa( binary );
+    }
 
     function importKey (key, importKeyComplete) {
-      crypto.subtle.importKey("jwk", JSON.parse(key), {name: algorithm, modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: {name: "SHA-1"}}, true, ["sign"]).then(function(result){
+      crypto.subtle.importKey("pkcs8", _base64ToArrayBuffer(key), {name: algorithm, hash: {name: "SHA-1"}}, true, ["sign"]).then(function(result){
         importKeyComplete(result);
       }, function(e){
         console.log(e);
@@ -55,7 +73,7 @@ angular
         encrypt_promise = crypto.subtle.sign({name: algorithm}, private_key_object, convertStringToArrayBufferView(data));
         encrypt_promise.then(
           function (result_signature) {
-            signDataComplete(result_signature);
+            signDataComplete(_arrayBufferToBase64(result_signature));
           },
           function (e) {
             console.log(e);
