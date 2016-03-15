@@ -19,13 +19,17 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final int sshPort = 22;
     private final String user;
     private final String masterHost;
+    private final int MASTER_PEER_PORT = 7873;
+    private final String MASTER_PEER_ADDRESS;
+    private final int MASTER_APP_PORT = 9000;
+    private final String MAIN_ADDRESS;
     
     public static void main(String[] args) {
         try {
             log.info("Starting module {}...", MODULE_NAME);
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             RemoteTestsLauncher instance = new RemoteTestsLauncher(properties);
-            instance.run();
+            instance.run(properties);
         } catch (Exception e) {
             log.error("Module {} failed: ", MODULE_NAME, e.getMessage());
         }
@@ -35,18 +39,20 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         user = properties.getProperty("vm.user");
         masterHost = properties.getProperty("vm.mainNode");
         sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
-        
+        MASTER_PEER_ADDRESS = String.format("http://%s:%d", masterHost, MASTER_PEER_PORT); 
+        MAIN_ADDRESS = properties.getProperty("master.address");
     }
     
     private void installNode(String pathToInstallScript, String ownerId, String privateKey, String mainNxtAddress, 
                              String accountPassphrase, boolean master, int peerPort, int apiPort, int appPort, 
-                             String nxtMasterHost, String ownerHost) throws Exception {
+                             String nxtMasterHost, String ownerHost, String webHost, String directory) throws Exception {
         Session session = getSession(masterHost);
-        String pathToMasterConfig = WORK_DIR + "build/master/client.properties";
-        log.debug(makeCmd(session, String.format("cd %s; ./update.sh", WORK_DIR)));
-        //TODO read script
-        log.debug(makeCmd(session, pathToInstallScript));
-        String s = makeCmd(session, String.format("cat %s", pathToMasterConfig));
+        String pathToMasterConfig = WORK_DIR + "build/" + directory + "/client.properties";
+        log.debug(makeCmd(session, String.format("cd %s; ./update.sh %s", WORK_DIR, directory)));
+        String resourceString = PropertiesHelper.getResourceString(pathToInstallScript);
+        log.debug(makeCmd(session, resourceString));
+        String backendConfig = makeCmd(session, String.format("cat %s", pathToMasterConfig));
+        log.debug(String.format("Initial backend config: %s%n", backendConfig));
         Map<String, String> overrides = new LinkedHashMap<>();
         overrides.put("client.isMain", Boolean.toString(master));
         overrides.put("voting.files", "voting.xml");
@@ -54,7 +60,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("participants_xml.file_path", "mi_participants.xml");
         overrides.put("credentials.filepath", "credentials.json");
         overrides.put("clients.filepath", "clients.json");
-        overrides.put("client.web.port", Integer.toString(appPort));
+        overrides.put("client.webHost.port", Integer.toString(appPort));
         overrides.put("owner.id", ownerId);
         overrides.put("owner.private_key", privateKey);
         overrides.put("register.server.url", ownerHost);
@@ -73,7 +79,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("nxt.main.address", mainNxtAddress);
         overrides.put("nxt.account.passphrase", accountPassphrase);
         Map<String, String> original = new LinkedHashMap<>();
-        for (String keyToValueStr : s.split(String.format("%n"))) {
+        for (String keyToValueStr : backendConfig.split(String.format("%n"))) {
             String[] keyToValue = keyToValueStr.split("=");
             if (keyToValue.length == 2)
                 original.put(keyToValue[0], keyToValue[1]);
@@ -88,11 +94,36 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             result.append(keyToValue.getValue());
             result.append(String.format("%n"));
         }
+        log.debug(String.format("Result backend config: %s%n", backendConfig));
         makeCmd(session, String.format("/bin/echo -e \"%s\" > %s", result.toString(), pathToMasterConfig));
-        //TODO update frontend config
+        String pathToMasterFrontendConfig = WORK_DIR + "build/" + directory + "/gui-public/app/server-properties.js";
+        String frontendConfig = makeCmd(session, String.format("cat %s", pathToMasterFrontendConfig));
+        log.debug(String.format("Original frontend config: %s%n", frontendConfig));
+        frontendConfig = frontendConfig.replaceAll("\"serverUrl\": \"*\",", String.format("\"serverUrl\": \"%s\"", webHost));
+        frontendConfig = frontendConfig.replaceAll("\"serverPort\": *,", String.format("\"serverPort\": %s", appPort));
+        frontendConfig = frontendConfig.replaceAll("\"pathToApi\": \"*\",", "\"pathToApi\": \"api\"");
+        frontendConfig = frontendConfig.replaceAll("\"readPortFromUrl\": \"*\",", "\"readPortFromUrl\": true");
+        log.debug(String.format("Result frontend config: %s%n", frontendConfig));
+        makeCmd(session, String.format("/bin/echo -e \"%s\" > %s", frontendConfig, pathToMasterFrontendConfig));
     }
     
-    private void run() throws Exception {
+    private void run(Properties properties) throws Exception {
+        installNode(
+            "ssh/createNode.sh",
+            "00",
+            "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlNntpENmQzCyPx+M3D1RZypdxkfFF2+60CSDtqCSvsi/MLsPEu87CDYxuBmTtLY5zBP2HcNIvT9cB699nRNFAQIDAQABAkBAk4sViGgFHks2N2nU4oU+TJMCQoCu+joBstWxlVgUjDYGk/QHEMhx60kZ3L2Pw8k8uFZVCDXy0/uemuIp8vABAiEA7xlJWC8bCDYqVggQgK9yzAuL7P1T0+dUF080P8kR7nECIQCfX4epGtFSWJFOK+CGly/mLyhZrn6g0cu7jKCw5BgnkQIhAJFihNCURBGoLfIGEVLOXDVqR/kgyNou7VkHFjQ65SZhAiAf79fSpmId+0ua+6XxsqhRm0+dsR8FASWvfr3Q1NSWUQIgGfqAUV4I0nG8sIz3UE7rf+tzQaScDYOoCNu4amJjxEI=",
+            MAIN_ADDRESS,
+            properties.getProperty("master.passphrase"),
+            true,
+            MASTER_PEER_PORT,
+            7872,
+            MASTER_APP_PORT,
+            MASTER_PEER_ADDRESS,
+            String.format("http://%s:%d/voting-api", masterHost, MASTER_APP_PORT),
+            String.format("http://%s:%d", masterHost, MASTER_APP_PORT),
+            "master");
+
+        //TODO install other nodes
     }
     
     public String makeCmd(Session s, String cmd) throws Exception {
