@@ -114,6 +114,11 @@ public class ClientApplication extends ResourceConfig {
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
                 walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+
+        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
+
+        messageHandler.run(newMessagesRequestInterval);
+
         if (masterNode != null) {
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
             //Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
@@ -123,14 +128,21 @@ public class ClientApplication extends ResourceConfig {
                 String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
                 Voting voting = messagesSerializer.deserializeVoting(votingMessage);
                 voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp()-voting.getBeginTimestamp(), voting.getQuestions());
-                masterNode.addNewVoting(voting);
+                boolean found = false;
+                while (!found) {
+                    masterNode.addNewVoting(voting);
+                    Thread.sleep(10000);
+                    for (Voting receivedVoting : masterNode.getVotings()) {
+                        if (voting.getId().equals(receivedVoting.getId())) {
+                            log.debug("Voting with id {} was accepted", voting.getId());
+                            found = true;
+                            break;
+                        }
+                    }
+                    log.debug("Voting with id {} was not accepted yet", voting.getId());
+                }
             }
         }
-
-        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
-
-        messageHandler.run(newMessagesRequestInterval);
-
 
         JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
         Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
