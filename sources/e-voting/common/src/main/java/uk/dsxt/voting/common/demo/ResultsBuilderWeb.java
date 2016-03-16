@@ -27,6 +27,7 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,8 @@ public class ResultsBuilderWeb implements ResultsBuilder {
     private void execute(String name, String url, Map<String, String> parameters) {
         try {
             httpHelper.request(url, parameters, RequestType.POST);
+        } catch (ConnectException e) {
+            log.error("ResultsBuilderWeb: {} failed. url={}. error={}.", name, url, e.getMessage());
         } catch (IOException e) {
             log.error("ResultsBuilderWeb: {} failed. url={}.", name, url, e);
         } catch (InternalLogicException e) {
