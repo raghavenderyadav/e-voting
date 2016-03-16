@@ -1,14 +1,17 @@
 package uk.dsxt.voting.tests;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.*;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.ParticipantRole;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Log4j2
@@ -26,13 +29,25 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final int MASTER_APP_PORT = 9000;
     private final String MAIN_ADDRESS;
     private final String MASTER_NODE_NAME = "master";
-    private final Function<Integer, String> NODE_NAME = id -> String.format("node_%d", id);
-    private final String MASTER_PASSWORD;
+    private final Function<Integer, String> NODE_NAME = id -> id == 0 ? MASTER_NODE_NAME : String.format("node_%d", id);
     private final String PATH_TO_ISTALL_SCRIPT = "ssh/createNode.sh";
+    
+    private final String VOTING_DESCRIPTION = "voting.txt";
+    private final String VOTING_NET_CONFIGURATION = "net.txt";
     private final String SCENARIO;
+    private final String SCENARIO_HOME_DIR = "scenarios";
+    private final String VOTING_XML_NAME = "voting.xml";
+    private final String MESSAGES_NAME = "messages.txt";
+    private final String MI_PARTICIPANTS_NAME = "mi_participants.xml";
+    private final String CREDENTIALS_NAME = "credentials.json";
+    private final String CLIENTS_NAME = "clients.json";
+    
+    private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data, path);
     
     private Map<Integer, NodeInfo> idToNodeInfo;
     private Map<String, Integer> hostToNodesCount;
+    
+    private final ObjectMapper mapper = new ObjectMapper();
     
     public static void main(String[] args) {
         try {
@@ -51,23 +66,46 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
         MASTER_NXT_PEER_ADDRESS = String.format("http://%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
         MAIN_ADDRESS = properties.getProperty("master.address");
-        MASTER_PASSWORD = properties.getProperty("master.passphrase");
         SCENARIO = properties.getProperty("testing.type");
     }
     
     private void run(Properties properties) throws Exception {
-        hostToNodesCount = new HashMap<>();
+        hostToNodesCount = new LinkedHashMap<>();
         idToNodeInfo = new HashMap<>();
-        //TODO start:  read from config   
-        hostToNodesCount.put(masterHost, 10);
-        for (int i = 0; i < 10; i++)
-            idToNodeInfo.put(i, new NodeInfo(i == 0 ? MASTER_PASSWORD : "client_password", i, i == 0 ? 0 : i - 1, 
-                "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAygnxmB4jC7wPZdx9/2M0vRt0zvt+Xq6kJRcd2dxhKLSWxoxL9CHlzoEFHrSWGaEZMSHqw3Spxpb5bu6nlMrkfwIDAQABAkAjVQvYA2UzlybGNIIgWHQPoi6SR+74legEyH8i62ReXq6Vdk0xaVqWpzoo7Ih89vPdND6abFrNLd7SOrk1ASZZAiEA+u+jJjnfB4hGV1PfKsqP8GyLNWNGR6qXJvoEUdu9q60CIQDOHbKyyizMt7QPbBxlT7/nBxrPwz66hzM3+XLebdYWWwIhAPTxniveKZrMpvzvXdQDTmW9TlWaxiuGlWzyd+z/tjExAiBSmeQ7cnpxsE0gwRrAHy2w0FAWYxCIgBYuoHFAYpQhcQIhAJGkcJ56CWS4Y24EJGwfEZyIt4ixuKYSY6eoBHuYfP7f", 
-                i == 0 ? ParticipantRole.NRD : ParticipantRole.NominalHolder, ""));
-        //TODO end
-        installOrUpdate();
-        installOrUpdateScenario();
-        runScenario();
+        readConfig(hostToNodesCount, VOTING_NET_CONFIGURATION, str -> {
+            String[] splited = str.split("=");
+            if (splited.length == 2)
+                return new AbstractMap.SimpleEntry<>(splited[0], Integer.parseInt(splited[1]));
+            return null;
+        });
+        readConfig(idToNodeInfo, VOTING_DESCRIPTION, str -> {
+            try {
+                String[] splited = str.split("=");
+                if (splited.length == 2)
+                    return new AbstractMap.SimpleEntry<>(Integer.parseInt(splited[0]), mapper.readValue(splited[1], NodeInfo.class));
+                return null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        
+        if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
+            updateBuilds();
+        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateNodes")))
+            installOrUpdateNodes();
+        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateScenario")))
+            installOrUpdateScenario();
+        if (Boolean.parseBoolean(properties.getProperty("vm.runScenario")))
+            runScenario();
+    }
+    
+    private <K, V> void readConfig(Map<K, V> map, String fileName, Function<String, Map.Entry<K, V>> parse) {
+        String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, fileName).toString());
+        for (String str : data.split("\\r?\\n")) {
+            Map.Entry<K, V> keyAndValue = parse.apply(str);
+            if (keyAndValue != null)
+                map.put(keyAndValue.getKey(), keyAndValue.getValue());
+        }
     }
 
     private void installOrUpdateNode(Session session, int ownId, String ownerId, String privateKey, String mainNxtAddress,
@@ -81,11 +119,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         log.debug(String.format("Initial backend config: %s%n", backendConfig));
         Map<String, String> overrides = new LinkedHashMap<>();
         overrides.put("client.isMain", Boolean.toString(master));
-        overrides.put("voting.files", "voting.xml");
-        overrides.put("scheduled_messages.file_path", "messages.txt");
-        overrides.put("participants_xml.file_path", "mi_participants.xml");
-        overrides.put("credentials.filepath", "credentials.json");
-        overrides.put("clients.filepath", "clients.json");
+        overrides.put("voting.files", VOTING_XML_NAME);
+        overrides.put("scheduled_messages.file_path", MESSAGES_NAME);
+        overrides.put("participants_xml.file_path", MI_PARTICIPANTS_NAME);
+        overrides.put("credentials.filepath", CREDENTIALS_NAME);
+        overrides.put("clients.filepath", CLIENTS_NAME);
         overrides.put("client.webHost.port", Integer.toString(currentWebPort));
         overrides.put("owner.id", ownerId);
         overrides.put("owner.private_key", privateKey);
@@ -121,7 +159,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             result.append(String.format("%n"));
         }
         log.debug(String.format("Result backend config: %s%n", backendConfig));
-        makeCmd(session, String.format("/bin/echo -e \"%s\" > %s", result.toString(), pathToConfig));
+        makeCmd(session, ECHO_CMD.apply(result.toString(), pathToConfig));
         String pathToMasterFrontendConfig = WORK_DIR + "build/" + directory + "/gui-public/app/server-properties.js";
         String frontendConfig = makeCmd(session, String.format("cat %s", pathToMasterFrontendConfig));
         log.debug(String.format("Original frontend config: %s%n", frontendConfig));
@@ -130,7 +168,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         frontendConfig = frontendConfig.replaceAll("\"pathToApi\": \".*\",", "\"pathToApi\": \"api\"");
         frontendConfig = frontendConfig.replaceAll("\"readPortFromUrl\": .*\n", "\"readPortFromUrl\": true\n");
         log.debug(String.format("Result frontend config: %s%n", frontendConfig));
-        makeCmd(session, String.format("/bin/echo -e \"%s\" > %s", frontendConfig, pathToMasterFrontendConfig));
+        makeCmd(session, ECHO_CMD.apply(frontendConfig, pathToMasterFrontendConfig));
 
 
         String holderApi = String.format("http://%s:%d/holderAPI", webHost, currentWebPort);
@@ -141,40 +179,76 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             nodeInfo.setHolderAPI(holderApi);
     }
 
-    private void installOrUpdate() throws Exception {
-        Session session = getSession(masterHost);
-        //log.debug(makeCmd(session, String.format("cd %s; ./update.sh", WORK_DIR)));
-        int counter = 0;
-        for (Map.Entry<String, Integer> hostWithNodesCount : hostToNodesCount.entrySet()) {
-            String currentHost = hostWithNodesCount.getKey();
-            int getCount = hostWithNodesCount.getValue();
-            for (int i = 0; i < getCount; i++) {
-                int currentNodeId = counter++;
-                NodeInfo nodeInfo = idToNodeInfo.get(currentNodeId);
-                NodeInfo ownerNodeInfo = idToNodeInfo.get(nodeInfo.getOwnerId());
-                boolean master = currentHost.equals(masterHost) && i == 0;
+    private void updateBuilds() throws Exception {
+        for (String host : hostToNodesCount.keySet())
+            log.debug(makeCmd(getSession(host), String.format("cd %s; ./update.sh", WORK_DIR)));
+    }
+
+    private void installOrUpdateNodes() throws Exception {        
+        iterateByAllNodes((session, currentNodeId) -> {
+            NodeInfo nodeInfo = idToNodeInfo.get(currentNodeId);
+            NodeInfo ownerNodeInfo = idToNodeInfo.get(nodeInfo.getOwnerId());
+            String currentHost = session.getHost();
+            boolean master = currentHost.equals(masterHost) && currentNodeId == 0;
+            try {
                 installOrUpdateNode(
                     session,
                     currentNodeId,
-                    Integer.toString(nodeInfo.getOwnerId()),
+                    master ? "00" : Integer.toString(nodeInfo.getId()),
                     nodeInfo.getPrivateKey(),
                     MAIN_ADDRESS,
                     nodeInfo.getNxtPassword(),
                     master,
                     ownerNodeInfo.getHolderAPI(),
                     currentHost,
-                    master ? MASTER_NODE_NAME : NODE_NAME.apply(currentNodeId),
+                    NODE_NAME.apply(currentNodeId),
                     currentNodeId);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+        });
+    }
+
+    private void installOrUpdateScenario() throws Exception {
+        iterateByAllNodes((session, currentNodeId) -> {
+            try {
+                uploadFile(session, currentNodeId, VOTING_XML_NAME);
+                uploadFile(session, currentNodeId, MESSAGES_NAME);
+                uploadFile(session, currentNodeId, MI_PARTICIPANTS_NAME);
+                uploadFile(session, currentNodeId, CREDENTIALS_NAME);
+                uploadFile(session, currentNodeId, CLIENTS_NAME);                
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+    
+    private void uploadFile(Session session, int currentNodeId, String fileName) throws Exception {
+        String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, Integer.toString(currentNodeId), fileName).toString());
+        makeCmd(session, ECHO_CMD.apply(data, Paths.get(WORK_DIR, "build", NODE_NAME.apply(currentNodeId), fileName).toString()));
+    }
+
+    private void runScenario() throws Exception {
+        iterateByAllNodes((session, currentNodeId) -> {
+            try {
+                makeCmd(session, String.format("cd %sbuild/%s/; rm -r ./%s*; java -jar client.jar", WORK_DIR, NODE_NAME.apply(currentNodeId), DB_FOLDER));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void iterateByAllNodes(BiConsumer<Session, Integer> action) throws Exception {
+        int counter = 0;
+        for (Map.Entry<String, Integer> hostWithNodesCount : hostToNodesCount.entrySet()) {
+            String currentHost = hostWithNodesCount.getKey();
+            Session session = getSession(currentHost);
+            int getCount = hostWithNodesCount.getValue();
+            for (int i = 0; i < getCount; i++)
+                action.accept(session, counter++);
         }
     }
-
-    private void installOrUpdateScenario() {
-    }
-
-    private void runScenario() {
-    }
-
+    
     public String makeCmd(Session s, String cmd) throws Exception {
         ChannelExec exec = (ChannelExec)s.openChannel("exec");
         exec.setCommand(cmd);
