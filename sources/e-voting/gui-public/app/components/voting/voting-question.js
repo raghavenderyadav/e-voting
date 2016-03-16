@@ -103,8 +103,23 @@ angular
         return answers;
       }
 
-      function signVote(key, data, signDataComplete) {
-        cryptoHelper.signData(key, data, signDataComplete);
+      function signVote(params, signDataComplete) {
+        cryptoHelper.signData(params.signKey, params.xmlData, function (signature) {
+          apiRequests.postCookieRequest(
+            'signVote',
+            {
+              votingId: params.votingId,
+              signature: signature
+            },
+            signDataComplete,
+            signVoteFailed,
+            null
+          );
+        });
+
+        function signVoteFailed(data) {
+          console.log('XHR Failed for signVote.' + data.error);
+        }
       }
     }
   ]);

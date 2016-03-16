@@ -38,7 +38,7 @@ angular
         "votingTotalResults": "/votingTotalResults",
         "signResult": "/signResult",
         "vote": "/vote",
-        "sign": "/sign",
+        "signVote": "/signVote",
         "logout": "/logout"
       }
     }

@@ -30,8 +30,12 @@ angular
     vc.votingChoice = {};
     vc.cancel = cancel;
     vc.vote = vote;
+    vc.sign = sign;
     vc.totalVotes = 0;
     vc.votingCountdown = 0;
+    vc.signKey = '';
+    vc.phase = 1;
+    vc.xml = '';
 
     activate();
 
@@ -60,7 +64,21 @@ angular
         votingChoice: votingInfo.normalizeAnswers(vc.votingChoice, vc.voting, vc.totalVotes)
       }, voteComplete);
 
-      function voteComplete(response) {
+      function voteComplete(data) {
+        vc.phase = 2;
+        vc.voting = data.questions;
+        vc.totalVotes = data.amount;
+        vc.xml = data.xmlBody;
+      }
+    }
+    function sign() {
+      votingInfo.signVote({
+        votingId: $state.params.id,
+        signKey: vc.signKey,
+        xmlData: vc.xml
+      }, signComplete);
+
+      function signComplete(response) {
         if(response) {
           alert("Vote accepted");
         } else {
@@ -69,6 +87,7 @@ angular
         cancel();
       }
     }
+
     function cancel() {
       $state.go('votingList');
     }

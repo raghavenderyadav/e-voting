@@ -1,0 +1,36 @@
+<strong class="voting-item-title">{{question.question}}</strong>
+<div ng-if="question.canSelectMultiple">
+  <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)">
+    <div class="row">
+      <div class="col-xs-3">
+        <br>
+        {{answer.name}}
+      </div>
+      <div class="col-xs-9">
+        <span>Votes: {{answer.votes}} / {{totalVotes}}</span>
+        <div class="progress">
+          <div class="progress-bar"
+            role="progressbar"
+            ng-click="{'progress-bar-success': answer.votes > 0}"
+            aria-valuenow="{{answer.votes}}"
+            aria-valuemin="{{answer.votes}}"
+            aria-valuemax="{{totalVotes}}"
+            style="width: {{answer.votes / totalVotes * 100 | number: 2}}%;">
+            <span ng-if="answer.votes > 0">
+            {{answer.votes / totalVotes * 100 | number: 2}}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div ng-if="!question.canSelectMultiple">
+  <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)"
+       ng-class="{'text-success text-bold': answer.votes > 0, 'text-muted': answer.votes <= 0}">
+    {{answer.name}}
+  </div>
+  <div ng-show="question.answers.length == 0" class="text-danger text-bold">
+    no answers
+  </div>
+</div>
