@@ -67,7 +67,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
     @Override
     public synchronized boolean acceptVote(VoteResult newResult, List<String> signatures) {
-        if (!addVote(newResult, parentHolder == null))
+        if (!addVote(newResult, false))
             return false;
         if (parentHolder != null)
             parentHolder.acceptVote(new VoteResult(newResult, participantId + PATH_SEPARATOR + newResult.getHolderId()), signatures);
@@ -100,6 +100,8 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("acceptVote. Voting {} already ends. holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
             return false;
         }
+
+        log.debug("acceptVote. participantId={} votingId={} holdersTreePath={} isConfirmed={}", participantId, newResult.getVotingId(), holdersTreePath, isConfirmed);
 
         String clientId = clientIds[0];
         if (!isConfirmed && newResult.getStatus() == VoteResultStatus.OK) {
