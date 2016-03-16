@@ -153,7 +153,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit, participantsById), new AuthManager(credentialsFilePath, audit)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
         walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);

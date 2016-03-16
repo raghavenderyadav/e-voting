@@ -24,6 +24,7 @@ package uk.dsxt.voting.client.auth;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -41,11 +42,14 @@ public class AuthManager {
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
 
+    private final Map<String, Participant> participantsById;
+
     private Logger audit;
 
-    public AuthManager(String credentialsFilepath, Logger audit) {
+    public AuthManager(String credentialsFilepath, Logger audit, Map<String, Participant> participantsById) {
         log.debug("Initializing AuthManager...");
         this.audit = audit;
+        this.participantsById = participantsById;
         try {
             ClientCredentials[] credentials = PropertiesHelper.loadResource(credentialsFilepath, ClientCredentials[].class);
             log.debug("Found {} client credentials.", credentials.length);
@@ -69,7 +73,7 @@ public class AuthManager {
                 if (clientCrls.getPassword().equals(password)) {
                     LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
                     String cookie = generateCookieAndLogin(loggedUser);
-                    String userName = String.format("Dear Client %s", clientId); // TODO Get user display name.
+                    String userName = participantsById.get(clientId).getName();
                     audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
                     return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
                 } else {
