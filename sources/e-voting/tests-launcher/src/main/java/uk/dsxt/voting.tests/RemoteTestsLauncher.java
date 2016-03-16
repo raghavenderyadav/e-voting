@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -48,9 +47,9 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                              String nxtMasterHost, String ownerHost, String webHost, String directory) throws Exception {
         Session session = getSession(masterHost);
         String pathToMasterConfig = WORK_DIR + "build/" + directory + "/client.properties";
-        log.debug(makeCmd(session, String.format("cd %s; ./update.sh %s", WORK_DIR, directory)));
+        log.debug(makeCmd(session, String.format("cd %s; ./update.sh", WORK_DIR)));
         String resourceString = PropertiesHelper.getResourceString(pathToInstallScript);
-        log.debug(makeCmd(session, resourceString));
+        log.debug(makeCmd(session, resourceString.replace("$1", directory)));
         String backendConfig = makeCmd(session, String.format("cat %s", pathToMasterConfig));
         log.debug(String.format("Initial backend config: %s%n", backendConfig));
         Map<String, String> overrides = new LinkedHashMap<>();
@@ -108,21 +107,22 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
     
     private void run(Properties properties) throws Exception {
-        installNode(
-            "ssh/createNode.sh",
-            "00",
-            "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlNntpENmQzCyPx+M3D1RZypdxkfFF2+60CSDtqCSvsi/MLsPEu87CDYxuBmTtLY5zBP2HcNIvT9cB699nRNFAQIDAQABAkBAk4sViGgFHks2N2nU4oU+TJMCQoCu+joBstWxlVgUjDYGk/QHEMhx60kZ3L2Pw8k8uFZVCDXy0/uemuIp8vABAiEA7xlJWC8bCDYqVggQgK9yzAuL7P1T0+dUF080P8kR7nECIQCfX4epGtFSWJFOK+CGly/mLyhZrn6g0cu7jKCw5BgnkQIhAJFihNCURBGoLfIGEVLOXDVqR/kgyNou7VkHFjQ65SZhAiAf79fSpmId+0ua+6XxsqhRm0+dsR8FASWvfr3Q1NSWUQIgGfqAUV4I0nG8sIz3UE7rf+tzQaScDYOoCNu4amJjxEI=",
-            MAIN_ADDRESS,
-            properties.getProperty("master.passphrase"),
-            true,
-            MASTER_PEER_PORT,
-            7872,
-            MASTER_APP_PORT,
-            MASTER_PEER_ADDRESS,
-            String.format("http://%s:%d/voting-api", masterHost, MASTER_APP_PORT),
-            String.format("http://%s:%d", masterHost, MASTER_APP_PORT),
-            "master");
-
+        if (Boolean.parseBoolean(properties.getProperty("vm.needInstall"))) {
+            installNode(
+                "ssh/createNode.sh",
+                "00",
+                "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAlNntpENmQzCyPx+M3D1RZypdxkfFF2+60CSDtqCSvsi/MLsPEu87CDYxuBmTtLY5zBP2HcNIvT9cB699nRNFAQIDAQABAkBAk4sViGgFHks2N2nU4oU+TJMCQoCu+joBstWxlVgUjDYGk/QHEMhx60kZ3L2Pw8k8uFZVCDXy0/uemuIp8vABAiEA7xlJWC8bCDYqVggQgK9yzAuL7P1T0+dUF080P8kR7nECIQCfX4epGtFSWJFOK+CGly/mLyhZrn6g0cu7jKCw5BgnkQIhAJFihNCURBGoLfIGEVLOXDVqR/kgyNou7VkHFjQ65SZhAiAf79fSpmId+0ua+6XxsqhRm0+dsR8FASWvfr3Q1NSWUQIgGfqAUV4I0nG8sIz3UE7rf+tzQaScDYOoCNu4amJjxEI=",
+                MAIN_ADDRESS,
+                properties.getProperty("master.passphrase"),
+                true,
+                MASTER_PEER_PORT,
+                7872,
+                MASTER_APP_PORT,
+                MASTER_PEER_ADDRESS,
+                String.format("http://%s:%d/voting-api", masterHost, MASTER_APP_PORT),
+                String.format("http://%s:%d", masterHost, MASTER_APP_PORT),
+                "master");
+        }
         //TODO install other nodes
     }
     
@@ -130,22 +130,27 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         ChannelExec exec = (ChannelExec)s.openChannel("exec");
         exec.setCommand(cmd);
         exec.connect();
+        byte[] output = readData(exec, exec.getInputStream());
+        byte[] error = readData(exec, exec.getErrStream());
         int exitStatus = exec.getExitStatus();
-        InputStream resultStream = exitStatus == 0 ? exec.getInputStream() : exec.getErrStream();
-        String result = new String(readData(resultStream), StandardCharsets.UTF_8);
+        byte[] resultStream = exitStatus == 0 ? output : error;
+        String result = new String(resultStream, StandardCharsets.UTF_8);
         exec.disconnect();
         return result;
     }
-
-    private byte[] readData(InputStream stream) throws IOException {
+    
+    private byte[] readData(ChannelExec exec, InputStream stream) throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        while (stream.available() > 0) {
-            byte[] tmp = new byte[BUFFER_SIZE];
-            int i = stream.read(tmp, 0, BUFFER_SIZE);
-            if (i < 0) {
-                break;
+        while (!exec.isEOF()) {
+            while (stream.available() > 0) {
+                byte[] tmp = new byte[BUFFER_SIZE];
+                int i = stream.read(tmp, 0, BUFFER_SIZE);
+                if (i < 0) {
+                    break;
+                }
+                buffer.write(tmp, 0, i);
             }
-            buffer.write(tmp, 0, i);
+            Thread.sleep(100);
         }
         return buffer.toByteArray();
     }
