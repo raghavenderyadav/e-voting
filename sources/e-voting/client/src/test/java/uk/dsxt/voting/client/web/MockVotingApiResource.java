@@ -45,12 +45,12 @@ public class MockVotingApiResource implements VotingAPI {
 
     static {
         votings = new HashMap<>();
-        votings.put("voting_1", new VotingWeb("voting_1", "voting_1", Instant.now().getMillis(), Instant.now().plus(600000).getMillis(), true, false, null));
-        votings.put("voting_2", new VotingWeb("voting_2", "voting_2", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), true, true, null));
-        votings.put("voting_3", new VotingWeb("voting_3", "voting_3", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), true, true, null));
-        votings.put("voting_4", new VotingWeb("voting_4", "voting_4", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), true, true, null));
-        votings.put("voting_5", new VotingWeb("voting_5", "voting_5", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), false, false, null));
-        votings.put("voting_6", new VotingWeb("voting_6", "voting_6", Instant.now().getMillis(), Instant.now().plus(100000).getMillis(), false, false, null));
+        votings.put("voting_1", new VotingWeb("voting_1", "voting_1", Instant.now().getMillis(), Instant.now().plus(6000000).getMillis(), true, false, null));
+        votings.put("voting_2", new VotingWeb("voting_2", "voting_2", Instant.now().getMillis(), Instant.now().plus(3000000).getMillis(), true, true, null));
+        votings.put("voting_3", new VotingWeb("voting_3", "voting_3", Instant.now().getMillis(), Instant.now().plus(3000000).getMillis(), true, true, null));
+        votings.put("voting_4", new VotingWeb("voting_4", "voting_4", Instant.now().getMillis(), Instant.now().plus(3000000).getMillis(), true, true, null));
+        votings.put("voting_5", new VotingWeb("voting_5", "voting_5", Instant.now().getMillis(), Instant.now().plus(3000000).getMillis(), false, false, null));
+        votings.put("voting_6", new VotingWeb("voting_6", "voting_6", Instant.now().getMillis(), Instant.now().plus(1000000).getMillis(), false, false, null));
     }
 
     @POST
