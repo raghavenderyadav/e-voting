@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
+import uk.dsxt.voting.common.cryptoVote.CryptoNodeDecorator;
+import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
 import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
@@ -35,19 +37,18 @@ import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
-import uk.dsxt.voting.common.cryptoVote.CryptoNodeDecorator;
-import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.networking.MessageHandler;
+import uk.dsxt.voting.common.networking.MockWalletManager;
 import uk.dsxt.voting.common.networking.WalletManager;
-import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
 import uk.dsxt.voting.common.registries.FileRegisterServer;
 import uk.dsxt.voting.common.registries.RegistriesServer;
 import uk.dsxt.voting.common.registries.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.PropertiesHelper;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
-import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import javax.ws.rs.ApplicationPath;
 import javax.xml.bind.JAXBContext;
@@ -152,7 +153,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit), new AuthManager(credentialsFilePath, audit)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit, participantsById), new AuthManager(credentialsFilePath, audit)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
         walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);

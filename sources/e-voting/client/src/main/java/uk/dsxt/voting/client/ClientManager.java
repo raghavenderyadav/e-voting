@@ -27,6 +27,7 @@ import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Question;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
@@ -58,10 +59,13 @@ public class ClientManager {
 
     CryptoHelper helper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
-    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit) {
+    Map<String, Participant> participantsById;
+
+    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit, Map<String, Participant> participantsById) {
         this.assetsHolder = assetsHolder;
         this.participantsXml = participantsXml;
         this.audit = audit;
+        this.participantsById = participantsById;
     }
 
     public RequestResult getVotings(String clientId) {
@@ -141,8 +145,7 @@ public class ClientManager {
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
         try {
-            //TODO: get public key
-            boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey("public key"));
+            boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
             if (!result) {
                 log.error("signVote failed. Incorrect signature {} for client {} and voting {}", signature, clientId, votingId);
                 return new RequestResult<>(APIException.INVALID_SIGNATURE);
