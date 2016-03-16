@@ -33,11 +33,11 @@ angular
     'e-voting.crypto',
     'e-voting.notifications'
   ])
-  .run(['$rootScope', 'roleManager', function ($rootScope, roleManager) {
-    $rootScope.errorMessage = '';
+  .run(['$rootScope', 'roleManager', 'userInfo', function ($rootScope, roleManager, userInfo) {
     $rootScope.$on('$stateChangeStart',
         function (event, toState) {
           roleManager.checkPagePermission(event, toState);
+          userInfo.setTotalVotes(null);
         }
       );
     }

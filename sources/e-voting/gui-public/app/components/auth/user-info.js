@@ -28,6 +28,7 @@ angular
       var userInfo = angular.isUndefined($sessionStorage.header) ? {} : $sessionStorage.header;
       return {
         setInfo: setInfo,
+        setTotalVotes: setTotalVotes,
         getInfo: getInfo,
         deleteInfo: deleteInfo
       };
@@ -38,6 +39,7 @@ angular
       function setInfo(info) {
         userInfo.userName = info.userName;
         userInfo.roles = configRoles(info.rights);
+        userInfo.totalVotes = null;
         $sessionStorage.header = userInfo;
         $sessionStorage.cookie = info.cookie;
 
@@ -50,6 +52,10 @@ angular
           }
           return result;
         }
+      }
+
+      function setTotalVotes(totalVotes) {
+        userInfo.totalVotes = totalVotes;
       }
 
       function deleteInfo() {

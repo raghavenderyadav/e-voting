@@ -23,7 +23,7 @@
 
 angular
   .module('e-voting.voting.voting-question-view', [])
-  .controller('VotingController',['votingInfo', '$state', function (votingInfo, $state) {
+  .controller('VotingController',['votingInfo', 'userInfo', '$state', function (votingInfo, userInfo, $state) {
     var vc = this;
 
     vc.voting = [];
@@ -45,6 +45,7 @@ angular
       function getVotingComplete(data) {
         vc.voting = data.questions;
         vc.totalVotes = data.amount;
+        userInfo.setTotalVotes(vc.totalVotes);
         vc.votingCountdown = data.timer;
         angular.forEach(vc.voting, function(question) {
           if(question.canSelectMultiple) {

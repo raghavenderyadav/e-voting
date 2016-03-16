@@ -35,10 +35,7 @@ angular
       function (newValue) {
         hc.isLoggedIn = !angular.isUndefined(newValue);
       });
-      $scope.$watch(function () {
-        return userInfo.getInfo();
-      },
-      function (newValue) {
+      $scope.$watch(userInfo.getInfo, function (newValue) {
         hc.userInfo = newValue;
       });
     }
