@@ -45,6 +45,13 @@ import java.util.stream.Collectors;
 @Log4j2
 @Value
 public class ClientManager {
+    
+    @Value
+    private class SignatureInfo {
+        VoteResult vote;
+        String xmlToSign;
+    }
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     Iso20022Serializer serializer = new Iso20022Serializer();
@@ -55,7 +62,8 @@ public class ClientManager {
 
     Logger audit;
 
-    ConcurrentMap<String, String> documentByKey = new ConcurrentHashMap<>();
+    
+    ConcurrentMap<String, SignatureInfo> signInfoByKey = new ConcurrentHashMap<>();
 
     CryptoHelper helper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
@@ -114,14 +122,12 @@ public class ClientManager {
                     result.setAnswer(question.get().getId(), answer.getKey(), answer.getValue());
                 }
             }
-            //TODO: move method to signVote
-            assetsHolder.addClientVote(result);
             //generate xml body and get vote results
             VotingInfoWeb infoWeb = getVotingResults(result, voting);
             VoteResult adaptedResult = serializer.adaptVoteResultForXML(result, voting);
             String xmlBody = serializer.serialize(adaptedResult);
             //TODO: send xml string without header (and handle correctly send time)
-            documentByKey.put(generateKeyForDocument(clientId, votingId), xmlBody);
+            signInfoByKey.put(generateKeyForDocument(clientId, votingId), new SignatureInfo(result, xmlBody));
             infoWeb.setXmlBody(xmlBody);
             return new RequestResult<>(infoWeb, null);
         } catch (JsonMappingException je) {
@@ -139,11 +145,12 @@ public class ClientManager {
             log.debug("signVote. Voting with id={} not found.", votingId);
             return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
-        String documentString = documentByKey.get(generateKeyForDocument(clientId, votingId));
-        if (documentString == null) {
+        SignatureInfo info =  signInfoByKey.get(generateKeyForDocument(clientId, votingId));
+        if (info == null) {
             log.error("signVote failed. Client {} doesn't have vote for voting {}", clientId, votingId);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
+        String documentString = info.getXmlToSign();
         try {
             boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
             if (!result) {
@@ -155,7 +162,7 @@ public class ClientManager {
             return new RequestResult<>(APIException.INVALID_SIGNATURE);
         }
         audit.info("signVote. Client {} successfully signed voting {}", clientId, votingId);
-        //TODO: send result here assetsHolder.addClientVote(result);
+        assetsHolder.addClientVote(info.getVote());
         return new RequestResult<>(true, null);
     }
 
