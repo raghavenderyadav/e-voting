@@ -23,10 +23,18 @@
 
 angular
   .module('e-voting.notifications.notification-enum', [])
-  .service('notificationEnum', function() {
+  .service('notificationEnum', function () {
     return {
       "errors": {
-        "INCORRECT_LOGIN_OR_PASSWORD": "Incorrect login or password"
+        "INCORRECT_LOGIN_OR_PASSWORD": "Incorrect login or password",
+        "UNKNOWN_EXCEPTION": "Server error",
+        "WRONG_COOKIE": "Invalid session",
+        "INCORRECT_RIGHTS": "You don't have rights to do this operation",
+        "INVALID_SIGNATURE": "Invalid vote's signature",
+        "VOTING_NOT_FOUND": "Unknown voting",
+        "CLIENT_NOT_FOUND": "Server error",
+        "VOTE_NOT_FOUND": "You didn't vote for this voting",
+        "VOTE_RESULTS_NOT_FOUND": "Voting result are not ready"
       }
     }
   });
