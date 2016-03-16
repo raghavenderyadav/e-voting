@@ -143,7 +143,9 @@ public class MockVotingApiResource implements VotingAPI {
     }
 
     @Override
-    public RequestResult signVote(String cookie, String votingId, String signature) {
+    @Path("/signVote")
+    @Produces("application/json")
+    public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("sign") String signature) {
         try {
             log.debug("signVote method called. cookie={}; votingId={}; signature={}", cookie, votingId, signature);
             return new RequestResult<>(true, null);
