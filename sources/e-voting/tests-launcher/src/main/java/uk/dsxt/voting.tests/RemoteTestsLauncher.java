@@ -18,6 +18,7 @@ import java.util.function.Function;
 public class RemoteTestsLauncher implements BaseTestsLauncher {
 
     private static final int BUFFER_SIZE = 4096;
+    private static final String LINES_SEPARATOR = "\\r?\\n";
     private static final String WORK_DIR = "/home/ubuntu/e-voting/";
     private JSch sshProvider = new JSch();
     private final int sshPort = 22;
@@ -33,7 +34,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String PATH_TO_ISTALL_SCRIPT = "ssh/createNode.sh";
     
     private final String VOTING_DESCRIPTION = "voting.txt";
-    private final String VOTING_NET_CONFIGURATION = "net.txt";
+    private final String NET_CONFIGURATION = "net.txt";
+    private final String VOTING_VM_CONFIGURATION = "vm.txt";
     private final String SCENARIO;
     private final String SCENARIO_HOME_DIR = "scenarios";
     private final String VOTING_XML_NAME = "voting.xml";
@@ -45,7 +47,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data, path);
     
     private Map<Integer, NodeInfo> idToNodeInfo;
-    private Map<String, Integer> hostToNodesCount;
+    private Map<Integer, Integer> hostIdToNodesCount;
+    private List<String> hostsIp;
     
     private final ObjectMapper mapper = new ObjectMapper();
     
@@ -62,7 +65,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     
     RemoteTestsLauncher(Properties properties) throws Exception {
         user = properties.getProperty("vm.user");
-        masterHost = properties.getProperty("vm.mainNode");
+        String masterHostFromSetting = properties.getProperty("vm.mainNode");
+        if (masterHostFromSetting == null || masterHostFromSetting.isEmpty()) {
+            //TODO run vms with AWSHelper and get masterHost
+        }
+        masterHost = masterHostFromSetting;
         sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
         MASTER_NXT_PEER_ADDRESS = String.format("http://%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
         MAIN_ADDRESS = properties.getProperty("master.address");
@@ -70,12 +77,34 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
     
     private void run(Properties properties) throws Exception {
-        hostToNodesCount = new LinkedHashMap<>();
+        if (Boolean.parseBoolean(properties.getProperty("vm.runVMs"))) 
+            runVMs(Integer.parseInt(properties.getProperty("vm.count")));
+        
+        readConfigs();
+        
+        if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
+            updateBuilds();
+        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateNodes")))
+            installOrUpdateNodes();
+        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateScenario")))
+            installOrUpdateScenario();
+        if (Boolean.parseBoolean(properties.getProperty("vm.runScenario")))
+            runScenario();
+    }
+
+    private void runVMs(int count) {
+        //TODO run vms with AWSHelper
+    }
+    
+    private void readConfigs() {
+        String[] hosts = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, NET_CONFIGURATION).toString()).split(LINES_SEPARATOR);
+        hostsIp = Arrays.asList(hosts);
+        hostIdToNodesCount = new LinkedHashMap<>();
         idToNodeInfo = new HashMap<>();
-        readConfig(hostToNodesCount, VOTING_NET_CONFIGURATION, str -> {
+        readConfig(hostIdToNodesCount, VOTING_VM_CONFIGURATION, str -> {
             String[] splited = str.split("=");
             if (splited.length == 2)
-                return new AbstractMap.SimpleEntry<>(splited[0], Integer.parseInt(splited[1]));
+                return new AbstractMap.SimpleEntry<>(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
             return null;
         });
         readConfig(idToNodeInfo, VOTING_DESCRIPTION, str -> {
@@ -88,20 +117,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                 throw new RuntimeException(e);
             }
         });
-        
-        if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
-            updateBuilds();
-        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateNodes")))
-            installOrUpdateNodes();
-        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateScenario")))
-            installOrUpdateScenario();
-        if (Boolean.parseBoolean(properties.getProperty("vm.runScenario")))
-            runScenario();
     }
-    
+
     private <K, V> void readConfig(Map<K, V> map, String fileName, Function<String, Map.Entry<K, V>> parse) {
         String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, fileName).toString());
-        for (String str : data.split("\\r?\\n")) {
+        for (String str : data.split(LINES_SEPARATOR)) {
             Map.Entry<K, V> keyAndValue = parse.apply(str);
             if (keyAndValue != null)
                 map.put(keyAndValue.getKey(), keyAndValue.getValue());
@@ -180,8 +200,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
 
     private void updateBuilds() throws Exception {
-        for (String host : hostToNodesCount.keySet())
-            log.debug(makeCmd(getSession(host), String.format("cd %s; ./update.sh", WORK_DIR)));
+        for (Integer hostId : hostIdToNodesCount.keySet())
+            log.debug(makeCmd(getSession(hostsIp.get(hostId)), String.format("cd %s; ./update.sh", WORK_DIR)));
     }
 
     private void installOrUpdateNodes() throws Exception {        
@@ -240,8 +260,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
 
     private void iterateByAllNodes(BiConsumer<Session, Integer> action) throws Exception {
         int counter = 0;
-        for (Map.Entry<String, Integer> hostWithNodesCount : hostToNodesCount.entrySet()) {
-            String currentHost = hostWithNodesCount.getKey();
+        for (Map.Entry<Integer, Integer> hostWithNodesCount : hostIdToNodesCount.entrySet()) {
+            String currentHost = hostsIp.get(hostWithNodesCount.getKey());
             Session session = getSession(currentHost);
             int getCount = hostWithNodesCount.getValue();
             for (int i = 0; i < getCount; i++)
