@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @Value
 public class ClientManager {
-    
+
     @Value
     private class SignatureInfo {
         VoteResult vote;
@@ -62,7 +62,7 @@ public class ClientManager {
 
     Logger audit;
 
-    
+
     ConcurrentMap<String, SignatureInfo> signInfoByKey = new ConcurrentHashMap<>();
 
     CryptoHelper helper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
@@ -78,7 +78,7 @@ public class ClientManager {
 
     public RequestResult getVotings(String clientId) {
         final Collection<Voting> votings = assetsHolder.getVotings();
-        return new RequestResult<>(votings.stream().map(VotingWeb::new).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]), null);
+        return new RequestResult<>(votings.stream().map(v -> new VotingWeb(v, assetsHolder.getClientVote(v.getId(), clientId) == null)).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]), null);
     }
 
     public RequestResult getVoting(String votingId, String clientId) {
@@ -145,7 +145,7 @@ public class ClientManager {
             log.debug("signVote. Voting with id={} not found.", votingId);
             return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
-        SignatureInfo info =  signInfoByKey.get(generateKeyForDocument(clientId, votingId));
+        SignatureInfo info = signInfoByKey.get(generateKeyForDocument(clientId, votingId));
         if (info == null) {
             log.error("signVote failed. Client {} doesn't have vote for voting {}", clientId, votingId);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);

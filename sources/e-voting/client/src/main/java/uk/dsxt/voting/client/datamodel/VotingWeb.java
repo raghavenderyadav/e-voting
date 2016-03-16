@@ -27,9 +27,6 @@ import lombok.Value;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 @Value
 public class VotingWeb {
     String id;
@@ -38,30 +35,26 @@ public class VotingWeb {
     long endTimestamp;
     boolean isActive;
     boolean canVote;
-    QuestionWeb[] questions;
 
     @JsonCreator
     public VotingWeb(@JsonProperty("id") String id, @JsonProperty("name") String name,
                      @JsonProperty("beginTimestamp") long beginTimestamp, @JsonProperty("endTimestamp") long endTimestamp,
-                     @JsonProperty("isActive") boolean isActive, @JsonProperty("canVote") boolean canVote,
-                     @JsonProperty("questions") QuestionWeb[] questions) {
+                     @JsonProperty("isActive") boolean isActive, @JsonProperty("canVote") boolean canVote) {
         this.id = id;
         this.name = name;
         this.beginTimestamp = beginTimestamp;
         this.endTimestamp = endTimestamp;
         this.isActive = isActive;
         this.canVote = canVote;
-        this.questions = questions;
     }
 
-    public VotingWeb(Voting v) {
+    public VotingWeb(Voting v, boolean canVote) {
         this.id = v.getId();
         this.name = v.getName();
         this.beginTimestamp = v.getBeginTimestamp();
         this.endTimestamp = v.getEndTimestamp();
         final Instant now = Instant.now();
         this.isActive = now.isAfter(beginTimestamp) && now.isBefore(endTimestamp);
-        this.canVote = true; // TODO
-        this.questions = Arrays.stream(v.getQuestions()).map(QuestionWeb::new).collect(Collectors.toList()).toArray(new QuestionWeb[v.getQuestions().length]);
+        this.canVote = true; //TODO: use canVote in production
     }
 }
