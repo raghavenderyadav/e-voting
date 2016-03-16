@@ -22,20 +22,42 @@
 'use strict';
 
 angular
-  .module('e-voting.role-management.role-enums', [])
-  .service('roleEnums', function () {
-    return {
-      "roles": {
-        "user": "user",
-        "admin": "admin"
-      },
-      "permissionTypes": {
-        "atLeastOne": "atLeastOne",
-        "multiple": "multiple"
-      },
-      "permissions": {
-        "granted": "granted",
-        "denied": "denied"
+  .module('e-voting.notifications.global-notification-directive', [])
+  .directive('globalNotification', globalNotification);
+
+function globalNotification($injector) {
+  return {
+    restrict: 'AE',
+    scope: true,
+    templateUrl: 'components/notifications/global-notification-directive.html',
+    link: link
+  };
+
+  function link(scope, element, attrs) {
+    var notificationInfo = $injector.get('notificationInfo'),
+      timeout = $injector.get('$timeout'),
+      currentTimeout = null,
+      showNotificationTime = 10000;
+    scope.show = false;
+    scope.message = '';
+    scope.dialogStyle = {};
+    if (attrs.width)
+      scope.dialogStyle.width = attrs.width;
+    if (attrs.height)
+      scope.dialogStyle.height = attrs.height;
+    scope.hideModal = function () {
+      scope.show = false;
+    };
+    scope.$watch(notificationInfo.getNotificationCounter, function(newValue) {
+      if(newValue > 0) {
+        scope.message = notificationInfo.getNotificationMessage();
+        scope.show = true;
+        if (currentTimeout) timeout.cancel(currentTimeout);
+        currentTimeout = timeout(function () {
+          scope.show = false;
+          scope.message = '';
+        }, showNotificationTime);
       }
-    }
-  });
+    })
+  }
+}

@@ -22,20 +22,26 @@
 'use strict';
 
 angular
-  .module('e-voting.role-management.role-enums', [])
-  .service('roleEnums', function () {
+  .module('e-voting.notifications.notification-info', [])
+  .service('notificationInfo', function () {
+    var notificationCounter = 0,
+      notificationMessage = '';
+
     return {
-      "roles": {
-        "user": "user",
-        "admin": "admin"
-      },
-      "permissionTypes": {
-        "atLeastOne": "atLeastOne",
-        "multiple": "multiple"
-      },
-      "permissions": {
-        "granted": "granted",
-        "denied": "denied"
-      }
+      getNotificationCounter: getNotificationCounter,
+      getNotificationMessage: getNotificationMessage,
+      setNotification: setNotification
+    };
+
+    function getNotificationCounter() {
+      return notificationCounter;
+    }
+    function getNotificationMessage() {
+      return notificationMessage;
+    }
+
+    function setNotification(message) {
+      notificationMessage = message;
+      notificationCounter++;
     }
   });

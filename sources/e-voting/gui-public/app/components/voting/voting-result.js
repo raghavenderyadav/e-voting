@@ -35,13 +35,9 @@ angular
             votingId: votingId
           },
           getVotingResultComplete,
-          getVotingResultFailed,
+          null,
           null
         );
-
-        function getVotingResultFailed(data) {
-          console.log('XHR Failed for getVotingResult.' + data.error);
-        }
       }
     }
   ]);

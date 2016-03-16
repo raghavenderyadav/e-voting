@@ -19,7 +19,7 @@
  * *
  ******************************************************************************/
 
- 'use strict';
+'use strict';
 
 angular
   .module('e-voting.api-requests', [
@@ -49,12 +49,13 @@ angular
       getCookiePostUrl: getCookiePostUrl
     };
 
-    function getPostUrl(method){
+    function getPostUrl(method) {
       if (apiProperties.paths[method] === undefined)
         throw("apiProperties.paths['%s'] is undefined");
       return constructMethodUrl(apiProperties.paths[method]);
     }
-    function getCookiePostUrl(method){
+
+    function getCookiePostUrl(method) {
       if (apiProperties.cookiePaths[method] === undefined)
         throw("apiProperties.cookiePaths['%s'] is undefined");
       return constructMethodUrl(apiProperties.cookiePaths[method]);
@@ -62,8 +63,8 @@ angular
   }])
   .service('apiRequests', [
     '$q', '$http', '$sessionStorage',
-    'apiRequestsUrlHelper',
-    function ($q, $http, $sessionStorage, urlHelper) {
+    'apiRequestsUrlHelper', 'notificationInfo', 'notificationEnum',
+    function ($q, $http, $sessionStorage, urlHelper, notificationInfo, notificationEnum) {
       /**
        *
        * @param {string} url - request url
@@ -72,17 +73,16 @@ angular
        * @param serverErrorCallback - callback for {response = 200 AND success = 0). In case of no success is NULL
        * @param finallyCallback - callback for any response
        */
-      function sendRequest (url, parameters, serverSuccessCallback, serverErrorCallback, finallyCallback) {
+      function sendRequest(url, parameters, serverSuccessCallback, serverErrorCallback, finallyCallback) {
         function onHttpPostSuccess(response) {
           if (angular.isUndefined(response.data.error)) {
             if (!angular.isUndefined(serverSuccessCallback))
               serverSuccessCallback(response.data.result);
-          }
-          else {
-            if (angular.isUndefined(serverErrorCallback)) {
-              if (response.data.error !== "WRONG_COOKIE") throw {message: response.data.error, source: "server"};
+          } else {
+            if (angular.isUndefined(serverErrorCallback) || serverErrorCallback === null) {
+              notificationInfo.setNotification(notificationEnum.errors[response.data.error]);
             } else {
-              serverErrorCallback(response.data.result);
+              serverErrorCallback(response.data.error)
             }
           }
         }

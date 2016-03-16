@@ -23,8 +23,8 @@
 
 angular
   .module('e-voting.auth.sign-in', [])
-  .service('signIn', ['apiRequests', '$state', 'userInfo',
-    function (apiRequests, $state, userInfo) {
+  .service('signIn', ['apiRequests', '$state', 'userInfo', 'notificationInfo', 'notificationEnum',
+    function (apiRequests, $state, userInfo, notificationInfo, notificationEnum) {
       return {
         signIn: signIn
       };
@@ -36,17 +36,13 @@ angular
             password: password
           },
           signInComplete,
-          signInFailed,
+          null,
           null
         );
 
         function signInComplete(data) {
           userInfo.setInfo(data);
-          $state.go('votingList')
-        }
-
-        function signInFailed(data) {
-          console.log('XHR Failed for getVotingList.' + data.error);
+          $state.go('votingList');
         }
       }
     }

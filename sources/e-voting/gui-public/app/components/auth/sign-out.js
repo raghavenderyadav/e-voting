@@ -33,8 +33,8 @@ angular
           'logout',
           {},
           signOutComplete,
-          signOutFailed,
-          null
+          null,
+          signOutFinal
         );
 
         function signOutComplete() {
@@ -42,8 +42,7 @@ angular
           $state.go('signIn');
         }
 
-        function signOutFailed(data) {
-          console.log('XHR Failed for logout.' + data.error);
+        function signOutFinal() {
           $state.go('signIn');
         }
       }

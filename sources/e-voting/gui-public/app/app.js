@@ -30,9 +30,11 @@ angular
     'e-voting.server-properties',
     'e-voting.api-requests',
     'e-voting.role-management',
-    'e-voting.crypto'
+    'e-voting.crypto',
+    'e-voting.notifications'
   ])
   .run(['$rootScope', 'roleManager', function ($rootScope, roleManager) {
+    $rootScope.errorMessage = '';
     $rootScope.$on('$stateChangeStart',
         function (event, toState) {
           roleManager.checkPagePermission(event, toState);

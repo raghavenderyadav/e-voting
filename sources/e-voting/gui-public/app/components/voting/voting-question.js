@@ -39,13 +39,9 @@ angular
             votingId: votingId
           },
           getVotingComplete,
-          getVotingFailed,
+          null,
           null
         );
-
-        function getVotingFailed(data) {
-          console.log('XHR Failed for getVotingResult.' + data.error);
-        }
       }
 
       function vote(params, voteComplete) {
@@ -57,13 +53,9 @@ angular
             votingChoice: param
           },
           voteComplete,
-          voteFailed,
+          null,
           null
         );
-
-        function voteFailed(data) {
-          console.log('XHR Failed for getVotingResult.' + data.error);
-        }
       }
 
       function getTimer(votingId, getTimerComplete) {
@@ -73,13 +65,9 @@ angular
             votingId: votingId
           },
           getTimerComplete,
-          getTimerFailed,
+          null,
           null
         );
-
-        function getTimerFailed(data) {
-          console.log('XHR Failed for getVotingResult.' + data.error);
-        }
       }
 
       function getKeyByValue(arrObj, targetValue, targetValueKey) {
@@ -112,14 +100,10 @@ angular
               signature: signature
             },
             signDataComplete,
-            signVoteFailed,
+            null,
             null
           );
         });
-
-        function signVoteFailed(data) {
-          console.log('XHR Failed for signVote.' + data.error);
-        }
       }
     }
   ]);

@@ -33,13 +33,9 @@ angular
           'votings',
           {},
           getVotingListComplete,
-          getVotingListFailed,
+          null,
           null
         );
-
-        function getVotingListFailed(data) {
-          console.log('XHR Failed for getVotingList.' + data.error);
-        }
       }
     }
   ]);

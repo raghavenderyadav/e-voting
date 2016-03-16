@@ -22,20 +22,11 @@
 'use strict';
 
 angular
-  .module('e-voting.role-management.role-enums', [])
-  .service('roleEnums', function () {
+  .module('e-voting.notifications.notification-enum', [])
+  .service('notificationEnum', function() {
     return {
-      "roles": {
-        "user": "user",
-        "admin": "admin"
-      },
-      "permissionTypes": {
-        "atLeastOne": "atLeastOne",
-        "multiple": "multiple"
-      },
-      "permissions": {
-        "granted": "granted",
-        "denied": "denied"
+      "errors": {
+        "INCORRECT_LOGIN_OR_PASSWORD": "Incorrect login or password"
       }
     }
   });
