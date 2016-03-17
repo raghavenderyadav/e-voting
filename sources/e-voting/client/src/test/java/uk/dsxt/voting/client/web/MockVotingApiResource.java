@@ -135,7 +135,7 @@ public class MockVotingApiResource implements VotingAPI {
             questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
             questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
             questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-            return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), -1, "<root>mock xml body</root>"), null);
+            return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), 57000L, "<root>mock xml body</root>"), null);
         } catch (Exception e) {
             log.error("vote method failed. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
@@ -173,7 +173,7 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), -1, null), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), null, null), null);
     }
 
     @POST
@@ -248,6 +248,6 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no_1", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_yes_no_2", answers3, false, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, BigDecimal.ZERO, -1, null), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, BigDecimal.ZERO, null, null), null);
     }
 }

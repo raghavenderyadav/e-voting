@@ -192,7 +192,7 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote, false));
         }
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), 0, null);
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), null, null);
     }
 
     public RequestResult getTime(String votingId) {
@@ -237,7 +237,7 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, voteResults, true));
         }
-        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), BigDecimal.ZERO, 0, null), null);
+        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null, null), null);
     }
 
 

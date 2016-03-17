@@ -37,14 +37,14 @@ import java.util.Arrays;
 public class VotingInfoWeb {
     QuestionWeb[] questions;
     BigDecimal amount;
-    long timer;
+    Long timer;
 
     @NonFinal
     @Setter
     String xmlBody;
 
     @JsonCreator
-    public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount, @JsonProperty("timer") long timer, @JsonProperty("xmlBody") String xmlBody) {
+    public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount, @JsonProperty("timer") Long timer, @JsonProperty("xmlBody") String xmlBody) {
         this.questions = questions;
         this.amount = amount;
         this.timer = timer;
