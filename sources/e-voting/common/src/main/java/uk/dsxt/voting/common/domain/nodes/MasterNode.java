@@ -87,7 +87,7 @@ public class MasterNode extends ClientNode {
                 String holderId = holderIds[idx];
                 holderPath = i == 0 ? holderId : holderId + ClientNode.PATH_SEPARATOR + holderPath;
                 if (idx < signatures.size()) {
-                    network.addVote(newResult, signatures.get(idx), holderId);
+                    network.addVote(new VoteResult(newResult, holderPath), signatures.get(idx), holderId);
                 }
             }
             return true;
