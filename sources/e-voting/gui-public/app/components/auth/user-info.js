@@ -59,11 +59,7 @@ angular
       }
 
       function deleteInfo() {
-        angular.forEach($sessionStorage, function (value, key) {
-          if ($sessionStorage.hasOwnProperty(key)) {
-            delete $sessionStorage[key];
-          }
-        });
+        $sessionStorage.$reset();
       }
     }
   ]);

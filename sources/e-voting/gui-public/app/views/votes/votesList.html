@@ -27,7 +27,7 @@
         {{voting.packetSize}}
       </td>
       <td>
-        <span class="label" ng-class="voting.status == 'OK' ? 'label-success' : 'label-danger'">{{voting.status}}</span>
+        <span class="label" ng-class="{'label-success' : voting.status == 'OK', 'label-danger': voting.status != 'OK'}">{{voting.status}}</span>
       </td>
     </tr>
   </table>

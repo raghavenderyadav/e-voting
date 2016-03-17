@@ -22,19 +22,27 @@
 'use strict';
 
 angular
-  .module('e-voting.voting', [
-    'e-voting.voting.voting-list-model',
-    'e-voting.voting.voting-list-view',
-    'e-voting.voting.voting-result-model',
-    'e-voting.voting.voting-result-view',
-    'e-voting.voting.voting-result-directive',
-    'e-voting.voting.voting-question-model',
-    'e-voting.voting.voting-question-view',
-    'e-voting.voting.voting-question-directive',
-    'e-voting.voting.votes-list-model',
-    'e-voting.voting.votes-list-view',
-    'e-voting.voting.voting-countdown-directive',
-    'e-voting.voting.voting-total-result-model',
-    'e-voting.voting.voting-total-result-view',
-    'e-voting.voting.voting-result-answer-directive'
-  ]);
+  .module('e-voting.voting.voting-result-answer-directive', [])
+  .directive('votingResultAnswer', votingResultAnswer);
+
+function votingResultAnswer() {
+  return {
+    link: link,
+    templateUrl: 'components/voting/voting-result-answer-directive.html',
+    restrict: 'EA',
+    scope: {
+      answers: "=votingResultAnswer",
+      totalVotes: "=?"
+    }
+  };
+
+  function link(scope) {
+    var totalVotes = 0;
+    if(angular.isUndefined(scope.totalVotes)) {
+      angular.forEach(scope.answers, function(answer) {
+        totalVotes += answer.votes;
+      });
+      scope.totalVotes = totalVotes;
+    }
+  }
+}
