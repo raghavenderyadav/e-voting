@@ -76,7 +76,7 @@ public class AuthManager {
                 if (clientCrls.getPassword().equals(password)) {
                     LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
                     String cookie = generateCookieAndLogin(loggedUser);
-                    String userName = clientId.equals(ADMIN_NAME) ? ADMIN_NAME : participantsById.get(clientId).getName();
+                    String userName = participantsById.get(clientId).getName();
                     audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
                     return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
                 } else {
