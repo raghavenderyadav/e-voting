@@ -87,6 +87,9 @@ function votingCountdown($injector) {
         scope.isServerUpdateInProcess = false;
       }, 500)
     }
+    scope.$on("$destroy", function() {
+      interval.cancel(countdownServerUpdateInterval);
+    });
   }
 
   return {

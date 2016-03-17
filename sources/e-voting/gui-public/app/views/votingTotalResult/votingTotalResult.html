@@ -16,7 +16,7 @@
                     {{answer.name}}
                   </div>
                   <div class="col-xs-9">
-                    <span>Votes: {{answer.votes}} / {{vtrc.votingTotalResult.amount}}</span>
+                    <span>Votes: {{answer.votes}} / {{question.totalVotes}}</span>
                     <div class="progress">
                       <div
                         class="progress-bar"
@@ -24,10 +24,10 @@
                         ng-class="{'progress-bar-success': answer.votes > 0}"
                         aria-valuenow="{{answer.votes}}"
                         aria-valuemin="{{answer.votes}}"
-                        aria-valuemax="{{vtrc.votingTotalResult.amount}}"
-                        style="width: {{answer.votes / vtrc.votingTotalResult.amount * 100 | number: 2}}%;">
+                        aria-valuemax="{{question.totalVotes}}"
+                        style="width: {{answer.votes / question.totalVotes * 100 | number: 2}}%;">
                         <span ng-if="answer.votes > 0">
-                          {{answer.votes / vtrc.votingTotalResult.amount * 100 | number: 2}}%
+                          {{answer.votes / question.totalVotes * 100 | number: 2}}%
                         </span>
                       </div>
                     </div>

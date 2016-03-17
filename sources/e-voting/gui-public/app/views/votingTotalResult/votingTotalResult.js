@@ -34,6 +34,13 @@ angular
       return votingTotalResultInfo.getVotingTotalResult($state.params.id, getVotingTotalResultComplete);
 
       function getVotingTotalResultComplete(data) {
+        angular.forEach(data.questions, function(question, key) {
+          var totalVotes = 0;
+          angular.forEach(question.answers, function(answer) {
+            totalVotes += answer.votes;
+          });
+          data.questions[key].totalVotes = totalVotes;
+        });
         vtrc.votingTotalResult = data;
         return vtrc.votingTotalResult;
       }
