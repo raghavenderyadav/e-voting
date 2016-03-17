@@ -1,0 +1,63 @@
+.nav-radios {
+  margin-bottom: $gut_base;
+
+  > li {
+    > input {
+      display: none;
+    }
+
+    > label {
+      position: relative;
+      display: block;
+      padding: 10px 15px;
+      margin-bottom: 0;
+      font-size: $fz_big;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: none;
+        background-color: #eee;
+      }
+    }
+  }
+
+  &.nav-tabs {
+    > li > label {
+      margin-right: 2px;
+      line-height: 1.42857143;
+      border: 1px solid transparent;
+      border-radius: 4px 4px 0 0;
+
+      &:hover {
+        border-color: #eee #eee #ddd;
+      }
+    }
+
+    > li.active > label,
+    > li.active > label:hover {
+      color: #555;
+      cursor: default;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-bottom-color: transparent;
+    }
+  }
+
+  &.nav-pills {
+    > li > label {
+      border-radius: 4px;
+    }
+
+    > li + li {
+      margin-left: $gut_base;
+    }
+
+    > li.active > label,
+    > li.active > label:hover {
+      color: #fff;
+      background-color: #337ab7;
+    }
+  }
+}
+
+

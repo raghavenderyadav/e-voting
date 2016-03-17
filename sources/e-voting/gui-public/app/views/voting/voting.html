@@ -11,14 +11,17 @@
           <div ng-if="vc.phase === 2">
             <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question" total-votes="vc.totalVotes"></div>
 
-            <div class="col-xs-3">
-              <br/><br/><br/><br/>
-              <label for="signKey">Signature key</label>
-            </div>
-            <div class="col-xs-9">
-              <textarea name="signKey" id="signKey" cols="30" rows="10" ng-model="vc.signKey"></textarea>
+            <div class="form-horizontal">
+              <br>
+              <div class="form-group">
+                <label class="col-xs-3 control-label" for="signKey">Signature key</label>
+                <div class="col-xs-9">
+                  <textarea class="form-control" name="signKey" id="signKey" cols="30" rows="10" ng-model="vc.signKey"></textarea>
+                </div>
+              </div>
             </div>
             <div class="ng-hide">{{vc.xml}}</div>
+
           </div>
         </div>
         <div class="panel-footer text-center">

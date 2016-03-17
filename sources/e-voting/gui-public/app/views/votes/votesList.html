@@ -1,10 +1,21 @@
 <div class="container">
-  <h2 class="page-title">
+  <!-- <h2 class="page-title">
     <input type="radio" ng-model="volc.votesType" value="confirmed" id="confirmed-votes" ng-change="volc.getVotes(volc.votesType)">
     <label for="confirmed-votes">Confirmed votes list</label>
     <input type="radio" ng-model="volc.votesType" value="all" id="all-votes" ng-change="volc.getVotes(volc.votesType)">
     <label for="all-votes">All votes list</label>
-  </h2>
+  </h2> -->
+
+  <ul class="nav nav-pills nav-radios">
+    <li role="presentation" ng-class="{'active': volc.votesType == 'confirmed'}">
+      <input type="radio" ng-model="volc.votesType" value="confirmed" id="confirmed-votes" ng-change="volc.getVotes(volc.votesType)">
+      <label for="confirmed-votes">Confirmed votes list</label>
+    </li>
+    <li role="presentation" ng-class="{'active': volc.votesType == 'all'}">
+      <input type="radio" ng-model="volc.votesType" value="all" id="all-votes" ng-change="volc.getVotes(volc.votesType)">
+      <label for="all-votes">All votes list</label>
+    </li>
+  </ul>
   <table class="table table-striped table-custom">
     <tr>
       <th>Voting</th>
@@ -14,13 +25,13 @@
     </tr>
     <tr ng-repeat="voting in volc.votesList">
       <td>
-        <span class="voting-title">{{voting.votingId}}</span>
+        <strong>{{voting.votingId}}</strong>
       </td>
       <td>
-        <span>{{voting.clientId}}</span>
+        {{voting.clientId}}
       </td>
       <td>
-        <span>{{voting.packetSize}}</span>
+        {{voting.packetSize}}
       </td>
       <td>
         <span class="label" ng-class="voting.status == 'OK' ? 'label-success' : 'label-danger'">{{voting.status}}</span>

@@ -1,14 +1,12 @@
 @import 'var.css';
 @import 'base.css';
-@import 'blocks/login-panel.css';
-@import 'blocks/header.css';
 @import 'blocks/account.css';
 @import 'blocks/countdown.css';
+@import 'blocks/header.css';
 @import 'blocks/login-panel.css';
-@import 'blocks/table-custom.css';
-@import 'blocks/voting.css';
-@import 'blocks/voting-item.css';
+@import 'blocks/nav-radios.css';
 @import 'blocks/notification.css';
-
-
+@import 'blocks/table-custom.css';
+@import 'blocks/voting-item.css';
+@import 'blocks/voting.css';
 

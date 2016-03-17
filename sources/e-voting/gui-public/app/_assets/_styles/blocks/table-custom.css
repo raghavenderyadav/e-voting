@@ -5,10 +5,17 @@
 
   td {
     vertical-align: middle;
-    padding: 10px 30px !important;
+    padding: 15px 30px !important;
+
+    &.table-custom-small-cell {
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+    }
   }
 
   th {
     padding: 15px 30px !important;
   }
 }
+
+

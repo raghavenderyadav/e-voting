@@ -12,16 +12,12 @@
         <span class="voting-title">{{voting.name}}</span>
       </td>
       <td>
-        <span class="voting-date">
-          {{voting.beginTimestamp | date: 'shortDate'}} {{voting.beginTimestamp | date: 'mediumTime'}}
-        </span>
+        {{voting.beginTimestamp | date: 'shortDate'}} {{voting.beginTimestamp | date: 'mediumTime'}}
       </td>
       <td>
-        <span class="voting-date">
-          {{voting.endTimestamp | date: 'shortDate'}} {{voting.endTimestamp | date: 'mediumTime'}}
-        </span>
+        {{voting.endTimestamp | date: 'shortDate'}} {{voting.endTimestamp | date: 'mediumTime'}}
       </td>
-      <td ng-if="voting.active">
+      <td ng-if="voting.active" class="table-custom-small-cell">
         <button
           type="button"
           class="voting-btn btn-sm btn btn-success"
@@ -31,7 +27,7 @@
           Vote
         </button>
       </td>
-      <td ng-if="!voting.active">
+      <td ng-if="!voting.active" class="table-custom-small-cell">
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
