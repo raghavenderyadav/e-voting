@@ -1,11 +1,11 @@
 <div class="container">
-  <h2 class="page-title">Votings list</h2>
+  <h2 class="page-title">All votings</h2>
   <table class="table table-striped table-custom">
     <tr>
-      <th>Name:</th>
-      <th>Begin:</th>
-      <th>End:</th>
-      <th>Action:</th>
+      <th>Name</th>
+      <th>Begin</th>
+      <th>End</th>
+      <th>Actions</th>
     </tr>
     <tr ng-repeat="voting in vlc.votingList">
       <td>
@@ -31,7 +31,7 @@
                 class="voting-btn btn-sm btn btn-default"
                 access="vlc.roleEnums.roles.admin" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
                 ng-click="vlc.showVoteRelatedPage('confirmedVotes', voting.id)">
-          Confirmed votes
+          Client's votes
         </button>
       </td>
       <td ng-if="!voting.active" class="table-custom-small-cell">
@@ -40,21 +40,21 @@
           class="voting-btn btn-sm btn btn-default"
           access="vlc.roleEnums.roles.user" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('votingResult', voting.id)">
-          Results
+          Own vote
         </button>
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
           access="vlc.roleEnums.roles.admin" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('confirmedVotes', voting.id)">
-          Confirmed votes
+          Client's votes
         </button>
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
           access="vlc.roleEnums.roles.user" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('votingTotalResult', voting.id)">
-          Total votes
+          Voting results
         </button>
       </td>
     </tr>
