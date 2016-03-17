@@ -72,4 +72,13 @@ public class CryptoKeysGenerator {
         X509EncodedKeySpec spec = fact.getKeySpec(publicKey, X509EncodedKeySpec.class);
         return Base64.getEncoder().encodeToString(spec.getEncoded());
     }
+    
+    public static void main(String[] args) throws Exception {
+        int count = Integer.parseInt(args[0]);
+        CryptoKeysGenerator cryptoKeysGenerator = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator();
+        for (int i = 0; i < count; i++) {
+            KeyPair keyPair = cryptoKeysGenerator.generateKeyPair();
+            System.out.printf("public: %s%nprivate: %s%n%n", keyPair.getPublicKey(), keyPair.getPrivateKey());
+        }
+    }
 }
