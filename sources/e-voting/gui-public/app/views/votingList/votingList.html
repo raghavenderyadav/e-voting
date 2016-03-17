@@ -30,12 +30,19 @@
           ng-click="voting.canVote && vlc.showVoteRelatedPage('voting', voting.id)">
           Vote
         </button>
+        <button
+                type="button"
+                class="voting-btn btn-sm btn btn-default"
+                access="vlc.roleEnums.roles.admin" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
+                ng-click="vlc.showVoteRelatedPage('confirmedVotes', voting.id)">
+          Confirmed votes
+        </button>
       </td>
       <td ng-if="!voting.active">
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
-          access="vlc.roleEnums.roles.user"
+          access="vlc.roleEnums.roles.user" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('votingResult', voting.id)">
           Results
         </button>
@@ -49,6 +56,7 @@
         <button
           type="button"
           class="voting-btn btn-sm btn btn-default"
+          access="vlc.roleEnums.roles.user" access-permission-type="vlc.roleEnums.permissionTypes.atLeastOne"
           ng-click="vlc.showVoteRelatedPage('votingTotalResult', voting.id)">
           Total votes
         </button>
