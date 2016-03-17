@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -42,8 +43,8 @@ public class MasterNode extends ClientNode {
 
     public static String MASTER_HOLDER_ID = "00";
 
-    public MasterNode() {
-        super(MASTER_HOLDER_ID);
+    public MasterNode(MessagesSerializer messagesSerializer) {
+        super(MASTER_HOLDER_ID, messagesSerializer);
         calculateResultsService = Executors.newScheduledThreadPool(10);
     }
 
@@ -63,7 +64,13 @@ public class MasterNode extends ClientNode {
         VoteResult totalResult = new VoteResult(votingId, null);
         votingRecord.sumClientResultsByClientId.values().stream().filter(r -> r.getStatus() == VoteResultStatus.OK).forEach(r -> totalResult.add(r));
         log.info("calculateResults. totalResult={}", totalResult);
-        network.addVotingTotalResult(totalResult);
+        //TODO: move to common logic
+        try {
+            VoteResult adaptedTotalResult = messagesSerializer.adaptVoteResultForXML(totalResult, votingRecord.voting);
+            network.addVotingTotalResult(adaptedTotalResult);
+        } catch (Exception e) {
+            log.error("calculateResults failed", e);
+        }
     }
 
     @Override

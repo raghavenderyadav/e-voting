@@ -30,8 +30,8 @@ import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
-import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
@@ -73,7 +73,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     @Override
     public void addVotingTotalResult(VoteResult result) {
-        send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result));
+        try {
+            send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result));
+        } catch (Exception e) {
+            log.error("addVotingTotalResult failed. couldn't send total results.", e);
+        }
     }
 
     @Override

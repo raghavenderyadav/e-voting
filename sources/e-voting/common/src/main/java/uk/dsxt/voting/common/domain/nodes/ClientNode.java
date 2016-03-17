@@ -28,6 +28,7 @@ import uk.dsxt.voting.common.domain.dataModel.Client;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -57,8 +58,11 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
     protected final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public ClientNode(String participantId) {
+    protected final MessagesSerializer messagesSerializer;
+
+    public ClientNode(String participantId, MessagesSerializer messagesSerializer) {
         this.participantId = participantId;
+        this.messagesSerializer = messagesSerializer;
     }
 
     public synchronized void setClientsOnTime(long timestamp, Client[] clients) {
@@ -105,7 +109,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
 
         String clientId = clientIds[0];
         if (!isConfirmed && newResult.getStatus() == VoteResultStatus.OK) {
-            Client client =  getClient(votingRecord.voting, clientIds[0]);
+            Client client = getClient(votingRecord.voting, clientIds[0]);
             if (client == null) {
                 log.warn("acceptVote. Client not found on voting begin. votingId={} holdersTreePath={}", newResult.getVotingId(), holdersTreePath);
                 return false;
@@ -122,7 +126,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
                 clientResult = clientResult.sum(newResult);
                 if (clientResult.getPacketSize().compareTo(client.getPacketSize()) > 0) {
                     log.warn("acceptVote. VoteResult adds to big packet size to client. votingId={} holdersTreePath={} clientPacketSize={} newPacketSize={}",
-                            newResult.getVotingId(), holdersTreePath, client.getPacketSize(), clientResult.getPacketSize());
+                        newResult.getVotingId(), holdersTreePath, client.getPacketSize(), clientResult.getPacketSize());
                     newResult.setStatus(VoteResultStatus.ERROR);
                 } else {
                     votingRecord.sumClientResultsByClientId.put(clientId, clientResult);
@@ -185,7 +189,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("acceptVote. Voting not found {}. clientId={}", votingId, clientId);
             return null;
         }
-        Client client =  getClient(votingRecord.voting, clientId);
+        Client client = getClient(votingRecord.voting, clientId);
         if (client == null) {
             log.warn("acceptVote. Client not found on voting begin. votingId={} clientId={}", votingId, clientId);
             return null;
@@ -207,7 +211,12 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("addVotingTotalResult. Voting not found {}", result.getVotingId());
             return;
         }
-        votingRecord.totalResult = result;
+        //TODO: move to common logic
+        try {
+            votingRecord.totalResult = messagesSerializer.adaptVoteResultFromXML(result, votingRecord.voting);
+        } catch (Exception e) {
+            log.error("addVotingTotalResult failed", e);
+        }
     }
 
     @Override
@@ -219,9 +228,9 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
         Map<String, Client> clients = null;
         for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
             if (clientsEntry.getKey() <= voting.getBeginTimestamp()) {
-              clients = clientsEntry.getValue();
+                clients = clientsEntry.getValue();
             } else {
-              break;
+                break;
             }
         }
         if (clients == null) {

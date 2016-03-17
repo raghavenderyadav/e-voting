@@ -23,8 +23,8 @@
 
 angular
   .module('e-voting.auth.sign-in', [])
-  .service('signIn', ['apiRequests', '$state', 'userInfo', 'notificationInfo', 'notificationEnum',
-    function (apiRequests, $state, userInfo, notificationInfo, notificationEnum) {
+  .service('signIn', ['apiRequests', '$state', 'userInfo',
+    function (apiRequests, $state, userInfo) {
       return {
         signIn: signIn
       };
