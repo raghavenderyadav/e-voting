@@ -182,7 +182,7 @@ public class ClientManager {
         final VoteResult clientVote = assetsHolder.getClientVote(votingId, clientId);
         if (clientVote == null) {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
-            return new RequestResult<>(APIException.VOTE_NOT_FOUND);
+            return new RequestResult<>(getVotingResults(new VoteResult(votingId, clientId), voting), null);
         }
         return new RequestResult<>(getVotingResults(clientVote, voting), null);
     }
