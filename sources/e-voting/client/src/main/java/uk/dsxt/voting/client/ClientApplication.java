@@ -72,7 +72,7 @@ public class ClientApplication extends ResourceConfig {
     private final WalletManager walletManager;
 
     public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
-                             String mainAddress, String passphrase, String nxtPropertiesPath, 
+                             String mainAddress, String passphrase, String nxtPropertiesPath,
                              String parentHolderUrl, String credentialsFilePath, String clientsFilePath, Logger audit) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
@@ -92,16 +92,17 @@ public class ClientApplication extends ResourceConfig {
         CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
         ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
 
+        MessagesSerializer messagesSerializer = new Iso20022Serializer();
         ClientNode clientNode;
         MasterNode masterNode;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
-            masterNode = new MasterNode();
+            masterNode = new MasterNode(messagesSerializer);
             clientNode = masterNode;
         } else {
             masterNode = null;
-            clientNode = new ClientNode(ownerId);
+            clientNode = new ClientNode(ownerId, messagesSerializer);
         }
         loadClients(clientNode, clientsFilePath);
 
@@ -110,11 +111,11 @@ public class ClientApplication extends ResourceConfig {
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
 
         PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
-        MessagesSerializer messagesSerializer = new Iso20022Serializer();
+
         CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
-                walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+            walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 
@@ -124,11 +125,11 @@ public class ClientApplication extends ResourceConfig {
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
             //Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
             String votingFiles = properties.getProperty("voting.files", "");
-            for(String votingFile : votingFiles.split(",")) {
+            for (String votingFile : votingFiles.split(",")) {
                 long now = System.currentTimeMillis();
                 String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
                 Voting voting = messagesSerializer.deserializeVoting(votingMessage);
-                voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp()-voting.getBeginTimestamp(), voting.getQuestions());
+                voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions());
                 boolean found = false;
                 while (!found) {
                     masterNode.addNewVoting(voting);
@@ -164,11 +165,11 @@ public class ClientApplication extends ResourceConfig {
         try {
             clientsOnTimes = PropertiesHelper.loadResource(clientsFilePath, ClientsOnTime[].class);
         } catch (InternalLogicException e) {
-           log.error("loadClients failed: {}", e.getMessage());
-           return;
+            log.error("loadClients failed: {}", e.getMessage());
+            return;
         }
         long now = System.currentTimeMillis();
-        for(ClientsOnTime clientsOnTime : clientsOnTimes) {
+        for (ClientsOnTime clientsOnTime : clientsOnTimes) {
             node.setClientsOnTime(now + clientsOnTime.getMinutes() * 60000, clientsOnTime.getClients());
         }
     }
