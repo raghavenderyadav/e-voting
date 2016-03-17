@@ -85,10 +85,13 @@ public class ClientManager {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.error("getVoting. Couldn't find voting with id [{}].", votingId);
-            return null;
+            return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
         BigDecimal amount = assetsHolder.getClientPacketSize(votingId, clientId);
-        long time = (long) getTime(votingId).getResult();
+        long time = -1;
+        long now = System.currentTimeMillis();
+        if (now >= voting.getBeginTimestamp() && now <= voting.getEndTimestamp())
+            time = voting.getEndTimestamp() - now;
         return new RequestResult<>(new VotingInfoWeb(voting, amount, time), null);
     }
 
