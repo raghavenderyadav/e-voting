@@ -51,14 +51,12 @@ public class ResultsBuilderWeb implements ResultsBuilder {
     private void execute(String name, String url, Map<String, String> parameters) {
         try {
             httpHelper.request(url, parameters, RequestType.POST);
-        } catch (ConnectException e) {
+        } catch (ConnectException | InternalLogicException e) {
             log.error("ResultsBuilderWeb: {} failed. url={}. error={}.", name, url, e.getMessage());
         } catch (IOException e) {
             log.error("ResultsBuilderWeb: {} failed. url={}.", name, url, e);
-        } catch (InternalLogicException e) {
-            log.error("ResultsBuilderWeb: {} failed. url={}. error={}.", name, url, e.getMessage());
         }
-     }
+    }
 
     @Override
     public void addResult(String holderId, String voteResult) {
