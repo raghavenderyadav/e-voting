@@ -38,6 +38,9 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class AuthManager {
+    
+    private final String ADMIN_NAME = "admin";
+    
     public HashMap<String, ClientCredentials> userCredentials = new HashMap<>();
 
     protected final ConcurrentMap<String, LoggedUser> loggedUsers = new ConcurrentHashMap<>();
@@ -58,7 +61,7 @@ public class AuthManager {
                     userCredentials.put(c.getClientId(), c);
                 }
                 //TODO: added default admin role
-                userCredentials.put("admin", new ClientCredentials("admin", "admin", UserRole.ADMIN));
+                userCredentials.put(ADMIN_NAME, new ClientCredentials(ADMIN_NAME, "admin", UserRole.ADMIN));
             }
             log.info("{} client credentials loaded.", userCredentials.size());
         } catch (InternalLogicException e) {
@@ -73,7 +76,7 @@ public class AuthManager {
                 if (clientCrls.getPassword().equals(password)) {
                     LoggedUser loggedUser = new LoggedUser(clientId, clientCrls.getRole());
                     String cookie = generateCookieAndLogin(loggedUser);
-                    String userName = participantsById.get(clientId).getName();
+                    String userName = clientId.equals(ADMIN_NAME) ? ADMIN_NAME : participantsById.get(clientId).getName();
                     audit.info("[Voting WEB APP] SUCCESSFUL user login. User ID: {}.", clientId);
                     return new RequestResult<>(new SessionInfoWeb(userName, cookie, loggedUser.getRole()), null);
                 } else {
