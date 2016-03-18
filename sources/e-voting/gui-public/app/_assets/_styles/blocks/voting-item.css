@@ -13,4 +13,9 @@
   margin: 16px 0;
   position: relative;
   right: 24px;
+
+  label& {
+    font-weight: 700;
+    user-select: none;
+  }
 }

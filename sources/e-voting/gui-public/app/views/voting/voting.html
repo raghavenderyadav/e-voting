@@ -11,13 +11,12 @@
           <div ng-if="vc.phase === 2">
             <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question" total-votes="vc.totalVotes"></div>
 
-            <div class="form-horizontal">
-              <div class="form-group">
-                <div class="col-xs-12">
-                  <input type="checkbox" id="signVote" name="signVote" ng-model="vc.isSign"><label class="col-xs-3 control-label" for="signVote">Sign vote?</label>
-                </div>
-              </div>
+            <div class="checkbox voting-item">
+              <label class="voting-item-title">
+                <input type="checkbox" id="signVote" name="signVote" ng-model="vc.isSign"> Sign vote?
+              </label>
             </div>
+
             <div class="form-horizontal" ng-if="vc.isSign">
               <br>
               <div class="form-group">
