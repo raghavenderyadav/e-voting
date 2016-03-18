@@ -22,11 +22,14 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.common.domain.dataModel.*;
+import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.crypto.KeyPair;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
@@ -36,6 +39,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class TestDataGenerator {
@@ -58,6 +63,8 @@ public class TestDataGenerator {
     private final static int BADCONNECTION_PARTICIPANTS = 0;
     private final static int MAX_DISCONNECT_COUNT = 0;
     private final static int MAX_DISCONNECT_PERIOD = 0;
+    
+    private final static String SECURITY = "security";
 
     private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
@@ -78,7 +85,7 @@ public class TestDataGenerator {
         Client[] clients = new Client[PARTICIPANTS_COUNT];
         for (int i = 0; i < PARTICIPANTS_COUNT; i++) {
             Map<String, BigDecimal> packetSizeBySecurityId = new HashMap<>();
-            packetSizeBySecurityId.put("security",new BigDecimal(randomInt(15, 100)));
+            packetSizeBySecurityId.put(SECURITY,new BigDecimal(randomInt(15, 100)));
             clients[i] = new Client(participants[i].getId(), packetSizeBySecurityId, null);
             if ((i % (PARTICIPANTS_COUNT / NODES_COUNT)) != 0) {
                 //setting nominal holder
@@ -137,9 +144,26 @@ public class TestDataGenerator {
 
     public static void main(String[] args) {
         try {
-            generateCredentialsJSON();
-        } catch (IOException e) {
-            log.error(e);
+            if (args.length == 1) {
+                generateCredentialsJSON();
+                return;
+            }
+            if (args.length < 7) {
+                System.out.println("<name> <totalParticipant> <holdersCount> <vmCount> <levelsCount> <minutes> <generateVotes>");
+                throw new IllegalArgumentException("Invalid arguments count exception.");
+            }
+            int argId = 0;
+            String name = args[argId++];
+            int totalParticipant = Integer.parseInt(args[argId++]);
+            int holdersCount = Integer.parseInt(args[argId++]);
+            int vmCount = Integer.parseInt(args[argId++]);
+            int levelsCount = Integer.parseInt(args[argId++]);
+            int minutes = Integer.parseInt(args[argId++]);
+            boolean generateVotes = Boolean.parseBoolean(args[argId++]);
+            TestDataGenerator generator = new TestDataGenerator();
+            generator.newGenerate(name, totalParticipant, holdersCount, vmCount, levelsCount, minutes, generateVotes);
+        } catch (Exception e) {
+            log.error("Test generation was failed.", e);
         }
     }
 
@@ -202,13 +226,26 @@ public class TestDataGenerator {
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
             String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
-            BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, clients[i].getPacketSizeBySecurity().get("security").subtract(totalSum).intValue()));
+            BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, clients[i].getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue()));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
         }
         return vote;
     }
 
+    private static VoteResult generateVote(ClientFullInfo child, Voting voting) {
+        VoteResult vote = new VoteResult(voting.getId(), Integer.toString(child.getId()));
+        BigDecimal totalSum = BigDecimal.ZERO;
+        for (int j = 0; j < voting.getQuestions().length; j++) {
+            String questionId = voting.getQuestions()[j].getId();
+            String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
+            BigDecimal voteAmount = new BigDecimal(randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue()));
+            totalSum = totalSum.add(voteAmount);
+            vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
+        }
+        return vote;
+    }
+    
     private static Voting generateVoting(long startTime, long endTime) throws Exception {
         Question[] questions = new Question[3];
         Answer[] answers = new Answer[3];
@@ -227,7 +264,7 @@ public class TestDataGenerator {
         answers[1] = new Answer("2", "Petrov");
         answers[2] = new Answer("3", "Sidorov");
         questions[2] = new Question("3", "New chairman", answers);
-        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, "security");
+        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, SECURITY);
 
     }
 
@@ -239,5 +276,129 @@ public class TestDataGenerator {
     private static Boolean randomBoolean(int trueProbabilityPercents) {
         int id = randomInt(0, 100);
         return id <= trueProbabilityPercents;
+    }
+
+    @Data
+    @AllArgsConstructor
+    class ClientFullInfo {
+        Map<String, BigDecimal> packetSizeBySecurity;
+        int id;
+        int holderId;
+        ParticipantRole role;
+        String privateKey;
+        String publicKey;
+        String name;
+        VoteResult vote;
+        List<ClientFullInfo> clients;
+    }
+
+    class Recursive<FI> {
+        public FI recursive;
+    }
+
+    private void newGenerate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes) throws Exception {
+        //TODO generate voting
+        KeyPair[] keys = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator().generateKeys(totalParticipant);
+        
+        ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
+        Participant[] participants = new Participant[totalParticipant];
+        long now = System.currentTimeMillis();
+        Voting voting = generateVoting(now, now + minutes * 60000);
+
+        for (int i = 0; i < totalParticipant; i++) {
+            ParticipantRole role;
+            if (i == 0)
+                role = ParticipantRole.NRD;
+            else if (i <= holdersCount)
+                role = ParticipantRole.NominalHolder;
+            else 
+                role = ParticipantRole.Owner;
+            HashMap<String, BigDecimal> map = new HashMap<>();
+            map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
+            ClientFullInfo c = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null);
+            clients[i] = c;
+        }
+        for (int i = 0; i < totalParticipant; i++) {
+            ClientFullInfo client = clients[i];
+            participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), client.getName(), client.getPublicKey());
+        }
+
+        int[] counters = {1, 0, 0};
+        int minNdClient = 1;
+
+        Recursive<BiConsumer<Integer, Integer>> generateTree = new Recursive<>();
+        generateTree.recursive = (id, height) -> {
+            ClientFullInfo currentNode = clients[id];
+            List<ClientFullInfo> children = new ArrayList<>();
+            if (height + 1 != levelsCount && holdersCount > counters[0]) {
+                //Generate sub nd
+                int maxCount = holdersCount - counters[0];
+                int undistributed = height == levelsCount ? maxCount : randomInt(1, maxCount);
+                for (int i = 0; i < undistributed; i++) {
+                    children.add(clients[counters[0]++]);
+                }
+            }
+            //Generate owners
+            int maxCount = (totalParticipant - holdersCount - counters[1]) - (holdersCount - counters[2]) * minNdClient;
+            int undistributed = randomInt(minNdClient, maxCount);
+            for (int i = 0; i < undistributed; i++) {
+                ClientFullInfo child = clients[holdersCount + counters[1]++];
+                child.setVote(generateVote(child, voting));
+                children.add(child);
+            }
+            counters[2]++;
+            currentNode.setClients(children);
+            //Generate next level
+            for (ClientFullInfo child : children) {
+                if (child.getRole() != ParticipantRole.Owner)
+                    generateTree.recursive.accept(child.getId(), height + 1);
+            }
+            currentNode.setPacketSizeBySecurity(children.stream().map(ClientFullInfo::getPacketSizeBySecurity).reduce(new HashMap<>(), (map1, map2) -> {
+                for (String key : map2.keySet()) {
+                    BigDecimal old = map1.get(key);
+                    map1.put(key, (old == null ? BigDecimal.ZERO : old).add(map2.get(key)));   
+                }
+                return map1;
+            }));
+        };
+
+        generateTree.recursive.accept(0, 0);
+
+        final String dirPath = "/src/main/resources/scenarios";
+        FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/participants.json", BaseTestsLauncher.MODULE_NAME, dirPath, name)), mapper.writeValueAsString(participants));
+        Iso20022Serializer serializer = new Iso20022Serializer();
+        FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/voting.xml", BaseTestsLauncher.MODULE_NAME, dirPath, name)), serializer.serialize(voting));
+        StringBuilder vmConfig = new StringBuilder();
+        int countByVM = (holdersCount + vmCount - 1)/ vmCount;
+        int totalCount = 0;
+        for (int i = 0; i < vmCount; i++) {
+            int count = Math.min(holdersCount - totalCount, countByVM);
+            vmConfig.append(String.format("%s=%s%n", i, count));
+            totalCount += count;
+        }
+        FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/vm.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), vmConfig.toString());
+        StringBuilder nodesConfig = new StringBuilder();
+        for (int i = 0; i < holdersCount; i++) {
+            ClientFullInfo client = clients[i];       
+            List<ClientCredentials> credentials = client.getClients().stream().
+                map(child -> new ClientCredentials(Integer.toString(child.getId()), Integer.toString(child.getId()))).
+                collect(Collectors.toList());
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/credentials.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), mapper.writeValueAsString(credentials));
+            List<Client> clientsJson = client.getClients().stream().
+                map(child -> new Client(Integer.toString(child.getId()), child.getPacketSizeBySecurity(), child.getRole())).
+                collect(Collectors.toList());
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), mapper.writeValueAsString(clientsJson));
+            String messages = client.getClients().stream().
+                filter(child -> child.getVote() != null).
+                map(child -> child.getVote().toString()).
+                reduce("", (s1, s2) -> s1 + "\n" + s2);
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), messages);
+
+            nodesConfig.append(i);
+            nodesConfig.append("=");
+            nodesConfig.append(mapper.writeValueAsString(new NodeInfo("", client.getId(), client.getHolderId(), client.getPrivateKey(), null)));
+            nodesConfig.append("\n");
+        }
+        FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/voting.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), nodesConfig.toString());
     }
 }
