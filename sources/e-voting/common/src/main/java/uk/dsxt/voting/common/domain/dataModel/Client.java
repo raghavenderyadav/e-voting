@@ -26,18 +26,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Value
 public class Client {
     String participantId;
     ParticipantRole clientType;
-    BigDecimal packetSize;
+    Map<String, BigDecimal> packetSizeBySecurity;
 
     @JsonCreator
-    public Client(@JsonProperty("participantId") String participantId, @JsonProperty("packetSize") BigDecimal packetSize,
+    public Client(@JsonProperty("participantId") String participantId, @JsonProperty("packetSizeBySecurity") Map<String, BigDecimal> packetSizeBySecurity,
                   @JsonProperty("clientType") ParticipantRole clientType) {
         this.participantId = participantId;
-        this.packetSize = packetSize;
+        this.packetSizeBySecurity = packetSizeBySecurity;
         this.clientType = clientType;
     }
 }

@@ -73,7 +73,7 @@ public class ClientManager {
     }
 
     public RequestResult getVotings(String clientId) {
-        final Collection<Voting> votings = assetsHolder.getVotings();
+        final Collection<Voting> votings = assetsHolder.getVotings().stream().filter(v -> assetsHolder.getClientPacketSize(v.getId(), clientId).compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toSet());
         return new RequestResult<>(votings.stream().map(v -> new VotingWeb(v, assetsHolder.getClientVote(v.getId(), clientId) == null)).collect(Collectors.toList()).toArray(new VotingWeb[votings.size()]), null);
     }
 

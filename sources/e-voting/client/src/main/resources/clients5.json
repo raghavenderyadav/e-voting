@@ -4,12 +4,16 @@
     "clients": [
       {
         "participantId": "6",
-        "packetSize": 10,
+        "packetSizeBySecurity": {
+          "RU1111111111": 10
+        },
         "clientType": "NominalHolder"
       },
       {
         "participantId": "7",
-        "packetSize": 20,
+        "packetSizeBySecurity": {
+          "RU1111111111": 20
+        },
         "clientType": "Owner"
       }
     ]

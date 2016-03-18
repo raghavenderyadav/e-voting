@@ -124,9 +124,10 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
                 if (clientResult == null)
                     clientResult = new VoteResult(newResult.getVotingId(), clientId);
                 clientResult = clientResult.sum(newResult);
-                if (clientResult.getPacketSize().compareTo(client.getPacketSize()) > 0) {
+                BigDecimal clientPacketSize = client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity());
+                if (clientResult.getPacketSize().compareTo(clientPacketSize) > 0) {
                     log.warn("acceptVote. VoteResult adds to big packet size to client. votingId={} holdersTreePath={} clientPacketSize={} newPacketSize={}",
-                        newResult.getVotingId(), holdersTreePath, client.getPacketSize(), clientResult.getPacketSize());
+                        newResult.getVotingId(), holdersTreePath, clientPacketSize, clientResult.getPacketSize());
                     newResult.setStatus(VoteResultStatus.ERROR);
                 } else {
                     votingRecord.sumClientResultsByClientId.put(clientId, clientResult);
@@ -194,7 +195,9 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
             log.warn("acceptVote. Client not found on voting begin. votingId={} clientId={}", votingId, clientId);
             return null;
         }
-        return client.getPacketSize();
+        if (client.getPacketSizeBySecurity().containsKey(votingRecord.voting.getSecurity()))
+            return client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity());
+        return BigDecimal.ZERO;
     }
 
     @Override

@@ -28,16 +28,13 @@ import org.joda.time.Instant;
 import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
-import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
 import uk.dsxt.voting.common.utils.crypto.KeyPair;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Log4j2
@@ -80,7 +77,9 @@ public class TestDataGenerator {
         //generate holdings
         Client[] clients = new Client[PARTICIPANTS_COUNT];
         for (int i = 0; i < PARTICIPANTS_COUNT; i++) {
-            clients[i] = new Client(participants[i].getId(), new BigDecimal(randomInt(15, 100)), null);
+            Map<String, BigDecimal> packetSizeBySecurityId = new HashMap<>();
+            packetSizeBySecurityId.put("security",new BigDecimal(randomInt(15, 100)));
+            clients[i] = new Client(participants[i].getId(), packetSizeBySecurityId, null);
             if ((i % (PARTICIPANTS_COUNT / NODES_COUNT)) != 0) {
                 //setting nominal holder
                 //TODO create tree configuration
@@ -203,7 +202,7 @@ public class TestDataGenerator {
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
             String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
-            BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, clients[i].getPacketSize().subtract(totalSum).intValue()));
+            BigDecimal voteAmount = i % (PARTICIPANTS_COUNT / NODES_COUNT) == 0 ? new BigDecimal(randomInt(0, 4)) : new BigDecimal(randomInt(0, clients[i].getPacketSizeBySecurity().get("security").subtract(totalSum).intValue()));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
         }
@@ -228,7 +227,7 @@ public class TestDataGenerator {
         answers[1] = new Answer("2", "Petrov");
         answers[2] = new Answer("3", "Sidorov");
         questions[2] = new Question("3", "New chairman", answers);
-        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions);
+        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, "security");
 
     }
 

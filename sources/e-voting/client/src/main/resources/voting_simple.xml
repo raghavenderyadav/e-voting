@@ -2,6 +2,14 @@
 <MeetingNotification>
 	<Document>
 		<MtgNtfctn>
+      <Scty>
+        <Id>
+          <Id>
+            <ISIN>RU1111111111</ISIN>
+          </Id>
+          <Desc>RU1111111111#RU#1-11-00111-A#ÎÀÎ «FFFF</Desc>
+        </Id>
+      </Scty>
 			<Mtg>
 				<MtgId>123456</MtgId>
 				<Tp>GMET</Tp>
@@ -60,7 +68,7 @@
 				<PrtlVoteAllwd>false</PrtlVoteAllwd>
 				<SpltVoteAllwd>false</SpltVoteAllwd>
 				<VoteMktDdln>
-					<Dt>2016-03-10T00:01:00</Dt>
+					<Dt>2016-03-10T00:05:00</Dt>
 				</VoteMktDdln>
 			</Vote>
 		</MtgNtfctn>

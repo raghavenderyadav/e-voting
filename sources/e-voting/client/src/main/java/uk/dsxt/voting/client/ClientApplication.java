@@ -125,7 +125,7 @@ public class ClientApplication extends ResourceConfig {
                 Voting voting = messagesSerializer.deserializeVoting(votingMessage);
                 if (adjustVotingTime) {
                     long now = System.currentTimeMillis();
-                    voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions());
+                    voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions(), voting.getSecurity());
                 }
                 boolean found = false;
                 while (!found) {

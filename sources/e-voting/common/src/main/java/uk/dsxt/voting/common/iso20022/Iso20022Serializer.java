@@ -77,6 +77,14 @@ public class Iso20022Serializer implements MessagesSerializer {
             mtg.setAnncmntDt(xmlCalStart);
             mtg.setTp(MeetingType2Code.valueOf(voting.getName().split("_")[0]));
 
+            SecurityIdentification11Choice isin = new SecurityIdentification11Choice();
+            isin.setISIN(voting.getSecurity());
+            SecurityIdentification11 ident = new SecurityIdentification11();
+            ident.setId(isin);
+            SecurityPosition6 secPos = new SecurityPosition6();
+            secPos.setId(ident);
+            
+            mtgNtfctn.getScty().add(secPos);
             mtgNtfctn.setMtg(mtg);
             mtgNtfctn.setVote(vote);
 
@@ -112,16 +120,17 @@ public class Iso20022Serializer implements MessagesSerializer {
         String id = mn.getDocument().getMtgNtfctn().getMtg().getMtgId();
         LocalDate startDate = LocalDate.parse(mn.getDocument().getMtgNtfctn().getMtg().getAnncmntDt().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         long beginTimestamp = startDate.atTime(0, 0, 0).toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
-
+        //TODO: it can be several securities
+        String security = mn.getDocument().getMtgNtfctn().getScty().get(0).getId().getId().getISIN();
         XMLGregorianCalendar end = mn.getDocument().getMtgNtfctn().getVote().getVoteDdln() == null
-                ? mn.getDocument().getMtgNtfctn().getVote().getVoteMktDdln().getDt()
-                : mn.getDocument().getMtgNtfctn().getVote().getVoteDdln().getDt();
+            ? mn.getDocument().getMtgNtfctn().getVote().getVoteMktDdln().getDt()
+            : mn.getDocument().getMtgNtfctn().getVote().getVoteDdln().getDt();
         LocalDateTime endDate = LocalDateTime.parse(end.toString());
         long endTimestamp = endDate.toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
         String name = String.format("%s_%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId());
         List<Question> questions = convertResolutions(mn.getDocument().getMtgNtfctn().getRsltn());
         log.debug("deserializeVoting id={} name={} begin={} end={} questionsLength={}", id, name, new Instant(beginTimestamp), new Instant(endTimestamp), questions.size());
-        return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]));
+        return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]), security);
     }
 
     @Override

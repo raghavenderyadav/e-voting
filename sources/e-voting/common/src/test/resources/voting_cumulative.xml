@@ -9,6 +9,14 @@
 			<NtfctnSts>
 				<Sts>ECON</Sts>
 			</NtfctnSts>
+      <Scty>
+        <Id>
+          <Id>
+            <ISIN>RU1111111111</ISIN>
+          </Id>
+          <Desc>RU1111111111#RU#1-11-00111-A#ÎÀÎ «FFFF</Desc>
+        </Id>
+      </Scty>
 			<Mtg>
 				<MtgId>123456</MtgId>
 				<Tp>GMET</Tp>

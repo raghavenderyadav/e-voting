@@ -4,22 +4,30 @@
     "clients": [
       {
         "participantId": "1",
-        "packetSize": 10,
+        "packetSizeBySecurity": {
+          "RU1111111111": 10
+        },
         "clientType": "Owner"
       },
       {
         "participantId": "2",
-        "packetSize": 20,
+        "packetSizeBySecurity": {
+          "RU1111111111": 20
+        },
         "clientType": "Owner"
       },
       {
         "participantId": "3",
-        "packetSize": 30,
+        "packetSizeBySecurity": {
+          "RU1111111111": 30
+        },
         "clientType": "ForeignNominalHolder"
       },
       {
         "participantId": "5",
-        "packetSize": 100,
+        "packetSizeBySecurity": {
+          "RU1111111111": 100
+        },
         "clientType": "NominalHolder"
       }
     ]
@@ -29,17 +37,23 @@
     "clients": [
       {
         "participantId": "1",
-        "packetSize": 10,
+        "packetSizeBySecurity": {
+          "RU1111111111": 10
+        },
         "clientType": "NominalHolder"
       },
       {
         "participantId": "4",
-        "packetSize": 40,
+        "packetSizeBySecurity": {
+          "RU1111111111": 40
+        },
         "clientType": "ManagementCompany"
       },
       {
         "participantId": "5",
-        "packetSize": 100,
+        "packetSizeBySecurity": {
+          "RU1111111111": 100
+        },
         "clientType": "NominalHolder"
       }
     ]

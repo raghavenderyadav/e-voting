@@ -1,22 +1,22 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
 package uk.dsxt.voting.common.domain.dataModel;
@@ -33,15 +33,17 @@ public class Voting {
     long beginTimestamp;
     long endTimestamp;
     Question[] questions;
+    String security;
 
     @JsonCreator
     public Voting(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("beginTimestamp") long beginTimestamp, @JsonProperty("endTimestamp") long endTimestamp,
-                  @JsonProperty("questions") Question[] questions) {
+                  @JsonProperty("questions") Question[] questions, @JsonProperty("security") String security) {
         this.id = id;
         this.name = name;
         this.beginTimestamp = beginTimestamp;
         this.endTimestamp = endTimestamp;
         this.questions = questions;
+        this.security = security;
     }
 
     public void validate() throws InternalLogicException {
