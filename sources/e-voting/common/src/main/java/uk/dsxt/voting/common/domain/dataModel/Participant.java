@@ -22,10 +22,12 @@
 package uk.dsxt.voting.common.domain.dataModel;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Participant {
     String id;
     String name;

@@ -33,7 +33,6 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
-import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.math.BigDecimal;
@@ -52,11 +51,9 @@ public class ClientManager {
         String xmlToSign;
     }
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
     Iso20022Serializer serializer = new Iso20022Serializer();
-
-    MeetingInstruction participantsXml;
 
     AssetsHolder assetsHolder;
 
@@ -69,9 +66,8 @@ public class ClientManager {
 
     Map<String, Participant> participantsById;
 
-    public ClientManager(AssetsHolder assetsHolder, MeetingInstruction participantsXml, Logger audit, Map<String, Participant> participantsById) {
+    public ClientManager(AssetsHolder assetsHolder, Logger audit, Map<String, Participant> participantsById) {
         this.assetsHolder = assetsHolder;
-        this.participantsXml = participantsXml;
         this.audit = audit;
         this.participantsById = participantsById;
     }

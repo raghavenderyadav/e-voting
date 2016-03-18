@@ -36,7 +36,6 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
-import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.networking.MessageHandler;
 import uk.dsxt.voting.common.networking.MockWalletManager;
@@ -51,10 +50,6 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 
 import javax.ws.rs.ApplicationPath;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBIntrospector;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.Map;
@@ -148,15 +143,9 @@ public class ClientApplication extends ResourceConfig {
             }
         }
 
-        JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
-        Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
-        String miParticipantsXml = PropertiesHelper.getResourceString(properties.getProperty("participants_xml.file_path"), "windows-1251");
-        StringReader miReader = new StringReader(miParticipantsXml);
-        MeetingInstruction mi = (MeetingInstruction) JAXBIntrospector.getValue(miUnmarshaller.unmarshal(miReader));
-
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, mi, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
         walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);
