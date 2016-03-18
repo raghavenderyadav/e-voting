@@ -12,6 +12,13 @@
             <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question" total-votes="vc.totalVotes"></div>
 
             <div class="form-horizontal">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input type="checkbox" id="signVote" name="signVote" ng-model="vc.isSign"><label class="col-xs-3 control-label" for="signVote">Sign vote?</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-horizontal" ng-if="vc.isSign">
               <br>
               <div class="form-group">
                 <label class="col-xs-3 control-label" for="signKey">Signature key</label>
@@ -27,7 +34,7 @@
         <div class="panel-footer text-center">
           <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vc.cancel()">Cancel</button>
           <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.votingCountdown > 0) && vc.vote()" ng-disabled="vc.votingCountdown <= 0" ng-if="vc.phase === 1">Vote</button>
-          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.signKey != '') && vc.sign()" ng-disabled="vc.signKey == ''" ng-if="vc.phase === 2">Sign</button>
+          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.signKey != '' || !vc.isSign) && vc.sign()" ng-disabled="vc.signKey == '' && vc.isSign" ng-if="vc.phase === 2">Sign</button>
         </div>
       </div>
     </div>

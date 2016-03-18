@@ -36,6 +36,7 @@ angular
     vc.signKey = '';
     vc.phase = 1;
     vc.xml = '';
+    vc.isSign = true;
 
     activate();
 
@@ -76,7 +77,8 @@ angular
       votingInfo.signVote({
         votingId: $state.params.id,
         signKey: vc.signKey,
-        xmlData: vc.xml
+        xmlData: vc.xml,
+        isSign: vc.isSign
       }, signComplete);
 
       function signComplete(response) {

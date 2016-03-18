@@ -92,18 +92,33 @@ angular
       }
 
       function signVote(params, signDataComplete) {
-        cryptoHelper.signData(params.signKey, params.xmlData, function (signature) {
+        var requestParams = {};
+        if(params.isSign) {
+          cryptoHelper.signData(params.signKey, params.xmlData, function (signature) {
+            requestParams = {
+              votingId: params.votingId,
+              signature: signature,
+              isSign: true
+            };
+            sendSign(requestParams);
+          });
+        } else {
+          requestParams = {
+            votingId: params.votingId,
+            isSign: false
+          };
+          sendSign(requestParams);
+        }
+
+        function sendSign(requestParams) {
           apiRequests.postCookieRequest(
             'signVote',
-            {
-              votingId: params.votingId,
-              signature: signature
-            },
+            requestParams,
             signDataComplete,
             null,
             null
-          );
-        });
+          )
+        }
       }
     }
   ]);
