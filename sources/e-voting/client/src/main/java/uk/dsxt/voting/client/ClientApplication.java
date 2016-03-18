@@ -123,13 +123,15 @@ public class ClientApplication extends ResourceConfig {
 
         if (masterNode != null) {
             masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
-            //Voting[] votings = loadResource(properties, subdirectory, "votings.filepath", Voting[].class);
             String votingFiles = properties.getProperty("voting.files", "");
+            final boolean adjustVotingTime = Boolean.valueOf(properties.getProperty("voting.adjust.time", Boolean.TRUE.toString()));
             for (String votingFile : votingFiles.split(",")) {
-                long now = System.currentTimeMillis();
                 String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
                 Voting voting = messagesSerializer.deserializeVoting(votingMessage);
-                voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions());
+                if (adjustVotingTime) {
+                    long now = System.currentTimeMillis();
+                    voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions());
+                }
                 boolean found = false;
                 while (!found) {
                     masterNode.addNewVoting(voting);

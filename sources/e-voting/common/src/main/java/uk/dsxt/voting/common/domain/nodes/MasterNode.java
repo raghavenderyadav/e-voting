@@ -50,7 +50,7 @@ public class MasterNode extends ClientNode {
 
     public void addNewVoting(Voting voting) {
         network.addVoting(voting);
-        calculateResultsService.schedule(() -> calculateResults(voting.getId()), voting.getEndTimestamp() - System.currentTimeMillis()+60000, TimeUnit.MILLISECONDS);
+        calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + 60000, TimeUnit.MILLISECONDS);
         log.info("Voting added. votingId={}", voting.getId());
     }
 
@@ -78,12 +78,12 @@ public class MasterNode extends ClientNode {
         if (super.acceptVote(newResult, signatures)) {
             String[] holderIds = newResult.getHolderId().split(ClientNode.PATH_SEPARATOR);
             String holderPath = null;
-            if (signatures.size() < holderIds.length-1 || signatures.size() > holderIds.length) {
+            if (signatures.size() < holderIds.length - 1 || signatures.size() > holderIds.length) {
                 log.error("acceptVote.holderIds.length={} but signatures.size()={}", holderIds.length, signatures.size());
                 return false;
             }
-            for(int i = 0; i < holderIds.length; i++) {
-                int idx = holderIds.length-i-1;
+            for (int i = 0; i < holderIds.length; i++) {
+                int idx = holderIds.length - i - 1;
                 String holderId = holderIds[idx];
                 holderPath = i == 0 ? holderId : holderId + ClientNode.PATH_SEPARATOR + holderPath;
                 if (idx < signatures.size()) {
