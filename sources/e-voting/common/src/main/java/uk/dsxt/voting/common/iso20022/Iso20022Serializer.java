@@ -23,7 +23,6 @@ package uk.dsxt.voting.common.iso20022;
 
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
-import uk.dsxt.voting.common.datamodel.AnswerType;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.jaxb.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;

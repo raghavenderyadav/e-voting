@@ -1,8 +1,8 @@
-package uk.dsxt.voting.common.datamodel;
+package uk.dsxt.voting.common.iso20022;
 
 import lombok.Getter;
 
-public enum AnswerType {
+enum AnswerType {
     FOR("1"),
     AGAINST("2"),
     ABSTAIN("3");
@@ -10,7 +10,7 @@ public enum AnswerType {
     @Getter
     private final String code;
 
-    private AnswerType(String code) {
+    AnswerType(String code) {
         this.code=code;
     }
 
