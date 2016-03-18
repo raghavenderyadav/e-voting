@@ -28,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.datamodel.ClientCredentials;
+import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
@@ -387,7 +388,8 @@ public class TestDataGenerator {
             List<Client> clientsJson = client.getClients().stream().
                 map(child -> new Client(Integer.toString(child.getId()), child.getPacketSizeBySecurity(), child.getRole())).
                 collect(Collectors.toList());
-            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), mapper.writeValueAsString(clientsJson));
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), 
+                mapper.writeValueAsString(new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()]))));
             String messages = client.getClients().stream().
                 filter(child -> child.getVote() != null).
                 map(child -> child.getVote().toString()).
