@@ -145,12 +145,12 @@ public class MockVotingApiResource implements VotingAPI {
     @Override
     @Path("/signVote")
     @Produces("application/json")
-    public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("sign") String signature) {
+    public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("isSign") Boolean isSign, @FormParam("sign") String signature) {
         try {
-            log.debug("signVote method called. cookie={}; votingId={}; signature={}", cookie, votingId, signature);
+            log.debug("signVote method called. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature);
             return new RequestResult<>(true, null);
         } catch (Exception e) {
-            log.error("signVote method failed. cookie={}; votingId={}; signature={}", cookie, votingId, signature, e);
+            log.error("signVote method failed. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }

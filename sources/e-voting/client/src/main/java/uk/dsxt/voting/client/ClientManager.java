@@ -138,7 +138,7 @@ public class ClientManager {
         }
     }
 
-    public RequestResult signVote(String votingId, String clientId, String signature) {
+    public RequestResult signVote(String votingId, String clientId, Boolean isSign, String signature) {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("signVote. Voting with id={} not found.", votingId);
@@ -149,18 +149,22 @@ public class ClientManager {
             log.error("signVote failed. Client {} doesn't have vote for voting {}", clientId, votingId);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
-        String documentString = info.getXmlToSign();
-        try {
-            boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
-            if (!result) {
-                log.error("signVote failed. Incorrect signature {} for client {} and voting {}", signature, clientId, votingId);
+        if (isSign) {
+            String documentString = info.getXmlToSign();
+            try {
+                boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
+                if (!result) {
+                    log.error("signVote failed. Incorrect signature {} for client {} and voting {}", signature, clientId, votingId);
+                    return new RequestResult<>(APIException.INVALID_SIGNATURE);
+                }
+            } catch (Exception e) {
+                log.error("signVote failed. Failed to check signature {} for client {} and voting {}", signature, clientId, votingId, e.getMessage());
                 return new RequestResult<>(APIException.INVALID_SIGNATURE);
             }
-        } catch (Exception e) {
-            log.error("signVote failed. Failed to check signature {} for client {} and voting {}", signature, clientId, votingId, e.getMessage());
-            return new RequestResult<>(APIException.INVALID_SIGNATURE);
+            audit.info("signVote. Client {} successfully signed voting {}", clientId, votingId);
+        } else {
+            audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
-        audit.info("signVote. Client {} successfully signed voting {}", clientId, votingId);
         assetsHolder.addClientVote(info.getVote());
         return new RequestResult<>(true, null);
     }
