@@ -27,12 +27,10 @@ import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
-import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.domain.dataModel.Question;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.math.BigDecimal;
@@ -138,7 +136,7 @@ public class ClientManager {
         }
     }
 
-    public RequestResult signVote(String votingId, String clientId, Boolean isSign, String signature) {
+    public RequestResult signVote(String votingId, String clientId, Boolean isSign, String signature) throws InternalLogicException {
         final Voting voting = assetsHolder.getVoting(votingId);
         if (voting == null) {
             log.debug("signVote. Voting with id={} not found.", votingId);
@@ -165,7 +163,7 @@ public class ClientManager {
         } else {
             audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
-        assetsHolder.addClientVote(info.getVote());
+        assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
         return new RequestResult<>(true, null);
     }
 
@@ -209,15 +207,16 @@ public class ClientManager {
 
     public RequestResult getConfirmedClientVotes(String votingId) {
         List<VoteResultWeb> results = new ArrayList<>();
-        final Collection<VoteResult> votes = assetsHolder.getConfirmedClientVotes(votingId);
-        results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
+        final Collection<VoteStatus> votes = assetsHolder.getConfirmedClientVotes(votingId);
+        //TODO
+        //results.addAll(votes.stream().map(v -> new VoteResultWeb(v, VoteResultStatus.OK)).collect(Collectors.toList()));
         return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
     }
 
     public RequestResult getAllClientVotes(String votingId) {
         List<VoteResultWeb> results = new ArrayList<>();
         final Collection<VoteResult> votes = assetsHolder.getAllClientVotes(votingId);
-        results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
+        results.addAll(votes.stream().map(v -> new VoteResultWeb(v, VoteResultStatus.OK)).collect(Collectors.toList()));
         return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
     }
 

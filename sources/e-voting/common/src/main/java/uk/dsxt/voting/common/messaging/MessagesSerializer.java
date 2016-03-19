@@ -22,6 +22,7 @@
 package uk.dsxt.voting.common.messaging;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
@@ -34,6 +35,10 @@ public interface MessagesSerializer {
     String serialize(VoteResult voteResult);
 
     VoteResult deserializeVoteResult(String message) throws InternalLogicException;
+
+    String serialize(VoteStatus voteStatus);
+
+    VoteStatus deserializeVoteStatus(String message) throws InternalLogicException;
 
     VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException;
 

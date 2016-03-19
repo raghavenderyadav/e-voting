@@ -22,8 +22,17 @@
 package uk.dsxt.voting.common.domain.nodes;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 
-public interface NetworkMessagesSender extends BroadcastingMessagesReceiver {
+public interface NetworkMessagesSender {
 
-    void addVote(VoteResult result, String signature, String receiverId);
+    String addVoting(Voting voting);
+
+    String addVotingTotalResult(VoteResult result);
+
+    String addVoteStatus(VoteStatus status);
+
+    String addVote(VoteResult result, String ownerSignature, String nodeSignature);
+
 }

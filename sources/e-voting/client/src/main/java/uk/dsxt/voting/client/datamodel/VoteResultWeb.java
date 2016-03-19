@@ -51,12 +51,12 @@ public class VoteResultWeb {
         this.status = status;
     }
 
-    public VoteResultWeb(VoteResult vr) {
+    public VoteResultWeb(VoteResult vr, VoteResultStatus status) {
         this.votingId = vr.getVotingId();
         this.votingName = ""; // TODO Get votingName from other sources.
         this.clientId = vr.getHolderId();
         this.clientName = ""; // TODO Get clientName from other sources.
         this.packetSize = vr.getPacketSize();
-        this.status = vr.getStatus();
+        this.status = status;
     }
 }

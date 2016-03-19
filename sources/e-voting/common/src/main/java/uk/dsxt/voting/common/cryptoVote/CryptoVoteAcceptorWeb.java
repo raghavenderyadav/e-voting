@@ -22,21 +22,22 @@
 package uk.dsxt.voting.common.cryptoVote;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
+import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.web.RequestType;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Log4j2
-public class CryptoVoteAcceptorWeb implements CryptoVoteAcceptor {
-
-    public final static String SIGNATURE_SEPARATOR = ";";
+public class CryptoVoteAcceptorWeb implements VoteAcceptor {
 
     private final static String ACCEPT_VOTE_URL_PART = "/acceptVote";
 
@@ -60,11 +61,16 @@ public class CryptoVoteAcceptorWeb implements CryptoVoteAcceptor {
      }
 
     @Override
-    public void acceptVote(String newResultMessage, String clientId, List<String> signatures) throws InternalLogicException, GeneralSecurityException, UnsupportedEncodingException {
+    public VoteResultStatus acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("newResultMessage", newResultMessage);
+        parameters.put("transactionId", transactionId);
+        parameters.put("votingId", votingId);
+        parameters.put("packetSize", packetSize.toPlainString());
         parameters.put("clientId", clientId);
-        parameters.put("joinedSignatures", String.join(SIGNATURE_SEPARATOR, signatures));
+        parameters.put("clientPacketResidual", clientPacketResidual.toPlainString());
+        parameters.put("encryptedData", encryptedData);
+        parameters.put("clientSignature", clientSignature);
         execute("acceptVote", acceptVoteUrl, parameters);
+        return VoteResultStatus.OK;
     }
 }

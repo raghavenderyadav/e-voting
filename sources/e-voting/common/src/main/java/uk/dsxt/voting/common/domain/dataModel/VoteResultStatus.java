@@ -23,5 +23,8 @@ package uk.dsxt.voting.common.domain.dataModel;
 
 public enum VoteResultStatus {
     OK,
-    ERROR,
+    SignatureFailed,
+    IncorrectMessage,
+    IncorrectResidual,
+    InternalError,
 }

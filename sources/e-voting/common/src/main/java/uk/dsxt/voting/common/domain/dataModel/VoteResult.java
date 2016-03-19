@@ -24,7 +24,6 @@ package uk.dsxt.voting.common.domain.dataModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -42,10 +41,6 @@ public class VoteResult {
     private BigDecimal packetSize;
 
     @Getter
-    @Setter
-    private VoteResultStatus status;
-
-    @Getter
     private final SortedMap<String, VotedAnswer> answersByKey;
 
     public VoteResult(String votingId, String holderId, BigDecimal packetSize) {
@@ -53,7 +48,6 @@ public class VoteResult {
         this.votingId = votingId;
         this.holderId = holderId;
         this.packetSize = packetSize;
-        status = VoteResultStatus.OK;
     }
 
     public VoteResult(String votingId, String holderId) {
@@ -64,7 +58,6 @@ public class VoteResult {
         answersByKey = new TreeMap<>(origin.answersByKey);
         votingId = origin.votingId;
         packetSize = origin.packetSize;
-        status = origin.status;
         this.holderId = holderId;
     }
 
@@ -87,7 +80,6 @@ public class VoteResult {
             VotedAnswer answer = new VotedAnswer(terms[i]);
             answersByKey.put(answer.getKey(), answer);
         }
-        status = VoteResultStatus.OK;
     }
 
     public Collection<VotedAnswer> getAnswers() {
@@ -146,7 +138,7 @@ public class VoteResult {
     public VoteResult sum(VoteResult other) {
         SortedMap<String, VotedAnswer> answers = new TreeMap<>(answersByKey);
         addAnswers(answers, other.getAnswers());
-        return new VoteResult(votingId, holderId, packetSize.add(other.getPacketSize()), status, answers);
+        return new VoteResult(votingId, holderId, packetSize.add(other.getPacketSize()), answers);
     }
     
     public void setAnswer(String questionId, String answerId, BigDecimal amount) {

@@ -22,40 +22,29 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptor;
-import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
+import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Log4j2
 @Path("/holderAPI")
 public class HolderApiResource {
-    private final CryptoVoteAcceptor cryptoVoteAcceptor;
+    private final VoteAcceptor node;
 
-    public HolderApiResource(CryptoVoteAcceptor cryptoVoteAcceptor) {
-        this.cryptoVoteAcceptor = cryptoVoteAcceptor;
+    public HolderApiResource(VoteAcceptor node) {
+        this.node = node;
     }
-
-    /*private <T> T execute(String name, Supplier<T> request) {
-        try {
-            return request.get();
-        } catch (Exception ex) {
-            log.error("{} failed", name, ex);
-            manager.stop();
-            return null;
-        }
-    }*/
 
     @POST
     @Path("/acceptVote")
-    public void acceptVote(@FormParam("newResultMessage") String newResultMessage, @FormParam("clientId") String clientId, @FormParam("joinedSignatures") String joinedSignatures) {
+    public void acceptVote(@FormParam("transactionId") String transactionId, @FormParam("votingId") String votingId, @FormParam("packetSize") String packetSize,
+                           @FormParam("clientId") String clientId, @FormParam("clientPacketResidual") String clientPacketResidual, 
+                           @FormParam("encryptedData") String encryptedData, @FormParam("clientSignature") String clientSignature) {
         try {
-            String[] signatures = joinedSignatures.split(CryptoVoteAcceptorWeb.SIGNATURE_SEPARATOR);
-            cryptoVoteAcceptor.acceptVote(newResultMessage, clientId, Arrays.stream(signatures).collect(Collectors.toList()));
+            node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, clientSignature);
         } catch (Exception e) {
             log.error("acceptVote fails", e);
         }

@@ -21,77 +21,111 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
+import java.util.Map;
 
 @Log4j2
 public class MasterNode extends ClientNode {
 
-    @Setter
-    private NetworkMessagesSender network;
-
-    private final ScheduledExecutorService calculateResultsService;
-
     public static String MASTER_HOLDER_ID = "00";
 
-    public MasterNode(MessagesSerializer messagesSerializer) {
-        super(MASTER_HOLDER_ID, messagesSerializer);
-        calculateResultsService = Executors.newScheduledThreadPool(10);
+    public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
+            throws InternalLogicException, GeneralSecurityException {
+        super(MASTER_HOLDER_ID, messagesSerializer, cryptoProvider, participantsById, privateKey, null);
+        parentHolder = new VoteChecker();
     }
+    
+    private class VoteChecker implements VoteAcceptor {
 
-    public void addNewVoting(Voting voting) {
-        network.addVoting(voting);
-        calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + 60000, TimeUnit.MILLISECONDS);
-        log.info("Voting added. votingId={}", voting.getId());
-    }
+        @Override
+        public VoteResultStatus acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) {
 
-    private void calculateResults(String votingId) {
-        log.info("calculateResults started. votingId={}", votingId);
-        VotingRecord votingRecord = votingsById.get(votingId);
-        if (votingRecord == null) {
-            log.warn("calculateResults. Voting not found {}", votingId);
-            return;
-        }
-        VoteResult totalResult = new VoteResult(votingId, null);
-        votingRecord.sumClientResultsByClientId.values().stream().filter(r -> r.getStatus() == VoteResultStatus.OK).forEach(r -> totalResult.add(r));
-        log.info("calculateResults. totalResult={}", totalResult);
-        //TODO: move to common logic
-        try {
-            VoteResult adaptedTotalResult = messagesSerializer.adaptVoteResultForXML(totalResult, votingRecord.voting);
-            network.addVotingTotalResult(adaptedTotalResult);
-        } catch (Exception e) {
-            log.error("calculateResults failed", e);
-        }
-    }
-
-    @Override
-    public synchronized boolean acceptVote(VoteResult newResult, List<String> signatures) {
-        if (super.acceptVote(newResult, signatures)) {
-            String[] holderIds = newResult.getHolderId().split(ClientNode.PATH_SEPARATOR);
-            String holderPath = null;
-            if (signatures.size() < holderIds.length - 1 || signatures.size() > holderIds.length) {
-                log.error("acceptVote.holderIds.length={} but signatures.size()={}", holderIds.length, signatures.size());
-                return false;
-            }
-            for (int i = 0; i < holderIds.length; i++) {
-                int idx = holderIds.length - i - 1;
-                String holderId = holderIds[idx];
-                holderPath = i == 0 ? holderId : holderId + ClientNode.PATH_SEPARATOR + holderPath;
-                if (idx < signatures.size()) {
-                    network.addVote(new VoteResult(newResult, holderPath), signatures.get(idx), holderId);
+            while (true) {
+                String decryptedData;
+                try {
+                    decryptedData = cryptoHelper.decrypt(encryptedData, privateKey);
+                } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                    log.error("VoteChecker.acceptVote. Failed to decrypt data. error={}", e.getMessage());
+                    return VoteResultStatus.SignatureFailed;
+                }
+                String[] decryptedParts = splitMessage(decryptedData);
+                if (decryptedParts.length == 2) {
+                    String sign = decryptedParts[1];
+                    if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
+                        VoteResult result;
+                        try {
+                            result = messagesSerializer.deserializeVoteResult(decryptedParts[0]);
+                        } catch (InternalLogicException e) {
+                            log.error("VoteChecker.acceptVote. Failed to deserializeVoteResult. error={}", e.getMessage());
+                            return VoteResultStatus.IncorrectMessage;
+                        }
+                        Participant participant = participantsById.get(result.getHolderId());
+                        if (participant == null) {
+                            log.error("VoteChecker.acceptVote. Owner {} not found", result.getHolderId());
+                            return VoteResultStatus.IncorrectMessage;
+                        }
+                        if (participant.getPublicKey() == null) {
+                            log.error("VoteChecker.acceptVote. Owner {} has no public key", result.getHolderId());
+                            return VoteResultStatus.IncorrectMessage;
+                        }
+                        try {
+                            if (!cryptoHelper.verifySignature(decryptedParts[0], sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                                log.error("VoteChecker.acceptVote. Invalid signature of owner {}", result.getHolderId());
+                                return VoteResultStatus.SignatureFailed;
+                            }
+                        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                            log.error("VoteChecker.acceptVote. Failed to check owner signature. participantId={} error={}", result.getHolderId(), e.getMessage());
+                            return VoteResultStatus.SignatureFailed;
+                        }
+                    }
+                    String resultSign;
+                    try {
+                        resultSign = cryptoHelper.createSignature(decryptedParts[0], privateKey);
+                    } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                        log.error("VoteChecker.acceptVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
+                        return VoteResultStatus.InternalError;
+                    }
+                    network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, resultSign));
+                    return VoteResultStatus.OK;
+                } else if (decryptedParts.length == 3) {
+                    encryptedData = decryptedParts[0];
+                    String participantId = decryptedParts[1];
+                    String sign = decryptedParts[2];
+                    Participant participant = participantsById.get(participantId);
+                    if (participant == null) {
+                        log.error("VoteChecker.acceptVote. Participant {} not found", participantId);
+                        return VoteResultStatus.IncorrectMessage;
+                    }
+                    if (participant.getPublicKey() == null) {
+                        log.error("VoteChecker.acceptVote. Participant {} has no public key", participantId);
+                        return VoteResultStatus.IncorrectMessage;
+                    }
+                    try {
+                        if (!cryptoHelper.verifySignature(buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                            log.error("VoteChecker.acceptVote. Invalid signature of participant {}", participantId);
+                            return VoteResultStatus.SignatureFailed;
+                        }
+                    } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                        log.error("VoteChecker.acceptVote. Failed to check participant signature. participantId={} error={}", participantId, e.getMessage());
+                        return VoteResultStatus.SignatureFailed;
+                    }
+                } else {
+                    log.error("VoteChecker.acceptVote. decryptedData contains {} parts.", decryptedParts.length);
+                    return VoteResultStatus.IncorrectMessage;
                 }
             }
-            return true;
         }
-        return false;
     }
 }

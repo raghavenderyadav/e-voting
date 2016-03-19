@@ -22,13 +22,15 @@
 package uk.dsxt.voting.common.domain.nodes;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface VoteAcceptor {
 
-    boolean acceptVote(VoteResult newResult, List<String> signatures);
+    VoteResultStatus acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature);
 }

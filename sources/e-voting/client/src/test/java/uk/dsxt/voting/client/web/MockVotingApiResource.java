@@ -195,9 +195,9 @@ public class MockVotingApiResource implements VotingAPI {
 
         results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
         results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
-        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
+        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
         results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(222222.12345678), VoteResultStatus.ERROR);
+        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(222222.12345678), VoteResultStatus.SignatureFailed);
 
         return new RequestResult<>(results, null);
     }
@@ -210,13 +210,13 @@ public class MockVotingApiResource implements VotingAPI {
 
         results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
         results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
-        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.ERROR);
+        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
         results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.ERROR);
+        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.SignatureFailed);
         results[5] = new VoteResultWeb(votingId, "Voting Name 2016", "client_6", "Mr. Kak", BigDecimal.ONE, VoteResultStatus.OK);
-        results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.ERROR);
+        results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
         results[7] = new VoteResultWeb(votingId, "Voting Name 2016", "client_8", "Mr. Smith", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.ERROR);
+        results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.SignatureFailed);
         results[9] = new VoteResultWeb(votingId, "Voting Name 2016", "client_10", "Mr. Kalinin", new BigDecimal(5632626), VoteResultStatus.OK);
 
         return new RequestResult<>(results, null); 

@@ -1,10 +1,6 @@
 package uk.dsxt.voting.common.demo;
 
-import uk.dsxt.voting.common.domain.dataModel.Participant;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.domain.nodes.ClientNode;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 import uk.dsxt.voting.common.messaging.MessageContent;
@@ -29,8 +25,8 @@ public class WalletMessageConnectorWithResultBuilderClient implements NetworkMes
         this.resultsBuilder = resultsBuilder;
         connector = new WalletMessageConnector(walletManager, new NetworkMessagesReceiver() {
             @Override
-            public void addVote(VoteResult result) {
-                messageReceiver.addVote(result);
+            public void addVote(VoteResult result, String messageId) {
+                messageReceiver.addVote(result, messageId);
             }
 
             @Override
@@ -43,25 +39,34 @@ public class WalletMessageConnectorWithResultBuilderClient implements NetworkMes
                 messageReceiver.addVotingTotalResult(result);
                 resultsBuilder.addResult(holderId, result.toString());
             }
+
+            @Override
+            public void addVoteStatus(VoteStatus status) {
+                messageReceiver.addVoteStatus(status);
+            }
         }, serializer, cryptoHelper, participantsById, privateKey, holderId, masterId);
 
     }
 
     @Override
-    public void addVote(VoteResult result, String signature, String receiverId) {
-        connector.addVote(result, signature, receiverId);
-        if (result.getStatus() == VoteResultStatus.OK && result.getHolderId().indexOf(ClientNode.PATH_SEPARATOR) > 0)
-            resultsBuilder.addVote(result.toString());
+    public String addVote(VoteResult result, String signature, String nodeSignature) {
+        resultsBuilder.addVote(result.toString());
+        return connector.addVote(result, signature, nodeSignature);
     }
 
     @Override
-    public void addVoting(Voting voting) {
-        connector.addVoting(voting);
+    public String addVoting(Voting voting) {
+        return connector.addVoting(voting);
     }
 
     @Override
-    public void addVotingTotalResult(VoteResult result) {
-        connector.addVotingTotalResult(result);
+    public String addVotingTotalResult(VoteResult result) {
+        return connector.addVotingTotalResult(result);
+    }
+
+    @Override
+    public String addVoteStatus(VoteStatus status) {
+        return connector.addVoteStatus(status);
     }
 
     public void handleNewMessage(MessageContent messageContent, String messageId) {

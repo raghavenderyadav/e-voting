@@ -24,6 +24,7 @@ package uk.dsxt.voting.client;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,7 +35,7 @@ public class VoteScheduler {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
-    public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId) {
+    public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId) throws InternalLogicException {
 
         if (messagesFileContent == null) {
             log.info("messagesFile not found");
@@ -55,9 +56,9 @@ public class VoteScheduler {
                 VoteResult voteResult = new VoteResult(terms[1]);
                 int delay = Integer.parseInt(terms[0]);
                 if (delay <= 0)
-                    assetsHolder.addClientVote(voteResult);
+                    assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
                 else
-                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult), delay, TimeUnit.SECONDS);
+                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE), delay, TimeUnit.SECONDS);
                 cnt++;
                 if (maxDelay < delay)
                     maxDelay = delay;

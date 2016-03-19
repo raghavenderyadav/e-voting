@@ -31,6 +31,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
@@ -52,7 +53,7 @@ public class VoteSchedulerTest {
         doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
             return true;
-        }).when(client).addClientVote(anyObject());
+        }).when(client).addClientVote(anyObject(), anyString());
 
         VoteScheduler scheduler = new VoteScheduler(client, messages, "001");
         Thread.sleep(100);

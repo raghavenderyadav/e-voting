@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
-import uk.dsxt.voting.common.cryptoVote.CryptoNodeDecorator;
 import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
@@ -35,6 +34,7 @@ import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
+import uk.dsxt.voting.common.domain.nodes.VotingOrganizer;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.networking.MessageHandler;
@@ -84,40 +84,38 @@ public class ClientApplication extends ResourceConfig {
         final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
         RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
 
-        CryptoVoteAcceptorWeb cryptoVoteAcceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout);
         ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
-
-        MessagesSerializer messagesSerializer = new Iso20022Serializer();
-        ClientNode clientNode;
-        MasterNode masterNode;
-        if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
-            throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
-        if (isMain) {
-            masterNode = new MasterNode(messagesSerializer);
-            clientNode = masterNode;
-        } else {
-            masterNode = null;
-            clientNode = new ClientNode(ownerId, messagesSerializer);
-        }
-        loadClients(clientNode, clientsFilePath);
-
 
         Participant[] participants = registriesServer.getParticipants();
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
 
         PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
 
-        CryptoNodeDecorator cryptoNodeDecorator = new CryptoNodeDecorator(clientNode, cryptoVoteAcceptorWeb, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+        MessagesSerializer messagesSerializer = new Iso20022Serializer();
+        ClientNode clientNode;
+        MasterNode masterNode;
+        VotingOrganizer votingOrganizer;
+        if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
+            throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
+        if (isMain) {
+            votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+        } else {
+            votingOrganizer = null;
+            clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey,
+                parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout));
+        }
+        loadClients(clientNode, clientsFilePath);
 
         WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
-            walletManager, clientNode, new Iso20022Serializer(), cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+            walletManager, clientNode, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+        clientNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
 
         messageHandler.run(newMessagesRequestInterval);
 
-        if (masterNode != null) {
-            masterNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
+        if (votingOrganizer != null) {
             String votingFiles = properties.getProperty("voting.files", "");
             final boolean adjustVotingTime = Boolean.valueOf(properties.getProperty("voting.adjust.time", Boolean.TRUE.toString()));
             for (String votingFile : votingFiles.split(",")) {
@@ -129,9 +127,9 @@ public class ClientApplication extends ResourceConfig {
                 }
                 boolean found = false;
                 while (!found) {
-                    masterNode.addNewVoting(voting);
+                    votingOrganizer.addNewVoting(voting);
                     Thread.sleep(10000);
-                    for (Voting receivedVoting : masterNode.getVotings()) {
+                    for (Voting receivedVoting : clientNode.getVotings()) {
                         if (voting.getId().equals(receivedVoting.getId())) {
                             log.debug("Voting with id {} was accepted", voting.getId());
                             found = true;
@@ -144,7 +142,7 @@ public class ClientApplication extends ResourceConfig {
         }
 
         JettyRunner.configureMapper(this);
-        HolderApiResource holderApiResource = new HolderApiResource(cryptoNodeDecorator);
+        HolderApiResource holderApiResource = new HolderApiResource(clientNode);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);

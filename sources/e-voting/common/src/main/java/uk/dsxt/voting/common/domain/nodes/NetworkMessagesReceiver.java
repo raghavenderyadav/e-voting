@@ -22,11 +22,18 @@
 package uk.dsxt.voting.common.domain.nodes;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 
 import java.util.List;
 
-public interface NetworkMessagesReceiver extends BroadcastingMessagesReceiver {
+public interface NetworkMessagesReceiver {
 
-    void addVote(VoteResult result);
+    void addVoting(Voting voting);
+
+    void addVotingTotalResult(VoteResult result);
+
+    void addVoteStatus(VoteStatus status);
+
+    void addVote(VoteResult result, String messageId);
 }

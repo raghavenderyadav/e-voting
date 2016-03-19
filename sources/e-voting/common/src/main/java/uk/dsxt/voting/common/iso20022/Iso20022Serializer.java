@@ -240,6 +240,16 @@ public class Iso20022Serializer implements MessagesSerializer {
     }
 
     @Override
+    public String serialize(VoteStatus voteStatus) {
+        return voteStatus.toString();
+    }
+
+    @Override
+    public VoteStatus deserializeVoteStatus(String message) throws InternalLogicException {
+        return new VoteStatus(message);
+    }
+
+    @Override
     public VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException {
         Map<String, Question> questionsById = new HashMap<>();
         for (Question q : voting.getQuestions()) {

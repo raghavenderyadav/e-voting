@@ -28,6 +28,7 @@ import uk.dsxt.voting.client.datamodel.LoggedUser;
 import uk.dsxt.voting.client.datamodel.RequestResult;
 import uk.dsxt.voting.client.datamodel.UserRole;
 import uk.dsxt.voting.client.web.VotingAPI;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -48,16 +49,21 @@ public class VotingApiResource implements VotingAPI {
     }
 
     @FunctionalInterface
+    private interface SimpleRequest {
+        RequestResult get() throws InternalLogicException;
+    }
+
+    @FunctionalInterface
     private interface ClientIdRequest {
-        RequestResult get(String clientId);
+        RequestResult get(String clientId) throws InternalLogicException;
     }
 
     @FunctionalInterface
     private interface ClientRequest {
-        RequestResult get(String clientId, UserRole role);
+        RequestResult get(String clientId, UserRole role) throws InternalLogicException;
     }
 
-    private RequestResult execute(String name, String params, Supplier<RequestResult> request) {
+    private RequestResult execute(String name, String params, SimpleRequest request) {
         try {
             log.debug("{} called. params: [{}]", name, params);
             return request.get();

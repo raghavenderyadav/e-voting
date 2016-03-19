@@ -22,12 +22,16 @@
 package uk.dsxt.voting.common.domain.nodes;
 
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 
 public interface AssetsHolder extends VoteAcceptor {
+    
+    String EMPTY_SIGNATURE = "-";
 
     Voting getVoting(String votingId);
 
@@ -37,11 +41,11 @@ public interface AssetsHolder extends VoteAcceptor {
 
     Collection<VoteResult> getAllClientVotes(String votingId);
 
-    Collection<VoteResult> getConfirmedClientVotes(String votingId);
+    Collection<VoteStatus> getConfirmedClientVotes(String votingId);
 
     VoteResult getClientVote(String votingId, String clientId);
 
-    void addClientVote(VoteResult result);
+    String addClientVote(VoteResult result, String signature) throws InternalLogicException;
 
     BigDecimal getClientPacketSize(String votingId, String clientId);
 }
