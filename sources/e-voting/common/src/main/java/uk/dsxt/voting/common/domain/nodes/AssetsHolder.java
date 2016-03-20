@@ -31,7 +31,7 @@ import java.util.Collection;
 
 public interface AssetsHolder extends VoteAcceptor {
     
-    String EMPTY_SIGNATURE = "-";
+    String EMPTY_SIGNATURE = "!";
 
     Voting getVoting(String votingId);
 

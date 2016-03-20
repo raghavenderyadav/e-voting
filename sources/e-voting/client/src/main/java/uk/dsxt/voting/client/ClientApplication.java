@@ -40,6 +40,7 @@ import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.networking.MessageHandler;
 import uk.dsxt.voting.common.networking.MockWalletManager;
 import uk.dsxt.voting.common.networking.WalletManager;
+import uk.dsxt.voting.common.networking.WalletMessageConnector;
 import uk.dsxt.voting.common.nxt.NxtWalletManager;
 import uk.dsxt.voting.common.registries.FileRegisterServer;
 import uk.dsxt.voting.common.registries.RegistriesServer;
@@ -93,12 +94,14 @@ public class ClientApplication extends ResourceConfig {
 
         MessagesSerializer messagesSerializer = new Iso20022Serializer();
         ClientNode clientNode;
-        MasterNode masterNode;
         VotingOrganizer votingOrganizer;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, 
+                votingOrganizer, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+            votingOrganizer.setNetwork(walletMessageConnector);
             clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
         } else {
             votingOrganizer = null;

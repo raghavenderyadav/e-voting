@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
@@ -165,7 +166,7 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
         if (parentHolder != null) {
             String encrypted = null, sign = null;
             try {
-                encrypted = encryptToMasterNode(encryptedData, participantId, cryptoHelper.createSignature(buildMessage(encryptedData, participantId), privateKey));
+                encrypted = encryptToMasterNode(encryptedData, participantId, cryptoHelper.createSignature(MessageBuilder.buildMessage(encryptedData, participantId), privateKey));
                 String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted);
                 sign = cryptoHelper.createSignature(signed, privateKey);
             } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
@@ -311,23 +312,15 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
     }
 
     private String buildMessage(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData) {
-        return buildMessage(transactionId, votingId, packetSize.toPlainString(), clientId, clientPacketResidual.toPlainString(), encryptedData);
+        return MessageBuilder.buildMessage(transactionId, votingId, packetSize.toPlainString(), clientId, clientPacketResidual.toPlainString(), encryptedData);
     }
 
     private String encryptToMasterNode(String... data) throws InternalLogicException {
-        String text = buildMessage(data);
+        String text = MessageBuilder.buildMessage(data);
         try {
             return cryptoHelper.encrypt(text, masterNodePublicKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException(String.format("Can not encrypt message: %s", e.getMessage()));
         }
-    }
-    
-    protected String buildMessage(String... parts) {
-        return String.join("\n", parts);
-    }
-
-    protected String[] splitMessage(String message) {
-        return message.split("\n");
     }
 }

@@ -34,6 +34,7 @@ import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
@@ -96,7 +97,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             log.error("addVote. master node {} does not have public key holderId={}", masterId, holderId);
             return null;
         }
-        String message = buildMessage(resultMessage, ownerSignature, nodeSignature);
+        String message = MessageBuilder.buildMessage(resultMessage, ownerSignature, nodeSignature);
         String encryptedMessage;
         try {
             encryptedMessage = cryptoHelper.encrypt(message, cryptoHelper.loadPublicKey(participant.getPublicKey()));
@@ -115,7 +116,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             if (id == null)
                 log.error("send {} fails. holderId={}", messageType, holderId);
             else
-                log.info("{} sent", messageType);
+                log.info("{} sent. holderId={}", messageType, holderId);
             return id;
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
@@ -140,7 +141,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                             log.error("Undecrypted VOTE message {}. holderId={}", messageId, holderId);
                             break;
                         }
-                        String[] messageParts = splitMessage(decryptedBody);
+                        String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
                         if (messageParts.length != 3) {
                             log.error("VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
                             break;
@@ -185,13 +186,5 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
             log.error("handleNewMessage fails. message type={} messageId={} holderId={}", type, messageId, holderId, e);
         }
-    }
-
-    protected String buildMessage(String... parts) {
-        return String.join("\n", parts);
-    }
-
-    protected String[] splitMessage(String message) {
-        return message.split("\n");
     }
 }

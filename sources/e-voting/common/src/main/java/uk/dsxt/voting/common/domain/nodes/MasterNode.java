@@ -28,6 +28,7 @@ import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
@@ -60,7 +61,7 @@ public class MasterNode extends ClientNode {
                     log.error("VoteChecker.acceptVote. Failed to decrypt data. error={}", e.getMessage());
                     return VoteResultStatus.SignatureFailed;
                 }
-                String[] decryptedParts = splitMessage(decryptedData);
+                String[] decryptedParts = MessageBuilder.splitMessage(decryptedData);
                 if (decryptedParts.length == 2) {
                     String sign = decryptedParts[1];
                     if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
@@ -113,7 +114,7 @@ public class MasterNode extends ClientNode {
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
-                        if (!cryptoHelper.verifySignature(buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                        if (!cryptoHelper.verifySignature(MessageBuilder.buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
                             log.error("VoteChecker.acceptVote. Invalid signature of participant {}", participantId);
                             return VoteResultStatus.SignatureFailed;
                         }

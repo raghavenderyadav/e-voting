@@ -18,14 +18,14 @@ public class VoteStatus {
     
     public VoteStatus(String s) {
         if (s == null)
-            throw new IllegalArgumentException("VoteResult can not be created from null string");
-        String[] terms = s.split(",");
+            throw new IllegalArgumentException("VoteStatus can not be created from null string");
+        String[] terms = s.split("-");
         if (terms.length == 4) {
             votingId = terms[0];
             messageId = terms[1];
             status = VoteResultStatus.valueOf(terms[2]);
             voteSign = terms[3];
         } else
-            throw new IllegalArgumentException(String.format("VoteResult can not be created from string with %d terms (%s)", terms.length, s));
+            throw new IllegalArgumentException(String.format("VoteStatus can not be created from string with %d terms (%s)", terms.length, s));
     }
 }
