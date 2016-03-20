@@ -39,11 +39,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
+public class ClientNode implements AssetsHolder, NetworkClient {
 
     protected VoteAcceptor parentHolder;
 
-    @Setter
     protected NetworkMessagesSender network;
 
     private final String participantId;
@@ -87,6 +86,11 @@ public class ClientNode implements AssetsHolder, NetworkMessagesReceiver {
         if (masterNode.getPublicKey() == null)
             throw new InternalLogicException(String.format("Master node %s has no public key", MasterNode.MASTER_HOLDER_ID));
         masterNodePublicKey = cryptoProvider.loadPublicKey(masterNode.getPublicKey());
+    }
+
+    @Override
+    public void setNetworkMessagesSender(NetworkMessagesSender networkMessagesSender) {
+        network = networkMessagesSender;
     }
 
     public synchronized void setClientsOnTime(long timestamp, Client[] clients) {

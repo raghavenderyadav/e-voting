@@ -29,7 +29,7 @@ import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
-import uk.dsxt.voting.common.demo.WalletMessageConnectorWithResultBuilderClient;
+import uk.dsxt.voting.common.demo.ResultBilderDecorator;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
@@ -93,15 +93,16 @@ public class ClientApplication extends ResourceConfig {
         PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
 
         MessagesSerializer messagesSerializer = new Iso20022Serializer();
+        
+        WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
-            WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, 
-                votingOrganizer, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
-            votingOrganizer.setNetwork(walletMessageConnector);
+            walletMessageConnector.addClient(votingOrganizer);
             clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
         } else {
             votingOrganizer = null;
@@ -109,12 +110,9 @@ public class ClientApplication extends ResourceConfig {
                 parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout));
         }
         loadClients(clientNode, clientsFilePath);
+        walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
 
-        WalletMessageConnectorWithResultBuilderClient walletMessageConnectorWithResultBuilderClient = new WalletMessageConnectorWithResultBuilderClient(resultsBuilder,
-            walletManager, clientNode, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
-        clientNode.setNetwork(walletMessageConnectorWithResultBuilderClient);
-
-        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnectorWithResultBuilderClient::handleNewMessage);
+        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnector::handleNewMessage);
 
         messageHandler.run(newMessagesRequestInterval);
 

@@ -27,10 +27,7 @@ import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
-import uk.dsxt.voting.common.domain.nodes.MasterNode;
-import uk.dsxt.voting.common.domain.nodes.NetworkMessagesReceiver;
-import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
+import uk.dsxt.voting.common.domain.nodes.*;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
@@ -40,23 +37,26 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Log4j2
 public class WalletMessageConnector implements NetworkMessagesSender {
 
-    public static final String TYPE_VOTE = "VOTE";
-    public static final String TYPE_VOTE_STATUS = "VOTE_STATUS";
-    public static final String TYPE_VOTING = "VOTING";
-    public static final String TYPE_VOTING_TOTAL_RESULT = "VOTING_TOTAL_RESULT";
+    private static final String TYPE_VOTE = "VOTE";
+    private static final String TYPE_VOTE_STATUS = "VOTE_STATUS";
+    private static final String TYPE_VOTING = "VOTING";
+    private static final String TYPE_VOTING_TOTAL_RESULT = "VOTING_TOTAL_RESULT";
 
-    public static final String FIELD_BODY = "BODY";
+    private static final String FIELD_BODY = "BODY";
 
     private final WalletManager walletManager;
 
-    private final NetworkMessagesReceiver messageReceiver;
+    private final List<NetworkMessagesReceiver> messageReceivers = new ArrayList<>();
 
     private final MessagesSerializer serializer;
 
@@ -69,6 +69,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final String holderId;
 
     private final String masterId;
+    
+    public void addClient(NetworkClient client) {
+        messageReceivers.add(client);
+        client.setNetworkMessagesSender(this);
+    }
 
     @Override
     public String addVoting(Voting voting) {
@@ -123,10 +128,18 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             return null;
         }
     }
+    
+    private void sendMessage(Consumer<NetworkMessagesReceiver> action) {
+        for(NetworkMessagesReceiver messagesReceiver : messageReceivers) {
+            try {
+                action.accept(messagesReceiver);
+            } catch (Exception e) {
+                log.error("sendMessage fails. holderId={}", holderId, e);
+            }
+        }
+    }
 
     public void handleNewMessage(MessageContent messageContent, String messageId) {
-        if (messageReceiver == null)
-            return;
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
         log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
@@ -156,7 +169,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                             log.error("VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                             break;
                         }
-                        messageReceiver.addVote(result, messageId);
+                        sendMessage(r -> r.addVote(result, messageId));
                     }
                     break;
                 case TYPE_VOTE_STATUS:
@@ -164,21 +177,24 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                         log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
                         break;
                     }
-                    messageReceiver.addVoteStatus(serializer.deserializeVoteStatus(body));
+                    VoteStatus status = serializer.deserializeVoteStatus(body);
+                    sendMessage(r -> r.addVoteStatus(status));
                     break;
                 case TYPE_VOTING:
                     if (!masterId.equals(messageContent.getAuthor())) {
                         log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
                         break;
                     }
-                    messageReceiver.addVoting(serializer.deserializeVoting(body));
+                    Voting voting = serializer.deserializeVoting(body);
+                    sendMessage(r -> r.addVoting(voting));
                     break;
                 case TYPE_VOTING_TOTAL_RESULT:
                     if (!masterId.equals(messageContent.getAuthor())) {
                         log.error("TYPE_VOTING_TOTAL_RESULT message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
                         break;
                     }
-                    messageReceiver.addVotingTotalResult(serializer.deserializeVoteResult(body));
+                    VoteResult result = serializer.deserializeVoteResult(body);
+                    sendMessage(r -> r.addVotingTotalResult(result));
                     break;
                 default:
                     log.warn("handleNewMessage. Unknown message type: {} messageId={} holderId={}", type, messageId, holderId);

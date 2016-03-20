@@ -42,9 +42,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public class VotingOrganizer implements NetworkMessagesReceiver {
+public class VotingOrganizer implements NetworkClient {
 
-    @Setter
     private NetworkMessagesSender network;
 
     private final ScheduledExecutorService calculateResultsService;
@@ -75,6 +74,11 @@ public class VotingOrganizer implements NetworkMessagesReceiver {
         this.cryptoHelper = cryptoProvider;
         this.participantsById = participantsById;
         publicKey = cryptoHelper.loadPublicKey(participantsById.get(MasterNode.MASTER_HOLDER_ID).getPublicKey());
+    }
+
+    @Override
+    public void setNetworkMessagesSender(NetworkMessagesSender networkMessagesSender) {
+        network = networkMessagesSender;
     }
 
     public void addNewVoting(Voting voting) {
