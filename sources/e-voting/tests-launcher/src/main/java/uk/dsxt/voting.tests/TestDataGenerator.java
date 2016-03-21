@@ -395,7 +395,7 @@ public class TestDataGenerator {
                 filter(child -> child.getVote() != null).
                 map(child -> child.getVote().toString()).
                 reduce("", (s1, s2) -> s1 + "\n" + s2);
-            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), messages);
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), messages);
 
             nodesConfig.append(i);
             nodesConfig.append("=");

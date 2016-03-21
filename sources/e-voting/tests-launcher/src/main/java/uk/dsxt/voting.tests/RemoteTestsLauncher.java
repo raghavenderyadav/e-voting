@@ -41,6 +41,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String VOTING_XML_NAME = "voting.xml";
     private final String MESSAGES_NAME = "messages.txt";
     private final String MI_PARTICIPANTS_NAME = "mi_participants.xml";
+    private final String PARTICIPANTS_NAME = "participants.json";
     private final String CREDENTIALS_NAME = "credentials.json";
     private final String CLIENTS_NAME = "clients.json";
     
@@ -109,10 +110,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         });
         readConfig(idToNodeInfo, VOTING_DESCRIPTION, str -> {
             try {
-                String[] splited = str.split("=");
-                if (splited.length == 2)
-                    return new AbstractMap.SimpleEntry<>(Integer.parseInt(splited[0]), mapper.readValue(splited[1], NodeInfo.class));
-                return null;
+                int placeOfDelimiter = str.indexOf("=");
+                if (placeOfDelimiter < 0)
+                    return null;
+                String[] splited = { str.substring(0, placeOfDelimiter), str.substring(placeOfDelimiter + 1) };
+                return new AbstractMap.SimpleEntry<>(Integer.parseInt(splited[0]), mapper.readValue(splited[1], NodeInfo.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -144,7 +146,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("participants_xml.file_path", MI_PARTICIPANTS_NAME);
         overrides.put("credentials.filepath", CREDENTIALS_NAME);
         overrides.put("clients.filepath", CLIENTS_NAME);
-        overrides.put("client.webHost.port", Integer.toString(currentWebPort));
+        overrides.put("client.web.port", Integer.toString(currentWebPort));
         overrides.put("owner.id", ownerId);
         overrides.put("owner.private_key", privateKey);
         overrides.put("parent.holder.url", ownerHost);
@@ -161,7 +163,10 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("nxt.isOffline", "false");
         overrides.put("nxt.isTestnet", "true");
         overrides.put("nxt.main.address", mainNxtAddress);
+        overrides.put("nxt.timeMultiplier", "1");
         overrides.put("nxt.account.passphrase", accountPassphrase);
+        overrides.put("http.connection.timeout", "15000");
+        overrides.put("http.read.timeout", "60000");
         Map<String, String> original = new LinkedHashMap<>();
         for (String keyToValueStr : backendConfig.split(String.format("%n"))) {
             String[] keyToValue = keyToValueStr.split("=");
@@ -232,26 +237,27 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private void installOrUpdateScenario() throws Exception {
         iterateByAllNodes((session, currentNodeId) -> {
             try {
-                uploadFile(session, currentNodeId, VOTING_XML_NAME);
-                uploadFile(session, currentNodeId, MESSAGES_NAME);
-                uploadFile(session, currentNodeId, MI_PARTICIPANTS_NAME);
-                uploadFile(session, currentNodeId, CREDENTIALS_NAME);
-                uploadFile(session, currentNodeId, CLIENTS_NAME);                
+                uploadFile(session, currentNodeId, VOTING_XML_NAME, true);
+                uploadFile(session, currentNodeId, MESSAGES_NAME, false);
+                uploadFile(session, currentNodeId, MI_PARTICIPANTS_NAME, true);
+                uploadFile(session, currentNodeId, PARTICIPANTS_NAME, true);
+                uploadFile(session, currentNodeId, CREDENTIALS_NAME, false);
+                uploadFile(session, currentNodeId, CLIENTS_NAME, false);                
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
     }
     
-    private void uploadFile(Session session, int currentNodeId, String fileName) throws Exception {
-        String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, Integer.toString(currentNodeId), fileName).toString());
-        makeCmd(session, ECHO_CMD.apply(data, Paths.get(WORK_DIR, "build", NODE_NAME.apply(currentNodeId), fileName).toString()));
+    private void uploadFile(Session session, int currentNodeId, String fileName, boolean global) throws Exception {
+        String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, global ? "" : Integer.toString(currentNodeId), fileName).toString());
+        makeCmd(session, ECHO_CMD.apply(data, Paths.get(WORK_DIR, "build", NODE_NAME.apply(currentNodeId), fileName).toString().replace("\\", "/")));
     }
 
     private void runScenario() throws Exception {
         iterateByAllNodes((session, currentNodeId) -> {
             try {
-                makeCmd(session, String.format("cd %sbuild/%s/; rm -r ./%s*; java -jar client.jar", WORK_DIR, NODE_NAME.apply(currentNodeId), DB_FOLDER));
+                makeCmd(session, String.format("cd %sbuild/%s/; rm -r ./%s*; java -jar client.jar > /dev/null 2>&1 &", WORK_DIR, NODE_NAME.apply(currentNodeId), DB_FOLDER));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
