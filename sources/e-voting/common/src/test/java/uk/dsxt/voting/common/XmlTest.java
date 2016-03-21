@@ -7,6 +7,7 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingNotification;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
 import javax.xml.bind.*;
@@ -93,7 +94,7 @@ public class XmlTest {
         //deserialization from xml file
         Iso20022Serializer serializer = new Iso20022Serializer();
         String voteResultXml = PropertiesHelper.getResourceString("voteResult_simple.xml", "windows-1251");
-        VoteResult voteResult = serializer.deserializeVoteResult(voteResultXml);
+        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, votingXml));
         assertNotNull(voteResult);
 
         assertEquals("МХ1", voteResult.getHolderId());
@@ -158,7 +159,7 @@ public class XmlTest {
 
         //deserialization from xml file
         String voteResultXml = PropertiesHelper.getResourceString("voteResult_cumulative.xml", "windows-1251");
-        VoteResult voteResult = serializer.deserializeVoteResult(voteResultXml);
+        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, votingXml));
         assertNotNull(voteResult);
 
         assertEquals("МХ1", voteResult.getHolderId());

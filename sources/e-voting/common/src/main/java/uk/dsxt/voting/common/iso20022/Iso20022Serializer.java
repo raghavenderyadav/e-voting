@@ -27,6 +27,7 @@ import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.jaxb.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 
 import javax.xml.bind.*;
 import javax.xml.datatype.DatatypeFactory;
@@ -44,7 +45,6 @@ import java.util.*;
 public class Iso20022Serializer implements MessagesSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
     private static final String SINGLE_ANSWER_TITLE = "resolution";
-    private static final String VOTE_STRING_DELIMITER = "<xml voting delimiter>";
 
     @Override
     public String serialize(Voting voting) {
@@ -192,7 +192,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         MeetingInstruction mi = new MeetingInstruction();
         mi.setDocument(document);
         //convert JAXB object to string
-        String voteResultString = null;
+        String voteResultString;
         try {
             JAXBContext context = JAXBContext.newInstance(MeetingInstruction.class);
             Marshaller m = context.createMarshaller();
@@ -203,15 +203,15 @@ public class Iso20022Serializer implements MessagesSerializer {
         } catch (JAXBException e) {
             throw new InternalLogicException(String.format("unable to serialize. Reason: %s", e.getMessage()));
         }
-        return String.format("%s%s%s", voteResultString, VOTE_STRING_DELIMITER, serialize(voting));
+        return MessageBuilder.buildMessage(voteResultString, serialize(voting));
     }
 
     @Override
     public VoteResult deserializeVoteResult(String message) throws InternalLogicException {
-        String[] messages = message.split(VOTE_STRING_DELIMITER);
-        if (messages.length!=2)
+        String[] messages = MessageBuilder.splitMessage(message);
+        if (messages.length != 2)
             throw new InternalLogicException("Wrong message string");
-        
+
         MeetingInstruction mi = null;
         try {
             JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);

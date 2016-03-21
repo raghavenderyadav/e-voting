@@ -228,14 +228,15 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException(String.format("acceptVote. Client not found on voting begin. votingId=%s clientId=%s", result.getVotingId(), result.getHolderId()));
         }
         String nodeSignature;
+        String serializedVote = messagesSerializer.serialize(result, votingRecord.voting);
         try {
-            nodeSignature = cryptoHelper.createSignature(messagesSerializer.serialize(result, votingRecord.voting), privateKey);
+            nodeSignature = cryptoHelper.createSignature(serializedVote, privateKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException("Can not sign vote");
         }
         String tranId = network.addVote(result, votingRecord.voting, signature, nodeSignature);
         addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
-            encryptToMasterNode(messagesSerializer.serialize(result, votingRecord.voting), signature));
+            encryptToMasterNode(serializedVote, signature));
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
         votingRecord.clientResultsByMessageId.put(tranId, result);
         return tranId;
