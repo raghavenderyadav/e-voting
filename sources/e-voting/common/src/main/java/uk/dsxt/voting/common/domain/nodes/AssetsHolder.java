@@ -21,6 +21,7 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
+import uk.dsxt.voting.common.domain.dataModel.ClientVoteReceipt;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
@@ -45,7 +46,7 @@ public interface AssetsHolder extends VoteAcceptor {
 
     VoteResult getClientVote(String votingId, String clientId);
 
-    String addClientVote(VoteResult result, String signature) throws InternalLogicException;
+    ClientVoteReceipt addClientVote(VoteResult result, String signature) throws InternalLogicException;
 
     BigDecimal getClientPacketSize(String votingId, String clientId);
 }

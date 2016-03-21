@@ -19,20 +19,31 @@
  * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.domain.nodes;
+package uk.dsxt.voting.common.domain.dataModel;
 
-import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
-import uk.dsxt.voting.common.utils.InternalLogicException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+@Value
+public class NodeVoteReceipt {
+    @JsonProperty
+    String inputMessage;
 
-public interface VoteAcceptor {
+    @JsonProperty
+    long timestamp;
 
-    NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) throws InternalLogicException;
+    @JsonProperty
+    VoteResultStatus status;
+
+    @JsonProperty
+    String signature;
+
+    @JsonCreator
+    public NodeVoteReceipt(@JsonProperty String inputMessage, @JsonProperty long timestamp, @JsonProperty VoteResultStatus status, @JsonProperty String signature) {
+        this.inputMessage = inputMessage;
+        this.timestamp = timestamp;
+        this.status = status;
+        this.signature = signature;
+    }
 }

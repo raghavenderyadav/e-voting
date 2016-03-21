@@ -162,7 +162,7 @@ public class ClientManager {
         } else {
             audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
-        assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
+        ClientVoteReceipt receipt = assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
         return new RequestResult<>(true, null);
     }
 

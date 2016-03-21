@@ -21,19 +21,17 @@
 
 package uk.dsxt.voting.common.cryptoVote;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
+import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
 import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.web.RequestType;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -44,24 +42,27 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
     private final HttpHelper httpHelper;
 
     private final String acceptVoteUrl;
+    
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public CryptoVoteAcceptorWeb(String baseUrl, int connectionTimeout, int readTimeout) {
         acceptVoteUrl = String.format("%s%s", baseUrl, ACCEPT_VOTE_URL_PART);
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
     }
 
-    private void execute(String name, String url, Map<String, String> parameters) {
+    private String execute(String name, String url, Map<String, String> parameters) {
         try {
-            httpHelper.request(url, parameters, RequestType.POST);
+            return httpHelper.request(url, parameters, RequestType.POST);
         } catch (IOException e) {
             log.error("{} failed. url={} error={}", name, url, e);
         } catch (InternalLogicException e) {
             log.error("{} failed. url={}", name, url, e);
         }
+        return null;
      }
 
     @Override
-    public VoteResultStatus acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) {
+    public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("transactionId", transactionId);
         parameters.put("votingId", votingId);
@@ -70,7 +71,14 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
         parameters.put("clientPacketResidual", clientPacketResidual.toPlainString());
         parameters.put("encryptedData", encryptedData);
         parameters.put("clientSignature", clientSignature);
-        execute("acceptVote", acceptVoteUrl, parameters);
-        return VoteResultStatus.OK;
+        String result = execute("acceptVote", acceptVoteUrl, parameters);
+        NodeVoteReceipt receipt;
+        try {
+            receipt = mapper.readValue(result, NodeVoteReceipt.class);
+        } catch (IOException e) {
+            log.error("acceptVote. can not read receipt. error={}", e.getMessage());
+            return null;
+        }
+        return receipt;
     }
 }

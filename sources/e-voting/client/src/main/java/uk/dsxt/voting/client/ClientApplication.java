@@ -75,8 +75,8 @@ public class ClientApplication extends ResourceConfig {
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
         String registriesServerUrl = properties.getProperty("register.server.url");
         String resultsBuilderUrl = properties.getProperty("results.builder.url");
-        int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout"));
-        int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout"));
+        int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout", "15000"));
+        int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout", "60000"));
 
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase);
@@ -84,8 +84,6 @@ public class ClientApplication extends ResourceConfig {
 
         final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
         RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
-
-        ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
 
         Participant[] participants = registriesServer.getParticipants();
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
@@ -110,7 +108,13 @@ public class ClientApplication extends ResourceConfig {
                 parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout));
         }
         loadClients(clientNode, clientsFilePath);
-        walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
+
+        if (resultsBuilderUrl == null) {
+            walletMessageConnector.addClient(clientNode);
+        } else {
+            ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
+            walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
+        }
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnector::handleNewMessage);
 

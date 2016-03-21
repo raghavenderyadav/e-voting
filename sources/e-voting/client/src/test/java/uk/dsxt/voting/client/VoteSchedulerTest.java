@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client;
 
 import org.junit.Test;
+import uk.dsxt.voting.common.domain.dataModel.ClientVoteReceipt;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
@@ -50,9 +51,9 @@ public class VoteSchedulerTest {
 
         List<VoteResult> sentResults = new ArrayList<>();
         AssetsHolder client = mock(AssetsHolder.class);
-        doAnswer(invocation -> {
+        ClientVoteReceipt receipt = doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
-            return "1";
+            return new ClientVoteReceipt("", "1", 0, "");
         }).when(client).addClientVote(anyObject(), anyString());
 
         VoteScheduler scheduler = new VoteScheduler(client, messages, "001");

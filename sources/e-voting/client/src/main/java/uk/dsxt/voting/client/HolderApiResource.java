@@ -22,11 +22,13 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
 import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import java.math.BigDecimal;
 
 @Log4j2
@@ -40,13 +42,15 @@ public class HolderApiResource {
 
     @POST
     @Path("/acceptVote")
-    public void acceptVote(@FormParam("transactionId") String transactionId, @FormParam("votingId") String votingId, @FormParam("packetSize") String packetSize,
-                           @FormParam("clientId") String clientId, @FormParam("clientPacketResidual") String clientPacketResidual, 
-                           @FormParam("encryptedData") String encryptedData, @FormParam("clientSignature") String clientSignature) {
+    @Produces("application/json")
+    public NodeVoteReceipt acceptVote(@FormParam("transactionId") String transactionId, @FormParam("votingId") String votingId, @FormParam("packetSize") String packetSize,
+                                      @FormParam("clientId") String clientId, @FormParam("clientPacketResidual") String clientPacketResidual,
+                                      @FormParam("encryptedData") String encryptedData, @FormParam("clientSignature") String clientSignature) {
         try {
-            node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, clientSignature);
+            return node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, clientSignature);
         } catch (Exception e) {
             log.error("acceptVote fails", e);
+            return null;
         }
     }
 }
