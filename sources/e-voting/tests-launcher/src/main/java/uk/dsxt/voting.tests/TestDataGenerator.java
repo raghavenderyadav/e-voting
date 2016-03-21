@@ -66,7 +66,8 @@ public class TestDataGenerator {
     private final static int MAX_DISCONNECT_PERIOD = 0;
     
     private final static String SECURITY = "security";
-
+    private final static String MASTER_PASSWORD = "NXT-9PHW-CVXU-2TDY-H4878";
+    
     private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
     public static void generate() throws Exception {
@@ -265,7 +266,7 @@ public class TestDataGenerator {
         answers[1] = new Answer("2", "Petrov");
         answers[2] = new Answer("3", "Sidorov");
         questions[2] = new Question("3", "New chairman", answers);
-        return new Voting("1", "The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, SECURITY);
+        return new Voting("1", "GMET_The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, SECURITY);
 
     }
 
@@ -395,11 +396,11 @@ public class TestDataGenerator {
                 filter(child -> child.getVote() != null).
                 map(child -> child.getVote().toString()).
                 reduce("", (s1, s2) -> s1 + "\n" + s2);
-            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), messages);
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), generateVotes ? messages : "");
 
             nodesConfig.append(i);
             nodesConfig.append("=");
-            nodesConfig.append(mapper.writeValueAsString(new NodeInfo("", client.getId(), client.getHolderId(), client.getPrivateKey(), null)));
+            nodesConfig.append(mapper.writeValueAsString(new NodeInfo(client.getId() == 0 ? MASTER_PASSWORD : "", client.getId(), client.getHolderId(), client.getPrivateKey(), null)));
             nodesConfig.append("\n");
         }
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/voting.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), nodesConfig.toString());

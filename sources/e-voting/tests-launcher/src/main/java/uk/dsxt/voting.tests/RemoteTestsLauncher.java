@@ -45,7 +45,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String CREDENTIALS_NAME = "credentials.json";
     private final String CLIENTS_NAME = "clients.json";
     
-    private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data, path);
+    private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data.replace("\"", "\\\""), path);
     
     private Map<Integer, NodeInfo> idToNodeInfo;
     private Map<Integer, Integer> hostIdToNodesCount;
@@ -144,6 +144,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("voting.files", VOTING_XML_NAME);
         overrides.put("scheduled_messages.file_path", MESSAGES_NAME);
         overrides.put("participants_xml.file_path", MI_PARTICIPANTS_NAME);
+        overrides.put("participants.filepath", PARTICIPANTS_NAME);
         overrides.put("credentials.filepath", CREDENTIALS_NAME);
         overrides.put("clients.filepath", CLIENTS_NAME);
         overrides.put("client.web.port", Integer.toString(currentWebPort));
