@@ -336,7 +336,9 @@ public class TestDataGenerator {
                 int maxCount = holdersCount - counters[0];
                 int undistributed = height == levelsCount ? maxCount : randomInt(1, maxCount);
                 for (int i = 0; i < undistributed; i++) {
-                    children.add(clients[counters[0]++]);
+                    ClientFullInfo subND = clients[counters[0]++];
+                    subND.setHolderId(id);
+                    children.add(subND);
                 }
             }
             //Generate owners
