@@ -250,10 +250,14 @@ public class NxtWalletManager implements WalletManager {
     }
 
     private void waitInitialize() {
-        if (selfAccount != null && passphrase != null)
+        if (passphrase == null || passphrase.isEmpty()) {
+            log.warn("Start without address. Password is null or empty.");
+            return;
+        }
+        if (selfAccount != null)
             return;
         log.info("Start wallet initialization...");
-        while ((selfAccount == null || passphrase == null) && !Thread.currentThread().isInterrupted()) {
+        while ((accountId == null || selfAccount == null) && !Thread.currentThread().isInterrupted()) {
             try {
                 if (accountId == null || selfAccount == null) {
                     AccountResponse account = sendApiRequest(WalletRequestType.GET_ACCOUNT_ID, passphrase, keyToValue -> {
