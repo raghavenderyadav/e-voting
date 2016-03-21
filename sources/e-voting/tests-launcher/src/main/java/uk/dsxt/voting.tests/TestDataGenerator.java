@@ -66,7 +66,7 @@ public class TestDataGenerator {
     private final static int MAX_DISCONNECT_PERIOD = 0;
     
     private final static String SECURITY = "security";
-    private final static String MASTER_PASSWORD = "NXT-9PHW-CVXU-2TDY-H4878";
+    private final static String MASTER_PASSWORD = "master_password";
     
     private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
