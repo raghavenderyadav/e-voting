@@ -21,7 +21,6 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
@@ -29,7 +28,6 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -55,7 +53,7 @@ public class VotingOrganizer implements NetworkClient {
     private final MessagesSerializer messagesSerializer;
 
     private final Map<String, Participant> participantsById;
-    
+
     private final PublicKey publicKey;
 
     private static class VotingRecord {
@@ -66,8 +64,8 @@ public class VotingOrganizer implements NetworkClient {
 
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
-            throws InternalLogicException, GeneralSecurityException {
+    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey)
+        throws InternalLogicException, GeneralSecurityException {
         calculateResultsService = Executors.newScheduledThreadPool(10);
         this.messagesSerializer = messagesSerializer;
         this.privateKey = privateKey;
@@ -95,10 +93,10 @@ public class VotingOrganizer implements NetworkClient {
             return;
         }
         VoteResult totalResult = new VoteResult(votingId, null);
-        for(Map.Entry<String, VoteResult> resultEntry : votingRecord.resultsByMessageId.entrySet()) {
+        for (Map.Entry<String, VoteResult> resultEntry : votingRecord.resultsByMessageId.entrySet()) {
             String messageId = resultEntry.getKey();
             VoteResult result = resultEntry.getValue();
-            for(VoteStatus status : votingRecord.statuses) {
+            for (VoteStatus status : votingRecord.statuses) {
                 if (!status.getMessageId().equals(messageId))
                     continue;
                 if (status.getStatus() != VoteResultStatus.OK) {
@@ -106,10 +104,13 @@ public class VotingOrganizer implements NetworkClient {
                     continue;
                 }
                 try {
-                    if (!cryptoHelper.verifySignature(messagesSerializer.serialize(result), status.getVoteSign(), publicKey)) {
+                    if (!cryptoHelper.verifySignature(messagesSerializer.serialize(result, votingRecord.voting), status.getVoteSign(), publicKey)) {
                         log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
                         continue;
                     }
+                } catch (InternalLogicException e) {
+                    log.error("calculateResults. InternalLogicException. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                    continue;
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
                     continue;
@@ -119,13 +120,7 @@ public class VotingOrganizer implements NetworkClient {
             }
         }
         log.info("calculateResults. totalResult={}", totalResult);
-        try {
-            //TODO: move to common logic
-            VoteResult adaptedTotalResult = messagesSerializer.adaptVoteResultForXML(totalResult, votingRecord.voting);
-            network.addVotingTotalResult(adaptedTotalResult);
-        } catch (Exception e) {
-            log.error("calculateResults failed", e);
-        }
+        network.addVotingTotalResult(totalResult, votingRecord.voting);
     }
 
     @Override

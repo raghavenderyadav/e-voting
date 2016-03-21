@@ -121,8 +121,7 @@ public class ClientManager {
             }
             //generate xml body and get vote results
             VotingInfoWeb infoWeb = getVotingResults(result, voting);
-            VoteResult adaptedResult = serializer.adaptVoteResultForXML(result, voting);
-            String xmlBody = serializer.serialize(adaptedResult);
+            String xmlBody = serializer.serialize(result, voting);
             //TODO: send xml string without header (and handle correctly send time)
             signInfoByKey.put(generateKeyForDocument(clientId, votingId), new SignatureInfo(result, xmlBody));
             infoWeb.setXmlBody(xmlBody);

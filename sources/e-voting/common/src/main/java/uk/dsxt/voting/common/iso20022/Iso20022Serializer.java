@@ -44,6 +44,7 @@ import java.util.*;
 public class Iso20022Serializer implements MessagesSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
     private static final String SINGLE_ANSWER_TITLE = "resolution";
+    private static final String VOTE_STRING_DELIMITER = "<xml voting delimiter>";
 
     @Override
     public String serialize(Voting voting) {
@@ -83,7 +84,7 @@ public class Iso20022Serializer implements MessagesSerializer {
             ident.setId(isin);
             SecurityPosition6 secPos = new SecurityPosition6();
             secPos.setId(ident);
-            
+
             mtgNtfctn.getScty().add(secPos);
             mtgNtfctn.setMtg(mtg);
             mtgNtfctn.setVote(vote);
@@ -134,7 +135,8 @@ public class Iso20022Serializer implements MessagesSerializer {
     }
 
     @Override
-    public String serialize(VoteResult voteResult) throws IllegalArgumentException {
+    public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
+        voteResult = adaptVoteResultForXML(voteResult, voting);
         //TODO: add other required fields
         //serialize vote results
         Vote2Choice voteChoice = new Vote2Choice();
@@ -190,28 +192,34 @@ public class Iso20022Serializer implements MessagesSerializer {
         MeetingInstruction mi = new MeetingInstruction();
         mi.setDocument(document);
         //convert JAXB object to string
+        String voteResultString = null;
         try {
             JAXBContext context = JAXBContext.newInstance(MeetingInstruction.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             m.marshal(mi, stream);
-            return stream.toString();
+            voteResultString = stream.toString();
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(String.format("unable to serialize. Reason: %s", e.getMessage()));
+            throw new InternalLogicException(String.format("unable to serialize. Reason: %s", e.getMessage()));
         }
+        return String.format("%s%s%s", voteResultString, VOTE_STRING_DELIMITER, serialize(voting));
     }
 
     @Override
     public VoteResult deserializeVoteResult(String message) throws InternalLogicException {
+        String[] messages = message.split(VOTE_STRING_DELIMITER);
+        if (messages.length!=2)
+            throw new InternalLogicException("Wrong message string");
+        
         MeetingInstruction mi = null;
         try {
             JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
             Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
-            StringReader miReader = new StringReader(message);
+            StringReader miReader = new StringReader(messages[0]);
             mi = (MeetingInstruction) JAXBIntrospector.getValue(miUnmarshaller.unmarshal(miReader));
         } catch (JAXBException e) {
-            throw new InternalLogicException(String.format("Couldn't deserialize message %s. Reason: %s", message, e.getMessage()));
+            throw new InternalLogicException(String.format("Couldn't deserialize message %s. Reason: %s", messages[0], e.getMessage()));
         }
 
         String votingId = mi.getDocument().getMtgInstr().getMtgRef().getMtgId();
@@ -236,7 +244,8 @@ public class Iso20022Serializer implements MessagesSerializer {
             VotedAnswer answer = new VotedAnswer(vote.getIssrLabl(), answerId, amount);
             voteResult.getAnswersByKey().put(answer.getKey(), answer);
         }
-        return voteResult;
+        Voting voting = deserializeVoting(messages[1]);
+        return adaptVoteResultFromXML(voteResult, voting);
     }
 
     @Override
@@ -249,8 +258,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         return new VoteStatus(message);
     }
 
-    @Override
-    public VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException {
+    private VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException {
         Map<String, Question> questionsById = new HashMap<>();
         for (Question q : voting.getQuestions()) {
             questionsById.put(q.getId(), q);
@@ -275,8 +283,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         return adaptedResult;
     }
 
-    @Override
-    public VoteResult adaptVoteResultFromXML(VoteResult result, Voting voting) throws InternalLogicException {
+    private VoteResult adaptVoteResultFromXML(VoteResult result, Voting voting) throws InternalLogicException {
         Map<String, Question> questionsById = new HashMap<>();
         for (Question q : voting.getQuestions()) {
             questionsById.put(q.getId(), q);

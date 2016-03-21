@@ -1,6 +1,8 @@
 package uk.dsxt.voting.common.demo;
 
-import uk.dsxt.voting.common.domain.dataModel.*;
+import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
+import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.NetworkClient;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
 
@@ -48,8 +50,8 @@ public class ResultBilderDecorator implements NetworkClient {
             }
 
             @Override
-            public String addVotingTotalResult(VoteResult result) {
-                return networkMessagesSender.addVotingTotalResult(result);
+            public String addVotingTotalResult(VoteResult result, Voting voting) {
+                return networkMessagesSender.addVotingTotalResult(result, voting);
             }
 
             @Override
@@ -58,9 +60,9 @@ public class ResultBilderDecorator implements NetworkClient {
             }
 
             @Override
-            public String addVote(VoteResult result, String ownerSignature, String nodeSignature) {
+            public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) {
                 resultsBuilder.addVote(result.toString());
-                return networkMessagesSender.addVote(result, ownerSignature, nodeSignature);
+                return networkMessagesSender.addVote(result, voting, ownerSignature, nodeSignature);
             }
         });
     }

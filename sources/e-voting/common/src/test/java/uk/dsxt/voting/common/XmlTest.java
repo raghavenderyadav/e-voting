@@ -85,6 +85,11 @@ public class XmlTest {
 
     @Test
     public void testSimpleVoteResultSerialization() throws Exception {
+        Iso20022Serializer votingSerializer = new Iso20022Serializer();
+        String votingXml = PropertiesHelper.getResourceString("voting_simple.xml", "windows-1251");
+        Voting voting = votingSerializer.deserializeVoting(votingXml);
+        assertNotNull(voting);
+        
         //deserialization from xml file
         Iso20022Serializer serializer = new Iso20022Serializer();
         String voteResultXml = PropertiesHelper.getResourceString("voteResult_simple.xml", "windows-1251");
@@ -97,7 +102,7 @@ public class XmlTest {
         assertEquals(4, voteResult.getAnswers().size());
 
         //serialization result to string
-        String result = serializer.serialize(voteResult);
+        String result = serializer.serialize(voteResult, voting);
         assertNotNull(result);
         System.out.println(result);
 
@@ -159,21 +164,11 @@ public class XmlTest {
         assertEquals("МХ1", voteResult.getHolderId());
         assertEquals("000001", voteResult.getVotingId());
         assertEquals(6, voteResult.getAnswers().size());
-        //all question id are different
-        assertEquals(6, voteResult.getAnswers().stream().map(VotedAnswer::getQuestionId).distinct().count());
-
-        //adapt vote result for our scheme with multiple answer's questions
-        VoteResult adaptedVoteResult = serializer.adaptVoteResultFromXML(voteResult, voting);
-        //answer for cumulative questions joined
-        assertEquals(4, adaptedVoteResult.getAnswers().stream().map(VotedAnswer::getQuestionId).distinct().count());
-
-        //convert back for xml scheme
-        VoteResult xmlVoteResult = serializer.adaptVoteResultForXML(adaptedVoteResult, voting);
-        //check that two conversions resulted in the same object
-        assertEquals(voteResult, xmlVoteResult);
+        //check that deserialization already adapt questions
+        assertEquals(4, voteResult.getAnswers().stream().map(VotedAnswer::getQuestionId).distinct().count());
 
         //serialization result to string
-        String result = serializer.serialize(voteResult);
+        String result = serializer.serialize(voteResult, voting);
         assertNotNull(result);
         System.out.println(result);
 

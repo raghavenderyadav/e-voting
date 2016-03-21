@@ -21,7 +21,6 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
@@ -73,7 +72,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
     public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey, VoteAcceptor parentHolder)
-            throws InternalLogicException, GeneralSecurityException {
+        throws InternalLogicException, GeneralSecurityException {
         this.participantId = participantId;
         this.messagesSerializer = messagesSerializer;
         this.privateKey = privateKey;
@@ -165,8 +164,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
         votingRecord.clientResidualsByClientId.put(client.getParticipantId(), clientPacketResidual);
         votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
-        
-        
+
+
         if (parentHolder != null) {
             String encrypted = null, sign = null;
             try {
@@ -230,13 +229,13 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         }
         String nodeSignature;
         try {
-            nodeSignature = cryptoHelper.createSignature(messagesSerializer.serialize(result), privateKey);
+            nodeSignature = cryptoHelper.createSignature(messagesSerializer.serialize(result, votingRecord.voting), privateKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException("Can not sign vote");
         }
-        String tranId = network.addVote(result, signature, nodeSignature);
-        addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()), 
-            encryptToMasterNode(messagesSerializer.serialize(result), signature));
+        String tranId = network.addVote(result, votingRecord.voting, signature, nodeSignature);
+        addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
+            encryptToMasterNode(messagesSerializer.serialize(result, votingRecord.voting), signature));
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
         votingRecord.clientResultsByMessageId.put(tranId, result);
         return tranId;
@@ -264,14 +263,14 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         setVotingClients(votingRecord);
         votingsById.put(voting.getId(), votingRecord);
     }
-    
+
     private void setVotingClients(VotingRecord votingRecord) {
-        String security = votingRecord.voting.getSecurity(); 
+        String security = votingRecord.voting.getSecurity();
         for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
             if (clientsEntry.getKey() <= votingRecord.voting.getBeginTimestamp()) {
                 votingRecord.clients = new HashMap<>();
                 votingRecord.totalResidual = BigDecimal.ZERO;
-                for(Client client : clientsEntry.getValue().values()) {
+                for (Client client : clientsEntry.getValue().values()) {
                     if (client.getPacketSizeBySecurity() == null)
                         continue;
                     BigDecimal packetSize = client.getPacketSizeBySecurity().get(security);
@@ -293,12 +292,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             log.warn("addVotingTotalResult. Voting not found {}", result.getVotingId());
             return;
         }
-        //TODO: move to common logic
-        try {
-            votingRecord.totalResult = messagesSerializer.adaptVoteResultFromXML(result, votingRecord.voting);
-        } catch (Exception e) {
-            log.error("addVotingTotalResult failed", e);
-        }
+        votingRecord.totalResult = result;
     }
 
     @Override

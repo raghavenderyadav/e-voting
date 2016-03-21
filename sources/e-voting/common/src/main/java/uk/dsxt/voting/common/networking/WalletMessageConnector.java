@@ -69,7 +69,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final String holderId;
 
     private final String masterId;
-    
+
     public void addClient(NetworkClient client) {
         messageReceivers.add(client);
         client.setNetworkMessagesSender(this);
@@ -81,8 +81,13 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVotingTotalResult(VoteResult result) {
-        return send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result));
+    public String addVotingTotalResult(VoteResult result, Voting voting) {
+        try {
+            return send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result, voting));
+        } catch (InternalLogicException e) {
+            log.error("addVotingTotalResult. Serialization failed. holderId={} votingId={}", result.getHolderId(), result.getVotingId());
+            return null;
+        }
     }
 
     @Override
@@ -91,8 +96,14 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVote(VoteResult result, String ownerSignature, String nodeSignature) {
-        String resultMessage = serializer.serialize(result);
+    public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) {
+        String resultMessage;
+        try {
+            resultMessage = serializer.serialize(result, voting);
+        } catch (InternalLogicException e) {
+            log.error("addVote. Serialization failed. holderId={} votingId={}", result.getHolderId(), result.getVotingId());
+            return null;
+        }
         Participant participant = participantsById.get(masterId);
         if (participant == null) {
             log.error("addVote. master node {} not found holderId={}", masterId, holderId);
@@ -128,9 +139,9 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             return null;
         }
     }
-    
+
     private void sendMessage(Consumer<NetworkMessagesReceiver> action) {
-        for(NetworkMessagesReceiver messagesReceiver : messageReceivers) {
+        for (NetworkMessagesReceiver messagesReceiver : messageReceivers) {
             try {
                 action.accept(messagesReceiver);
             } catch (Exception e) {
@@ -160,8 +171,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                             break;
                         }
                         VoteResult result = serializer.deserializeVoteResult(messageParts[0]);
-                        if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) && 
-                                !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
+                        if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
+                            !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
                             log.error("VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                             break;
                         }

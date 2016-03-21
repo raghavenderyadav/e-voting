@@ -29,10 +29,10 @@ public interface NetworkMessagesSender {
 
     String addVoting(Voting voting);
 
-    String addVotingTotalResult(VoteResult result);
+    String addVotingTotalResult(VoteResult result, Voting voting);
 
     String addVoteStatus(VoteStatus status);
 
-    String addVote(VoteResult result, String ownerSignature, String nodeSignature);
+    String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature);
 
 }
