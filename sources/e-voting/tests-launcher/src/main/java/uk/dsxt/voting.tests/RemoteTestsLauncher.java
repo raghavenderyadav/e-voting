@@ -168,6 +168,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("nxt.account.passphrase", accountPassphrase);
         overrides.put("http.connection.timeout", "15000");
         overrides.put("http.read.timeout", "60000");
+        overrides.put("jetty.maxQueueSize", "1000");
+        overrides.put("jetty.minThreads", "200");
+        overrides.put("jetty.maxThreads", "500");
+        overrides.put("jetty.idleTimeout", "100000");
+        
         Map<String, String> original = new LinkedHashMap<>();
         for (String keyToValueStr : backendConfig.split(String.format("%n"))) {
             String[] keyToValue = keyToValueStr.split("=");
@@ -256,6 +261,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
 
     private void runScenario() throws Exception {
+        for (Integer vmId : hostIdToNodesCount.keySet()) {
+            String currentHost = hostsIp.get(vmId);
+            Session session = getSession(currentHost);
+            makeCmd(session, "killall -9 java;");
+        }
         iterateByAllNodes((session, currentNodeId) -> {
             try {
                 makeCmd(session, String.format("cd %sbuild/%s/; rm -r ./%s*; java -jar client.jar > /dev/null 2>&1 &", WORK_DIR, NODE_NAME.apply(currentNodeId), DB_FOLDER));
