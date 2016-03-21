@@ -298,7 +298,6 @@ public class TestDataGenerator {
     }
 
     private void newGenerate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes) throws Exception {
-        //TODO generate voting
         KeyPair[] keys = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator().generateKeys(totalParticipant);
         
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
