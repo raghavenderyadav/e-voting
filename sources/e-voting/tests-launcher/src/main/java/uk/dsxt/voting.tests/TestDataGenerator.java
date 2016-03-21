@@ -391,7 +391,7 @@ public class TestDataGenerator {
                 map(child -> new Client(Integer.toString(child.getId()), child.getPacketSizeBySecurity(), child.getRole())).
                 collect(Collectors.toList());
             FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), 
-                mapper.writeValueAsString(new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()]))));
+                mapper.writeValueAsString(new ClientsOnTime[] { new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()])) }));
             String messages = client.getClients().stream().
                 filter(child -> child.getVote() != null).
                 map(child -> child.getVote().toString()).
