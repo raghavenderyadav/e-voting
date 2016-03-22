@@ -121,8 +121,8 @@ public class ClientManager {
             }
             //generate xml body and get vote results
             VotingInfoWeb infoWeb = getVotingResults(result, voting, null);
+            //serializing whole xml and put signature near xml (not using Sgnt field)
             String xmlBody = serializer.serialize(result, voting);
-            //TODO: send xml string without header (and handle correctly send time)
             signInfoByKey.put(generateKeyForDocument(clientId, votingId), new SignatureInfo(result, xmlBody));
             infoWeb.setXmlBody(xmlBody);
             return new RequestResult<>(infoWeb, null);
@@ -163,8 +163,7 @@ public class ClientManager {
             audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
         ClientVoteReceipt receipt = assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
-        //TODO return receipt
-        return new RequestResult<>(true, null);
+        return new RequestResult<>(new VoteReceiptWeb(receipt), null);
     }
 
     private String generateKeyForDocument(String clientId, String votingId) {
@@ -191,8 +190,10 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote, false));
         }
-        //TODO use voteStatus
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), null, null);
+        if (voteStatus != null)
+            return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()),
+                null, voteStatus.getMessageId(), voteStatus.getStatus());
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), null);
     }
 
     public RequestResult getTime(String votingId) {
@@ -207,18 +208,11 @@ public class ClientManager {
         return new RequestResult<>(voting.getEndTimestamp() - now, null);
     }
 
-    //TODO delete this method
-    public RequestResult getConfirmedClientVotes(String votingId) {
-        return new RequestResult<>(false, null);
-    }
-
     public RequestResult getAllClientVotes(String votingId) {
-        List<VoteResultWeb> results = new ArrayList<>();
+        List<VoteStatusWeb> results = new ArrayList<>();
         final Collection<VoteStatus> votes = assetsHolder.getVoteStatuses(votingId);
-        //TODO create WebVoteStatus class and return collection
-        //results.addAll(votes.stream().map(v -> new VoteResultWeb(v, VoteResultStatus.OK)).collect(Collectors.toList()));
-        //return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
-        return new RequestResult<>(false, null);
+        results.addAll(votes.stream().map(VoteStatusWeb::new).collect(Collectors.toList()));
+        return new RequestResult<>(results.toArray(new VoteStatusWeb[results.size()]), null);
     }
 
     public RequestResult votingTotalResults(String votingId) {
@@ -237,7 +231,7 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, voteResults, true));
         }
-        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null, null), null);
+        return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null), null);
     }
 
 

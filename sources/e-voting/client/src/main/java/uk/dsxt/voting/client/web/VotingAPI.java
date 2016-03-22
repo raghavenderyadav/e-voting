@@ -43,7 +43,5 @@ public interface VotingAPI {
 
     RequestResult getTime(String cookie, String votingId);
 
-    RequestResult getConfirmedClientVotes(String cookie, String votingId);
-
     RequestResult getAllClientVotes(String cookie, String votingId);
 }

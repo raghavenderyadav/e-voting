@@ -34,7 +34,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.util.function.Supplier;
 
 @Log4j2
 @Path("/api")
@@ -154,13 +153,6 @@ public class VotingApiResource implements VotingAPI {
     @Produces("application/json")
     public RequestResult getTime(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return executeClientId(cookie, "getTime", String.format("votingId=%s", votingId), (clientId) -> manager.getTime(votingId));
-    }
-
-    @POST
-    @Path("/getConfirmedClientVotes")
-    @Produces("application/json")
-    public RequestResult getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClientId(cookie, "getConfirmedClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getConfirmedClientVotes(votingId));
     }
 
     @POST

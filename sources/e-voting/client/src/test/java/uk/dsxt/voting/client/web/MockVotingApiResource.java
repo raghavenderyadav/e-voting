@@ -109,7 +109,7 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1", answers1, false, 1);
         questions[1] = new QuestionWeb("2", "question_2", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3", answers3, true, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(500), (long)getTime(cookie, votingId).getResult(), null), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(500), (long) getTime(cookie, votingId).getResult()), null);
     }
 
     @POST
@@ -135,7 +135,7 @@ public class MockVotingApiResource implements VotingAPI {
             questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
             questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
             questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-            return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), 57000L, "<root>mock xml body</root>"), null);
+            return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), 57000L), null);
         } catch (Exception e) {
             log.error("vote method failed. cookie={}; votingId={}; votingChoice={}", cookie, votingId, votingChoice, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
@@ -148,7 +148,7 @@ public class MockVotingApiResource implements VotingAPI {
     public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("isSign") Boolean isSign, @FormParam("sign") String signature) {
         try {
             log.debug("signVote method called. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature);
-            return new RequestResult<>(true, null);
+            return new RequestResult<>(new VoteReceiptWeb("We accept your transaction", "dasfansdfjkans345dkfjn5445asdfshdf", Instant.now().getMillis() - 10000L, "signature"), null);
         } catch (Exception e) {
             log.error("signVote method failed. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
@@ -173,7 +173,7 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), null, null), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), null, "asdkfhbwerjhwbejhsdhfsjjsjdf3k345k", VoteResultStatus.OK), null);
     }
 
     @POST
@@ -188,38 +188,22 @@ public class MockVotingApiResource implements VotingAPI {
     }
 
     @POST
-    @Path("/getConfirmedClientVotes")
-    @Produces("application/json")
-    public RequestResult getConfirmedClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        final VoteResultWeb[] results = new VoteResultWeb[5];
-
-        results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
-        results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
-        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
-        results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(222222.12345678), VoteResultStatus.SignatureFailed);
-
-        return new RequestResult<>(results, null);
-    }
-
-    @POST
     @Path("/getAllClientVotes")
     @Produces("application/json")
     public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        final VoteResultWeb[] results = new VoteResultWeb[10];
+        final VoteStatusWeb[] results = new VoteStatusWeb[10];
 
-        results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK);
-        results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK);
-        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
-        results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.SignatureFailed);
-        results[5] = new VoteResultWeb(votingId, "Voting Name 2016", "client_6", "Mr. Kak", BigDecimal.ONE, VoteResultStatus.OK);
-        results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.SignatureFailed);
-        results[7] = new VoteResultWeb(votingId, "Voting Name 2016", "client_8", "Mr. Smith", BigDecimal.ZERO, VoteResultStatus.OK);
-        results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.SignatureFailed);
-        results[9] = new VoteResultWeb(votingId, "Voting Name 2016", "client_10", "Mr. Kalinin", new BigDecimal(5632626), VoteResultStatus.OK);
-
-        return new RequestResult<>(results, null); 
+        results[0] = new VoteStatusWeb(votingId, VoteResultStatus.OK, "signature_1");
+        results[1] = new VoteStatusWeb(votingId, VoteResultStatus.OK, null);
+        results[2] = new VoteStatusWeb(votingId, VoteResultStatus.SignatureFailed, "bad signature");
+        results[3] = new VoteStatusWeb(votingId, VoteResultStatus.OK, "signature_3");
+        results[4] = new VoteStatusWeb(votingId, VoteResultStatus.SignatureFailed, "sign");
+        results[5] = new VoteStatusWeb(votingId, VoteResultStatus.OK, "DFASDFASDFASDFAsdfFASDFASDFASfasdfasdf");
+        results[6] = new VoteStatusWeb(votingId, VoteResultStatus.SignatureFailed, "sdfsdfsdfd234df");
+        results[7] = new VoteStatusWeb(votingId, VoteResultStatus.OK, "signature");
+        results[8] = new VoteStatusWeb(votingId, VoteResultStatus.SignatureFailed, "s");
+        results[9] = new VoteStatusWeb(votingId, VoteResultStatus.OK, null);
+        return new RequestResult<>(results, null);
     }
 
     @POST
@@ -248,6 +232,6 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no_1", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_yes_no_2", answers3, false, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, BigDecimal.ZERO, null, null), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, BigDecimal.ZERO, null), null);
     }
 }
