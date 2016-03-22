@@ -72,13 +72,12 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
         parameters.put("encryptedData", encryptedData);
         parameters.put("clientSignature", clientSignature);
         String result = execute("acceptVote", acceptVoteUrl, parameters);
-        NodeVoteReceipt receipt;
         try {
-            receipt = mapper.readValue(result, NodeVoteReceipt.class);
+            NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
+            return receipt;
         } catch (IOException e) {
             log.error("acceptVote. can not read receipt. error={}", e.getMessage());
             return null;
         }
-        return receipt;
     }
 }

@@ -40,7 +40,8 @@ public class NodeVoteReceipt {
     String signature;
 
     @JsonCreator
-    public NodeVoteReceipt(@JsonProperty String inputMessage, @JsonProperty long timestamp, @JsonProperty VoteResultStatus status, @JsonProperty String signature) {
+    public NodeVoteReceipt(@JsonProperty("inputMessage") String inputMessage, @JsonProperty("timestamp") long timestamp, 
+                           @JsonProperty("status") VoteResultStatus status, @JsonProperty("signature") String signature) {
         this.inputMessage = inputMessage;
         this.timestamp = timestamp;
         this.status = status;
