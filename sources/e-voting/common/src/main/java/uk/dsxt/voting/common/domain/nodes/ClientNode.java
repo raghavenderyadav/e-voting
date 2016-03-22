@@ -64,9 +64,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         Map<String, Client> clients = new HashMap<>();
         BigDecimal totalResidual;
         Map<String, VoteResult> clientResultsByClientId = new HashMap<>();
-        Map<String, VoteResult> clientResultsByMessageId = new HashMap<>();
+        Map<String, String> clientResultMessageIdsByClientId = new HashMap<>();
         Map<String, BigDecimal> clientResidualsByClientId = new HashMap<>();
-        List<VoteStatus> voteStatuses = new ArrayList<>();
+        Map<String, VoteStatus> voteStatusesByMessageId = new HashMap<>();
     }
 
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
@@ -216,15 +216,22 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized Collection<VoteResult> getAllClientVotes(String votingId) {
+    public synchronized VoteStatus getClientVoteStatus(String votingId, String clientId) {
         VotingRecord votingRecord = votingsById.get(votingId);
-        return votingRecord == null ? null : votingRecord.clientResultsByClientId.values();
+        if (votingRecord == null) {
+            return null;
+        }
+        String messageId = votingRecord.clientResultMessageIdsByClientId.get(clientId);
+        if (messageId == null) {
+            return null;
+        }
+        return votingRecord.voteStatusesByMessageId.get(messageId);
     }
 
     @Override
-    public synchronized Collection<VoteStatus> getConfirmedClientVotes(String votingId) {
+    public synchronized Collection<VoteStatus> getVoteStatuses(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
-        return votingRecord == null ? null : votingRecord.voteStatuses;
+        return votingRecord == null ? null : votingRecord.voteStatusesByMessageId.values();
     }
 
     @Override
@@ -254,7 +261,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
             encryptToMasterNode(serializedVote, signature));
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
-        votingRecord.clientResultsByMessageId.put(tranId, result);
+        votingRecord.clientResultMessageIdsByClientId.put(result.getHolderId(), tranId);
         
         long now = System.currentTimeMillis();
         String resultMessage = messagesSerializer.serialize(result, votingRecord.voting);
@@ -329,7 +336,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             log.warn("addVoteStatus. Voting not found {}", status.getVotingId());
             return;
         }
-        votingRecord.voteStatuses.add(status);
+        votingRecord.voteStatusesByMessageId.put(status.getMessageId(), status);
     }
 
     @Override

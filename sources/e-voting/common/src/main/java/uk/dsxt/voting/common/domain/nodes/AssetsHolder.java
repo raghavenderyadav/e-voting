@@ -40,9 +40,9 @@ public interface AssetsHolder extends VoteAcceptor {
 
     VoteResult getTotalVotingResult(String votingId);
 
-    Collection<VoteResult> getAllClientVotes(String votingId);
+    VoteStatus getClientVoteStatus(String votingId, String clientId);
 
-    Collection<VoteStatus> getConfirmedClientVotes(String votingId);
+    Collection<VoteStatus> getVoteStatuses(String votingId);
 
     VoteResult getClientVote(String votingId, String clientId);
 
