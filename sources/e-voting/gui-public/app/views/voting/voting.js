@@ -37,6 +37,8 @@ angular
     vc.phase = 1;
     vc.xml = '';
     vc.isSign = true;
+    vc.showSigningContent = false;
+    vc.messageId = null;
 
     activate();
 
@@ -67,10 +69,10 @@ angular
       }, voteComplete);
 
       function voteComplete(data) {
-        vc.phase = 2;
         vc.voting = data.questions;
         vc.totalVotes = data.amount;
         vc.xml = data.xmlBody;
+        vc.phase = 2;
       }
     }
     function sign() {
@@ -83,11 +85,13 @@ angular
 
       function signComplete(response) {
         if(response) {
-          alert("Vote accepted");
+          vc.messageId = data.id;
+          vc.signature = data.signature;
+          vc.xml = data.message;
+          vc.phase = 3;
         } else {
           alert("Vote failed");
         }
-        cancel();
       }
     }
 

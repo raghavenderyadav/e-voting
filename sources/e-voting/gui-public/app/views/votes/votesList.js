@@ -5,8 +5,6 @@ angular
   .controller('VotesListController', ['votesListInfo', '$state', function (votesListInfo, $state) {
     var volc = this;
     volc.votesList = [];
-    volc.votesType = 'confirmed';
-    volc.getVotes = getVotes;
 
     function getVotesListComplete(data) {
       volc.votesList = data;
@@ -16,10 +14,6 @@ angular
     activate();
 
     function activate() {
-      return votesListInfo.getVotesList($state.params.id, getVotesListComplete, 'confirmed');
-    }
-
-    function getVotes(type) {
-      votesListInfo.getVotesList($state.params.id, getVotesListComplete, type);
+      return votesListInfo.getVotesList($state.params.id, getVotesListComplete);
     }
   }]);

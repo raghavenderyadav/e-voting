@@ -1,14 +1,5 @@
 <div class="container">
-  <ul class="nav nav-pills nav-radios">
-    <li role="presentation" ng-class="{'active': volc.votesType == 'confirmed'}">
-      <input type="radio" ng-model="volc.votesType" value="confirmed" id="confirmed-votes" ng-change="volc.getVotes(volc.votesType)">
-      <label for="confirmed-votes">Confirmed votes</label>
-    </li>
-    <li role="presentation" ng-class="{'active': volc.votesType == 'all'}">
-      <input type="radio" ng-model="volc.votesType" value="all" id="all-votes" ng-change="volc.getVotes(volc.votesType)">
-      <label for="all-votes">Preliminary votes</label>
-    </li>
-  </ul>
+  <h2 class="page-title">Preliminary votes</h2>
   <table class="table table-striped table-custom">
     <tr>
       <th>Voting</th>

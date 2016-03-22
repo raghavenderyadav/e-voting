@@ -7,9 +7,9 @@ angular
       return {
         getVotesList: getVotesList
       };
-      function getVotesList(votingId, getVotesListComplete, votesType) {
+      function getVotesList(votingId, getVotesListComplete) {
         return apiRequests.postCookieRequest(
-          votesType + 'Votes',
+          'allVotes',
           {
             votingId: votingId
           },

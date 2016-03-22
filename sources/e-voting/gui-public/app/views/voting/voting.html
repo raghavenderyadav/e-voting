@@ -7,9 +7,11 @@
         </div>
         <div class="panel-body">
           <div voting-countdown="vc.votingCountdown"></div>
-          <div ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice" total-votes="vc.totalVotes" ng-if="vc.phase === 1"></div>
+          <div ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice"
+               total-votes="vc.totalVotes" ng-if="vc.phase === 1"></div>
           <div ng-if="vc.phase === 2">
-            <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question" total-votes="vc.totalVotes"></div>
+            <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question"
+                 total-votes="vc.totalVotes"></div>
 
             <div class="checkbox voting-item">
               <label class="voting-item-title">
@@ -17,23 +19,69 @@
               </label>
             </div>
 
-            <div class="form-horizontal" ng-if="vc.isSign">
+            <div ng-if="vc.isSign">
+              <div ng-hide="vc.showSigningContent" ng-click="vc.showSigningContent = true">Show signing content</div>
+              <div ng-show="vc.showSigningContent" ng-click="vc.showSigningContent = false">Hide signing content</div>
+
+              <div class="form-group" ng-show="vc.showSigningContent">
+                <br>
+                <label class="col-xs-3 control-label" for="signContent">Signing content</label>
+                <div class="col-xs-9">
+                  <textarea class="form-control" name="signKey" id="signContent" cols="30" rows="10"
+                            ng-model="vc.xml"></textarea>
+                </div>
+              </div>
+              <div class="form-horizontal">
+                <br>
+                <div class="form-group">
+                  <label class="col-xs-3 control-label" for="signKey">Signature key</label>
+                  <div class="col-xs-9">
+                    <textarea class="form-control" name="signKey" id="signKey" cols="30" rows="10"
+                              ng-model="vc.signKey"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div ng-if="vc.phase === 3">
+            <div class="form-group" ng-show="vc.showSigningContent">
+              <br>
+              <label class="col-xs-3 control-label" for="signContent">Signing content</label>
+              <div class="col-xs-9">
+                  <textarea class="form-control" name="signContent" id="signContent" cols="30" rows="10"
+                            ng-model="vc.xml"></textarea>
+              </div>
+            </div>
+            <div class="form-horizontal">
               <br>
               <div class="form-group">
                 <label class="col-xs-3 control-label" for="signKey">Signature key</label>
                 <div class="col-xs-9">
-                  <textarea class="form-control" name="signKey" id="signKey" cols="30" rows="10" ng-model="vc.signKey"></textarea>
+                    <textarea class="form-control" name="signKey" id="signKey" cols="30" rows="10"
+                              ng-model="vc.signKey"></textarea>
                 </div>
               </div>
             </div>
-            <div class="ng-hide">{{vc.xml}}</div>
 
+            <div class="form-group">
+              <label class="col-xs-3 control-label" for="messageId">ID</label>
+              <div class="col-xs-9">
+                    <textarea class="form-control" name="messageId" id="messageId" cols="30" rows="10"
+                              ng-model="vc.messageId"></textarea>
+              </div>
+            </div>
           </div>
         </div>
         <div class="panel-footer text-center">
           <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vc.cancel()">Cancel</button>
-          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.votingCountdown > 0) && vc.vote()" ng-disabled="vc.votingCountdown <= 0" ng-if="vc.phase === 1">Vote</button>
-          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80" ng-click="(vc.signKey != '' || !vc.isSign) && vc.sign()" ng-disabled="vc.signKey == '' && vc.isSign" ng-if="vc.phase === 2">Sign</button>
+          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80"
+                  ng-click="(vc.votingCountdown > 0) && vc.vote()" ng-disabled="vc.votingCountdown <= 0"
+                  ng-if="vc.phase === 1">Vote
+          </button>
+          <button type="button" class="btn btn-default btn-primary btn-spacing btn-80"
+                  ng-click="(vc.signKey != '' || !vc.isSign) && vc.sign()" ng-disabled="vc.signKey == '' && vc.isSign"
+                  ng-if="vc.phase === 2">Sign
+          </button>
         </div>
       </div>
     </div>
