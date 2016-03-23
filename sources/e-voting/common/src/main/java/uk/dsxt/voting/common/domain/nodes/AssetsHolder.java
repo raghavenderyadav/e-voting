@@ -21,10 +21,7 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
-import uk.dsxt.voting.common.domain.dataModel.ClientVoteReceipt;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 
 import java.math.BigDecimal;
@@ -40,11 +37,11 @@ public interface AssetsHolder extends VoteAcceptor {
 
     VoteResult getTotalVotingResult(String votingId);
 
-    VoteStatus getClientVoteStatus(String votingId, String clientId);
-
     Collection<VoteStatus> getVoteStatuses(String votingId);
 
-    VoteResult getClientVote(String votingId, String clientId);
+    Collection<VoteResultAndStatus> getClientVotes(String votingId);
+
+    VoteResultAndStatus getClientVote(String votingId, String clientId);
 
     ClientVoteReceipt addClientVote(VoteResult result, String signature) throws InternalLogicException;
 

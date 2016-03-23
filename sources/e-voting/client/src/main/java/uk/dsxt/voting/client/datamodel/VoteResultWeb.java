@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
+import uk.dsxt.voting.common.domain.dataModel.VoteResultAndStatus;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 
 import java.math.BigDecimal;
@@ -37,26 +38,30 @@ public class VoteResultWeb {
     String clientName;
     BigDecimal packetSize;
     VoteResultStatus status;
+    String messageId;
     // TODO Add answers for each question
 
     @JsonCreator
     public VoteResultWeb(@JsonProperty("votingId") String votingId, @JsonProperty("votingName") String votingName,
                          @JsonProperty("clientId") String clientId, @JsonProperty("clientName") String clientName,
-                         @JsonProperty("packetSize") BigDecimal packetSize, @JsonProperty("status") VoteResultStatus status) {
+                         @JsonProperty("packetSize") BigDecimal packetSize, 
+                         @JsonProperty("status") VoteResultStatus status, @JsonProperty("messageId") String messageId) {
         this.votingId = votingId;
         this.votingName = votingName;
         this.clientId = clientId;
         this.clientName = clientName;
         this.packetSize = packetSize;
         this.status = status;
+        this.messageId = messageId;
     }
 
-    public VoteResultWeb(VoteResult vr, VoteResultStatus status) {
-        this.votingId = vr.getVotingId();
+    public VoteResultWeb(VoteResultAndStatus vr) {
+        this.votingId = vr.getResult().getVotingId();
         this.votingName = ""; // TODO Get votingName from other sources.
-        this.clientId = vr.getHolderId();
+        this.clientId = vr.getResult().getHolderId();
         this.clientName = ""; // TODO Get clientName from other sources.
-        this.packetSize = vr.getPacketSize();
-        this.status = status;
+        this.packetSize = vr.getResult().getPacketSize();
+        this.status = vr.getStatus() == null ? null : vr.getStatus().getStatus();
+        this.messageId = vr.getStatus() == null ? null : vr.getStatus().getMessageId();
     }
 }

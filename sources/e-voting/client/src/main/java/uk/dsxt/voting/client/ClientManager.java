@@ -178,13 +178,12 @@ public class ClientManager {
             log.debug("votingResults. Voting with id={} not found.", votingId);
             return new RequestResult<>(APIException.VOTING_NOT_FOUND);
         }
-        final VoteResult clientVote = assetsHolder.getClientVote(votingId, clientId);
+        final VoteResultAndStatus clientVote = assetsHolder.getClientVote(votingId, clientId);
         if (clientVote == null) {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
             return new RequestResult<>(getVotingResults(new VoteResult(votingId, clientId), voting, null), null);
         }
-        final VoteStatus voteStatus = assetsHolder.getClientVoteStatus(votingId, clientId);
-        return new RequestResult<>(getVotingResults(clientVote, voting, voteStatus), null);
+        return new RequestResult<>(getVotingResults(clientVote.getResult(), voting, clientVote.getStatus()), null);
     }
 
     private VotingInfoWeb getVotingResults(VoteResult clientVote, Voting voting, VoteStatus voteStatus) {
@@ -208,6 +207,13 @@ public class ClientManager {
         if (now < voting.getBeginTimestamp() || now > voting.getEndTimestamp())
             return new RequestResult<>(-1, null);
         return new RequestResult<>(voting.getEndTimestamp() - now, null);
+    }
+
+    public RequestResult getAllClientVotes(String votingId) {
+        List<VoteResultWeb> results = new ArrayList<>();
+        final Collection<VoteResultAndStatus> votes = assetsHolder.getClientVotes(votingId);
+        results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
+        return new RequestResult<>(results.toArray(new VoteStatusWeb[results.size()]), null);
     }
 
     public RequestResult getAllVoteStatuses(String votingId) {
@@ -235,4 +241,6 @@ public class ClientManager {
         }
         return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null), null);
     }
+
+
 }

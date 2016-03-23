@@ -216,28 +216,40 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized VoteStatus getClientVoteStatus(String votingId, String clientId) {
-        VotingRecord votingRecord = votingsById.get(votingId);
-        if (votingRecord == null) {
-            return null;
-        }
-        String messageId = votingRecord.clientResultMessageIdsByClientId.get(clientId);
-        if (messageId == null) {
-            return null;
-        }
-        return votingRecord.voteStatusesByMessageId.get(messageId);
-    }
-
-    @Override
     public synchronized Collection<VoteStatus> getVoteStatuses(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
         return votingRecord == null ? null : votingRecord.voteStatusesByMessageId.values();
     }
 
     @Override
-    public synchronized VoteResult getClientVote(String votingId, String clientId) {
+    public Collection<VoteResultAndStatus> getClientVotes(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
-        return votingRecord == null ? null : votingRecord.clientResultsByClientId.get(clientId);
+        if (votingRecord == null) {
+            return null;
+        }
+        List<VoteResultAndStatus> resultSet = new ArrayList<>();
+        for(VoteResult clientResult : votingRecord.clientResultsByClientId.values()) {
+            resultSet.add(getClientVote(votingRecord, clientResult));
+        }
+        return resultSet;
+    }
+
+    @Override
+    public synchronized VoteResultAndStatus getClientVote(String votingId, String clientId) {
+        VotingRecord votingRecord = votingsById.get(votingId);
+        if (votingRecord == null) {
+            return null;
+        }
+        VoteResult clientResult = votingRecord.clientResultsByClientId.get(clientId);
+        if (clientResult == null) {
+            return null;
+        }
+        return getClientVote(votingRecord, clientResult);
+    }
+    
+    private VoteResultAndStatus getClientVote(VotingRecord votingRecord, VoteResult clientResult) {
+        String messageId = votingRecord.clientResultMessageIdsByClientId.get(clientResult.getHolderId());
+        return new VoteResultAndStatus(clientResult, messageId == null ? null : votingRecord.voteStatusesByMessageId.get(messageId));
     }
 
     @Override
