@@ -164,6 +164,7 @@ public class ClientManager {
             audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
         ClientVoteReceipt receipt = assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
+        signInfoByKey.remove(generateKeyForDocument(clientId, votingId));
         return new RequestResult<>(new VoteReceiptWeb(receipt), null);
     }
 
@@ -209,7 +210,7 @@ public class ClientManager {
         return new RequestResult<>(voting.getEndTimestamp() - now, null);
     }
 
-    public RequestResult getAllClientVotes(String votingId) {
+    public RequestResult getAllVoteStatuses(String votingId) {
         List<VoteStatusWeb> results = new ArrayList<>();
         final Collection<VoteStatus> votes = assetsHolder.getVoteStatuses(votingId);
         results.addAll(votes.stream().map(VoteStatusWeb::new).collect(Collectors.toList()));
@@ -234,6 +235,4 @@ public class ClientManager {
         }
         return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null), null);
     }
-
-
 }

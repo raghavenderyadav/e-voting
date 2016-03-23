@@ -156,10 +156,10 @@ public class VotingApiResource implements VotingAPI {
     }
 
     @POST
-    @Path("/getAllClientVotes")
+    @Path("/getAllVoteStatuses")
     @Produces("application/json")
-    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClientId(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllClientVotes(votingId));
+    public RequestResult getAllVoteStatuses(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClientId(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllVoteStatuses(votingId));
     }
 
     @POST

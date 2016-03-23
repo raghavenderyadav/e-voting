@@ -188,9 +188,9 @@ public class MockVotingApiResource implements VotingAPI {
     }
 
     @POST
-    @Path("/getAllClientVotes")
+    @Path("/getAllVoteStatuses")
     @Produces("application/json")
-    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+    public RequestResult getAllVoteStatuses(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         final VoteStatusWeb[] results = new VoteStatusWeb[10];
 
         results[0] = new VoteStatusWeb(votingId, VoteResultStatus.OK, "signature_1");
