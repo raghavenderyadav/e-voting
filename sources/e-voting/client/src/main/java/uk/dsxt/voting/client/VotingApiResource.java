@@ -159,7 +159,7 @@ public class VotingApiResource implements VotingAPI {
     @Path("/getAllVoteStatuses")
     @Produces("application/json")
     public RequestResult getAllVoteStatuses(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
-        return executeClientId(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), (clientId) -> manager.getAllVoteStatuses(votingId));
+        return executeClientId(cookie, "getAllVoteStatuses", String.format("votingId=%s", votingId), (clientId) -> manager.getAllVoteStatuses(votingId));
     }
 
     @POST
@@ -167,5 +167,12 @@ public class VotingApiResource implements VotingAPI {
     @Produces("application/json")
     public RequestResult votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return executeClientId(cookie, "votingTotalResults", String.format("votingId=%s", votingId), (clientId) -> manager.votingTotalResults(votingId));
+    }
+
+    @POST
+    @Path("/getAllClientVotes")
+    @Produces("application/json")
+    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        return executeClientWithRole(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), UserRole.ADMIN, (clientId) -> manager.getAllClientVotes(votingId));
     }
 }

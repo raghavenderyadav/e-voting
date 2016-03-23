@@ -207,6 +207,26 @@ public class MockVotingApiResource implements VotingAPI {
     }
 
     @POST
+    @Path("/getAllClientVotes")
+    @Produces("application/json")
+    public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
+        final VoteResultWeb[] results = new VoteResultWeb[10];
+
+        results[0] = new VoteResultWeb(votingId, "Voting Name 2016", "client_1", "Dr. Watson", BigDecimal.TEN, VoteResultStatus.OK, "message_1");
+        results[1] = new VoteResultWeb(votingId, "Voting Name 2016", "client_2", "Mr. Drow", BigDecimal.ONE, VoteResultStatus.OK, "message_2");
+        results[2] = new VoteResultWeb(votingId, "Voting Name 2016", "client_3", "Mrs. Smith", BigDecimal.ZERO, VoteResultStatus.SignatureFailed, "message_3");
+        results[3] = new VoteResultWeb(votingId, "Voting Name 2016", "client_4", "Mr. Zuba", BigDecimal.ZERO, VoteResultStatus.OK, "message_4");
+        results[4] = new VoteResultWeb(votingId, "Voting Name 2016", "client_5", "Mr. Lenin", new BigDecimal(24324234), VoteResultStatus.SignatureFailed, "message_5");
+        results[5] = new VoteResultWeb(votingId, "Voting Name 2016", "client_6", "Mr. Kak", BigDecimal.ONE, VoteResultStatus.OK, "message_6");
+        results[6] = new VoteResultWeb(votingId, "Voting Name 2016", "client_7", "Mrs. Drow", BigDecimal.ZERO, VoteResultStatus.SignatureFailed, "message_7");
+        results[7] = new VoteResultWeb(votingId, "Voting Name 2016", "client_8", "Mr. Smith", BigDecimal.ZERO, VoteResultStatus.OK, "message_8");
+        results[8] = new VoteResultWeb(votingId, "Voting Name 2016", "client_9", "Mr. Stalin", new BigDecimal(6435674), VoteResultStatus.SignatureFailed, "message_9");
+        results[9] = new VoteResultWeb(votingId, "Voting Name 2016", "client_10", "Mr. Kalinin", new BigDecimal(5632626), VoteResultStatus.OK, "message_10");
+
+        return new RequestResult<>(results, null);
+    }
+
+    @POST
     @Path("/votingTotalResults")
     @Produces("application/json")
     public RequestResult votingTotalResults(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {

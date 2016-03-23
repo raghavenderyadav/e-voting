@@ -213,7 +213,7 @@ public class ClientManager {
         List<VoteResultWeb> results = new ArrayList<>();
         final Collection<VoteResultAndStatus> votes = assetsHolder.getClientVotes(votingId);
         results.addAll(votes.stream().map(VoteResultWeb::new).collect(Collectors.toList()));
-        return new RequestResult<>(results.toArray(new VoteStatusWeb[results.size()]), null);
+        return new RequestResult<>(results.toArray(new VoteResultWeb[results.size()]), null);
     }
 
     public RequestResult getAllVoteStatuses(String votingId) {
