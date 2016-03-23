@@ -39,6 +39,7 @@ angular
     vc.isSign = true;
     vc.showSigningContent = false;
     vc.messageId = null;
+    vc.voteTime = null;
 
     activate();
 
@@ -83,11 +84,12 @@ angular
         isSign: vc.isSign
       }, signComplete);
 
-      function signComplete(response) {
-        if(response) {
+      function signComplete(data) {
+        if(data) {
           vc.messageId = data.id;
           vc.signature = data.signature;
           vc.xml = data.message;
+          vc.voteTime = data.timestamp;
           vc.phase = 3;
         } else {
           alert("Vote failed");
