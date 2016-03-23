@@ -228,7 +228,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                     master ? "00" : Integer.toString(nodeInfo.getId()),
                     nodeInfo.getPrivateKey(),
                     MAIN_ADDRESS,
-                    nodeInfo.getNxtPassword(),
+                    nodeInfo.getNxtPassword() != null && !nodeInfo.getNxtPassword().isEmpty() ? nodeInfo.getNxtPassword() : "client_password",
                     master,
                     ownerNodeInfo.getHolderAPI(),
                     currentHost,
