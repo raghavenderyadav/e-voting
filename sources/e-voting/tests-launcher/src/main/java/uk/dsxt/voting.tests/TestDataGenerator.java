@@ -394,7 +394,7 @@ public class TestDataGenerator {
                 mapper.writeValueAsString(new ClientsOnTime[] { new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()])) }));
             String messages = client.getClients().stream().
                 filter(child -> child.getVote() != null).
-                map(child -> child.getVote().toString()).
+                map(child -> String.format("%s:%s", randomInt(30, minutes * 60), child.getVote().toString())).
                 reduce("", (s1, s2) -> s1 + "\n" + s2);
             FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), generateVotes ? messages : "");
 

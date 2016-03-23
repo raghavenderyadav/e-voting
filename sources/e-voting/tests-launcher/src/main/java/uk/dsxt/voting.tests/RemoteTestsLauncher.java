@@ -248,7 +248,18 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                 uploadFile(session, currentNodeId, MI_PARTICIPANTS_NAME, true);
                 uploadFile(session, currentNodeId, PARTICIPANTS_NAME, true);
                 uploadFile(session, currentNodeId, CREDENTIALS_NAME, false);
-                uploadFile(session, currentNodeId, CLIENTS_NAME, false);                
+                uploadFile(session, currentNodeId, CLIENTS_NAME, false);
+                String pathToConfig = WORK_DIR + "build/" + NODE_NAME.apply(currentNodeId) + "/client.properties";
+                String[] backendConfigLines = makeCmd(session, String.format("cat %s", pathToConfig)).split("\n");
+                for (int i = 0; i < backendConfigLines.length; i++)
+                    if (backendConfigLines[i].startsWith("owner.private_key="))
+                        backendConfigLines[i] = String.format("owner.private_key=%s", idToNodeInfo.get(currentNodeId).getPrivateKey());
+                StringBuilder result = new StringBuilder();
+                Arrays.asList(backendConfigLines).stream().forEach(item -> {
+                    result.append(item);
+                    result.append(String.format("%n"));
+                });
+                makeCmd(session, ECHO_CMD.apply(result.toString(), pathToConfig));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
