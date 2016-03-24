@@ -195,9 +195,9 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         String pathToMasterFrontendConfig = WORK_DIR + "build/" + directory + "/gui-public/app/server-properties.js";
         String frontendConfig = makeCmd(session, String.format("cat %s", pathToMasterFrontendConfig));
         log.debug(String.format("Original frontend config: %s%n", frontendConfig));
-        frontendConfig = frontendConfig.replaceAll("\"serverUrl\": \".*\",", String.format("\"serverUrl\": \"%s\"", String.format("http://%s:%d/", webHost, currentWebPort)));
-        frontendConfig = frontendConfig.replaceAll("\"serverPort\": .*,", String.format("\"serverPort\": %s", currentWebPort));
-        frontendConfig = frontendConfig.replaceAll("\"pathToApi\": \".*\",", "\"pathToApi\": \"api\"");
+        frontendConfig = frontendConfig.replaceAll("\"serverUrl\": \".*\",", String.format("\"serverUrl\": \"%s\",", String.format("http://%s", webHost)));
+        frontendConfig = frontendConfig.replaceAll("\"serverPort\": .*,", String.format("\"serverPort\": %s,", currentWebPort));
+        frontendConfig = frontendConfig.replaceAll("\"pathToApi\": \".*\",", "\"pathToApi\": \"api\",");
         frontendConfig = frontendConfig.replaceAll("\"readPortFromUrl\": .*\n", "\"readPortFromUrl\": true\n");
         log.debug(String.format("Result frontend config: %s%n", frontendConfig));
         makeCmd(session, ECHO_CMD.apply(frontendConfig, pathToMasterFrontendConfig));

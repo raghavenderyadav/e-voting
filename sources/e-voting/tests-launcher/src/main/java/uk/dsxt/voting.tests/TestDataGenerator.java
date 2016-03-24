@@ -241,7 +241,8 @@ public class TestDataGenerator {
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
             String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
-            BigDecimal voteAmount = new BigDecimal(randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue()));
+            int remaining = child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue();
+            BigDecimal voteAmount = new BigDecimal(randomInt(Math.min(remaining/2, remaining), remaining));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
         }
