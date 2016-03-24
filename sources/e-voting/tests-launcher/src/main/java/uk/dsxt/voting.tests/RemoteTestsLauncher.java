@@ -45,7 +45,11 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String CREDENTIALS_NAME = "credentials.json";
     private final String CLIENTS_NAME = "clients.json";
     
+    private final String JAVA_CLIENT_OPTIONS;
+    private final String JAVA_NXT_OPTIONS;
+    
     private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data.replace("\"", "\\\""), path);
+    private final Function<Integer, String> RUN_CMD;
     
     private Map<Integer, NodeInfo> idToNodeInfo;
     private Map<Integer, Integer> hostIdToNodesCount;
@@ -75,6 +79,10 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         MASTER_NXT_PEER_ADDRESS = String.format("http://%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
         MAIN_ADDRESS = properties.getProperty("master.address");
         SCENARIO = properties.getProperty("testing.type");
+        JAVA_CLIENT_OPTIONS = properties.getProperty("java.clientOptions");
+        JAVA_NXT_OPTIONS = properties.getProperty("java.nxtOptions");
+        RUN_CMD = id -> String.format("cd %sbuild/%s/; rm -r ./%s*; java %s -jar client.jar > /dev/null 2>&1 &",
+            WORK_DIR, NODE_NAME.apply(id), DB_FOLDER, JAVA_CLIENT_OPTIONS);
     }
     
     private void run(Properties properties) throws Exception {
@@ -167,6 +175,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("nxt.main.address", mainNxtAddress);
         overrides.put("nxt.timeMultiplier", "1");
         overrides.put("nxt.account.passphrase", accountPassphrase);
+        overrides.put("nxt.javaOptions", JAVA_NXT_OPTIONS);
         overrides.put("http.connection.timeout", "15000");
         overrides.put("http.read.timeout", "60000");
         overrides.put("jetty.maxQueueSize", "1000");
@@ -280,7 +289,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         }
         iterateByAllNodes((session, currentNodeId) -> {
             try {
-                makeCmd(session, String.format("cd %sbuild/%s/; rm -r ./%s*; java -jar client.jar > /dev/null 2>&1 &", WORK_DIR, NODE_NAME.apply(currentNodeId), DB_FOLDER));
+                makeCmd(session, RUN_CMD.apply(currentNodeId));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
