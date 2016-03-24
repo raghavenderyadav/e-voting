@@ -8,6 +8,7 @@ cp ../../src/e-voting/sources/e-voting/conf/nxt-default.properties ./conf/;
 mkdir -p ./gui-public;
 cp -r ../../src/e-voting/sources/e-voting/gui-public/* ./gui-public;
 cp -r ./gui-public/app/default-server-properties.js ./gui-public/app/server-properties.js;
+cp -r ../html ./;
 cd -p ./gui-public;
 npm install;
 npm install -g bower;
