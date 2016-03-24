@@ -148,7 +148,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("credentials.filepath", CREDENTIALS_NAME);
         overrides.put("clients.filepath", CLIENTS_NAME);
         overrides.put("client.web.port", Integer.toString(currentWebPort));
-        overrides.put("client.web.webDir", "./gui-public");
+        overrides.put("client.web.webDir", "./gui-public/app");
         overrides.put("owner.id", ownerId);
         overrides.put("owner.private_key", privateKey);
         overrides.put("parent.holder.url", ownerHost);
