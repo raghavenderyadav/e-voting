@@ -76,7 +76,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         }
         masterHost = masterHostFromSetting;
         sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
-        MASTER_NXT_PEER_ADDRESS = String.format("http://%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
+        MASTER_NXT_PEER_ADDRESS = String.format("%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
         MAIN_ADDRESS = properties.getProperty("master.address");
         SCENARIO = properties.getProperty("testing.type");
         JAVA_CLIENT_OPTIONS = properties.getProperty("java.clientOptions");
