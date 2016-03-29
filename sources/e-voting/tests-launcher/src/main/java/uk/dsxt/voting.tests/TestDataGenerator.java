@@ -64,17 +64,17 @@ public class TestDataGenerator {
     private final static int BADCONNECTION_PARTICIPANTS = 0;
     private final static int MAX_DISCONNECT_COUNT = 0;
     private final static int MAX_DISCONNECT_PERIOD = 0;
-    
+
     private final static String SECURITY = "security";
     private final static String MASTER_PASSWORD = "master_password";
-    
+
     private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
     public static void generate() throws Exception {
         //generate voting
         long startTime = Instant.now().getMillis();
         long endTime = Instant.now().plus(DURATION_MINUTES * 60 * 1000).getMillis();
-        Voting voting = generateVoting(startTime, endTime);
+        Voting voting = generateVotingEn(startTime, endTime);
         Voting[] votings = new Voting[]{voting};
         //generating keys
         KeyPair[] keys = cryptoHelper.createCryptoKeysGenerator().generateKeys(PARTICIPANTS_COUNT);
@@ -87,7 +87,7 @@ public class TestDataGenerator {
         Client[] clients = new Client[PARTICIPANTS_COUNT];
         for (int i = 0; i < PARTICIPANTS_COUNT; i++) {
             Map<String, BigDecimal> packetSizeBySecurityId = new HashMap<>();
-            packetSizeBySecurityId.put(SECURITY,new BigDecimal(randomInt(15, 100)));
+            packetSizeBySecurityId.put(SECURITY, new BigDecimal(randomInt(15, 100)));
             clients[i] = new Client(participants[i].getId(), packetSizeBySecurityId, null);
             if ((i % (PARTICIPANTS_COUNT / NODES_COUNT)) != 0) {
                 //setting nominal holder
@@ -150,18 +150,18 @@ public class TestDataGenerator {
                 generateCredentialsJSON();
                 return;
             }
-            if (args.length < 7) {
+            if (args.length > 0 && args.length < 7) {
                 System.out.println("<name> <totalParticipant> <holdersCount> <vmCount> <levelsCount> <minutes> <generateVotes>");
                 throw new IllegalArgumentException("Invalid arguments count exception.");
             }
             int argId = 0;
-            String name = args[argId++];
-            int totalParticipant = Integer.parseInt(args[argId++]);
-            int holdersCount = Integer.parseInt(args[argId++]);
-            int vmCount = Integer.parseInt(args[argId++]);
-            int levelsCount = Integer.parseInt(args[argId++]);
-            int minutes = Integer.parseInt(args[argId++]);
-            boolean generateVotes = Boolean.parseBoolean(args[argId++]);
+            String name = args.length == 0 ? "1" : args[argId++];
+            int totalParticipant = args.length == 0 ? 20 : Integer.parseInt(args[argId++]);
+            int holdersCount = args.length == 0 ? 4 : Integer.parseInt(args[argId++]);
+            int vmCount = args.length == 0 ? 1 : Integer.parseInt(args[argId++]);
+            int levelsCount = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
+            int minutes = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
+            boolean generateVotes = args.length == 0 ? true : Boolean.parseBoolean(args[argId]);
             TestDataGenerator generator = new TestDataGenerator();
             generator.newGenerate(name, totalParticipant, holdersCount, vmCount, levelsCount, minutes, generateVotes);
         } catch (Exception e) {
@@ -171,15 +171,15 @@ public class TestDataGenerator {
 
     private static void generateCredentialsJSON() throws IOException {
         List<ClientCredentials> credentials = new ArrayList<>();
-        credentials.add(new ClientCredentials("user1",  "1234"));
-        credentials.add(new ClientCredentials("user2",  "1234"));
-        credentials.add(new ClientCredentials("user3",  "1234"));
-        credentials.add(new ClientCredentials("user4",  "1234"));
-        credentials.add(new ClientCredentials("user5",  "1234"));
-        credentials.add(new ClientCredentials("user6",  "1234"));
-        credentials.add(new ClientCredentials("user7",  "1234"));
-        credentials.add(new ClientCredentials("user8",  "1234"));
-        credentials.add(new ClientCredentials("user9",  "1234"));
+        credentials.add(new ClientCredentials("user1", "1234"));
+        credentials.add(new ClientCredentials("user2", "1234"));
+        credentials.add(new ClientCredentials("user3", "1234"));
+        credentials.add(new ClientCredentials("user4", "1234"));
+        credentials.add(new ClientCredentials("user5", "1234"));
+        credentials.add(new ClientCredentials("user6", "1234"));
+        credentials.add(new ClientCredentials("user7", "1234"));
+        credentials.add(new ClientCredentials("user8", "1234"));
+        credentials.add(new ClientCredentials("user9", "1234"));
         credentials.add(new ClientCredentials("user10", "1234"));
         final String string = mapper.writeValueAsString(credentials);
         FileUtils.writeStringToFile(new File("credentials00.json"), string);
@@ -242,33 +242,71 @@ public class TestDataGenerator {
             String questionId = voting.getQuestions()[j].getId();
             String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
             int remaining = child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue();
-            BigDecimal voteAmount = new BigDecimal(randomInt(Math.min(remaining/2, remaining), remaining));
+            BigDecimal voteAmount = new BigDecimal(randomInt(Math.min(remaining / 2, remaining), remaining));
             totalSum = totalSum.add(voteAmount);
             vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
         }
         return vote;
     }
-    
-    private static Voting generateVoting(long startTime, long endTime) throws Exception {
-        Question[] questions = new Question[3];
+
+    private static Voting generateVotingRu(long startTime, long endTime) throws Exception {
+        Question[] questions = new Question[5];
         Answer[] answers = new Answer[3];
-        answers[0] = new Answer("1", "Temnov");
-        answers[1] = new Answer("2", "Svetlov");
-        answers[2] = new Answer("3", "Vertev");
-        questions[0] = new Question("1", "New member", answers);
-
+        answers[0] = new Answer("1", "Да");
+        answers[1] = new Answer("2", "Нет");
+        answers[2] = new Answer("3", "Воздержался");
+        questions[0] = new Question("1.1", "Выбрать в Ревизионную комиссию Общества B", answers);
         answers = new Answer[3];
-        answers[0] = new Answer("1", "Tsrev");
-        answers[1] = new Answer("2", "Bronev");
-        answers[2] = new Answer("3", "Steklov");
-        questions[1] = new Question("2", "New vice-president", answers);
+        answers[0] = new Answer("1", "Да");
+        answers[1] = new Answer("2", "Нет");
+        answers[2] = new Answer("3", "Воздержался");
+        questions[1] = new Question("1.2", "Выбрать в Ревизионную комиссию Общества A", answers);
         answers = new Answer[3];
-        answers[0] = new Answer("1", "Ivanov");
-        answers[1] = new Answer("2", "Petrov");
-        answers[2] = new Answer("3", "Sidorov");
-        questions[2] = new Question("3", "New chairman", answers);
-        return new Voting("1", "GMET_The annual voting of shareholders of OJSC 'Blockchain Company'", startTime, endTime, questions, SECURITY);
+        answers[0] = new Answer("1", "Да");
+        answers[1] = new Answer("2", "Нет");
+        answers[2] = new Answer("3", "Воздержался");
+        questions[2] = new Question("2.1", "Избрать Совет директоров Общества. (Примечание: количественный состав Совета директоров в соответствии с Уставом – 3)", answers);
+        answers = new Answer[3];
+        answers[0] = new Answer("2.1.1", "Иванов");
+        answers[1] = new Answer("2.1.2", "Петров");
+        answers[2] = new Answer("2.1.3", "Сидоров");
+        questions[3] = new Question("2.1.multi", "Избрать Совет директоров Общества. (Примечание: количественный состав Совета директоров в соответствии с Уставом – 3)", answers, true, 1);
+        answers = new Answer[3];
+        answers[0] = new Answer("1", "Да");
+        answers[1] = new Answer("2", "Нет");
+        answers[2] = new Answer("3", "Воздержался");
+        questions[4] = new Question("3.1", "Утвердить  Годовой  отчет  Общества  за  2016 год, годовой бухгалтерский  баланс и счет прибылей и убытков Общества за 2016 год.", answers);
+        return new Voting("1", "GMET_Ежегодное голосование", startTime, endTime, questions, SECURITY);
+    }
 
+    private static Voting generateVotingEn(long startTime, long endTime) throws Exception {
+        Question[] questions = new Question[5];
+        Answer[] answers = new Answer[3];
+        answers[0] = new Answer("1", "For");
+        answers[1] = new Answer("2", "Against");
+        answers[2] = new Answer("3", "Abstain");
+        questions[0] = new Question("1.1", "Elect into committee A", answers);
+        answers = new Answer[3];
+        answers[0] = new Answer("1", "For");
+        answers[1] = new Answer("2", "Against");
+        answers[2] = new Answer("3", "Abstain");
+        questions[1] = new Question("1.2", "Elect into committee B", answers);
+        answers = new Answer[3];
+        answers[0] = new Answer("1", "For");
+        answers[1] = new Answer("2", "Against");
+        answers[2] = new Answer("3", "Abstain");
+        questions[2] = new Question("2.1", "Elect committee directors.", answers);
+        answers = new Answer[3];
+        answers[0] = new Answer("2.1.1", "Ivanov");
+        answers[1] = new Answer("2.1.2", "Petrov");
+        answers[2] = new Answer("2.1.3", "Sidorov");
+        questions[3] = new Question("2.1.multi", "Elect committee director members", answers, true, 1);
+        answers = new Answer[3];
+        answers[0] = new Answer("1", "For");
+        answers[1] = new Answer("2", "Against");
+        answers[2] = new Answer("3", "Abstain");
+        questions[4] = new Question("3.1", "Approve annual document", answers);
+        return new Voting("1", "GMET_Annual voting", startTime, endTime, questions, SECURITY);
     }
 
     private static int randomInt(int baseMinValue, int baseMaxValue) {
@@ -301,11 +339,11 @@ public class TestDataGenerator {
 
     private void newGenerate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes) throws Exception {
         KeyPair[] keys = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator().generateKeys(totalParticipant);
-        
+
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
         Participant[] participants = new Participant[totalParticipant];
         long now = System.currentTimeMillis();
-        Voting voting = generateVoting(now, now + minutes * 60000);
+        Voting voting = generateVotingEn(now, now + minutes * 60000);
 
         for (int i = 0; i < totalParticipant; i++) {
             ParticipantRole role;
@@ -313,7 +351,7 @@ public class TestDataGenerator {
                 role = ParticipantRole.NRD;
             else if (i <= holdersCount)
                 role = ParticipantRole.NominalHolder;
-            else 
+            else
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> map = new HashMap<>();
             map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
@@ -360,7 +398,7 @@ public class TestDataGenerator {
             currentNode.setPacketSizeBySecurity(children.stream().map(ClientFullInfo::getPacketSizeBySecurity).reduce(new HashMap<>(), (map1, map2) -> {
                 for (String key : map2.keySet()) {
                     BigDecimal old = map1.get(key);
-                    map1.put(key, (old == null ? BigDecimal.ZERO : old).add(map2.get(key)));   
+                    map1.put(key, (old == null ? BigDecimal.ZERO : old).add(map2.get(key)));
                 }
                 return map1;
             }));
@@ -373,7 +411,7 @@ public class TestDataGenerator {
         Iso20022Serializer serializer = new Iso20022Serializer();
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/voting.xml", BaseTestsLauncher.MODULE_NAME, dirPath, name)), serializer.serialize(voting));
         StringBuilder vmConfig = new StringBuilder();
-        int countByVM = (holdersCount + vmCount - 1)/ vmCount;
+        int countByVM = (holdersCount + vmCount - 1) / vmCount;
         int totalCount = 0;
         for (int i = 0; i < vmCount; i++) {
             int count = Math.min(holdersCount - totalCount, countByVM);
@@ -383,7 +421,7 @@ public class TestDataGenerator {
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/vm.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), vmConfig.toString());
         StringBuilder nodesConfig = new StringBuilder();
         for (int i = 0; i < holdersCount; i++) {
-            ClientFullInfo client = clients[i];       
+            ClientFullInfo client = clients[i];
             List<ClientCredentials> credentials = client.getClients().stream().
                 map(child -> new ClientCredentials(Integer.toString(child.getId()), Integer.toString(child.getId()))).
                 collect(Collectors.toList());
@@ -391,8 +429,8 @@ public class TestDataGenerator {
             List<Client> clientsJson = client.getClients().stream().
                 map(child -> new Client(Integer.toString(child.getId()), child.getPacketSizeBySecurity(), child.getRole())).
                 collect(Collectors.toList());
-            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), 
-                mapper.writeValueAsString(new ClientsOnTime[] { new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()])) }));
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/clients.json", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())),
+                mapper.writeValueAsString(new ClientsOnTime[]{new ClientsOnTime(-20000, clientsJson.toArray(new Client[clientsJson.size()]))}));
             String messages = client.getClients().stream().
                 filter(child -> child.getVote() != null).
                 map(child -> String.format("%s:%s", randomInt(30, minutes * 60), child.getVote().toString())).
