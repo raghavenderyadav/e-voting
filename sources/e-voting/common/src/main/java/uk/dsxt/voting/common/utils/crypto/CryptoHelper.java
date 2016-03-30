@@ -41,18 +41,21 @@ public class CryptoHelper {
 
     private final String signatureAlgorithm;
 
+    private final String digestAlgorithm;
+
     private final int asymmetricKeyLength;
 
     private final int symmetricKeyLength;
 
     private final SecureRandom random = new SecureRandom();
 
-    public static final CryptoHelper DEFAULT_CRYPTO_HELPER = new CryptoHelper("RSA", "AES", "SHA1WithRSA", 2048, 128);
+    public static final CryptoHelper DEFAULT_CRYPTO_HELPER = new CryptoHelper("RSA", "AES", "SHA1WithRSA", "SHA1", 2048, 128);
 
-    public CryptoHelper(String asymmetricAlgorithm, String symmetricAlgorithm, String signatureAlgorithm, int asymmetricKeyLength, int symmetricKeyLength) {
+    public CryptoHelper(String asymmetricAlgorithm, String symmetricAlgorithm, String signatureAlgorithm, String digestAlgorithm, int asymmetricKeyLength, int symmetricKeyLength) {
         this.asymmetricAlgorithm = asymmetricAlgorithm;
         this.symmetricAlgorithm = symmetricAlgorithm;
         this.signatureAlgorithm = signatureAlgorithm;
+        this.digestAlgorithm = digestAlgorithm;
         this.asymmetricKeyLength = asymmetricKeyLength;
         this.symmetricKeyLength = symmetricKeyLength;
     }
@@ -123,6 +126,12 @@ public class CryptoHelper {
         byte[] cipherTextBytes = Base64.getDecoder().decode(keyAndText[1].getBytes());
         byte[] decryptedTextBytes = textCipher.doFinal(cipherTextBytes);
         return new String(decryptedTextBytes);
+    }
+    
+    public String getDigest(String text) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance(digestAlgorithm);
+        digest.update(text.getBytes());
+        return new String(Base64.getEncoder().encode(digest.digest()));
     }
 
     public CryptoKeysGenerator createCryptoKeysGenerator() {

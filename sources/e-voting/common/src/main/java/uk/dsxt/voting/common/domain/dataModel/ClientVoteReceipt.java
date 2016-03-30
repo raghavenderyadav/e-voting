@@ -28,6 +28,8 @@ public class ClientVoteReceipt {
     String voteResultMessage;
 
     String transactionId;
+
+    String voteDigest;
     
     long timestamp;
     

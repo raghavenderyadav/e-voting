@@ -48,14 +48,14 @@ public class MasterNode extends ClientNode {
     private class VoteChecker implements VoteAcceptor {
 
         @Override
-        public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) throws InternalLogicException {
-            return handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData);
+        public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
+            return handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
         }
     }
     
-    private NodeVoteReceipt handleVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData) throws InternalLogicException {
-        VoteResultStatus status = handleVote(transactionId, votingId, encryptedData);
-        String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData);
+    private NodeVoteReceipt handleVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
+        VoteResultStatus status = handleVote(transactionId, votingId, encryptedData, voteDigest);
+        String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
         long now = System.currentTimeMillis();
         String signedText = MessageBuilder.buildMessage(inputMessage, Long.toString(now), status.toString());
         String receiptSign;
@@ -67,7 +67,7 @@ public class MasterNode extends ClientNode {
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
     }
     
-    private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData) {
+    private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) {
         while (true) {
             String decryptedData;
             try {
@@ -113,7 +113,7 @@ public class MasterNode extends ClientNode {
                     log.error("VoteChecker.acceptVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
                     return VoteResultStatus.InternalError;
                 }
-                network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, resultSign));
+                network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
                 return VoteResultStatus.OK;
             } else if (decryptedParts.length == 3) {
                 encryptedData = decryptedParts[0];

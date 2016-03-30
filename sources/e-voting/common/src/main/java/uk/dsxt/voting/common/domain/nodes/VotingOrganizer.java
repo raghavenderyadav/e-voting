@@ -29,6 +29,7 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -103,16 +104,29 @@ public class VotingOrganizer implements NetworkClient {
                     log.info("calculateResults. Skip result due its VoteStatus {}. messageId={} ownerId={}", status.getStatus(), messageId, result.getHolderId());
                     continue;
                 }
+                String voteString = null;
                 try {
-                    if (!cryptoHelper.verifySignature(messagesSerializer.serialize(result, votingRecord.voting), status.getVoteSign(), publicKey)) {
+                    voteString = messagesSerializer.serialize(result, votingRecord.voting);
+                } catch (InternalLogicException e) {
+                    log.error("calculateResults. serialize result failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                    continue;
+                }
+                try {
+                    if (!cryptoHelper.verifySignature(voteString, status.getVoteSign(), publicKey)) {
                         log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
                         continue;
                     }
-                } catch (InternalLogicException e) {
-                    log.error("calculateResults. InternalLogicException. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
-                    continue;
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                    continue;
+                }
+                try {
+                    if (!cryptoHelper.getDigest(voteString).equals(status.getVoteDigest())) {
+                        log.error("calculateResults. VoteStatus vote digest is incorrect. messageId={} ownerId={}", messageId, result.getHolderId());
+                        continue;
+                    }
+                } catch (NoSuchAlgorithmException e) {
+                    log.error("calculateResults. getDigest failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
                     continue;
                 }
                 totalResult.add(result);

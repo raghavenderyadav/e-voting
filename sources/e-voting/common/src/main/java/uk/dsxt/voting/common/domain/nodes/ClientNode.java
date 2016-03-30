@@ -31,6 +31,7 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.*;
@@ -99,8 +100,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) throws InternalLogicException {
-        String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData);
+    public synchronized NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, 
+                                                   String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
+        String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
         VoteResultStatus status;
         VotingRecord votingRecord = votingsById.get(votingId);
         if (votingRecord == null) {
@@ -120,7 +122,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                         if (!cryptoHelper.verifySignature(inputMessage, clientSignature, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
                             status = VoteResultStatus.SignatureFailed;
                         } else {
-                            status = addVoteAndHandleErrors(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData);
+                            status = addVoteAndHandleErrors(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData, voteDigest);
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                         status = VoteResultStatus.SignatureFailed;
@@ -139,12 +141,12 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
     }
 
-    private synchronized VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData) throws InternalLogicException {
+    private synchronized VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
         VoteResultStatus status = checkVote(votingRecord, client, packetSize, clientPacketResidual, encryptedData);
         if (status != VoteResultStatus.OK) {
-            network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, AssetsHolder.EMPTY_SIGNATURE));
+            network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } else {
-            addVote(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData);
+            addVote(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData, voteDigest);
         }
         return status;
     }
@@ -177,7 +179,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         return VoteResultStatus.OK;
     }
 
-    private synchronized void addVote(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData) throws InternalLogicException {
+    private synchronized void addVote(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
         log.debug("acceptVote. participantId={} votingId={} client={}", participantId, votingRecord.voting.getId(), client.getParticipantId());
 
         votingRecord.clientResidualsByClientId.put(client.getParticipantId(), clientPacketResidual);
@@ -187,13 +189,13 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             String encrypted = null, sign = null;
             try {
                 encrypted = encryptToMasterNode(encryptedData, participantId, cryptoHelper.createSignature(MessageBuilder.buildMessage(encryptedData, participantId), privateKey));
-                String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted);
+                String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
                 sign = cryptoHelper.createSignature(signed, privateKey);
             } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
                 log.error("acceptVote. encrypt or sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
             }
             if (sign != null) {
-                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, sign);
+                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
             }
         }
     }
@@ -270,21 +272,27 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not sign vote");
         }
         String tranId = network.addVote(result, votingRecord.voting, signature, nodeSignature);
+        String voteDigest = null;
+        try {
+            voteDigest = cryptoHelper.getDigest(serializedVote);
+        } catch (NoSuchAlgorithmException e) {
+            throw new InternalLogicException("Can not calculate hash");
+        }
         addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
-            encryptToMasterNode(serializedVote, signature));
+            encryptToMasterNode(serializedVote, signature), voteDigest);
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
         votingRecord.clientResultMessageIdsByClientId.put(result.getHolderId(), tranId);
         
         long now = System.currentTimeMillis();
         String resultMessage = messagesSerializer.serialize(result, votingRecord.voting);
-        String signedText = MessageBuilder.buildMessage(resultMessage, tranId, Long.toString(now));
+        String signedText = MessageBuilder.buildMessage(resultMessage, tranId, voteDigest, Long.toString(now));
         String receiptSign;
         try {
             receiptSign = cryptoHelper.createSignature(signedText, privateKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException("Can not sign vote");
         }
-        return new ClientVoteReceipt(resultMessage, tranId, now, receiptSign);
+        return new ClientVoteReceipt(resultMessage, tranId, voteDigest, now, receiptSign);
     }
 
     @Override
@@ -355,8 +363,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     public synchronized void addVote(VoteResult result, String messageId) {
     }
 
-    protected String buildMessage(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData) {
-        return MessageBuilder.buildMessage(transactionId, votingId, packetSize.toPlainString(), clientId, clientPacketResidual.toPlainString(), encryptedData);
+    protected String buildMessage(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) {
+        return MessageBuilder.buildMessage(transactionId, votingId, packetSize.toPlainString(), clientId, clientPacketResidual.toPlainString(), encryptedData, voteDigest);
     }
 
     private String encryptToMasterNode(String... data) throws InternalLogicException {

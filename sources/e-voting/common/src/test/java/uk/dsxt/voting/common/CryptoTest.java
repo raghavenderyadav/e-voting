@@ -30,6 +30,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class CryptoTest {
@@ -106,5 +107,10 @@ public class CryptoTest {
         String encryptedTextSaved = cryptoHelper.encrypt(originalText, publicSaved);
         String decryptedTextSaved = cryptoHelper.decrypt(encryptedTextSaved, privateSaved);
         assertEquals(originalText, decryptedTextSaved);
+    }
+    @Test
+    public void testDigest() throws Exception {
+        assertEquals(cryptoHelper.getDigest("AAA"), cryptoHelper.getDigest("AAA"));
+        assertNotEquals(cryptoHelper.getDigest("AAA"), cryptoHelper.getDigest("AAB"));
     }
 }

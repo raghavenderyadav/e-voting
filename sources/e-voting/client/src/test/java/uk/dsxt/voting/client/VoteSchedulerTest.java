@@ -53,7 +53,7 @@ public class VoteSchedulerTest {
         AssetsHolder client = mock(AssetsHolder.class);
         ClientVoteReceipt receipt = doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
-            return new ClientVoteReceipt("", "1", 0, "");
+            return new ClientVoteReceipt("", "1", "", 0, "");
         }).when(client).addClientVote(anyObject(), anyString());
 
         VoteScheduler scheduler = new VoteScheduler(client, messages, "001");

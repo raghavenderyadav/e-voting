@@ -45,9 +45,9 @@ public class HolderApiResource {
     @Produces("application/json")
     public NodeVoteReceipt acceptVote(@FormParam("transactionId") String transactionId, @FormParam("votingId") String votingId, @FormParam("packetSize") String packetSize,
                                       @FormParam("clientId") String clientId, @FormParam("clientPacketResidual") String clientPacketResidual,
-                                      @FormParam("encryptedData") String encryptedData, @FormParam("clientSignature") String clientSignature) {
+                                      @FormParam("encryptedData") String encryptedData, @FormParam("voteDigest") String voteDigest, @FormParam("clientSignature") String clientSignature) {
         try {
-            return node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, clientSignature);
+            return node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, voteDigest, clientSignature);
         } catch (Exception e) {
             log.error("acceptVote fails", e);
             return null;

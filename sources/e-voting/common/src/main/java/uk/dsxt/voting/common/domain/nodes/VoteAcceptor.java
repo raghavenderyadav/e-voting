@@ -34,5 +34,6 @@ import java.util.Map;
 
 public interface VoteAcceptor {
 
-    NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) throws InternalLogicException;
+    NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, 
+                               String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException;
 }

@@ -62,7 +62,7 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
      }
 
     @Override
-    public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String clientSignature) {
+    public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("transactionId", transactionId);
         parameters.put("votingId", votingId);
@@ -70,6 +70,7 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
         parameters.put("clientId", clientId);
         parameters.put("clientPacketResidual", clientPacketResidual.toPlainString());
         parameters.put("encryptedData", encryptedData);
+        parameters.put("voteDigest", voteDigest);
         parameters.put("clientSignature", clientSignature);
         String result = execute("acceptVote", acceptVoteUrl, parameters);
         try {
