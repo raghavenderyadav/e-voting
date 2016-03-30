@@ -92,6 +92,7 @@ public class MessageHandler {
     }
 
     public void run(long newMessagesRequestInterval) {
+        checkNewMessages();
         messagesHandler = new Thread(() -> {
             while (!Thread.interrupted()) {
                 checkNewMessages();

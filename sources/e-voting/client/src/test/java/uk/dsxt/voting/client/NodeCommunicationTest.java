@@ -39,6 +39,7 @@ public class NodeCommunicationTest {
             null,
             "credentials00.json",
             "clients00.json",
+            "state00.txt",
         });
         VotingClientMain.main(new String[]{
             "./conf/nxt-default.properties",
@@ -55,6 +56,7 @@ public class NodeCommunicationTest {
             "http://127.0.0.1:9000/holderAPI",
             "credentials5.json",
             "clients5.json",
+            "", //"state5.txt",
         });
     }
     

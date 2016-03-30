@@ -62,9 +62,10 @@ public class VotingClientMain {
             String parentHolderUrl = args == null ? properties.getProperty("parent.holder.url") : args[11];
             String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[12];
             String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[13];
+            String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[14];
 
             application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath,
-                parentHolderUrl, credentialsFilePath, clientsFilePath, audit);
+                parentHolderUrl, credentialsFilePath, clientsFilePath, stateFilePath, audit);
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

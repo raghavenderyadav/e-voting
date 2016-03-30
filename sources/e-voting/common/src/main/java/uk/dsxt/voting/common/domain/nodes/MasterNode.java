@@ -41,7 +41,7 @@ public class MasterNode extends ClientNode {
 
     public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
-        super(MASTER_HOLDER_ID, messagesSerializer, cryptoProvider, participantsById, privateKey, null);
+        super(MASTER_HOLDER_ID, messagesSerializer, cryptoProvider, participantsById, privateKey, null, null, null);
         parentHolder = new VoteChecker();
     }
     

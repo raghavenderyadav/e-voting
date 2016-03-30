@@ -24,6 +24,7 @@ package uk.dsxt.voting.common.domain.nodes;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.utils.CollectionsHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
@@ -35,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -59,20 +61,12 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     private final SortedMap<Long, Map<String, Client>> clientsByIdByTimestamp = new TreeMap<>();
 
-    private static class VotingRecord {
-        Voting voting;
-        VoteResult totalResult;
-        Map<String, Client> clients = new HashMap<>();
-        BigDecimal totalResidual;
-        Map<String, VoteResult> clientResultsByClientId = new HashMap<>();
-        Map<String, String> clientResultMessageIdsByClientId = new HashMap<>();
-        Map<String, BigDecimal> clientResidualsByClientId = new HashMap<>();
-        Map<String, VoteStatus> voteStatusesByMessageId = new HashMap<>();
-    }
-
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey, VoteAcceptor parentHolder)
+    private final Consumer<String> stateSaver;
+
+    public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey,
+                      VoteAcceptor parentHolder, String state, Consumer<String> stateSaver)
         throws InternalLogicException, GeneralSecurityException {
         this.participantId = participantId;
         this.messagesSerializer = messagesSerializer;
@@ -80,12 +74,15 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         this.cryptoHelper = cryptoProvider;
         this.participantsById = participantsById;
         this.parentHolder = parentHolder;
+        this.stateSaver = stateSaver;
         Participant masterNode = participantsById.get(MasterNode.MASTER_HOLDER_ID);
         if (masterNode == null)
             throw new InternalLogicException(String.format("Master node %s not found", MasterNode.MASTER_HOLDER_ID));
         if (masterNode.getPublicKey() == null)
             throw new InternalLogicException(String.format("Master node %s has no public key", MasterNode.MASTER_HOLDER_ID));
         masterNodePublicKey = cryptoProvider.loadPublicKey(masterNode.getPublicKey());
+        if (state != null)
+            loadState(state);
     }
 
     @Override
@@ -96,7 +93,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     public synchronized void setClientsOnTime(long timestamp, Client[] clients) {
         clientsByIdByTimestamp.put(timestamp, Arrays.stream(clients).collect(Collectors.toMap(Client::getParticipantId, Function.identity())));
         long now = System.currentTimeMillis();
-        votingsById.values().stream().filter(vr -> vr.voting.getBeginTimestamp() > now).forEach(this::setVotingClients);
+        votingsById.values().stream().filter(vr -> vr.voting != null && vr.voting.getBeginTimestamp() > now).forEach(this::setVotingClients);
     }
 
     @Override
@@ -292,6 +289,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException("Can not sign vote");
         }
+        if (stateSaver != null)
+            stateSaver.accept(collectState());
         return new ClientVoteReceipt(resultMessage, tranId, voteDigest, now, receiptSign);
     }
 
@@ -312,10 +311,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     @Override
     public synchronized void addVoting(Voting voting) {
-        VotingRecord votingRecord = new VotingRecord();
+        VotingRecord votingRecord = CollectionsHelper.getOrAdd(votingsById, voting.getId(), VotingRecord::new);
         votingRecord.voting = voting;
         setVotingClients(votingRecord);
-        votingsById.put(voting.getId(), votingRecord);
     }
 
     private void setVotingClients(VotingRecord votingRecord) {
@@ -323,7 +321,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         for (Map.Entry<Long, Map<String, Client>> clientsEntry : clientsByIdByTimestamp.entrySet()) {
             if (clientsEntry.getKey() <= votingRecord.voting.getBeginTimestamp()) {
                 votingRecord.clients = new HashMap<>();
-                votingRecord.totalResidual = BigDecimal.ZERO;
+                BigDecimal totalResidual = BigDecimal.ZERO;
                 for (Client client : clientsEntry.getValue().values()) {
                     if (client.getPacketSizeBySecurity() == null)
                         continue;
@@ -331,8 +329,10 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                     if (packetSize == null || packetSize.signum() <= 0)
                         continue;
                     votingRecord.clients.put(client.getParticipantId(), client);
-                    votingRecord.totalResidual = votingRecord.totalResidual.add(packetSize);
+                    totalResidual = votingRecord.totalResidual.add(packetSize);
                 }
+                if (votingRecord.clientResidualsByClientId.size() == 0)
+                    votingRecord.totalResidual = totalResidual;
             } else {
                 break;
             }
@@ -374,5 +374,23 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException(String.format("Can not encrypt message: %s", e.getMessage()));
         }
+    }
+
+
+    private synchronized void loadState(String state) {
+        String[] terms = MessageBuilder.splitMessage(state);
+        votingsById.clear();
+        for(int i = 0; i < terms.length-1; i+=2) {
+            votingsById.put(terms[i], new VotingRecord(terms[i+1]));
+        }
+    }
+
+    private synchronized String collectState() {
+        List<String> stateParts = new ArrayList<>();
+        for(Map.Entry<String, VotingRecord> recordEntry : votingsById.entrySet()) {
+            stateParts.add(recordEntry.getKey());
+            stateParts.add(recordEntry.getValue().toString());
+        }
+        return MessageBuilder.buildMessage(stateParts.toArray(new String[stateParts.size()]));
     }
 }

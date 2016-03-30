@@ -69,7 +69,7 @@ public class ClientApplication extends ResourceConfig {
 
     public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
                              String mainAddress, String passphrase, String nxtPropertiesPath,
-                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath, Logger audit) throws Exception {
+                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit) throws Exception {
         CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
@@ -103,8 +103,10 @@ public class ClientApplication extends ResourceConfig {
             clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
         } else {
             votingOrganizer = null;
+            StateFileSerializer stateFileSerializer = new StateFileSerializer(stateFilePath);
             clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey,
-                parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout));
+                parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout), 
+                stateFileSerializer.load(), stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
 
