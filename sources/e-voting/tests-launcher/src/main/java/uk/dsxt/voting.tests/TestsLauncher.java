@@ -26,9 +26,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import uk.dsxt.voting.client.VotingClientMain;
-import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.registries.RegistriesServer;
 import uk.dsxt.voting.common.registries.RegistriesServerWeb;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 import uk.dsxt.voting.registriesserver.RegistriesServerMain;
 import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
@@ -78,7 +78,7 @@ public class TestsLauncher implements BaseTestsLauncher {
             log.info("Found {} accounts.", nxtAccounts.length);
 
             //json file configuration for clients
-            ClientConfiguration[] configurations = PropertiesHelper.loadResource(properties, null, "client.config.file", ClientConfiguration[].class);
+            ClientConfiguration[] configurations = PropertiesHelper.loadResource(properties, testingType, "client.config.file", ClientConfiguration[].class);
             startClientsAsProcesses = Boolean.parseBoolean(properties.getProperty("testing.clients_as_processes"));
 
             StringBuilder builder = new StringBuilder();
