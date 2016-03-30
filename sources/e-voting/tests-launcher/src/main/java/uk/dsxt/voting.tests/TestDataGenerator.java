@@ -338,14 +338,17 @@ public class TestDataGenerator {
     }
 
     private void newGenerate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes) throws Exception {
-        KeyPair[] keys = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator().generateKeys(totalParticipant);
-
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
         Participant[] participants = new Participant[totalParticipant];
+        //generating keys
+        KeyPair[] keys = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator().generateKeys(totalParticipant);
+
+        //generating voting
         long now = System.currentTimeMillis();
-        long dayStart = now - now % (24*60*60*1000);
+        long dayStart = now - now % (24 * 60 * 60 * 1000);
         Voting voting = generateVotingEn(dayStart, dayStart + minutes * 60000);
 
+        //generating participants info
         for (int i = 0; i < totalParticipant; i++) {
             ParticipantRole role;
             if (i == 0)
@@ -356,17 +359,13 @@ public class TestDataGenerator {
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> map = new HashMap<>();
             map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
-            ClientFullInfo c = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null);
-            clients[i] = c;
-        }
-        for (int i = 0; i < totalParticipant; i++) {
-            ClientFullInfo client = clients[i];
-            participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), client.getName(), client.getPublicKey());
+            clients[i] = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null);
+            participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
         }
 
+        //generating random nodes tree
         int[] counters = {1, 0, 0};
         int minNdClient = 1;
-
         Recursive<BiConsumer<Integer, Integer>> generateTree = new Recursive<>();
         generateTree.recursive = (id, height) -> {
             ClientFullInfo currentNode = clients[id];
@@ -407,6 +406,7 @@ public class TestDataGenerator {
 
         generateTree.recursive.accept(0, 0);
 
+        //saving info to appropriate files
         final String dirPath = "/src/main/resources/scenarios";
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/participants.json", BaseTestsLauncher.MODULE_NAME, dirPath, name)), mapper.writeValueAsString(participants));
         Iso20022Serializer serializer = new Iso20022Serializer();
@@ -420,6 +420,8 @@ public class TestDataGenerator {
             totalCount += count;
         }
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/vm.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), vmConfig.toString());
+        
+        //aggregating data from all files and save it to one file
         StringBuilder nodesConfig = new StringBuilder();
         for (int i = 0; i < holdersCount; i++) {
             ClientFullInfo client = clients[i];
