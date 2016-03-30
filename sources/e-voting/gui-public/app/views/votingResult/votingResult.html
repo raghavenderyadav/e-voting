@@ -4,8 +4,8 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Own vote</h3>
-          <p>Message ID: {{vrc.messageId}}</p>
-          <p>Status: {{vrc.status}}</p>
+          <p>Message ID: {{vrc.votingResult.messageId}}</p>
+          <p>Status: {{vrc.votingResult.status}}</p>
         </div>
         <div class="panel-body">
           <div ng-repeat="question in vrc.votingResult.questions" class="voting-item" voting-result="question" total-votes="vrc.votingResult.amount">
