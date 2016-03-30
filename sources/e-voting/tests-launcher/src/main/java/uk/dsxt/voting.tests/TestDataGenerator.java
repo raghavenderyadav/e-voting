@@ -343,7 +343,8 @@ public class TestDataGenerator {
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
         Participant[] participants = new Participant[totalParticipant];
         long now = System.currentTimeMillis();
-        Voting voting = generateVotingEn(now, now + minutes * 60000);
+        long dayStart = now - now % (24*60*60*1000);
+        Voting voting = generateVotingEn(dayStart, dayStart + minutes * 60000);
 
         for (int i = 0; i < totalParticipant; i++) {
             ParticipantRole role;
