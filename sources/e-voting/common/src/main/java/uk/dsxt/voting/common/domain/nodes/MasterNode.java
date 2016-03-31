@@ -67,7 +67,7 @@ public class MasterNode extends ClientNode {
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
     }
     
-    private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) {
+    private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) throws InternalLogicException {
         while (true) {
             String decryptedData;
             try {

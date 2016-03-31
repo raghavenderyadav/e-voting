@@ -132,7 +132,7 @@ public class NxtWalletManager implements WalletManager {
     }
 
     @Override
-    public void runWallet() {
+    public void start() {
         try {
             List<String> cmd = new ArrayList<>();
             cmd.add("java");
@@ -151,7 +151,7 @@ public class NxtWalletManager implements WalletManager {
             nxtProcess = processBuilder.start();
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                    stopWallet();
+                    stop();
                 }
             });
             waitInitialize();
@@ -163,12 +163,12 @@ public class NxtWalletManager implements WalletManager {
     }
 
     @Override
-    public void stopWallet() {
+    public void stop() {
         try {
             if (nxtProcess.isAlive())
                 nxtProcess.destroyForcibly();
         } catch (Exception e) {
-            log.error("stopWallet method failed", e);
+            log.error("stop method failed", e);
         }
     }
 

@@ -24,15 +24,16 @@ package uk.dsxt.voting.common.domain.nodes;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 public interface NetworkMessagesSender {
 
-    String addVoting(Voting voting);
+    String addVoting(Voting voting) throws InternalLogicException;
 
-    String addVotingTotalResult(VoteResult result, Voting voting);
+    String addVotingTotalResult(VoteResult result, Voting voting) throws InternalLogicException;
 
-    String addVoteStatus(VoteStatus status);
+    String addVoteStatus(VoteStatus status) throws InternalLogicException;
 
-    String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature);
+    String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) throws InternalLogicException;
 
 }

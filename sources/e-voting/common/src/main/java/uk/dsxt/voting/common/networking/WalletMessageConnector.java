@@ -76,12 +76,12 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVoting(Voting voting) {
+    public String addVoting(Voting voting) throws InternalLogicException {
         return send(TYPE_VOTING, serializer.serialize(voting));
     }
 
     @Override
-    public String addVotingTotalResult(VoteResult result, Voting voting) {
+    public String addVotingTotalResult(VoteResult result, Voting voting) throws InternalLogicException {
         try {
             return send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result, voting));
         } catch (InternalLogicException e) {
@@ -91,12 +91,12 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVoteStatus(VoteStatus status) {
+    public String addVoteStatus(VoteStatus status) throws InternalLogicException {
         return send(TYPE_VOTE_STATUS, serializer.serialize(status));
     }
 
     @Override
-    public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) {
+    public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) throws InternalLogicException {
         String resultMessage;
         try {
             resultMessage = serializer.serialize(result, voting);
@@ -124,13 +124,14 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         return send(TYPE_VOTE, encryptedMessage);
     }
 
-    private String send(String messageType, String messageBody) {
+    private String send(String messageType, String messageBody) throws InternalLogicException {
         Map<String, String> fields = new HashMap<>();
         fields.put(FIELD_BODY, messageBody);
         try {
             String id = walletManager.sendMessage(MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields));
-            if (id == null)
-                log.error("send {} fails. holderId={}", messageType, holderId);
+            if (id == null) {
+                throw new InternalLogicException(String.format("send %s fails. holderId=%s", messageType, holderId));
+            }
             else
                 log.info("{} sent. holderId={}", messageType, holderId);
             return id;

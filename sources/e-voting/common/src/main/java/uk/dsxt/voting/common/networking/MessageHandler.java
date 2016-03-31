@@ -70,7 +70,7 @@ public class MessageHandler {
             }
         }
 
-        walletManager.runWallet();
+        walletManager.start();
     }
 
     protected MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants) {
@@ -88,7 +88,7 @@ public class MessageHandler {
             }
         }
 
-        walletManager.runWallet();
+        walletManager.start();
     }
 
     public void run(long newMessagesRequestInterval) {

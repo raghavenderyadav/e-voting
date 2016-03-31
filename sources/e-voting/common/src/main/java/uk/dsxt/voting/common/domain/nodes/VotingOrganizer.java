@@ -81,9 +81,13 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     public void addNewVoting(Voting voting) {
-        network.addVoting(voting);
+        try {
+            network.addVoting(voting);
+        } catch (InternalLogicException e) {
+            log.error("addNewVoting. addVoting failed. votingId={}", voting.getId(), e);
+        }
         calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + 60000, TimeUnit.MILLISECONDS);
-        log.info("Voting added. votingId={}", voting.getId());
+        log.info("addNewVoting. Voting added. votingId={}", voting.getId());
     }
 
     private synchronized void calculateResults(String votingId) {
@@ -133,8 +137,12 @@ public class VotingOrganizer implements NetworkClient {
                 break;
             }
         }
-        log.info("calculateResults. totalResult={}", totalResult);
-        network.addVotingTotalResult(totalResult, votingRecord.voting);
+        try {
+            network.addVotingTotalResult(totalResult, votingRecord.voting);
+            log.info("calculateResults. totalResult={}", totalResult);
+        } catch (InternalLogicException e) {
+            log.info("calculateResults. addVotingTotalResult failed. totalResult={}", totalResult, e);
+        }
     }
 
     @Override

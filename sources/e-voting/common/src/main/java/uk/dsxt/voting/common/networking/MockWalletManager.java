@@ -14,17 +14,19 @@ public class MockWalletManager implements WalletManager {
     private boolean isRunning = false;
 
     @Override
-    public void runWallet() {
+    public void start() {
         isRunning = true;
     }
 
     @Override
-    public void stopWallet() {
+    public void stop() {
         isRunning = false;
     }
 
     @Override
     public String sendMessage(byte[] body) {
+        if (!isRunning)
+            return null;
         synchronized (allMessages) {
             String id = String.format("MSG_%d", ++lastMessageId);
             allMessages.add(new Message(id, body));

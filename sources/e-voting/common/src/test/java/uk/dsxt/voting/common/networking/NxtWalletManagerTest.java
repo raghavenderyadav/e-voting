@@ -34,18 +34,18 @@ public class NxtWalletManagerTest {
         NxtWalletManager wm1;
 /*
         wm1 = new BaseWalletManager(properties, null, "1");
-        wm1.runWallet();
+        wm1.run();
         Thread.sleep(1000);
         assertEquals(wm1.getBalance().compareTo(new BigDecimal(1000000000L)), 0);
         Thread.sleep(60000);
-        wm1.stopWallet();
+        wm1.stop();
         Thread.sleep(1000);
         */
         properties.setProperty("nxt.isOffline", "false");
         properties.setProperty("nxt.isTestnet", "true");
         properties.setProperty("nxt.timeMultiplier", "10");
         wm1 = new NxtWalletManager(properties, null, "11", null, null);
-        wm1.runWallet();
+        wm1.start();
         Thread.sleep(3000);
         properties.setProperty("nxt.peerServerPort", "7973");
         properties.setProperty("nxt.apiServerPort", "7972");
@@ -55,7 +55,7 @@ public class NxtWalletManagerTest {
         properties.setProperty("nxt.defaultTestnetPeers", "127.0.0.1:7873;");
         properties.setProperty("nxt.defaultPeers", "127.0.0.1:7873;");
         WalletManager wm2 = new NxtWalletManager(properties, null, "2", null, null);
-        wm2.runWallet();
+        wm2.start();
         Thread.sleep(1000);
         String messageId = null;
         while (messageId == null) {

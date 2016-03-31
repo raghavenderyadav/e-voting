@@ -22,6 +22,8 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.demo.NetworkConnectorDemo;
+import uk.dsxt.voting.common.utils.NetworkConnector;
 import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
 import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 
@@ -33,7 +35,7 @@ import java.math.BigDecimal;
 
 @Log4j2
 @Path("/holderAPI")
-public class HolderApiResource {
+public class HolderApiResource extends NetworkConnectorDemo {
     private final VoteAcceptor node;
 
     public HolderApiResource(VoteAcceptor node) {
@@ -46,6 +48,9 @@ public class HolderApiResource {
     public NodeVoteReceipt acceptVote(@FormParam("transactionId") String transactionId, @FormParam("votingId") String votingId, @FormParam("packetSize") String packetSize,
                                       @FormParam("clientId") String clientId, @FormParam("clientPacketResidual") String clientPacketResidual,
                                       @FormParam("encryptedData") String encryptedData, @FormParam("voteDigest") String voteDigest, @FormParam("clientSignature") String clientSignature) {
+        if (!isNetworkOn)
+            return null;
+            
         try {
             return node.acceptVote(transactionId, votingId, new BigDecimal(packetSize), clientId, new BigDecimal(clientPacketResidual), encryptedData, voteDigest, clientSignature);
         } catch (Exception e) {

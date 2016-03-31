@@ -23,19 +23,30 @@ package uk.dsxt.voting.common.cryptoVote;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import org.eclipse.jetty.util.ArrayQueue;
+import uk.dsxt.voting.common.demo.NetworkConnectorDemo;
 import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
 import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
 import uk.dsxt.voting.common.utils.web.RequestType;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public class CryptoVoteAcceptorWeb implements VoteAcceptor {
+public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteAcceptor {
 
     private final static String ACCEPT_VOTE_URL_PART = "/acceptVote";
 
@@ -44,22 +55,20 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
     private final String acceptVoteUrl;
     
     private final ObjectMapper mapper = new ObjectMapper();
+    
+    private final Queue<Map<String, String>> unsentVoteMessages = new ArrayQueue<>();
+    
+    private final File receiptsFile;
 
-    public CryptoVoteAcceptorWeb(String baseUrl, int connectionTimeout, int readTimeout) {
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    public CryptoVoteAcceptorWeb(String baseUrl, int connectionTimeout, int readTimeout, String receiptsFilePath) {
+        super();
         acceptVoteUrl = String.format("%s%s", baseUrl, ACCEPT_VOTE_URL_PART);
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
+        receiptsFile = receiptsFilePath == null || receiptsFilePath.isEmpty() ? null : new File(receiptsFilePath);
+        scheduler.scheduleWithFixedDelay(this::sendNextVote, 0, 1, TimeUnit.SECONDS);
     }
-
-    private String execute(String name, String url, Map<String, String> parameters) {
-        try {
-            return httpHelper.request(url, parameters, RequestType.POST);
-        } catch (IOException e) {
-            log.error("{} failed. url={} error={}", name, url, e);
-        } catch (InternalLogicException e) {
-            log.error("{} failed. url={}", name, url, e);
-        }
-        return null;
-     }
 
     @Override
     public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) {
@@ -72,13 +81,52 @@ public class CryptoVoteAcceptorWeb implements VoteAcceptor {
         parameters.put("encryptedData", encryptedData);
         parameters.put("voteDigest", voteDigest);
         parameters.put("clientSignature", clientSignature);
-        String result = execute("acceptVote", acceptVoteUrl, parameters);
+        synchronized (unsentVoteMessages) {
+            unsentVoteMessages.add(parameters);
+        }
+        return null;
+    }
+    
+    private void sendNextVote() {
+        if (!isNetworkOn)
+            return;
+        Map<String, String> parameters;
+        synchronized (unsentVoteMessages) {
+            parameters = unsentVoteMessages.peek();
+        }
+        if (parameters == null)
+            return;
+        String result;
+        try {
+            result = httpHelper.request(acceptVoteUrl, parameters, RequestType.POST);
+        } catch (IOException e) {
+            log.warn("sendNextVote failed. url={} error={}", acceptVoteUrl, e);
+            return;
+        } catch (InternalLogicException e) {
+            log.error("sendNextVote failed. url={}", acceptVoteUrl, e);
+            return;
+        }
+        if (result == null) {
+            log.error("sendNextVote. result == null. url={}", acceptVoteUrl);
+            return;
+        }
+        
+        synchronized (unsentVoteMessages) {
+            unsentVoteMessages.remove();
+        }
+        if (receiptsFile != null) {
+            try {
+                Files.write(receiptsFile.toPath(), Arrays.asList(result), Charset.forName("utf-8"), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                log.warn("sendNextVote. Couldn't save result to file: {}. error={}", receiptsFile.getAbsolutePath(), e.getMessage());
+            }
+            
+        }
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
-            return receipt;
+            log.info("sendNextVote. Vote sent, receipt {}", receipt);
         } catch (IOException e) {
-            log.error("acceptVote. can not read receipt. error={}", e.getMessage());
-            return null;
+            log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }
     }
 }

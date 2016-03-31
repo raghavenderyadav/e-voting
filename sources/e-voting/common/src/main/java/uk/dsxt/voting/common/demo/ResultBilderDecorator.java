@@ -5,6 +5,7 @@ import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.NetworkClient;
 import uk.dsxt.voting.common.domain.nodes.NetworkMessagesSender;
+import uk.dsxt.voting.common.utils.InternalLogicException;
 
 public class ResultBilderDecorator implements NetworkClient {
 
@@ -45,22 +46,22 @@ public class ResultBilderDecorator implements NetworkClient {
     public void setNetworkMessagesSender(NetworkMessagesSender networkMessagesSender) {
         networkClient.setNetworkMessagesSender(new NetworkMessagesSender() {
             @Override
-            public String addVoting(Voting voting) {
+            public String addVoting(Voting voting) throws InternalLogicException {
                 return networkMessagesSender.addVoting(voting);
             }
 
             @Override
-            public String addVotingTotalResult(VoteResult result, Voting voting) {
+            public String addVotingTotalResult(VoteResult result, Voting voting) throws InternalLogicException {
                 return networkMessagesSender.addVotingTotalResult(result, voting);
             }
 
             @Override
-            public String addVoteStatus(VoteStatus status) {
+            public String addVoteStatus(VoteStatus status) throws InternalLogicException {
                 return networkMessagesSender.addVoteStatus(status);
             }
 
             @Override
-            public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) {
+            public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) throws InternalLogicException {
                 resultsBuilder.addVote(result.toString());
                 return networkMessagesSender.addVote(result, voting, ownerSignature, nodeSignature);
             }

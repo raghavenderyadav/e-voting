@@ -1,34 +1,43 @@
 /******************************************************************************
  * e-voting system                                                            *
  * Copyright (C) 2016 DSX Technologies Limited.                               *
- *                                                                            *
+ * *
  * This program is free software; you can redistribute it and/or modify       *
  * it under the terms of the GNU General Public License as published by       *
  * the Free Software Foundation; either version 2 of the License, or          *
  * (at your option) any later version.                                        *
- *                                                                            *
+ * *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied                         *
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           *
  * See the GNU General Public License for more details.                       *
- *                                                                            *
+ * *
  * You can find copy of the GNU General Public License in LICENSE.txt file    *
  * at the top-level directory of this distribution.                           *
- *                                                                            *
+ * *
  * Removal or modification of this copyright notice is prohibited.            *
- *                                                                            *
+ * *
  ******************************************************************************/
 
-package uk.dsxt.voting.common.networking;
+package uk.dsxt.voting.common.demo;
 
-import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.utils.NetworkConnector;
 
-import java.util.List;
+public class NetworkConnectorDemo implements NetworkConnector {
+    
+    protected volatile boolean isNetworkOn;
 
-public interface WalletManager extends NetworkConnector {
+    public NetworkConnectorDemo() {
+        isNetworkOn = true;
+    }
 
-    String sendMessage(byte[] body);
+    @Override
+    public void start() {
+        isNetworkOn = true;
+    }
 
-    List<Message> getNewMessages(long timestamp);
+    @Override
+    public void stop() {
+        isNetworkOn = false;
+    }
 }

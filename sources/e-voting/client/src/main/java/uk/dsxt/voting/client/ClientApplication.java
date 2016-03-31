@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
 public class ClientApplication extends ResourceConfig {
 
     private final VoteScheduler voteScheduler;
-    private final WalletScheduler walletScheduler;
+    private final NetworkScheduler networkScheduler;
     private final MessageHandler messageHandler;
     private final WalletManager walletManager;
 
@@ -95,18 +95,19 @@ public class ClientApplication extends ResourceConfig {
 
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
+        CryptoVoteAcceptorWeb acceptorWeb;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
             walletMessageConnector.addClient(votingOrganizer);
             clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            acceptorWeb = null;
         } else {
             votingOrganizer = null;
             StateFileSerializer stateFileSerializer = new StateFileSerializer(stateFilePath);
-            clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey,
-                parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout), 
-                stateFileSerializer.load(), stateFileSerializer::save);
+            acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
+            clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb, stateFileSerializer.load(), stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
 
@@ -152,7 +153,7 @@ public class ClientApplication extends ResourceConfig {
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
-        walletScheduler = walletOffSchedule == null ? null : new WalletScheduler(walletManager, walletOffSchedule);
+        networkScheduler = walletOffSchedule == null ? null : new NetworkScheduler(walletOffSchedule, walletManager, acceptorWeb, holderApiResource);
     }
 
     private void loadClients(ClientNode node, String clientsFilePath) {
@@ -172,9 +173,9 @@ public class ClientApplication extends ResourceConfig {
     public void stop() {
         if (voteScheduler != null)
             voteScheduler.stop();
-        if (walletScheduler != null)
-            walletScheduler.stop();
+        if (networkScheduler != null)
+            networkScheduler.stop();
         messageHandler.stop();
-        walletManager.stopWallet();
+        walletManager.stop();
     }
 }
