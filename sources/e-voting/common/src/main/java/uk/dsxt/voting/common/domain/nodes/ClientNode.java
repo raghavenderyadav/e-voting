@@ -139,7 +139,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     private synchronized VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
-        VoteResultStatus status = checkVote(votingRecord, client, packetSize, clientPacketResidual, encryptedData);
+        VoteResultStatus status = checkVote(votingRecord, client, packetSize, clientPacketResidual);
         if (status != VoteResultStatus.OK) {
             network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } else {
@@ -148,7 +148,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         return status;
     }
 
-    private synchronized VoteResultStatus checkVote(VotingRecord votingRecord, Client client, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData) {
+    private synchronized VoteResultStatus checkVote(VotingRecord votingRecord, Client client, BigDecimal packetSize, BigDecimal clientPacketResidual) {
         if (votingRecord.voting.getBeginTimestamp() > System.currentTimeMillis()) {
             log.warn("acceptVote. Voting {} does not begin yet. client={}", votingRecord.voting.getId(), client.getParticipantId());
             return VoteResultStatus.IncorrectMessage;
@@ -261,6 +261,10 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (client == null) {
             throw new InternalLogicException(String.format("acceptVote. Client not found on voting begin. votingId=%s clientId=%s", result.getVotingId(), result.getHolderId()));
         }
+        String error = result.findError(votingRecord.voting);
+        if (error != null) {
+            throw new InternalLogicException(String.format("acceptVote. Incorrect vote. votingId=%s clientId=%s. error=%s", result.getVotingId(), result.getHolderId(), error));
+        }
         String nodeSignature;
         String serializedVote = messagesSerializer.serialize(result, votingRecord.voting);
         try {
@@ -269,7 +273,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not sign vote");
         }
         String tranId = network.addVote(result, votingRecord.voting, signature, nodeSignature);
-        String voteDigest = null;
+        String voteDigest;
         try {
             voteDigest = cryptoHelper.getDigest(serializedVote);
         } catch (NoSuchAlgorithmException e) {

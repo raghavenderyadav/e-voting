@@ -108,7 +108,12 @@ public class VotingOrganizer implements NetworkClient {
                     log.info("calculateResults. Skip result due its VoteStatus {}. messageId={} ownerId={}", status.getStatus(), messageId, result.getHolderId());
                     continue;
                 }
-                String voteString = null;
+                String error = result.findError(votingRecord.voting);
+                if (error != null) {
+                    log.info("calculateResults. Skip incorrect result. messageId={} ownerId={} error={}", status.getStatus(), messageId, result.getHolderId(), error);
+                    continue;
+                }
+                String voteString;
                 try {
                     voteString = messagesSerializer.serialize(result, votingRecord.voting);
                 } catch (InternalLogicException e) {
