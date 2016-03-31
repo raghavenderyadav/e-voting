@@ -88,7 +88,7 @@ public class TestDataGenerator {
             int levelsCount = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
             int minutes = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
             boolean generateVotes = args.length == 0 ? true : Boolean.parseBoolean(args[argId++]);
-            int victimsCount = args.length == 0 ? 1 : Integer.parseInt(args[argId]);
+            int victimsCount = args.length == 0 ? 0 : Integer.parseInt(args[argId]);
             TestDataGenerator generator = new TestDataGenerator();
             generator.generate(name, totalParticipant, holdersCount, vmCount, levelsCount, minutes, generateVotes, victimsCount);
         } catch (Exception e) {
@@ -111,9 +111,9 @@ public class TestDataGenerator {
             ParticipantRole role;
             if (i == 0)
                 role = ParticipantRole.NRD;
-            else if (i <= holdersCount) 
+            else if (i <= holdersCount)
                 role = ParticipantRole.NominalHolder;
-             else
+            else
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> map = new HashMap<>();
             map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
@@ -187,15 +187,26 @@ public class TestDataGenerator {
     }
 
     private static VoteResult generateVote(ClientFullInfo child, Voting voting) {
-        VoteResult vote = new VoteResult(voting.getId(), Integer.toString(child.getId()));
-        BigDecimal totalSum = BigDecimal.ZERO;
+        VoteResult vote = new VoteResult(voting.getId(), Integer.toString(child.getId()), child.getPacketSizeBySecurity().get(SECURITY));
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
-            String answerId = String.valueOf(randomInt(0, voting.getQuestions()[j].getAnswers().length - 1) + 1);
-            int remaining = child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue();
-            BigDecimal voteAmount = new BigDecimal(randomInt(Math.min(remaining / 2, remaining), remaining));
-            totalSum = totalSum.add(voteAmount);
-            vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
+           
+            if (voting.getQuestions()[j].isCanSelectMultiple()) {
+                BigDecimal totalSum = BigDecimal.ZERO;
+                for (int i = 0; i < voting.getQuestions()[j].getAnswers().length; i++) {
+                    String answerId = voting.getQuestions()[j].getAnswers()[i].getId();
+                    int amount = randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue());
+                    BigDecimal voteAmount = new BigDecimal(amount);
+                    totalSum = totalSum.add(voteAmount);
+                    vote.setAnswer(questionId, answerId, voteAmount);
+                    //vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
+                }
+            } else {
+                String answerId = voting.getQuestions()[j].getAnswers()[randomInt(0, voting.getQuestions()[j].getAnswers().length - 1)].getId();
+                BigDecimal voteAmount = new BigDecimal(randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).intValue()));
+                vote.setAnswer(questionId, answerId, voteAmount);
+                //vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
+            }
         }
         return vote;
     }
