@@ -1,4 +1,4 @@
-<div ng-repeat="answer in answers">
+<div ng-if="answers.length > 0" ng-repeat="answer in answers">
   <div class="row">
     <div class="col-xs-3">
       <br>
@@ -22,4 +22,7 @@
       </div>
     </div>
   </div>
+</div>
+<div ng-show="answers.length == 0" class="text-danger text-bold">
+  no answers
 </div>
