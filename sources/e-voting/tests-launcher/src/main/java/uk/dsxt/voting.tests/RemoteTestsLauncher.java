@@ -1,7 +1,9 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -32,7 +34,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String MASTER_NODE_NAME = "master";
     private final Function<Integer, String> NODE_NAME = id -> id == 0 ? MASTER_NODE_NAME : String.format("node_%d", id);
     private final String PATH_TO_ISTALL_SCRIPT = "ssh/createNode.sh";
-    
+
     private final String VOTING_DESCRIPTION = "voting.txt";
     private final String NET_CONFIGURATION = "net.txt";
     private final String VOTING_VM_CONFIGURATION = "vm.txt";
@@ -44,19 +46,19 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String PARTICIPANTS_NAME = "participants.json";
     private final String CREDENTIALS_NAME = "credentials.json";
     private final String CLIENTS_NAME = "clients.json";
-    
+
     private final String JAVA_CLIENT_OPTIONS;
     private final String JAVA_NXT_OPTIONS;
-    
+
     private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data.replace("\"", "\\\""), path);
     private final Function<Integer, String> RUN_CMD;
-    
+
     private Map<Integer, NodeInfo> idToNodeInfo;
     private Map<Integer, Integer> hostIdToNodesCount;
     private List<String> hostsIp;
-    
+
     private final ObjectMapper mapper = new ObjectMapper();
-    
+
     public static void main(String[] args) {
         try {
             log.info("Starting module {}...", MODULE_NAME);
@@ -67,7 +69,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             log.error("Module {} failed: ", MODULE_NAME, e.getMessage());
         }
     }
-    
+
     RemoteTestsLauncher(Properties properties) throws Exception {
         user = properties.getProperty("vm.user");
         String masterHostFromSetting = properties.getProperty("vm.mainNode");
@@ -76,7 +78,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         }
         masterHost = masterHostFromSetting;
         sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
-        MASTER_NXT_PEER_ADDRESS = String.format("%s:%d", masterHost, MASTER_NXT_PEER_PORT); 
+        MASTER_NXT_PEER_ADDRESS = String.format("%s:%d", masterHost, MASTER_NXT_PEER_PORT);
         MAIN_ADDRESS = properties.getProperty("master.address");
         SCENARIO = properties.getProperty("testing.type");
         JAVA_CLIENT_OPTIONS = properties.getProperty("java.clientOptions");
@@ -84,13 +86,13 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         RUN_CMD = id -> String.format("cd %sbuild/%s/; rm -r ./%s*; java %s -jar client.jar > /dev/null 2>&1 &",
             WORK_DIR, NODE_NAME.apply(id), DB_FOLDER, JAVA_CLIENT_OPTIONS);
     }
-    
+
     private void run(Properties properties) throws Exception {
-        if (Boolean.parseBoolean(properties.getProperty("vm.runVMs"))) 
+        if (Boolean.parseBoolean(properties.getProperty("vm.runVMs")))
             runVMs(Integer.parseInt(properties.getProperty("vm.count")));
-        
+
         readConfigs();
-        
+
         if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
             updateBuilds();
         if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateNodes")))
@@ -104,7 +106,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private void runVMs(int count) {
         //TODO run vms with AWSHelper
     }
-    
+
     private void readConfigs() {
         String[] hosts = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, NET_CONFIGURATION).toString()).split(LINES_SEPARATOR);
         hostsIp = Arrays.asList(hosts);
@@ -121,7 +123,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                 int placeOfDelimiter = str.indexOf("=");
                 if (placeOfDelimiter < 0)
                     return null;
-                String[] splited = { str.substring(0, placeOfDelimiter), str.substring(placeOfDelimiter + 1) };
+                String[] splited = {str.substring(0, placeOfDelimiter), str.substring(placeOfDelimiter + 1)};
                 return new AbstractMap.SimpleEntry<>(Integer.parseInt(splited[0]), mapper.readValue(splited[1], NodeInfo.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -139,8 +141,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
 
     private void installOrUpdateNode(Session session, int ownId, String ownerId, String privateKey, String mainNxtAddress,
-                                      String accountPassphrase, boolean master, String ownerHost,
-                                      String webHost, String directory, int portShift) throws Exception {
+                                     String accountPassphrase, boolean master, String ownerHost,
+                                     String webHost, String directory, int portShift, String nxtBlacklist) throws Exception {
         final int currentWebPort = MASTER_APP_PORT + portShift;
         String pathToConfig = WORK_DIR + "build/" + directory + "/client.properties";
         String resourceString = PropertiesHelper.getResourceString(PATH_TO_ISTALL_SCRIPT);
@@ -182,7 +184,10 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("jetty.minThreads", "200");
         overrides.put("jetty.maxThreads", "500");
         overrides.put("jetty.idleTimeout", "100000");
-        
+        if (nxtBlacklist != null) {
+            overrides.put("nxt.evt.blackList", nxtBlacklist);
+        }
+
         Map<String, String> original = new LinkedHashMap<>();
         for (String keyToValueStr : backendConfig.split(String.format("%n"))) {
             String[] keyToValue = keyToValueStr.split("=");
@@ -225,7 +230,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             log.debug(makeCmd(getSession(hostsIp.get(hostId)), String.format("cd %s; ./update.sh", WORK_DIR)));
     }
 
-    private void installOrUpdateNodes() throws Exception {        
+    private void installOrUpdateNodes() throws Exception {
         iterateByAllNodes((session, currentNodeId) -> {
             NodeInfo nodeInfo = idToNodeInfo.get(currentNodeId);
             NodeInfo ownerNodeInfo = idToNodeInfo.get(nodeInfo.getOwnerId());
@@ -238,12 +243,14 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                     master ? "00" : Integer.toString(nodeInfo.getId()),
                     nodeInfo.getPrivateKey(),
                     MAIN_ADDRESS,
-                    nodeInfo.getNxtPassword() != null && !nodeInfo.getNxtPassword().isEmpty() ? nodeInfo.getNxtPassword() : "client_password",
+                    //nodeInfo.getNxtPassword() != null && !nodeInfo.getNxtPassword().isEmpty() ? nodeInfo.getNxtPassword() : "client_password",
+                    "master_password",
                     master,
                     ownerNodeInfo.getHolderAPI(),
                     currentHost,
                     NODE_NAME.apply(currentNodeId),
-                    currentNodeId);
+                    currentNodeId,
+                    nodeInfo.getBlacklist());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -275,7 +282,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             }
         });
     }
-    
+
     private void uploadFile(Session session, int currentNodeId, String fileName, boolean global) throws Exception {
         String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, global ? "" : Integer.toString(currentNodeId), fileName).toString());
         makeCmd(session, ECHO_CMD.apply(data, Paths.get(WORK_DIR, "build", NODE_NAME.apply(currentNodeId), fileName).toString().replace("\\", "/")));
@@ -306,9 +313,9 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                 action.accept(session, counter++);
         }
     }
-    
+
     public String makeCmd(Session s, String cmd) throws Exception {
-        ChannelExec exec = (ChannelExec)s.openChannel("exec");
+        ChannelExec exec = (ChannelExec) s.openChannel("exec");
         exec.setCommand(cmd);
         exec.connect();
         byte[] output = readData(exec, exec.getInputStream());
@@ -319,7 +326,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         exec.disconnect();
         return exitStatus == 0 ? result : String.format("Exit with code: %d. Output: %s", exitStatus, result);
     }
-    
+
     private byte[] readData(ChannelExec exec, InputStream stream) throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         while (!exec.isEOF() || stream.available() > 0) {
@@ -335,7 +342,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         }
         return buffer.toByteArray();
     }
-    
+
     public Session getSession(String host) throws Exception {
         Session session = sshProvider.getSession(user, host, sshPort);
         session.setConfig("StrictHostKeyChecking", "no");
