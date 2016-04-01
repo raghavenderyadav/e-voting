@@ -50,15 +50,19 @@ angular
         vc.voting = data.questions;
         vc.totalVotes = data.amount;
         userInfo.setTotalVotes(vc.totalVotes);
-        vc.votingCountdown = data.timer;
-        angular.forEach(vc.voting, function(question) {
-          if(question.canSelectMultiple) {
-            vc.votingChoice[question.id] = {};
-            angular.forEach(question.answers, function (answer) {
-              vc.votingChoice[question.id][answer.id] = 0;
-            });
-          }
-        });
+        if(data.timer > -1) {
+          vc.votingCountdown = data.timer;
+          angular.forEach(vc.voting, function (question) {
+            if (question.canSelectMultiple) {
+              vc.votingChoice[question.id] = {};
+              angular.forEach(question.answers, function (answer) {
+                vc.votingChoice[question.id][answer.id] = 0;
+              });
+            }
+          });
+        } else {
+          $state.go('votingResult', {id: $state.params.id});
+        }
         return vc.voting;
       }
     }
