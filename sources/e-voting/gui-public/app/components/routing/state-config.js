@@ -132,6 +132,20 @@ angular
             id: undefined
           }
         })
+        .state('allVotingStatuses', {
+          url: '/allVotingStatuses/:locale/?id',
+          templateUrl: 'views/allVotingStatuses/allVotingStatuses.html',
+          controller: 'AllVotingStatusesController',
+          controllerAs: 'avsc',
+          params: {
+            isLoginRequired: false,
+            locale: {
+              value: 'en-gb',
+              squash: true
+            },
+            id: undefined
+          }
+        })
         .state('404', {
           url: '/404/:locale/',
           templateUrl: 'views/404/404.html',

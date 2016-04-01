@@ -39,6 +39,7 @@ angular
         "signResult": "/signResult",
         "vote": "/vote",
         "signVote": "/signVote",
+        "getAllVoteStatuses": "/getAllVoteStatuses",
         "logout": "/logout"
       }
     }

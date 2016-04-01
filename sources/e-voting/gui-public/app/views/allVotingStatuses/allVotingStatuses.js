@@ -22,21 +22,24 @@
 'use strict';
 
 angular
-  .module('e-voting.voting', [
-    'e-voting.voting.voting-list-model',
-    'e-voting.voting.voting-list-view',
-    'e-voting.voting.voting-result-model',
-    'e-voting.voting.voting-result-view',
-    'e-voting.voting.voting-result-directive',
-    'e-voting.voting.voting-question-model',
-    'e-voting.voting.voting-question-view',
-    'e-voting.voting.voting-question-directive',
-    'e-voting.voting.votes-list-model',
-    'e-voting.voting.votes-list-view',
-    'e-voting.voting.voting-countdown-directive',
-    'e-voting.voting.voting-total-result-model',
-    'e-voting.voting.voting-total-result-view',
-    'e-voting.voting.voting-result-answer-directive',
-    'e-voting.voting.all-voting-statuses-model',
-    'e-voting.voting.all-voting-statuses-view'
-  ]);
+  .module('e-voting.voting.all-voting-statuses-view', [])
+  .controller('AllVotingStatusesController', ['allVotingStatusesInfo', '$state', function (allVotingStatusesInfo, $state) {
+    var avsc = this;
+    avsc.votingStatuses = [];
+    avsc.cancel = cancel;
+
+    activate();
+
+    function activate() {
+      return allVotingStatusesInfo.getAllVotingStatuses($state.params.id, getAllVotingStatusesComplete);
+
+      function getAllVotingStatusesComplete(data) {
+        avsc.votingStatuses = data;
+        return avsc.votingStatuses;
+      }
+    }
+
+    function cancel() {
+      $state.go('votingList');
+    }
+  }]);
