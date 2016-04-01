@@ -333,7 +333,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                     if (packetSize == null || packetSize.signum() <= 0)
                         continue;
                     votingRecord.clients.put(client.getParticipantId(), client);
-                    totalResidual = votingRecord.totalResidual.add(packetSize);
+                    totalResidual = totalResidual.add(packetSize);
                 }
                 if (votingRecord.clientResidualsByClientId.size() == 0)
                     votingRecord.totalResidual = totalResidual;
@@ -341,6 +341,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                 break;
             }
         }
+        log.debug("setVotingClients. votingId={} participantId={} totalResidual={}", votingRecord.voting.getId(), participantId, votingRecord.totalResidual);
     }
 
     @Override
