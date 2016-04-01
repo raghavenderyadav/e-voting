@@ -111,7 +111,7 @@ public class TestDataGenerator {
             ParticipantRole role;
             if (i == 0)
                 role = ParticipantRole.NRD;
-            else if (i <= holdersCount)
+            else if (i < holdersCount)
                 role = ParticipantRole.NominalHolder;
             else
                 role = ParticipantRole.Owner;
@@ -136,9 +136,12 @@ public class TestDataGenerator {
                 int maxCount = holdersCount - counters[0];
                 int undistributed = height == levelsCount ? maxCount : randomInt(1, maxCount);
                 for (int i = 0; i < undistributed; i++) {
-                    ClientFullInfo subND = clients[counters[0]++];
+                    int index = counters[0]++;
+                    ClientFullInfo subND = clients[index];
                     subND.setHolderId(id);
                     children.add(subND);
+                    
+                    
                 }
             }
             //Generate owners
