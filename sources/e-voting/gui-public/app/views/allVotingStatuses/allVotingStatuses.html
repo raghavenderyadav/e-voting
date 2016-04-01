@@ -1,11 +1,10 @@
 <div class="container">
-  <h2 class="page-title">All votings</h2>
+  <h2 class="page-title">Voting statuses</h2>
   <table class="table table-striped table-custom">
     <tr>
       <th>Message Id</th>
       <th>Status</th>
       <th>Vote sign</th>
-      <th>Actions</th>
     </tr>
     <tr ng-repeat="votingStatus in avsc.votingStatuses">
       <td>
@@ -15,7 +14,7 @@
         {{votingStatus.status}}
       </td>
       <td>
-        {{votingStatus.voteSign}}
+        <textarea name="signature" id="signature" cols="90" rows="5" ng-model="votingStatus.signature"></textarea>
       </td>
     </tr>
   </table>
