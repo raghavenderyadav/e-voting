@@ -173,6 +173,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             log.warn("acceptVote. invalid clientPacketResidual {} (expected {}). Voting={} client={}", clientPacketResidual, prevResidual.subtract(packetSize), votingRecord.voting.getId(), client.getParticipantId());
             return VoteResultStatus.IncorrectResidual;
         }
+        
         return VoteResultStatus.OK;
     }
 

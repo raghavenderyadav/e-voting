@@ -155,6 +155,7 @@ public class NxtWalletManager implements WalletManager {
                 }
             });
             waitInitialize();
+            log.info("connector started");
         } catch (Exception e) {
             String errorMessage = String.format("Couldn't run wallet. Error: %s", e.getMessage());
             log.error(errorMessage, e);
@@ -167,6 +168,7 @@ public class NxtWalletManager implements WalletManager {
         try {
             if (nxtProcess.isAlive())
                 nxtProcess.destroyForcibly();
+            log.info("connector stopped");
         } catch (Exception e) {
             log.error("stop method failed", e);
         }

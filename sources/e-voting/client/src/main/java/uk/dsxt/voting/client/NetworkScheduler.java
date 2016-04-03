@@ -22,11 +22,8 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
-import org.eclipse.jetty.server.Server;
 import uk.dsxt.voting.common.utils.NetworkConnector;
-import uk.dsxt.voting.common.networking.WalletManager;
 
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +34,11 @@ public class NetworkScheduler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public NetworkScheduler(String schedule, NetworkConnector... connectors) {
-        if (schedule == null) {
-            log.info("messagesFile not found");
+        if (schedule == null || schedule.isEmpty()) {
+            log.info("schedule is null or empty. client runs without disconnections");
             return;
         }
 
-        Random random = new Random();
         String[] lines = schedule.split("\\r?\\n");
         for (String line : lines) {
             line = line.trim();
@@ -58,7 +54,7 @@ public class NetworkScheduler {
                     throw new IllegalArgumentException(String.format("WalletOff schedule record can not be created from string with %d terms (%s)", terms.length, period));
                 int begin = Integer.parseInt(terms[0]);
                 int end = Integer.parseInt(terms[1]);
-                int sec = random.nextInt(60);
+                int sec = 0;
                 scheduler.schedule(() -> { 
                     for(NetworkConnector connector : connectors) {
                         try {
@@ -68,7 +64,7 @@ public class NetworkScheduler {
                             log.error("Can not stop network connector {}", connector.getClass(), e);
                         }
                     }
-                }, begin * 60 + sec, TimeUnit.SECONDS);
+                }, begin + sec, TimeUnit.SECONDS);
                 scheduler.schedule(() -> {
                     for(NetworkConnector connector : connectors) {
                         try {
@@ -78,7 +74,7 @@ public class NetworkScheduler {
                             log.error("Can not start network connector {}", connector.getClass(), e);
                         }
                     }
-                }, end * 60 + sec, TimeUnit.SECONDS);
+                }, end + sec, TimeUnit.SECONDS);
             }
         }
         log.info("WalletOff schedule loaded");

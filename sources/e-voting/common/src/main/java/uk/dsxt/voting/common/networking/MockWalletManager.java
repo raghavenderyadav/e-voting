@@ -1,10 +1,12 @@
 package uk.dsxt.voting.common.networking;
 
+import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.messaging.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class MockWalletManager implements WalletManager {
 
     private static final List<Message> allMessages = new ArrayList<>();
@@ -15,11 +17,13 @@ public class MockWalletManager implements WalletManager {
 
     @Override
     public void start() {
+        log.info("connector started");
         isRunning = true;
     }
 
     @Override
     public void stop() {
+        log.info("connector stopped");
         isRunning = false;
     }
 
