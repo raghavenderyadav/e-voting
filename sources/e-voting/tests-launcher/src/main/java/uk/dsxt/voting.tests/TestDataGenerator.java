@@ -64,6 +64,7 @@ public class TestDataGenerator {
         List<ClientFullInfo> clients;
         boolean isVictim;
         boolean isHonest;
+        String walletOffShedule;
     }
 
     private class Recursive<FI> {
@@ -76,7 +77,7 @@ public class TestDataGenerator {
                 generateCredentialsJSON();
                 return;
             }
-            if (args.length > 0 && args.length < 8) {
+            if (args.length > 0 && args.length < 10) {
                 System.out.println("<name> <totalParticipant> <holdersCount> <vmCount> <levelsCount> <minutes> <generateVotes> <victimsCount>");
                 throw new IllegalArgumentException("Invalid arguments count exception.");
             }
@@ -88,15 +89,18 @@ public class TestDataGenerator {
             int levelsCount = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
             int minutes = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
             boolean generateVotes = args.length == 0 ? true : Boolean.parseBoolean(args[argId++]);
-            int victimsCount = args.length == 0 ? 0 : Integer.parseInt(args[argId]);
+            int victimsCount = args.length == 0 ? 0 : Integer.parseInt(args[argId++]);
+            boolean generateDisconnect = args.length == 0 ? false : Boolean.parseBoolean(args[argId++]);
+            int disconnectNodes = args.length == 0 ? 0 : Integer.parseInt(args[argId]);
             TestDataGenerator generator = new TestDataGenerator();
-            generator.generate(name, totalParticipant, holdersCount, vmCount, levelsCount, minutes, generateVotes, victimsCount);
+            generator.generate(name, totalParticipant, holdersCount, vmCount, levelsCount, minutes, generateVotes, victimsCount, generateDisconnect, disconnectNodes);
         } catch (Exception e) {
             log.error("Test generation was failed.", e);
         }
     }
 
-    private void generate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes, int victimsCount) throws Exception {
+    private void generate(String name, int totalParticipant, int holdersCount, int vmCount, int levelsCount, int minutes, boolean generateVotes, int victimsCount,
+                          boolean generateDisconnect, int disconnectNodes) throws Exception {
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
         Participant[] participants = new Participant[totalParticipant];
         //generating keys
@@ -117,7 +121,7 @@ public class TestDataGenerator {
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> map = new HashMap<>();
             map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
-            clients[i] = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null, false, true);
+            clients[i] = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null, false, true, "");
             participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
         }
         if (victimsCount > 0) {
@@ -168,7 +172,7 @@ public class TestDataGenerator {
 
         generateTree.recursive.accept(0, 0);
 
-        saveData(clients, participants, name, voting, holdersCount, vmCount, minutes, generateVotes);
+        saveData(clients, participants, name, voting, holdersCount, vmCount, minutes, generateVotes, generateDisconnect, disconnectNodes);
     }
 
     private static void generateCredentialsJSON() throws IOException {
@@ -191,7 +195,7 @@ public class TestDataGenerator {
         VoteResult vote = new VoteResult(voting.getId(), Integer.toString(child.getId()), child.getPacketSizeBySecurity().get(SECURITY));
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
-           
+
             if (voting.getQuestions()[j].isCanSelectMultiple()) {
                 BigDecimal totalSum = BigDecimal.ZERO;
                 for (int i = 0; i < voting.getQuestions()[j].getAnswers().length; i++) {
@@ -200,13 +204,11 @@ public class TestDataGenerator {
                     BigDecimal voteAmount = new BigDecimal(amount);
                     totalSum = totalSum.add(voteAmount);
                     vote.setAnswer(questionId, answerId, voteAmount);
-                    //vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
                 }
             } else {
                 String answerId = voting.getQuestions()[j].getAnswers()[randomInt(0, voting.getQuestions()[j].getAnswers().length - 1)].getId();
                 BigDecimal voteAmount = new BigDecimal(randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).intValue()));
                 vote.setAnswer(questionId, answerId, voteAmount);
-                //vote.getAnswersByKey().put(String.valueOf(questionId), new VotedAnswer(questionId, answerId, voteAmount));
             }
         }
         return vote;
@@ -272,7 +274,9 @@ public class TestDataGenerator {
         return new Voting("1", "GMET_Annual voting", startTime, endTime, questions, SECURITY);
     }
 
-    private void saveData(ClientFullInfo[] clients, Participant[] participants, String name, Voting voting, int holdersCount, int vmCount, int minutes, boolean generateVotes) throws Exception {
+    private void saveData(ClientFullInfo[] clients, Participant[] participants, String name, Voting voting,
+                          int holdersCount, int vmCount, int minutes, boolean generateVotes,
+                          boolean generateDisconnect, int disconnectNodes) throws Exception {
         //saving info to appropriate files
         final String dirPath = "/src/main/resources/scenarios";
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/participants.json", BaseTestsLauncher.MODULE_NAME, dirPath, name)), mapper.writeValueAsString(participants));
@@ -289,6 +293,8 @@ public class TestDataGenerator {
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/vm.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), vmConfig.toString());
 
         //aggregating data from all files and save it to one file
+        if (generateDisconnect)
+            ThreadLocalRandom.current().ints(1, holdersCount - 1).distinct().limit(disconnectNodes).forEach(i -> clients[i].setWalletOffShedule(generateWalletoffShedule(minutes)));
         StringBuilder nodesConfig = new StringBuilder();
         for (int i = 0; i < holdersCount; i++) {
             ClientFullInfo client = clients[i];
@@ -306,14 +312,33 @@ public class TestDataGenerator {
                 map(child -> String.format("%s:%s", randomInt(30, minutes * 60), child.getVote().toString())).
                 reduce("", (s1, s2) -> s1 + "\n" + s2);
             FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/messages.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), generateVotes ? messages : "");
+            FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/%s/walletoff_schedule.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name, client.getId())), client.getWalletOffShedule());
 
             nodesConfig.append(i);
             nodesConfig.append("=");
-            nodesConfig.append(mapper.writeValueAsString(new NodeInfo(client.getId() == 0 ? MASTER_PASSWORD : (client.isVictim() ? "victim_password" : ""), client.getId(), client.getHolderId(), client.getPrivateKey(), 
+            nodesConfig.append(mapper.writeValueAsString(new NodeInfo(client.getId() == 0 ? MASTER_PASSWORD : (client.isVictim() ? "victim_password" : ""), client.getId(), client.getHolderId(), client.getPrivateKey(),
                 !client.isHonest() ? "client_password" : null)));
             nodesConfig.append("\n");
         }
         FileUtils.writeStringToFile(new File(String.format("%s/%s/%s/voting.txt", BaseTestsLauncher.MODULE_NAME, dirPath, name)), nodesConfig.toString());
+    }
+
+    private String generateWalletoffShedule(int minutes) {
+        StringBuilder builder = new StringBuilder();
+        int disconnections = randomInt(1, 5);
+        int startTime = 30;
+        int maxDuration = minutes * 60 / 5;
+        for (int i = 0; i < disconnections; i++) {
+            int duration = randomInt(1, maxDuration);
+            int endTime = Math.min(startTime + duration, minutes * 60 - 30);
+            builder.append(String.format("%s-%s", startTime, endTime));
+            startTime = endTime + randomInt(1, maxDuration);
+            if (startTime > minutes * 60 - 30)
+                break;
+            if (i < 4)
+                builder.append(";");
+        }
+        return builder.toString();
     }
 
     private static int randomInt(int baseMinValue, int baseMaxValue) {

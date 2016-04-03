@@ -42,6 +42,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String SCENARIO_HOME_DIR = "scenarios";
     private final String VOTING_XML_NAME = "voting.xml";
     private final String MESSAGES_NAME = "messages.txt";
+    private final String WALLETOFF_SHEDULE_NAME = "walletoff_schedule.txt";
     private final String MI_PARTICIPANTS_NAME = "mi_participants.xml";
     private final String PARTICIPANTS_NAME = "participants.json";
     private final String CREDENTIALS_NAME = "credentials.json";
@@ -153,6 +154,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("client.isMain", Boolean.toString(master));
         overrides.put("voting.files", VOTING_XML_NAME);
         overrides.put("scheduled_messages.file_path", MESSAGES_NAME);
+        overrides.put("walletoff_schedule.file_path", WALLETOFF_SHEDULE_NAME);
         overrides.put("participants_xml.file_path", MI_PARTICIPANTS_NAME);
         overrides.put("participants.filepath", PARTICIPANTS_NAME);
         overrides.put("credentials.filepath", CREDENTIALS_NAME);
@@ -262,6 +264,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             try {
                 uploadFile(session, currentNodeId, VOTING_XML_NAME, true);
                 uploadFile(session, currentNodeId, MESSAGES_NAME, false);
+                uploadFile(session, currentNodeId, WALLETOFF_SHEDULE_NAME, false);
                 uploadFile(session, currentNodeId, MI_PARTICIPANTS_NAME, true);
                 uploadFile(session, currentNodeId, PARTICIPANTS_NAME, true);
                 uploadFile(session, currentNodeId, CREDENTIALS_NAME, false);
