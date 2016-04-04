@@ -1,4 +1,4 @@
-cd /home/ubuntu/e-voting/build/;
+cd /home/$(whoami)/e-voting/build/;
 mkdir -p $1;
 cd $1;
 cp ../libs/client.jar ./;

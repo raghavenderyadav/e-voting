@@ -25,6 +25,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private JSch sshProvider = new JSch();
     private final int sshPort = 22;
     private final String user;
+    private final String password;
     private final String masterHost;
     private final int MASTER_NXT_PEER_PORT = 15000;
     private final int MASTER_NXT_API_PORT = 12000;
@@ -73,12 +74,14 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
 
     RemoteTestsLauncher(Properties properties) throws Exception {
         user = properties.getProperty("vm.user");
+        password = properties.getProperty("vm.password");
         String masterHostFromSetting = properties.getProperty("vm.mainNode");
         if (masterHostFromSetting == null || masterHostFromSetting.isEmpty()) {
             //TODO run vms with AWSHelper and get masterHost
         }
         masterHost = masterHostFromSetting;
-        sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
+        if (Boolean.parseBoolean(properties.getProperty("vm.needCrt")))
+            sshProvider.addIdentity(properties.getProperty("vm.crtPath"));
         MASTER_NXT_PEER_ADDRESS = String.format("%s:%d", masterHost, MASTER_NXT_PEER_PORT);
         MAIN_ADDRESS = properties.getProperty("master.address");
         SCENARIO = properties.getProperty("testing.type");
@@ -349,6 +352,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     public Session getSession(String host) throws Exception {
         Session session = sshProvider.getSession(user, host, sshPort);
         session.setConfig("StrictHostKeyChecking", "no");
+        if (password != null && !password.isEmpty())
+            session.setPassword(password);
         session.connect();
         return session;
     }
