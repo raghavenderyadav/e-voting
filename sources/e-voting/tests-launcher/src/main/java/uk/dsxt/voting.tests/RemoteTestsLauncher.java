@@ -303,7 +303,9 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         }
         iterateByAllNodes((session, currentNodeId) -> {
             try {
+                log.info("run node id {}", currentNodeId);
                 makeCmd(session, RUN_CMD.apply(currentNodeId));
+                Thread.sleep(3000);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
