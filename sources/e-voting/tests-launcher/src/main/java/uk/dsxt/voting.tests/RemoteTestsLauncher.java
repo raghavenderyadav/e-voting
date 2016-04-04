@@ -21,7 +21,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
 
     private static final int BUFFER_SIZE = 4096;
     private static final String LINES_SEPARATOR = "\\r?\\n";
-    private static final String WORK_DIR = "/home/ubuntu/e-voting/";
+    private static final String WORK_DIR = "/home/$(whoami)/e-voting/";
     private JSch sshProvider = new JSch();
     private final int sshPort = 22;
     private final String user;

@@ -11,6 +11,7 @@ rm -r /home/$(whoami)/e-voting/build/tests-launcher-0.1-SNAPSHOT/*
 echo Coping necessary jar files to libs folder
 cp /home/$(whoami)/e-voting/build/lib/client-0.1-SNAPSHOT.jar /home/$(whoami)/e-voting/build/libs/client.jar
 cp /home/$(whoami)/e-voting/src/e-voting/sources/e-voting/libs/nxt.jar /home/$(whoami)/e-voting/build/libs/nxt.jar
+cp /home/$(whoami)/e-voting/src/e-voting/sources/e-voting/libs/bcprov-jdk15on-154.jar /home/$(whoami)/e-voting/build/libs/bcprov-jdk15on-154.jar
 cp /home/$(whoami)/e-voting/src/e-voting/sources/e-voting/libs/nxt.jar /home/$(whoami)/e-voting/build/lib/nxt.jar
 cp -r /home/$(whoami)/e-voting/src/e-voting/sources/e-voting/tests-launcher/src/main/resources/json/* /home/$(whoami)/e-voting/build/bin/json/
 cp -r /home/$(whoami)/e-voting/src/e-voting/sources/e-voting/registries-server/src/main/resources/json/* /home/$(whoami)/e-voting/build/bin/json/
