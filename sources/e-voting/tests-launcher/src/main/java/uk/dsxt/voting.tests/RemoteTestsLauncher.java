@@ -23,7 +23,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private static final String LINES_SEPARATOR = "\\r?\\n";
     private static final String WORK_DIR = "/home/$(whoami)/e-voting/";
     private JSch sshProvider = new JSch();
-    private final int sshPort = 22;
+    private final int sshPort;
     private final String user;
     private final String password;
     private final String masterHost;
@@ -75,6 +75,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     RemoteTestsLauncher(Properties properties) throws Exception {
         user = properties.getProperty("vm.user");
         password = properties.getProperty("vm.password");
+        sshPort = Integer.parseInt(properties.getProperty("vm.sshPort"));
         String masterHostFromSetting = properties.getProperty("vm.mainNode");
         if (masterHostFromSetting == null || masterHostFromSetting.isEmpty()) {
             //TODO run vms with AWSHelper and get masterHost
