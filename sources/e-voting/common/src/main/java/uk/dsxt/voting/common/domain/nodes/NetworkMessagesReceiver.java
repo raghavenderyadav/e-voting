@@ -35,5 +35,5 @@ public interface NetworkMessagesReceiver {
 
     void addVoteStatus(VoteStatus status);
 
-    void addVote(VoteResult result, String messageId);
+    void addVote(VoteResult result, String messageId, String serializedResult);
 }

@@ -60,6 +60,7 @@ public class VotingOrganizer implements NetworkClient {
     private static class VotingRecord {
         Voting voting;
         Map<String, VoteResult> resultsByMessageId = new HashMap<>();
+        Map<String, String> serializedResultsByMessageId = new HashMap<>();
         List<VoteStatus> statuses = new ArrayList<>();
     }
 
@@ -101,6 +102,7 @@ public class VotingOrganizer implements NetworkClient {
         for (Map.Entry<String, VoteResult> resultEntry : votingRecord.resultsByMessageId.entrySet()) {
             String messageId = resultEntry.getKey();
             VoteResult result = resultEntry.getValue();
+            String voteString = votingRecord.serializedResultsByMessageId.get(messageId);
             for (VoteStatus status : votingRecord.statuses) {
                 if (!status.getMessageId().equals(messageId))
                     continue;
@@ -120,13 +122,6 @@ public class VotingOrganizer implements NetworkClient {
                     }
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
-                    continue;
-                }
-                String voteString;
-                try {
-                    voteString = messagesSerializer.serialize(result, votingRecord.voting);
-                } catch (InternalLogicException e) {
-                    log.error("calculateResults. serialize result failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
                     continue;
                 }
                 try {
@@ -175,12 +170,13 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId) {
+    public void addVote(VoteResult result, String messageId, String serializedResult) {
         VotingRecord votingRecord = votingsById.get(result.getVotingId());
         if (votingRecord == null) {
             votingRecord = new VotingRecord();
             votingsById.put(result.getVotingId(), votingRecord);
         }
         votingRecord.resultsByMessageId.put(messageId, result);
+        votingRecord.serializedResultsByMessageId.put(messageId, serializedResult);
     }
 }

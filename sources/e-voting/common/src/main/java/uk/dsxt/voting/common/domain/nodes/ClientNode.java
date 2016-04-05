@@ -366,7 +366,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized void addVote(VoteResult result, String messageId) {
+    public synchronized void addVote(VoteResult result, String messageId, String serializedResult) {
     }
 
     protected String buildMessage(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) {

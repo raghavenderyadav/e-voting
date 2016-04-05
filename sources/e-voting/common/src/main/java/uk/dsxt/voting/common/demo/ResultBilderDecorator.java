@@ -38,8 +38,8 @@ public class ResultBilderDecorator implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId) {
-        networkClient.addVote(result, messageId);
+    public void addVote(VoteResult result, String messageId, String serializedResult) {
+        networkClient.addVote(result, messageId, serializedResult);
     }
 
     @Override

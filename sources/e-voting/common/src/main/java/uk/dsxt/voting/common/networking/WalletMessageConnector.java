@@ -174,7 +174,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                             log.error("VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                             break;
                         }
-                        sendMessage(r -> r.addVote(result, messageId));
+                        sendMessage(r -> r.addVote(result, messageId, messageParts[0]));
                     }
                     break;
                 case TYPE_VOTE_STATUS:
