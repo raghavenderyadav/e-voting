@@ -3,7 +3,10 @@ package uk.dsxt.voting.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.*;
 import lombok.extern.log4j.Log4j2;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
+import uk.dsxt.voting.registriesserver.RegistriesServerMain;
+import uk.dsxt.voting.resultsbuilder.ResultsBuilderMain;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -97,6 +100,14 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         if (Boolean.parseBoolean(properties.getProperty("vm.runVMs")))
             runVMs(Integer.parseInt(properties.getProperty("vm.count")));
 
+        int votingDuration = Integer.valueOf(properties.getProperty("voting.duration.minutes"));
+        int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
+        String testingType = properties.getProperty("testing.type");
+        log.info("Testing type is {}", testingType);
+        startLocalModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
+        startLocalModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(new String[]{String.valueOf(resultsCheckPeriod)}));
+        
+        
         readConfigs();
 
         if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
@@ -364,5 +375,12 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             session.setPassword(password);
         session.connect();
         return session;
+    }
+
+    private static void startLocalModule(String name, Runnable request) {
+        log.debug("Starting {}", name);
+        long start = Instant.now().getMillis();
+        request.run();
+        log.info("{} started in {} ms", name, Instant.now().getMillis() - start);
     }
 }
