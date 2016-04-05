@@ -61,9 +61,9 @@ public class ResultBilderDecorator implements NetworkClient {
             }
 
             @Override
-            public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) throws InternalLogicException {
+            public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) throws InternalLogicException {
                 resultsBuilder.addVote(result.toString());
-                return networkMessagesSender.addVote(result, voting, ownerSignature, nodeSignature);
+                return networkMessagesSender.addVote(result, serializedVote, ownerSignature, nodeSignature);
             }
         });
     }

@@ -274,7 +274,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new InternalLogicException("Can not sign vote");
         }
-        String tranId = network.addVote(result, votingRecord.voting, signature, nodeSignature);
+        String tranId = network.addVote(result, serializedVote, signature, nodeSignature);
         String voteDigest;
         try {
             voteDigest = cryptoHelper.getDigest(serializedVote);
@@ -287,8 +287,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         votingRecord.clientResultMessageIdsByClientId.put(result.getHolderId(), tranId);
         
         long now = System.currentTimeMillis();
-        String resultMessage = messagesSerializer.serialize(result, votingRecord.voting);
-        String signedText = MessageBuilder.buildMessage(resultMessage, tranId, voteDigest, Long.toString(now));
+        String signedText = MessageBuilder.buildMessage(serializedVote, tranId, voteDigest, Long.toString(now));
         String receiptSign;
         try {
             receiptSign = cryptoHelper.createSignature(signedText, privateKey);
@@ -297,7 +296,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         }
         if (stateSaver != null)
             stateSaver.accept(collectState());
-        return new ClientVoteReceipt(resultMessage, tranId, voteDigest, now, receiptSign);
+        return new ClientVoteReceipt(serializedVote, tranId, voteDigest, now, receiptSign);
     }
 
     @Override

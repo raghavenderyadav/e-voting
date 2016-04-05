@@ -96,14 +96,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVote(VoteResult result, Voting voting, String ownerSignature, String nodeSignature) throws InternalLogicException {
-        String resultMessage;
-        try {
-            resultMessage = serializer.serialize(result, voting);
-        } catch (InternalLogicException e) {
-            log.error("addVote. Serialization failed. holderId={} votingId={}", result.getHolderId(), result.getVotingId());
-            return null;
-        }
+    public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) throws InternalLogicException {
         Participant participant = participantsById.get(masterId);
         if (participant == null) {
             log.error("addVote. master node {} not found holderId={}", masterId, holderId);
@@ -113,7 +106,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             log.error("addVote. master node {} does not have public key holderId={}", masterId, holderId);
             return null;
         }
-        String message = MessageBuilder.buildMessage(resultMessage, ownerSignature, nodeSignature);
+        String message = MessageBuilder.buildMessage(serializedVote, ownerSignature, nodeSignature);
         String encryptedMessage;
         try {
             encryptedMessage = cryptoHelper.encrypt(message, cryptoHelper.loadPublicKey(participant.getPublicKey()));
