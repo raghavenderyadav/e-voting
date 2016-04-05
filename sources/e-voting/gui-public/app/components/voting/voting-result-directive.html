@@ -1,11 +1,11 @@
 <strong class="voting-item-title">{{question.question}}</strong>
 <div ng-if="question.canSelectMultiple" voting-result-answer="question.answers" total-votes="totalVotes"></div>
 <div ng-if="!question.canSelectMultiple">
-  <div ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)"
+  <div class="voting-answer" ng-repeat="answer in question.answers track by (question.id + '-' + answer.id)"
        ng-class="{'text-success text-bold': answer.votes > 0, 'text-muted': answer.votes <= 0}">
     {{answer.name}}
   </div>
-  <div ng-show="question.answers.length == 0" class="text-danger text-bold">
+  <div class="voting-answer" ng-show="question.answers.length == 0" class="text-danger text-bold">
     no answers
   </div>
 </div>

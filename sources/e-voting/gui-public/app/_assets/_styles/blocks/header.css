@@ -1,6 +1,12 @@
 .header {
   position: relative;
   z-index: $z_header;
+
+  &.navbar-default {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
 }
 
 .header-top {
