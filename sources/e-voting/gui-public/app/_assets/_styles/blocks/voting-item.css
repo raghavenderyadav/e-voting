@@ -1,25 +1,35 @@
 .voting-item {
   display: block;
-  margin: 0 0 24px;
+  margin: 0 0 18px;
   padding-left: 24px;
   padding-right: 24px;
-}
-
-.voting-item-result {
   padding-bottom: 10px;
   border-bottom: 1px solid $c_bd;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
 }
 
 .voting-item-title {
   display: block;
   font-size: $fz_big;
-  font-weight: 700;
+  font-weight: 500;
   margin: 16px 0;
   position: relative;
   right: 24px;
+  color: #000;
 
   label& {
-    font-weight: 700;
+    font-weight: 500;
     user-select: none;
+    margin: 28px 0 20px;
   }
+}
+
+
+.voting-answer {
+  display: block;
+  font-size: 16px
 }

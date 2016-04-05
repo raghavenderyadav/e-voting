@@ -1,36 +1,34 @@
-<div class="voting-item">
-  <div class="form-group">
-    <strong class="voting-item-title">{{question.question}}</strong>
-  </div>
-  <div ng-if="question.canSelectMultiple" class="form-horizontal">
-    <div ng-repeat="answer in question.answers" class="form-group">
-      <label
-        for="question-{{question.id}}-answer-{{answer.id}}"
-        class="col-xs-3 control-label text-left">
-        {{answer.name}}
-      </label>
-      <div class="col-xs-9">
-        <input
-          type="text"
-          class="form-control"
-          name="question-{{question.id}}-answer-{{answer.id}}"
-          id="question-{{question.id}}-answer-{{answer.id}}"
-          ng-model="votingChoice[question.id][answer.id]">
-      </div>
+<div class="form-group">
+  <strong class="voting-item-title">{{question.question}}</strong>
+</div>
+<div ng-if="question.canSelectMultiple" class="form-horizontal">
+  <div ng-repeat="answer in question.answers" class="form-group">
+    <label
+      for="question-{{question.id}}-answer-{{answer.id}}"
+      class="col-xs-3 control-label text-left">
+      {{answer.name}}
+    </label>
+    <div class="col-xs-9">
+      <input
+        type="text"
+        class="form-control"
+        name="question-{{question.id}}-answer-{{answer.id}}"
+        id="question-{{question.id}}-answer-{{answer.id}}"
+        ng-model="votingChoice[question.id][answer.id]">
     </div>
   </div>
-  <div ng-if="!question.canSelectMultiple">
-    <div ng-repeat="answer in question.answers" class="radio">
-      <label>
-        <input
-          type="radio"
-          name="question-{{question.id}}"
-          id="question-{{question.id}}-answer-{{answer.id}}"
-          ng-model="votingChoice[question.id]"
-          ng-value="answer.id"/>
-        {{answer.name}}
-      </label>
-    </div>
+</div>
+<div ng-if="!question.canSelectMultiple">
+  <div ng-repeat="answer in question.answers" class="radio">
+    <label>
+      <input
+        type="radio"
+        name="question-{{question.id}}"
+        id="question-{{question.id}}-answer-{{answer.id}}"
+        ng-model="votingChoice[question.id]"
+        ng-value="answer.id"/>
+      {{answer.name}}
+    </label>
   </div>
 </div>
 

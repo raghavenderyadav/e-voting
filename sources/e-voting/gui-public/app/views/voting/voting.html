@@ -7,11 +7,9 @@
         </div>
         <div class="panel-body">
           <div voting-countdown="vc.votingCountdown"></div>
-          <div ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice"
-               total-votes="vc.totalVotes" ng-if="vc.phase === 1"></div>
+          <div ng-repeat="question in vc.voting" voting-question="question" voting-choice="vc.votingChoice" total-votes="vc.totalVotes" ng-if="vc.phase === 1" class="voting-item"></div>
           <div ng-if="vc.phase === 2">
-            <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question"
-                 total-votes="vc.totalVotes"></div>
+            <div ng-repeat="question in vc.voting" class="voting-item" voting-result="question" total-votes="vc.totalVotes"></div>
 
             <div class="checkbox voting-item">
               <label class="voting-item-title">
@@ -19,9 +17,13 @@
               </label>
             </div>
 
-            <div ng-if="vc.isSign">
-              <div ng-hide="vc.showSigningContent" ng-click="vc.showSigningContent = true">Show signing content</div>
-              <div ng-show="vc.showSigningContent" ng-click="vc.showSigningContent = false">Hide signing content</div>
+            <div ng-if="vc.isSign" class="form-horizontal">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <button type="button" class="btn btn-default" ng-hide="vc.showSigningContent" ng-click="vc.showSigningContent = true">Show signing content</button>
+                  <button type="button" class="btn btn-default" ng-show="vc.showSigningContent" ng-click="vc.showSigningContent = false">Hide signing content</button>
+                </div>
+              </div>
 
               <div class="form-group" ng-show="vc.showSigningContent">
                 <br>
