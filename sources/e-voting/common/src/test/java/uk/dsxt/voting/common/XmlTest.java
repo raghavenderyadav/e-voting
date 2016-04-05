@@ -1,5 +1,6 @@
 package uk.dsxt.voting.common;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
@@ -18,6 +19,7 @@ import java.io.StringReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class XmlTest {
     @Test
     public void testJAXBSerialization() throws Exception {
