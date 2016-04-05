@@ -122,22 +122,33 @@ public class MessageHandler {
         }
         int handledCnt = 0, skippedCnt = 0, errorsCnt = 0;
         for(Message message : newMessages) {
+            log.debug("checkNewMessages. id={}", message.getId());
             if (!handledMessageIDs.add(message.getId())) {
                 skippedCnt++;
+                log.debug("checkNewMessages. message skipped id={}", message.getId());
                 continue;
             }
             try {
+                log.debug("checkNewMessages. handle message id={}", message.getId());
                 MessageContent messageContent = new MessageContent(message.getBody());
+                if (messageContent == null) {
+                    log.debug("checkNewMessages. message id={} has no content", message.getId());
+                    continue;
+                }
+                log.debug("checkNewMessages. handle message id={} type={} author={}", message.getId(), messageContent.getType(), messageContent.getAuthor());
                 PublicKey authorKey = publicKeysById.get(messageContent.getAuthor());
                 if (authorKey == null) {
                     log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
                     continue;
                 }
+                log.debug("checkNewMessages. message id={} has key", message.getId());
                 if (!messageContent.checkSign(authorKey, cryptoHelper)) {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
                     continue;
                 }
+                log.debug("checkNewMessages. message id={} signature verified", message.getId());
                 handleNewMessage(messageContent, message.getId());
+                log.debug("checkNewMessages. message id={} handled", message.getId());
                 handledCnt++;
             } catch (Exception e) {
                 log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
