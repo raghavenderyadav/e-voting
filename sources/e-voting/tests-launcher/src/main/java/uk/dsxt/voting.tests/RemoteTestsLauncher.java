@@ -1,12 +1,11 @@
 package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.*;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +26,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String user;
     private final String password;
     private final String masterHost;
+    private final String sftpWorkDir;
     private final int MASTER_NXT_PEER_PORT = 15000;
     private final int MASTER_NXT_API_PORT = 12000;
     private final String MASTER_NXT_PEER_ADDRESS;
@@ -76,6 +76,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         user = properties.getProperty("vm.user");
         password = properties.getProperty("vm.password");
         sshPort = Integer.parseInt(properties.getProperty("vm.sshPort"));
+        sftpWorkDir = String.format("/home/%s/e-voting/", user);
         String masterHostFromSetting = properties.getProperty("vm.mainNode");
         if (masterHostFromSetting == null || masterHostFromSetting.isEmpty()) {
             //TODO run vms with AWSHelper and get masterHost
@@ -290,8 +291,14 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     }
 
     private void uploadFile(Session session, int currentNodeId, String fileName, boolean global) throws Exception {
+        Channel channel = session.openChannel("sftp");
+        channel.connect();
+        ChannelSftp channelSftp = (ChannelSftp) channel;
+        channelSftp.cd(Paths.get(sftpWorkDir, "build", NODE_NAME.apply(currentNodeId)).toString().replace("\\", "/"));
         String data = PropertiesHelper.getResourceString(Paths.get(SCENARIO_HOME_DIR, SCENARIO, global ? "" : Integer.toString(currentNodeId), fileName).toString());
-        makeCmd(session, ECHO_CMD.apply(data, Paths.get(WORK_DIR, "build", NODE_NAME.apply(currentNodeId), fileName).toString().replace("\\", "/")));
+        InputStream stream = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+        channelSftp.put(stream, fileName, ChannelSftp.OVERWRITE);
+        channelSftp.exit();
     }
 
     private void runScenario() throws Exception {
@@ -304,7 +311,6 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             try {
                 log.info("run node id {}", currentNodeId);
                 makeCmd(session, RUN_CMD.apply(currentNodeId));
-                Thread.sleep(3000);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -104,7 +104,14 @@ public class TestDataGenerator {
         ClientFullInfo[] clients = new ClientFullInfo[totalParticipant];
         Participant[] participants = new Participant[totalParticipant];
         //generating keys
-        KeyPair[] keys = cryptoHelper.createCryptoKeysGenerator().generateKeys(totalParticipant);
+        long start = System.currentTimeMillis();
+        log.debug("generating {} keys", totalParticipant);
+        KeyPair[] holderKeys = cryptoHelper.createCryptoKeysGenerator().generateKeys(holdersCount + 1);
+        KeyPair[] keys = new KeyPair[totalParticipant];
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = holderKeys[Math.min(i, holderKeys.length - 1)];
+        }
+        log.debug("{} keys generated. {} seconds spent", totalParticipant, (System.currentTimeMillis() - start) / 1000);
 
         //generating voting
         long now = System.currentTimeMillis();
