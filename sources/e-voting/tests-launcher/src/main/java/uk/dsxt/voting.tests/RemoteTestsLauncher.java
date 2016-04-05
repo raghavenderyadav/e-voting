@@ -100,14 +100,6 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         if (Boolean.parseBoolean(properties.getProperty("vm.runVMs")))
             runVMs(Integer.parseInt(properties.getProperty("vm.count")));
 
-        int votingDuration = Integer.valueOf(properties.getProperty("voting.duration.minutes"));
-        int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
-        String testingType = properties.getProperty("testing.type");
-        log.info("Testing type is {}", testingType);
-        startLocalModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
-        startLocalModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(new String[]{String.valueOf(resultsCheckPeriod)}));
-        
-        
         readConfigs();
 
         if (Boolean.parseBoolean(properties.getProperty("vm.updateBuild")))
@@ -116,8 +108,15 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             installOrUpdateNodes();
         if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateScenario")))
             installOrUpdateScenario();
-        if (Boolean.parseBoolean(properties.getProperty("vm.runScenario")))
+        if (Boolean.parseBoolean(properties.getProperty("vm.runScenario"))) {
+            int votingDuration = Integer.valueOf(properties.getProperty("voting.duration.minutes"));
+            int resultsCheckPeriod = Integer.parseInt(properties.getProperty("results.check.period"));
+            String testingType = properties.getProperty("testing.type");
+            log.info("Testing type is {}", testingType);
+            startLocalModule(RegistriesServerMain.MODULE_NAME, () -> RegistriesServerMain.main(new String[]{testingType, String.valueOf(votingDuration)}));
+            startLocalModule(ResultsBuilderMain.MODULE_NAME, () -> ResultsBuilderMain.main(new String[]{String.valueOf(resultsCheckPeriod)}));
             runScenario();
+        }
     }
 
     private void runVMs(int count) {
