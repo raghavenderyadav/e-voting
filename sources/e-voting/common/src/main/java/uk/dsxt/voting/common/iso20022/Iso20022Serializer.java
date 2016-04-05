@@ -27,14 +27,12 @@ import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.jaxb.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
-import uk.dsxt.voting.common.utils.MessageBuilder;
 
 import javax.xml.bind.*;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -135,6 +133,16 @@ public class Iso20022Serializer implements MessagesSerializer {
     }
 
     @Override
+    public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
+        return voteResult.toString();
+    }
+
+    @Override
+    public VoteResult deserializeVoteResult(String message) throws InternalLogicException {
+        return new VoteResult(message);
+    }
+    
+   /* @Override
     public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
         voteResult = adaptVoteResultForXML(voteResult, voting);
         //TODO: add other required fields
@@ -246,7 +254,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         }
         Voting voting = deserializeVoting(messages[1]);
         return adaptVoteResultFromXML(voteResult, voting);
-    }
+    }*/
 
     @Override
     public String serialize(VoteStatus voteStatus) {
