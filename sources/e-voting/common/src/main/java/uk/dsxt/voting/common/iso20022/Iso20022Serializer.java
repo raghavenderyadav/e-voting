@@ -25,14 +25,16 @@ import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.jaxb.*;
-import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.messaging.SimpleSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
+import uk.dsxt.voting.common.utils.MessageBuilder;
 
 import javax.xml.bind.*;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -40,7 +42,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Log4j2
-public class Iso20022Serializer implements MessagesSerializer {
+public class Iso20022Serializer extends SimpleSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
     private static final String SINGLE_ANSWER_TITLE = "resolution";
 
@@ -131,18 +133,8 @@ public class Iso20022Serializer implements MessagesSerializer {
         log.debug("deserializeVoting id={} name={} begin={} end={} questionsLength={}", id, name, new Instant(beginTimestamp), new Instant(endTimestamp), questions.size());
         return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]), security);
     }
-
-    @Override
-    public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
-        return voteResult.toString();
-    }
-
-    @Override
-    public VoteResult deserializeVoteResult(String message) throws InternalLogicException {
-        return new VoteResult(message);
-    }
     
-   /* @Override
+    @Override
     public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
         voteResult = adaptVoteResultForXML(voteResult, voting);
         //TODO: add other required fields
@@ -211,7 +203,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         } catch (JAXBException e) {
             throw new InternalLogicException(String.format("unable to serialize. Reason: %s", e.getMessage()));
         }
-        return MessageBuilder.buildMessage(voteResultString, serialize(voting));
+        return MessageBuilder.buildMessage(voteResultString, super.serialize(voting));
     }
 
     @Override
@@ -220,7 +212,7 @@ public class Iso20022Serializer implements MessagesSerializer {
         if (messages.length != 2)
             throw new InternalLogicException("Wrong message string");
 
-        MeetingInstruction mi = null;
+        MeetingInstruction mi;
         try {
             JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
             Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
@@ -252,18 +244,8 @@ public class Iso20022Serializer implements MessagesSerializer {
             VotedAnswer answer = new VotedAnswer(vote.getIssrLabl(), answerId, amount);
             voteResult.getAnswersByKey().put(answer.getKey(), answer);
         }
-        Voting voting = deserializeVoting(messages[1]);
+        Voting voting = super.deserializeVoting(messages[1]);
         return adaptVoteResultFromXML(voteResult, voting);
-    }*/
-
-    @Override
-    public String serialize(VoteStatus voteStatus) {
-        return voteStatus.toString();
-    }
-
-    @Override
-    public VoteStatus deserializeVoteStatus(String message) throws InternalLogicException {
-        return new VoteStatus(message);
     }
 
     private VoteResult adaptVoteResultForXML(VoteResult result, Voting voting) throws InternalLogicException {

@@ -37,6 +37,7 @@ import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.domain.nodes.VotingOrganizer;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.messaging.SimpleSerializer;
 import uk.dsxt.voting.common.networking.MessageHandler;
 import uk.dsxt.voting.common.networking.MockWalletManager;
 import uk.dsxt.voting.common.networking.WalletManager;
@@ -89,7 +90,8 @@ public class ClientApplication extends ResourceConfig {
 
         PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
 
-        MessagesSerializer messagesSerializer = new Iso20022Serializer();
+        final boolean useSimpleSerializer = Boolean.valueOf(properties.getProperty("mock.serializer", Boolean.TRUE.toString()));
+        MessagesSerializer messagesSerializer = useSimpleSerializer ? new SimpleSerializer() : new Iso20022Serializer();
         
         WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
 
