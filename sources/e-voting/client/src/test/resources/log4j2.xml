@@ -31,5 +31,6 @@
         <Root level="debug">
             <AppenderRef ref="STDOUT"/>
         </Root>
+      <Logger name="uk.dsxt.voting.common.networking.MessageHandler" level="info"/>
     </Loggers>
 </Configuration>
