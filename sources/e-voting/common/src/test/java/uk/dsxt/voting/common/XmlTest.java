@@ -2,12 +2,12 @@ package uk.dsxt.voting.common;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.dsxt.voting.common.domain.dataModel.VoteResult;
-import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
-import uk.dsxt.voting.common.domain.dataModel.Voting;
+import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingInstruction;
 import uk.dsxt.voting.common.iso20022.jaxb.MeetingNotification;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.messaging.SimpleSerializer;
 import uk.dsxt.voting.common.utils.MessageBuilder;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 
@@ -18,6 +18,7 @@ import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 @Ignore
 public class XmlTest {
@@ -89,6 +90,7 @@ public class XmlTest {
     @Test
     public void testSimpleVoteResultSerialization() throws Exception {
         Iso20022Serializer votingSerializer = new Iso20022Serializer();
+        MessagesSerializer simpleSerializer = new SimpleSerializer();
         String votingXml = PropertiesHelper.getResourceString("voting_simple.xml", "windows-1251");
         Voting voting = votingSerializer.deserializeVoting(votingXml);
         assertNotNull(voting);
@@ -96,7 +98,7 @@ public class XmlTest {
         //deserialization from xml file
         Iso20022Serializer serializer = new Iso20022Serializer();
         String voteResultXml = PropertiesHelper.getResourceString("voteResult_simple.xml", "windows-1251");
-        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, votingXml));
+        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, simpleSerializer.serialize(voting)));
         assertNotNull(voteResult);
 
         assertEquals("МХ1", voteResult.getHolderId());
@@ -154,6 +156,7 @@ public class XmlTest {
     @Test
     public void testCumulativeVoteResultSerialization() throws Exception {
         Iso20022Serializer serializer = new Iso20022Serializer();
+        MessagesSerializer simpleSerializer = new SimpleSerializer();
         //deserialize voting
         String votingXml = PropertiesHelper.getResourceString("voting_cumulative.xml", "windows-1251");
         Voting voting = serializer.deserializeVoting(votingXml);
@@ -161,7 +164,7 @@ public class XmlTest {
 
         //deserialization from xml file
         String voteResultXml = PropertiesHelper.getResourceString("voteResult_cumulative.xml", "windows-1251");
-        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, votingXml));
+        VoteResult voteResult = serializer.deserializeVoteResult(MessageBuilder.buildMessage(voteResultXml, simpleSerializer.serialize(voting)));
         assertNotNull(voteResult);
 
         assertEquals("МХ1", voteResult.getHolderId());
@@ -180,5 +183,25 @@ public class XmlTest {
         assertNotNull(serializedVoteResult);
         //check that resulted object equals voting deserialized from file
         assertEquals(voteResult, serializedVoteResult);
+    }
+
+    @Test
+    public void testJsonVotingSerialization() throws Exception {
+        final Question[] questions = new Question[1];
+        final Answer[] answers = new Answer[1];
+        answers[0] = new Answer("1", null);
+        questions[0] = new Question("1", "question", answers);
+        Voting voting = new Voting("voting_id", "voting_name", 0, 0, questions, "security");
+        MessagesSerializer serializer = new SimpleSerializer();
+        String msg = serializer.serialize(voting);
+        Voting loaded = serializer.deserializeVoting(msg);
+        assertEquals(voting.getBeginTimestamp(), loaded.getBeginTimestamp());
+        assertEquals(voting.getEndTimestamp(), loaded.getEndTimestamp());
+        assertEquals(voting.getId(), loaded.getId());
+        assertEquals(voting.getSecurity(), loaded.getSecurity());
+        assertEquals(voting.getName(), loaded.getName());
+        assertEquals(voting.getQuestions().length, loaded.getQuestions().length);
+        assertEquals(voting.getQuestions()[0].getId(), loaded.getQuestions()[0].getId());
+        assertEquals(voting.getQuestions()[0].getAnswers().length, loaded.getQuestions()[0].getAnswers().length);
     }
 }

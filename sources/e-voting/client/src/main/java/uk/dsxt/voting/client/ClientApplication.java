@@ -126,10 +126,11 @@ public class ClientApplication extends ResourceConfig {
 
         if (votingOrganizer != null) {
             String votingFiles = properties.getProperty("voting.files", "");
+            MessagesSerializer isoSerializer = new Iso20022Serializer();
             final boolean adjustVotingTime = Boolean.valueOf(properties.getProperty("voting.adjust.time", Boolean.TRUE.toString()));
             for (String votingFile : votingFiles.split(",")) {
                 String votingMessage = PropertiesHelper.getResourceString(votingFile, "windows-1251");
-                Voting voting = messagesSerializer.deserializeVoting(votingMessage);
+                Voting voting = isoSerializer.deserializeVoting(votingMessage);
                 if (adjustVotingTime) {
                     long now = System.currentTimeMillis();
                     voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions(), voting.getSecurity());

@@ -49,8 +49,7 @@ public class SimpleSerializer implements MessagesSerializer {
         try {
             return mapper.readValue(message, Voting.class);
         } catch (IOException e) {
-            log.error("deserializeVoting failed", e);
-            return null;
+            throw new InternalLogicException("deserializeVoting failed: " + e.getMessage());
         }
     }
 

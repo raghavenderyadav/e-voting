@@ -33,8 +33,7 @@ public class Question {
     boolean canSelectMultiple;
     int multiplicator;
 
-    @JsonCreator
-    public Question(@JsonProperty("id") String id, @JsonProperty("question") String question, @JsonProperty("answers") Answer[] answers) {
+    public Question(String id, String question, Answer[] answers) {
         this.id = id;
         this.question = question;
         this.answers = answers;
