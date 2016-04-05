@@ -30,6 +30,9 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class MessageHandler {
@@ -53,7 +56,7 @@ public class MessageHandler {
 
     private long lastNewMessagesRequestTime;
 
-    protected Thread messagesHandler;
+    private final ScheduledExecutorService handleMessagesService = Executors.newSingleThreadScheduledExecutor();
 
     public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants, MessageReceiver messageReceiver) {
         this.walletManager = walletManager;
@@ -93,22 +96,18 @@ public class MessageHandler {
 
     public void run(long newMessagesRequestInterval) {
         checkNewMessages();
-        messagesHandler = new Thread(() -> {
-            while (!Thread.interrupted()) {
+        handleMessagesService.scheduleWithFixedDelay(() -> {
+            try {
                 checkNewMessages();
-                try {
-                    Thread.sleep(newMessagesRequestInterval);
-                } catch (InterruptedException ignored) {
-                    return;
-                }
+            } catch (Exception e) {
+                log.error("handle messages failed", e);
             }
-        }, "messagesHandler");
-        messagesHandler.start();
+        }, 0, newMessagesRequestInterval, TimeUnit.MILLISECONDS);
         log.info("MessageHandler runs");
     }
 
     public void stop() {
-        messagesHandler.interrupt();
+        handleMessagesService.shutdownNow();
         log.info("MessageHandler stopped");
     }
 
