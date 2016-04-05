@@ -3,9 +3,12 @@
     <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Own vote</h3>
-          <p>Message ID: {{vrc.votingResult.messageId}}</p>
-          <p>Status: {{vrc.votingResult.status}}</p>
+          <h3 class="panel-title">
+            Own vote
+            |
+            Message ID: {{vrc.votingResult.messageId}}
+            |
+            Status: {{vrc.votingResult.status}}</h3>
         </div>
         <div class="panel-body">
           <div ng-repeat="question in vrc.votingResult.questions" class="voting-item" voting-result="question" total-votes="vrc.votingResult.amount">
