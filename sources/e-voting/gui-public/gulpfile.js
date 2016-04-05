@@ -30,8 +30,6 @@ gulp.task('styles', function() {
     })
   ];
 
-  console.log(path.join(__dirname, config.src, '_styles/style.css'));
-
   return gulp.src(path.join(__dirname, config.src, '_styles/style.css'))
     .pipe(plugins.plumber({
       errorHandler: plugins.notify.onError('Error: <%= error.message %>')

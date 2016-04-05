@@ -5,12 +5,12 @@
       {{answer.name}}
     </div>
     <div class="col-xs-9">
-      <span>Votes: {{answer.votes}} / {{totalVotes}}</span>
+      <small>Votes: {{answer.votes}} / {{totalVotes}}</small>
       <div class="progress">
         <div
           class="progress-bar"
           role="progressbar"
-          ng-class="{'progress-bar-success': answer.votes > 0}"
+          ng-class="{'progress-bar-success': answer.votes > 0, 'progress-bar-contrast': (answer.votes / totalVotes) < .12}"
           aria-valuenow="{{answer.votes}}"
           aria-valuemin="{{answer.votes}}"
           aria-valuemax="{{totalVotes}}"
