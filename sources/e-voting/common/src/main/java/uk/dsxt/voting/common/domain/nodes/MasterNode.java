@@ -80,29 +80,22 @@ public class MasterNode extends ClientNode {
             if (decryptedParts.length == 2) {
                 String sign = decryptedParts[1];
                 if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
-                    VoteResult result;
-                    try {
-                        result = messagesSerializer.deserializeVoteResult(decryptedParts[0]);
-                    } catch (InternalLogicException e) {
-                        log.error("handleVote. Failed to deserializeVoteResult. error={}", e.getMessage());
-                        return VoteResultStatus.IncorrectMessage;
-                    }
-                    Participant participant = participantsById.get(result.getHolderId());
+                    Participant participant = participantsById.get(decryptedParts[0]);
                     if (participant == null) {
-                        log.error("handleVote. Owner {} not found", result.getHolderId());
+                        log.error("handleVote. Owner {} not found", decryptedParts[0]);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     if (participant.getPublicKey() == null) {
-                        log.error("handleVote. Owner {} has no public key", result.getHolderId());
+                        log.error("handleVote. Owner {} has no public key", decryptedParts[0]);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
                         if (!cryptoHelper.verifySignature(decryptedParts[0], sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
-                            log.error("handleVote. Invalid signature of owner {}", result.getHolderId());
+                            log.error("handleVote. Invalid signature of owner {}", decryptedParts[0]);
                             return VoteResultStatus.SignatureFailed;
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                        log.error("handleVote. Failed to check owner signature. participantId={} error={}", result.getHolderId(), e.getMessage());
+                        log.error("handleVote. Failed to check owner signature. participantId={} error={}", decryptedParts[0], e.getMessage());
                         return VoteResultStatus.SignatureFailed;
                     }
                 }

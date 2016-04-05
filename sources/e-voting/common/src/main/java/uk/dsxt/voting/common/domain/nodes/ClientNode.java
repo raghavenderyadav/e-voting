@@ -282,7 +282,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not calculate hash");
         }
         addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
-            encryptToMasterNode(serializedVote, signature), voteDigest);
+            encryptToMasterNode(result.getHolderId(), signature), voteDigest);
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
         votingRecord.clientResultMessageIdsByClientId.put(result.getHolderId(), tranId);
         

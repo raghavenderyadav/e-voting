@@ -113,20 +113,20 @@ public class VotingOrganizer implements NetworkClient {
                     log.info("calculateResults. Skip incorrect result. messageId={} ownerId={} error={}", status.getStatus(), messageId, result.getHolderId(), error);
                     continue;
                 }
-                String voteString;
                 try {
-                    voteString = messagesSerializer.serialize(result, votingRecord.voting);
-                } catch (InternalLogicException e) {
-                    log.error("calculateResults. serialize result failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
-                    continue;
-                }
-                try {
-                    if (!cryptoHelper.verifySignature(voteString, status.getVoteSign(), publicKey)) {
+                    if (!cryptoHelper.verifySignature(result.getHolderId(), status.getVoteSign(), publicKey)) {
                         log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
                         continue;
                     }
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                    continue;
+                }
+                String voteString;
+                try {
+                    voteString = messagesSerializer.serialize(result, votingRecord.voting);
+                } catch (InternalLogicException e) {
+                    log.error("calculateResults. serialize result failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
                     continue;
                 }
                 try {
