@@ -22,6 +22,7 @@
 package uk.dsxt.voting.client;
 
 import lombok.extern.log4j.Log4j2;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
 import uk.dsxt.voting.common.utils.InternalLogicException;
@@ -55,10 +56,14 @@ public class VoteScheduler {
                     throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
                 VoteResult voteResult = new VoteResult(terms[1]);
                 int delay = Integer.parseInt(terms[0]);
-                if (delay <= 0)
+                if (delay <= 0) {
+                    log.debug("Immediate vote votingId={} ownerId={}", voteResult.getVotingId(), voteResult.getHolderId());
                     assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
-                else
+                } else {
+                    log.debug("Schedule vote votingId={} ownerId={} on {}", voteResult.getVotingId(), voteResult.getHolderId(), new Instant(System.currentTimeMillis() + delay*1000));
                     scheduler.schedule(() -> assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE), delay, TimeUnit.SECONDS);
+                }
+
                 cnt++;
                 if (maxDelay < delay)
                     maxDelay = delay;

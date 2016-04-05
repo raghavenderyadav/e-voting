@@ -73,7 +73,7 @@ public class MasterNode extends ClientNode {
             try {
                 decryptedData = cryptoHelper.decrypt(encryptedData, privateKey);
             } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                log.error("VoteChecker.acceptVote. Failed to decrypt data. error={}", e.getMessage());
+                log.error("handleVote. Failed to decrypt data. error={}", e.getMessage());
                 return VoteResultStatus.SignatureFailed;
             }
             String[] decryptedParts = MessageBuilder.splitMessage(decryptedData);
@@ -84,25 +84,25 @@ public class MasterNode extends ClientNode {
                     try {
                         result = messagesSerializer.deserializeVoteResult(decryptedParts[0]);
                     } catch (InternalLogicException e) {
-                        log.error("VoteChecker.acceptVote. Failed to deserializeVoteResult. error={}", e.getMessage());
+                        log.error("handleVote. Failed to deserializeVoteResult. error={}", e.getMessage());
                         return VoteResultStatus.IncorrectMessage;
                     }
                     Participant participant = participantsById.get(result.getHolderId());
                     if (participant == null) {
-                        log.error("VoteChecker.acceptVote. Owner {} not found", result.getHolderId());
+                        log.error("handleVote. Owner {} not found", result.getHolderId());
                         return VoteResultStatus.IncorrectMessage;
                     }
                     if (participant.getPublicKey() == null) {
-                        log.error("VoteChecker.acceptVote. Owner {} has no public key", result.getHolderId());
+                        log.error("handleVote. Owner {} has no public key", result.getHolderId());
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
                         if (!cryptoHelper.verifySignature(decryptedParts[0], sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
-                            log.error("VoteChecker.acceptVote. Invalid signature of owner {}", result.getHolderId());
+                            log.error("handleVote. Invalid signature of owner {}", result.getHolderId());
                             return VoteResultStatus.SignatureFailed;
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                        log.error("VoteChecker.acceptVote. Failed to check owner signature. participantId={} error={}", result.getHolderId(), e.getMessage());
+                        log.error("handleVote. Failed to check owner signature. participantId={} error={}", result.getHolderId(), e.getMessage());
                         return VoteResultStatus.SignatureFailed;
                     }
                 }
@@ -110,7 +110,7 @@ public class MasterNode extends ClientNode {
                 try {
                     resultSign = cryptoHelper.createSignature(decryptedParts[0], privateKey);
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("VoteChecker.acceptVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
+                    log.error("handleVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
                     return VoteResultStatus.InternalError;
                 }
                 network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
@@ -121,24 +121,24 @@ public class MasterNode extends ClientNode {
                 String sign = decryptedParts[2];
                 Participant participant = participantsById.get(participantId);
                 if (participant == null) {
-                    log.error("VoteChecker.acceptVote. Participant {} not found", participantId);
+                    log.error("handleVote. Participant {} not found", participantId);
                     return VoteResultStatus.IncorrectMessage;
                 }
                 if (participant.getPublicKey() == null) {
-                    log.error("VoteChecker.acceptVote. Participant {} has no public key", participantId);
+                    log.error("handleVote. Participant {} has no public key", participantId);
                     return VoteResultStatus.IncorrectMessage;
                 }
                 try {
                     if (!cryptoHelper.verifySignature(MessageBuilder.buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
-                        log.error("VoteChecker.acceptVote. Invalid signature of participant {}", participantId);
+                        log.error("handleVote. Invalid signature of participant {}", participantId);
                         return VoteResultStatus.SignatureFailed;
                     }
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("VoteChecker.acceptVote. Failed to check participant signature. participantId={} error={}", participantId, e.getMessage());
+                    log.error("handleVote. Failed to check participant signature. participantId={} error={}", participantId, e.getMessage());
                     return VoteResultStatus.SignatureFailed;
                 }
             } else {
-                log.error("VoteChecker.acceptVote. decryptedData contains {} parts.", decryptedParts.length);
+                log.error("handleVote. decryptedData contains {} parts.", decryptedParts.length);
                 return VoteResultStatus.IncorrectMessage;
             }
         }

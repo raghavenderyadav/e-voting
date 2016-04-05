@@ -112,13 +112,18 @@ public class MessageHandler {
     }
 
     private void checkNewMessages() {
+        log.debug("checkNewMessages begins");
         long now = System.currentTimeMillis();
         List<Message> newMessages = walletManager.getNewMessages(Math.max(0, lastNewMessagesRequestTime-MAX_MESSAGE_DELAY));
         lastNewMessagesRequestTime = now;
-        if (newMessages == null)
+        if (newMessages == null) {
+            log.debug("checkNewMessages ends - no messages");
             return;
+        }
+        int handledCnt = 0, skippedCnt = 0, errorsCnt = 0;
         for(Message message : newMessages) {
             if (!handledMessageIDs.add(message.getId())) {
+                skippedCnt++;
                 continue;
             }
             try {
@@ -133,10 +138,13 @@ public class MessageHandler {
                     continue;
                 }
                 handleNewMessage(messageContent, message.getId());
+                handledCnt++;
             } catch (Exception e) {
                 log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
+                errorsCnt++;
             }
         }
+        log.debug("checkNewMessages ends handledCnt={}, skippedCnt={}, errorsCnt={}", handledCnt, skippedCnt, errorsCnt);
     }
 
     protected void handleNewMessage(MessageContent messageContent, String messageId) {
