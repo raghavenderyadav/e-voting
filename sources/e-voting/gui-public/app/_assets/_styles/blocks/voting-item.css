@@ -5,6 +5,10 @@
   padding-right: 24px;
 }
 
+.voting-item-result {
+  padding-bottom: 10px;
+  border-bottom: 1px solid $c_bd;
+}
 
 .voting-item-title {
   display: block;

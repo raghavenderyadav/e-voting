@@ -92,7 +92,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         SCENARIO = properties.getProperty("testing.type");
         JAVA_CLIENT_OPTIONS = properties.getProperty("java.clientOptions");
         JAVA_NXT_OPTIONS = properties.getProperty("java.nxtOptions");
-        RUN_CMD = id -> String.format("cd %sbuild/%s/; rm -r ./%s*; java %s -jar client.jar > /dev/null 2>&1 &",
+        RUN_CMD = id -> String.format("cd %sbuild/%s/; rm -r ./%s*; rm -rf logs; java %s -jar client.jar > /dev/null 2>&1 &",
             WORK_DIR, NODE_NAME.apply(id), DB_FOLDER, JAVA_CLIENT_OPTIONS);
     }
 
@@ -179,6 +179,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("client.web.webDir", "./gui-public/app");
         overrides.put("owner.id", ownerId);
         overrides.put("owner.private_key", privateKey);
+        overrides.put("new_messages.request_interval", "10");
         overrides.put("parent.holder.url", ownerHost);
         overrides.put("mock.wallet", "false");
         overrides.put("mock.registries", "true");
