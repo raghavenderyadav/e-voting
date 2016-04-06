@@ -33,11 +33,15 @@ import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Log4j2
 public class MasterNode extends ClientNode {
 
     public static String MASTER_HOLDER_ID = "00";
+    
+    private final ExecutorService handleVoteExecutor = Executors.newFixedThreadPool(10);
 
     public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
@@ -49,12 +53,27 @@ public class MasterNode extends ClientNode {
 
         @Override
         public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
-            return handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
+            handleVoteExecutor.submit(() -> handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest));
+            return null; 
         }
     }
     
-    private NodeVoteReceipt handleVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
-        VoteResultStatus status = handleVote(transactionId, votingId, encryptedData, voteDigest);
+    private void handleVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) {
+        VoteResultStatus status = null;
+        try {
+            status = handleVote(transactionId, votingId, encryptedData, voteDigest);
+        } catch (InternalLogicException e) {
+            status = VoteResultStatus.InternalError;
+            log.error("handleVote failed: {}", e.getMessage());
+        }
+        if (status != VoteResultStatus.OK) {
+            try {
+                network.addVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
+            } catch (InternalLogicException e) {
+                log.error("handleVote. addVoteStatus failed: {}", e.getMessage());
+            }
+        }
+        /*
         String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
         long now = System.currentTimeMillis();
         String signedText = MessageBuilder.buildMessage(inputMessage, Long.toString(now), status.toString());
@@ -65,6 +84,7 @@ public class MasterNode extends ClientNode {
             throw new InternalLogicException("Can not sign vote");
         }
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
+        */
     }
     
     private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) throws InternalLogicException {
