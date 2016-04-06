@@ -296,7 +296,7 @@ public class TestDataGenerator {
 
             nodesConfig.append(i);
             nodesConfig.append("=");
-            nodesConfig.append(mapper.writeValueAsString(new NodeInfo(client.getId() == 0 ? MASTER_PASSWORD : (client.isVictim() ? "victim_password" : ""), client.getId(), client.getHolderId(), client.getPrivateKey(),
+            nodesConfig.append(mapper.writeValueAsString(new NodeInfo(client.getId() == 0 ? MASTER_PASSWORD : (client.isVictim() ? "victim_password" : ""), client.getId(), Math.max(0, client.getHolderId()), client.getPrivateKey(),
                 !client.isHonest() ? "client_password" : null)));
             nodesConfig.append("\n");
         }
