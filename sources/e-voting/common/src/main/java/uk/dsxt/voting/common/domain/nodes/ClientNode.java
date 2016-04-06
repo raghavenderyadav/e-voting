@@ -147,7 +147,16 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     private VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, 
                                                                  BigDecimal packetSize, BigDecimal clientPacketResidual, 
-                                                                 String encryptedData, String voteDigest, long voteTimestamp) throws InternalLogicException {
+                                                                String encryptedData, String voteDigest, long voteTimestamp) throws InternalLogicException {
+        String encrypted = null;
+        if (parentHolder != null) {
+            try {
+                encrypted = encryptToMasterNode(encryptedData, participantId, cryptoHelper.createSignature(MessageBuilder.buildMessage(encryptedData, participantId), privateKey));
+            } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
+                log.error("addVote. encrypt message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
+                return VoteResultStatus.InternalError;
+            }
+        }
         VoteResultStatus status;
         synchronized (votingRecord) {
             status = checkVote(votingRecord, client, packetSize, clientPacketResidual, voteTimestamp);
@@ -158,23 +167,23 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                     clientPacketResidual, votingRecord.totalResidual.subtract(packetSize));
                 votingRecord.clientResidualsByClientId.put(client.getParticipantId(), clientPacketResidual);
                 votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
+                if (parentHolder != null) {
+                    String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
+                    String sign = null;
+                    try {
+                        sign = cryptoHelper.createSignature(signed, privateKey);
+                    } catch (GeneralSecurityException | UnsupportedEncodingException  e) {
+                        log.error("addVote. sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
+                    }
+                    if (sign != null) {
+                        parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
+                    }
+                }
             }
         }
         if (status != VoteResultStatus.OK) {
             network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
-        } else if (parentHolder != null) {
-            String encrypted = null, sign = null;
-            try {
-                encrypted = encryptToMasterNode(encryptedData, participantId, cryptoHelper.createSignature(MessageBuilder.buildMessage(encryptedData, participantId), privateKey));
-                String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
-                sign = cryptoHelper.createSignature(signed, privateKey);
-            } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
-                log.error("addVote. encrypt or sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
-            }
-            if (sign != null) {
-                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
-            }
-        }
+        } 
         return status;
     }
 
@@ -228,8 +237,11 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     @Override
     public Collection<VoteStatus> getVoteStatuses(String votingId) {
         VotingRecord votingRecord = votingsById.get(votingId);
+        if (votingRecord == null) {
+            return null;
+        }
         synchronized (votingRecord) {
-            return votingRecord == null ? null : votingRecord.voteStatusesByMessageId.values();
+            return votingRecord.voteStatusesByMessageId.values();
         }
     }
 
@@ -239,13 +251,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (votingRecord == null) {
             return null;
         }
-        List<VoteResultAndStatus> resultSet = new ArrayList<>();
         synchronized (votingRecord) {
-            for(VoteResult clientResult : votingRecord.clientResultsByClientId.values()) {
-                resultSet.add(getClientVote(votingRecord, clientResult));
-            }
+            return votingRecord.clientResultsByClientId.values().stream().map(clientResult -> getClientVote(votingRecord, clientResult)).collect(Collectors.toList());
         }
-        return resultSet;
     }
 
     @Override
