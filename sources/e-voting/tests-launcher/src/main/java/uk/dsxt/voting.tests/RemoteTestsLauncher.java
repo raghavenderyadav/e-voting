@@ -54,6 +54,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String CLIENTS_NAME = "clients.json";
 
     private final String JAVA_CLIENT_OPTIONS;
+    private final String JAVA_MASTER_OPTIONS;
     private final String JAVA_NXT_OPTIONS;
 
     private final BiFunction<String, String, String> ECHO_CMD = (data, path) -> String.format("/bin/echo -e \"%s\" > %s", data.replace("\"", "\\\""), path);
@@ -92,9 +93,10 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         MAIN_ADDRESS = properties.getProperty("master.address");
         SCENARIO = properties.getProperty("testing.type");
         JAVA_CLIENT_OPTIONS = properties.getProperty("java.clientOptions");
+        JAVA_MASTER_OPTIONS = properties.getProperty("java.masterOptions");
         JAVA_NXT_OPTIONS = properties.getProperty("java.nxtOptions");
         RUN_CMD = id -> String.format("cd %sbuild/%s/; rm -r ./%s*; rm -rf logs; java %s -jar client.jar > /dev/null 2>&1 &",
-            WORK_DIR, NODE_NAME.apply(id), DB_FOLDER, JAVA_CLIENT_OPTIONS);
+            WORK_DIR, NODE_NAME.apply(id), DB_FOLDER, id==0 ? JAVA_MASTER_OPTIONS : JAVA_CLIENT_OPTIONS);
     }
 
     private void run(Properties properties) throws Exception {
@@ -185,6 +187,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
         overrides.put("parent.holder.url", ownerHost);
         overrides.put("mock.wallet", "false");
         overrides.put("mock.registries", "true");
+        overrides.put("mock.serializer", "false");
         overrides.put("nxt.jar.path", "../libs/nxt.jar");
         overrides.put("nxt.properties.path", "./conf/nxt-default.properties");
         overrides.put("nxt.peerServerPort", Integer.toString(MASTER_NXT_PEER_PORT + portShift));
