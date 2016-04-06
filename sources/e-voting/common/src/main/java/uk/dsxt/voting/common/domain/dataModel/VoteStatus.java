@@ -14,13 +14,13 @@ public class VoteStatus {
     
     @Override
     public String toString() {
-        return String.format("%s-%s-%s-%s-%s", votingId, messageId, status, voteDigest, voteSign);
+        return String.format("%s_%s_%s_%s_%s", votingId, messageId, status, voteDigest, voteSign);
     }
     
     public VoteStatus(String s) {
         if (s == null)
             throw new IllegalArgumentException("VoteStatus can not be created from null string");
-        String[] terms = s.split("-");
+        String[] terms = s.split("_");
         if (terms.length == 5) {
             votingId = terms[0];
             messageId = terms[1];
