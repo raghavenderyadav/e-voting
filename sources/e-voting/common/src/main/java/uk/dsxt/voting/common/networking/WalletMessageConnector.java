@@ -92,7 +92,9 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     @Override
     public String addVoteStatus(VoteStatus status) throws InternalLogicException {
-        return send(TYPE_VOTE_STATUS, serializer.serialize(status));
+        String id = send(TYPE_VOTE_STATUS, serializer.serialize(status));
+        log.debug("addVoteStatus. vote messageId={} status={} status messageId={}", status.getMessageId(), status.getStatus(), id);
+        return id;
     }
 
     @Override
