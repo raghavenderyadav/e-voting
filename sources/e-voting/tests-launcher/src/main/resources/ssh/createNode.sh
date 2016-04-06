@@ -10,8 +10,3 @@ cp -r ../../src/e-voting/sources/e-voting/gui-public/* ./gui-public;
 #cp -r .././src/e-voting/sources/e-voting/gui-public/* ./gui-public;
 cp -r ./gui-public/app/default-server-properties.js ./gui-public/app/server-properties.js;
 cp -r ../html ./;
-cd ./gui-public;
-/bin/echo '{ "directory": "app/bower_components" }' > ./.bowerrc;
-npm install;
-sudo npm install -g bower;
-bower update;
