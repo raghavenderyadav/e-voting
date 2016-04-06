@@ -191,7 +191,7 @@ public class NxtWalletManager implements WalletManager {
             keyToValue.put("deadline", "60");
         }, SendTransactionResponse.class);
         if (transaction != null)
-            return transaction.getTransactionId();
+            return Long.toString(Long.parseUnsignedLong(transaction.getTransactionId()));
         return null;
     }
 
