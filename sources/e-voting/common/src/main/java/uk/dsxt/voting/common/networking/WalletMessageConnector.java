@@ -179,7 +179,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     break;
                 case TYPE_VOTE_STATUS:
                     if (!masterId.equals(messageContent.getAuthor())) {
-                        log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
+                        log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId, holderId);
                         break;
                     }
                     VoteStatus status = serializer.deserializeVoteStatus(body);
@@ -187,7 +187,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     break;
                 case TYPE_VOTING:
                     if (!masterId.equals(messageContent.getAuthor())) {
-                        log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
+                        log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId, holderId);
                         break;
                     }
                     Voting voting = serializer.deserializeVoting(body);
@@ -195,7 +195,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     break;
                 case TYPE_VOTING_TOTAL_RESULT:
                     if (!masterId.equals(messageContent.getAuthor())) {
-                        log.error("TYPE_VOTING_TOTAL_RESULT message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId);
+                        log.error("TYPE_VOTING_TOTAL_RESULT message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId, holderId);
                         break;
                     }
                     VoteResult result = serializer.deserializeVoteResult(body);
