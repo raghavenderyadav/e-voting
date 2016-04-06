@@ -24,6 +24,9 @@ package uk.dsxt.voting.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import uk.dsxt.voting.client.datamodel.ClientCredentials;
@@ -50,7 +53,7 @@ public class TestDataGenerator {
 
     private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
 
-    @Data
+    @Value
     @AllArgsConstructor
     class ClientFullInfo {
         Map<String, BigDecimal> packetSizeBySecurity;
@@ -62,13 +65,15 @@ public class TestDataGenerator {
         String name;
         VoteResult vote;
         List<ClientFullInfo> clients;
+        @NonFinal
+        @Setter
         boolean isVictim;
+        @NonFinal
+        @Setter
         boolean isHonest;
+        @NonFinal
+        @Setter
         String walletOffShedule;
-    }
-
-    private class Recursive<FI> {
-        public FI recursive;
     }
 
     public static void main(String[] args) {
@@ -126,59 +131,27 @@ public class TestDataGenerator {
                 role = ParticipantRole.NominalHolder;
             else
                 role = ParticipantRole.Owner;
-            HashMap<String, BigDecimal> map = new HashMap<>();
-            map.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
-            clients[i] = new ClientFullInfo(map, i, 0, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), null, null, false, true, "");
+            HashMap<String, BigDecimal> securities = new HashMap<>();
+            securities.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
+            int ownerIdx = role == ParticipantRole.NRD ? -1 : randomInt(0, Math.min(i, holdersCount)-1);
+            VoteResult vote = role != ParticipantRole.Owner ? null : generateVote(Integer.toString(i), securities, voting);
+            clients[i] = new ClientFullInfo(securities, i, ownerIdx, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), vote, new ArrayList<>(), false, true, "");
             participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
+            if (role != ParticipantRole.NRD) {
+                clients[ownerIdx].clients.add(clients[i]);
+                for(ownerIdx = clients[ownerIdx].getHolderId(); ownerIdx >= 0; ownerIdx = clients[ownerIdx].getHolderId()) {
+                    for(Map.Entry<String, BigDecimal> secEntry : securities.entrySet()) {
+                        clients[ownerIdx].getPacketSizeBySecurity().put(secEntry.getKey(), clients[ownerIdx].getPacketSizeBySecurity().get(secEntry.getKey()).add(secEntry.getValue()));
+                    }
+                }
+            }
         }
+        
         if (victimsCount > 0) {
             ThreadLocalRandom.current().ints(1, holdersCount - 1).distinct().limit(victimsCount).forEach(i -> clients[i].setVictim(true));
             ThreadLocalRandom.current().ints(1, holdersCount - 1).filter(i -> !clients[i].isVictim()).distinct().limit(victimsCount).forEach(i -> clients[i].setHonest(false));
         }
-        //generating random nodes tree
-        int[] counters = {1, 0, 0};
-        int minNdClient = 1;
-        Recursive<BiConsumer<Integer, Integer>> generateTree = new Recursive<>();
-        generateTree.recursive = (id, height) -> {
-            ClientFullInfo currentNode = clients[id];
-            List<ClientFullInfo> children = new ArrayList<>();
-            if (height + 1 != levelsCount && holdersCount > counters[0]) {
-                //Generate sub nd
-                int maxCount = holdersCount - counters[0];
-                int undistributed = height == levelsCount ? maxCount : randomInt(1, maxCount);
-                for (int i = 0; i < undistributed; i++) {
-                    int index = counters[0]++;
-                    ClientFullInfo subND = clients[index];
-                    subND.setHolderId(id);
-                    children.add(subND);
-                }
-            }
-            //Generate owners
-            int maxCount = (totalParticipant - holdersCount - counters[1]) - (holdersCount - counters[2]) * minNdClient;
-            int undistributed = randomInt(minNdClient, maxCount);
-            for (int i = 0; i < undistributed; i++) {
-                ClientFullInfo child = clients[holdersCount + counters[1]++];
-                child.setVote(generateVote(child, voting));
-                children.add(child);
-            }
-            counters[2]++;
-            currentNode.setClients(children);
-            //Generate next level
-            for (ClientFullInfo child : children) {
-                if (child.getRole() != ParticipantRole.Owner)
-                    generateTree.recursive.accept(child.getId(), height + 1);
-            }
-            currentNode.setPacketSizeBySecurity(children.stream().map(ClientFullInfo::getPacketSizeBySecurity).reduce(new HashMap<>(), (map1, map2) -> {
-                for (String key : map2.keySet()) {
-                    BigDecimal old = map1.get(key);
-                    map1.put(key, (old == null ? BigDecimal.ZERO : old).add(map2.get(key)));
-                }
-                return map1;
-            }));
-        };
-
-        generateTree.recursive.accept(0, 0);
-
+        
         saveData(clients, participants, name, voting, holdersCount, vmCount, minutes, generateVotes, generateDisconnect, disconnectNodes);
     }
 
@@ -198,8 +171,8 @@ public class TestDataGenerator {
         FileUtils.writeStringToFile(new File("credentials00.json"), string);
     }
 
-    private static VoteResult generateVote(ClientFullInfo child, Voting voting) {
-        VoteResult vote = new VoteResult(voting.getId(), Integer.toString(child.getId()), child.getPacketSizeBySecurity().get(SECURITY));
+    private static VoteResult generateVote(String id, HashMap<String, BigDecimal> securities, Voting voting) {
+        VoteResult vote = new VoteResult(voting.getId(), id, securities.get(SECURITY));
         for (int j = 0; j < voting.getQuestions().length; j++) {
             String questionId = voting.getQuestions()[j].getId();
 
@@ -207,14 +180,14 @@ public class TestDataGenerator {
                 BigDecimal totalSum = BigDecimal.ZERO;
                 for (int i = 0; i < voting.getQuestions()[j].getAnswers().length; i++) {
                     String answerId = voting.getQuestions()[j].getAnswers()[i].getId();
-                    int amount = randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).subtract(totalSum).intValue());
+                    int amount = randomInt(0, vote.getPacketSize().subtract(totalSum).intValue());
                     BigDecimal voteAmount = new BigDecimal(amount);
                     totalSum = totalSum.add(voteAmount);
                     vote.setAnswer(questionId, answerId, voteAmount);
                 }
             } else {
                 String answerId = voting.getQuestions()[j].getAnswers()[randomInt(0, voting.getQuestions()[j].getAnswers().length - 1)].getId();
-                BigDecimal voteAmount = new BigDecimal(randomInt(0, child.getPacketSizeBySecurity().get(SECURITY).intValue()));
+                BigDecimal voteAmount = new BigDecimal(randomInt(0, vote.getPacketSize().intValue()));
                 vote.setAnswer(questionId, answerId, voteAmount);
             }
         }
