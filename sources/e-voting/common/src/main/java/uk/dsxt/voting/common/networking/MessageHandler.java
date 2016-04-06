@@ -42,7 +42,7 @@ public class MessageHandler {
         void handleNewMessage(MessageContent messageContent, String messageId);
     }
 
-    private static final long MAX_MESSAGE_DELAY = 10 * 60 * 1000;
+    private static final long MAX_MESSAGE_DELAY = 30 * 60 * 1000;
 
     protected final WalletManager walletManager;
 
