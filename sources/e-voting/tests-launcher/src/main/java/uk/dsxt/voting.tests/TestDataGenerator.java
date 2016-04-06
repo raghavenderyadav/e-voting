@@ -139,7 +139,7 @@ public class TestDataGenerator {
             participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
             if (role != ParticipantRole.NRD) {
                 clients[ownerIdx].clients.add(clients[i]);
-                for(ownerIdx = clients[ownerIdx].getHolderId(); ownerIdx >= 0; ownerIdx = clients[ownerIdx].getHolderId()) {
+                for(; ownerIdx >= 0; ownerIdx = clients[ownerIdx].getHolderId()) {
                     for(Map.Entry<String, BigDecimal> secEntry : securities.entrySet()) {
                         clients[ownerIdx].getPacketSizeBySecurity().put(secEntry.getKey(), clients[ownerIdx].getPacketSizeBySecurity().get(secEntry.getKey()).add(secEntry.getValue()));
                     }
