@@ -37,7 +37,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
     private final String MAIN_ADDRESS;
     private final String MASTER_NODE_NAME = "master";
     private final Function<Integer, String> NODE_NAME = id -> id == 0 ? MASTER_NODE_NAME : String.format("node_%d", id);
-    private final String PATH_TO_ISTALL_SCRIPT = "ssh/createNode.sh";
+    private final String PATH_TO_INSTALL_SCRIPT = "ssh/createNode.sh";
+    private final String PATH_TO_UPDATE_FE_SCRIPT = "ssh/updateFrontend.sh";
 
     private final String VOTING_DESCRIPTION = "voting.txt";
     private final String NET_CONFIGURATION = "net.txt";
@@ -106,6 +107,8 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
             updateBuilds();
         if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateNodes")))
             installOrUpdateNodes();
+        if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateFrontend")))
+            installOrUpdateFrontends();
         if (Boolean.parseBoolean(properties.getProperty("vm.installOrUpdateScenario")))
             installOrUpdateScenario();
         if (Boolean.parseBoolean(properties.getProperty("vm.runScenario"))) {
@@ -161,7 +164,7 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                                      String webHost, String directory, int portShift, String nxtBlacklist) throws Exception {
         final int currentWebPort = MASTER_APP_PORT + portShift;
         String pathToConfig = WORK_DIR + "build/" + directory + "/client.properties";
-        String resourceString = PropertiesHelper.getResourceString(PATH_TO_ISTALL_SCRIPT);
+        String resourceString = PropertiesHelper.getResourceString(PATH_TO_INSTALL_SCRIPT);
         log.debug(makeCmd(session, resourceString.replace("$1", directory)));
         String backendConfig = makeCmd(session, String.format("cat %s", pathToConfig));
         log.debug(String.format("Initial backend config: %s%n", backendConfig));
@@ -268,6 +271,17 @@ public class RemoteTestsLauncher implements BaseTestsLauncher {
                     NODE_NAME.apply(currentNodeId),
                     currentNodeId,
                     nodeInfo.getBlacklist());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void installOrUpdateFrontends() throws Exception {
+        iterateByAllNodes((session, currentNodeId) -> {
+            try {
+                String resourceString = PropertiesHelper.getResourceString(PATH_TO_UPDATE_FE_SCRIPT);
+                log.debug(makeCmd(session, resourceString.replace("$1", NODE_NAME.apply(currentNodeId))));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
