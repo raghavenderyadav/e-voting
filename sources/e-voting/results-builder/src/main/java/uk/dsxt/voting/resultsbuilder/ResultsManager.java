@@ -22,9 +22,9 @@
 package uk.dsxt.voting.resultsbuilder;
 
 import lombok.extern.log4j.Log4j2;
+import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VotedAnswer;
-import uk.dsxt.voting.common.demo.ResultsBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -98,11 +98,11 @@ public class ResultsManager implements ResultsBuilder {
         StringBuilder builder = new StringBuilder();
         builder.append(System.lineSeparator());
         List<String> keys = result.getAnswers().stream().map(VotedAnswer::getKey).sorted().collect(Collectors.toList());
-        int prevQuestionId = -1;
+        String prevQuestionId = "default";
         for (String key : keys) {
             String[] answerAndQuestion = key.split("-");
-            int questionId = Integer.valueOf(answerAndQuestion[0]);
-            if (questionId != prevQuestionId) {
+            String questionId = answerAndQuestion[0];
+            if (!questionId.equals(prevQuestionId)) {
                 builder.append(String.format("  Votes on question #%s:", questionId));
                 builder.append(System.lineSeparator());
                 prevQuestionId = questionId;
