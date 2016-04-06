@@ -64,6 +64,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
     private final Consumer<String> stateSaver;
+    
+    private final static long VOTE_MAX_DELAY = 60000;
 
     public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey,
                       VoteAcceptor parentHolder, String state, Consumer<String> stateSaver)
@@ -119,7 +121,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                         if (!cryptoHelper.verifySignature(inputMessage, clientSignature, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
                             status = VoteResultStatus.SignatureFailed;
                         } else {
-                            status = addVoteAndHandleErrors(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData, voteDigest);
+                            status = addVoteAndHandleErrors(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData, voteDigest, System.currentTimeMillis());
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                         status = VoteResultStatus.SignatureFailed;
@@ -138,8 +140,10 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
     }
 
-    private synchronized VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, BigDecimal packetSize, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) throws InternalLogicException {
-        VoteResultStatus status = checkVote(votingRecord, client, packetSize, clientPacketResidual);
+    private synchronized VoteResultStatus addVoteAndHandleErrors(VotingRecord votingRecord, Client client, String transactionId, 
+                                                                 BigDecimal packetSize, BigDecimal clientPacketResidual, 
+                                                                 String encryptedData, String voteDigest, long voteTimestamp) throws InternalLogicException {
+        VoteResultStatus status = checkVote(votingRecord, client, packetSize, clientPacketResidual, voteTimestamp);
         if (status != VoteResultStatus.OK) {
             network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } else {
@@ -148,12 +152,12 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         return status;
     }
 
-    private synchronized VoteResultStatus checkVote(VotingRecord votingRecord, Client client, BigDecimal packetSize, BigDecimal clientPacketResidual) {
-        if (votingRecord.voting.getBeginTimestamp() > System.currentTimeMillis()) {
+    private synchronized VoteResultStatus checkVote(VotingRecord votingRecord, Client client, BigDecimal packetSize, BigDecimal clientPacketResidual, long timestamp) {
+        if (votingRecord.voting.getBeginTimestamp() > timestamp) {
             log.warn("checkVote. Voting {} does not begin yet. client={}", votingRecord.voting.getId(), client.getParticipantId());
             return VoteResultStatus.IncorrectMessage;
         }
-        if (votingRecord.voting.getEndTimestamp() < System.currentTimeMillis()) {
+        if (votingRecord.voting.getEndTimestamp() < timestamp - VOTE_MAX_DELAY) {
             log.warn("checkVote. Voting {} already ends. client={}", votingRecord.voting.getId(), client.getParticipantId());
             return VoteResultStatus.IncorrectMessage;
         }
@@ -282,7 +286,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not calculate hash");
         }
         addVoteAndHandleErrors(votingRecord, client, tranId, result.getPacketSize(), client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
-            encryptToMasterNode(result.getHolderId(), signature), voteDigest);
+            encryptToMasterNode(result.getHolderId(), signature), voteDigest, System.currentTimeMillis());
         votingRecord.clientResultsByClientId.put(result.getHolderId(), result);
         votingRecord.clientResultMessageIdsByClientId.put(result.getHolderId(), tranId);
         
