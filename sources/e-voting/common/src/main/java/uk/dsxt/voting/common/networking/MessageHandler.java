@@ -112,7 +112,7 @@ public class MessageHandler {
     }
 
     private void checkNewMessages() {
-        log.debug("checkNewMessages begins");
+        //log.debug("checkNewMessages begins");
         long now = System.currentTimeMillis();
         List<Message> newMessages = walletManager.getNewMessages(Math.max(0, lastNewMessagesRequestTime-MAX_MESSAGE_DELAY));
         lastNewMessagesRequestTime = now;
@@ -122,7 +122,7 @@ public class MessageHandler {
         }
         int handledCnt = 0, skippedCnt = 0, errorsCnt = 0;
         for(Message message : newMessages) {
-            log.debug("checkNewMessages. id={}", message.getId());
+            //log.debug("checkNewMessages. id={}", message.getId());
             if (!handledMessageIDs.add(message.getId())) {
                 skippedCnt++;
                 //log.debug("checkNewMessages. message skipped id={}", message.getId());
