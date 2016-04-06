@@ -126,7 +126,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 throw new InternalLogicException(String.format("send %s fails. holderId=%s", messageType, holderId));
             }
             else
-                log.info("{} sent. holderId={}", messageType, holderId);
+                log.info("{} sent. holderId={} id={}", messageType, holderId, id);
             return id;
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
@@ -178,10 +178,6 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     }
                     break;
                 case TYPE_VOTE_STATUS:
-                    if (!masterId.equals(messageContent.getAuthor())) {
-                        log.error("TYPE_VOTING message {} author {} is not master {}. holderId={}", messageId, messageContent.getAuthor(), masterId, holderId);
-                        break;
-                    }
                     VoteStatus status = serializer.deserializeVoteStatus(body);
                     sendMessage(r -> r.addVoteStatus(status));
                     break;
