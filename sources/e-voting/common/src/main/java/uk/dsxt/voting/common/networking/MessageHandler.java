@@ -125,7 +125,7 @@ public class MessageHandler {
             log.debug("checkNewMessages. id={}", message.getId());
             if (!handledMessageIDs.add(message.getId())) {
                 skippedCnt++;
-                log.debug("checkNewMessages. message skipped id={}", message.getId());
+                //log.debug("checkNewMessages. message skipped id={}", message.getId());
                 continue;
             }
             try {
@@ -146,9 +146,9 @@ public class MessageHandler {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
                     continue;
                 }
-                log.debug("checkNewMessages. message id={} signature verified", message.getId());
+                //log.debug("checkNewMessages. message id={} signature verified", message.getId());
                 handleNewMessage(messageContent, message.getId());
-                log.debug("checkNewMessages. message id={} handled", message.getId());
+                //log.debug("checkNewMessages. message id={} handled", message.getId());
                 handledCnt++;
             } catch (Exception e) {
                 log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
