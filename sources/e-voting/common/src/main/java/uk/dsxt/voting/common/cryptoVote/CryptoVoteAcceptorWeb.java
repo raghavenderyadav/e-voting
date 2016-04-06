@@ -124,7 +124,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
-            log.info("sendNextVote. Vote sent, receipt {}", receipt);
+            log.info("sendNextVote. Vote sent, receipt.status={}", receipt.getStatus());
         } catch (IOException e) {
             log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }
