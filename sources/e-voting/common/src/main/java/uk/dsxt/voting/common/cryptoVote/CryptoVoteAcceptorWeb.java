@@ -53,7 +53,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
     
     private final ObjectMapper mapper = new ObjectMapper();
     
-    private final Queue<Map<String, String>> unsentVoteMessages = new ArrayQueue<>();
+    private final Queue<Map<String, String>> unsentVoteMessages = new ArrayQueue<>(1000, 1000);
     
     private final File receiptsFile;
 
