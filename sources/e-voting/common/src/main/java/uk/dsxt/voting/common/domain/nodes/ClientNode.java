@@ -102,6 +102,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     @Override
     public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, 
                                                    String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
+        log.debug("acceptVote votingId={} clientId={} packetSize={}", votingId, clientId, packetSize);
         String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
         VoteResultStatus status;
         VotingRecord votingRecord = votingsById.get(votingId);
@@ -151,7 +152,10 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         synchronized (votingRecord) {
             status = checkVote(votingRecord, client, packetSize, clientPacketResidual, voteTimestamp);
             if (status == VoteResultStatus.OK) {
-                log.debug("addVote. participantId={} votingId={} client={}", participantId, votingRecord.voting.getId(), client.getParticipantId());
+                log.debug("addVote. participantId={} votingId={} client={} packetSize={} oldTotalResidual={} oldClientResidual={} newClientPacketResidual={} newTotalResidual={}", 
+                    participantId, votingRecord.voting.getId(), client.getParticipantId(), packetSize,
+                    votingRecord.totalResidual, votingRecord.clientResidualsByClientId.get(client.getParticipantId()), 
+                    clientPacketResidual, votingRecord.totalResidual.subtract(packetSize));
                 votingRecord.clientResidualsByClientId.put(client.getParticipantId(), clientPacketResidual);
                 votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
             }
@@ -196,7 +200,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             prevResidual = client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity());
         }
         if (prevResidual.subtract(packetSize).compareTo(clientPacketResidual) != 0) {
-            log.warn("checkVote. invalid clientPacketResidual {} (expected {}). Voting={} client={}", clientPacketResidual, prevResidual.subtract(packetSize), votingRecord.voting.getId(), client.getParticipantId());
+            log.warn("checkVote. invalid clientPacketResidual {} (expected {}). Voting={} client={} packetSize={} prevResidual={}", 
+                clientPacketResidual, prevResidual.subtract(packetSize), votingRecord.voting.getId(), client.getParticipantId(), packetSize, prevResidual);
             return VoteResultStatus.IncorrectResidual;
         }
         
@@ -244,7 +249,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized VoteResultAndStatus getClientVote(String votingId, String clientId) {
+    public VoteResultAndStatus getClientVote(String votingId, String clientId) {
         VotingRecord votingRecord = votingsById.get(votingId);
         if (votingRecord == null) {
             return null;
@@ -265,7 +270,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     @Override
     public ClientVoteReceipt addClientVote(VoteResult result, String signature) throws InternalLogicException {
-        log.debug("addClientVote votingId={} ownerId={}", result.getVotingId(), result.getHolderId());
+        log.debug("addClientVote votingId={} ownerId={} packetSize={}", result.getVotingId(), result.getHolderId(), result.getPacketSize());
         VotingRecord votingRecord = votingsById.get(result.getVotingId());
         if (votingRecord == null) {
             throw new InternalLogicException(String.format("addClientVote. Voting not found. votingId=%s clientId=%s", result.getVotingId(), result.getHolderId()));

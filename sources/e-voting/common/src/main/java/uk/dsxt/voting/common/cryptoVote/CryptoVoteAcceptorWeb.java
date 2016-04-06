@@ -37,10 +37,7 @@ import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -116,7 +113,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         if (receiptsFile != null) {
             try {
-                Files.write(receiptsFile.toPath(), Arrays.asList(result), Charset.forName("utf-8"), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+                Files.write(receiptsFile.toPath(), Collections.singletonList(result), Charset.forName("utf-8"), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 log.warn("sendNextVote. Couldn't save result to file: {}. error={}", receiptsFile.getAbsolutePath(), e.getMessage());
             }
@@ -124,7 +121,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
-            log.info("sendNextVote. Vote sent, receipt.status={}", receipt.getStatus());
+            log.info("sendNextVote. Vote sent, receipt.status={} clientPacketResidual={} packetSize={}", receipt.getStatus(), parameters.get("clientPacketResidual"), parameters.get("packetSize"));
         } catch (IOException e) {
             log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }
