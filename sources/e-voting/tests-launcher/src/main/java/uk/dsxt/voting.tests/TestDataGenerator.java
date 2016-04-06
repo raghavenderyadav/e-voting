@@ -133,7 +133,7 @@ public class TestDataGenerator {
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> securities = new HashMap<>();
             securities.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
-            int ownerIdx = role == ParticipantRole.NRD ? -1 : randomInt(0, Math.min(i, holdersCount)-1);
+            int ownerIdx = role == ParticipantRole.NRD ? -1 : i < 6 ? 0 : randomInt(0, Math.min(i, holdersCount)-1);
             VoteResult vote = role != ParticipantRole.Owner ? null : generateVote(Integer.toString(i), securities, voting);
             clients[i] = new ClientFullInfo(securities, i, ownerIdx, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), vote, new ArrayList<>(), false, true, "");
             participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
