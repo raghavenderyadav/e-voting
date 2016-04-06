@@ -35,4 +35,10 @@ public final class CollectionsHelper {
         return value;
     }
 
+    public static <K, V> V synchronizedGetOrAdd(Map<K, V> map, K key, Supplier<V> constructor) {
+        synchronized (map) {
+            return getOrAdd(map, key, constructor);
+        }
+    }
+
 }

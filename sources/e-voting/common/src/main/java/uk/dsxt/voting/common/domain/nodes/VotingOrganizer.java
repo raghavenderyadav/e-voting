@@ -24,6 +24,7 @@ package uk.dsxt.voting.common.domain.nodes;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
+import uk.dsxt.voting.common.utils.CollectionsHelper;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
@@ -57,11 +58,15 @@ public class VotingOrganizer implements NetworkClient {
 
     private final PublicKey publicKey;
 
+    private static class MessageRecord {
+        VoteResult result;
+        String serializedResult;
+        List<VoteStatus> statuses = new ArrayList<>();
+    }
+
     private static class VotingRecord {
         Voting voting;
-        Map<String, VoteResult> resultsByMessageId = new HashMap<>();
-        Map<String, String> serializedResultsByMessageId = new HashMap<>();
-        List<VoteStatus> statuses = new ArrayList<>();
+        Map<String, MessageRecord> resultsByMessageId = new HashMap<>();
     }
 
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
@@ -93,48 +98,64 @@ public class VotingOrganizer implements NetworkClient {
 
     private synchronized void calculateResults(String votingId) {
         log.info("calculateResults started. votingId={}", votingId);
-        VotingRecord votingRecord = votingsById.get(votingId);
+        VotingRecord votingRecord;
+        synchronized (votingsById) {
+            votingRecord = votingsById.get(votingId);
+        }
         if (votingRecord == null) {
             log.warn("calculateResults. Voting not found {}", votingId);
             return;
         }
         VoteResult totalResult = new VoteResult(votingId, null);
-        for (Map.Entry<String, VoteResult> resultEntry : votingRecord.resultsByMessageId.entrySet()) {
-            String messageId = resultEntry.getKey();
-            VoteResult result = resultEntry.getValue();
-            String voteString = votingRecord.serializedResultsByMessageId.get(messageId);
-            for (VoteStatus status : votingRecord.statuses) {
-                if (!status.getMessageId().equals(messageId))
-                    continue;
-                if (status.getStatus() != VoteResultStatus.OK) {
-                    log.info("calculateResults. Skip result due its VoteStatus {}. messageId={} ownerId={}", status.getStatus(), messageId, result.getHolderId());
-                    continue;
-                }
-                String error = result.findError(votingRecord.voting);
-                if (error != null) {
-                    log.info("calculateResults. Skip incorrect result. messageId={} ownerId={} error={}", status.getStatus(), messageId, result.getHolderId(), error);
-                    continue;
-                }
-                try {
-                    if (!cryptoHelper.verifySignature(result.getHolderId(), status.getVoteSign(), publicKey)) {
-                        log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
+        synchronized (votingRecord) {
+            for (Map.Entry<String, MessageRecord> resultEntry : votingRecord.resultsByMessageId.entrySet()) {
+                String messageId = resultEntry.getKey();
+                MessageRecord messageRecord = resultEntry.getValue();
+                synchronized (messageRecord) {
+                    if (messageRecord.result == null) {
+                        log.warn("calculateResults. messageRecord without result. messageId={}", messageId);
                         continue;
                     }
-                } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
-                    continue;
-                }
-                try {
-                    if (!cryptoHelper.getDigest(voteString).equals(status.getVoteDigest())) {
-                        log.error("calculateResults. VoteStatus vote digest is incorrect. messageId={} ownerId={}", messageId, result.getHolderId());
+                    String voteString = messageRecord.serializedResult;
+                    VoteResult result = messageRecord.result;
+                    if (messageRecord.statuses.size() == 0) {
+                        log.warn("calculateResults. messageRecord without status. messageId={} ownerId={}", messageId, result.getHolderId());
                         continue;
+                    } else if (messageRecord.statuses.size() > 1) {
+                        log.warn("calculateResults. messageRecord with {} statuses. messageId={} ownerId={}", messageRecord.statuses.size(), messageId, result.getHolderId());
                     }
-                } catch (NoSuchAlgorithmException e) {
-                    log.error("calculateResults. getDigest failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
-                    continue;
+                    for (VoteStatus status : messageRecord.statuses) {
+                        if (status.getStatus() != VoteResultStatus.OK) {
+                            log.info("calculateResults. Skip result due its VoteStatus {}. messageId={} ownerId={}", status.getStatus(), messageId, result.getHolderId());
+                            continue;
+                        }
+                        String error = result.findError(votingRecord.voting);
+                        if (error != null) {
+                            log.warn("calculateResults. Skip incorrect result. messageId={} ownerId={} error={}", status.getStatus(), messageId, result.getHolderId(), error);
+                            continue;
+                        }
+                        try {
+                            if (!cryptoHelper.verifySignature(result.getHolderId(), status.getVoteSign(), publicKey)) {
+                                log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
+                                continue;
+                            }
+                        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                            log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                            continue;
+                        }
+                        try {
+                            if (!cryptoHelper.getDigest(voteString).equals(status.getVoteDigest())) {
+                                log.error("calculateResults. VoteStatus vote digest is incorrect. messageId={} ownerId={}", messageId, result.getHolderId());
+                                continue;
+                            }
+                        } catch (NoSuchAlgorithmException e) {
+                            log.error("calculateResults. getDigest failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                            continue;
+                        }
+                        totalResult.add(result);
+                        break;
+                    }
                 }
-                totalResult.add(result);
-                break;
             }
         }
         try {
@@ -147,12 +168,10 @@ public class VotingOrganizer implements NetworkClient {
 
     @Override
     public synchronized void addVoting(Voting voting) {
-        VotingRecord votingRecord = votingsById.get(voting.getId());
-        if (votingRecord == null) {
-            votingRecord = new VotingRecord();
-            votingsById.put(voting.getId(), votingRecord);
+        VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, voting.getId(), VotingRecord::new);
+        synchronized (votingRecord) {
+            votingRecord.voting = voting;
         }
-        votingRecord.voting = voting;
     }
 
     @Override
@@ -161,22 +180,24 @@ public class VotingOrganizer implements NetworkClient {
 
     @Override
     public synchronized void addVoteStatus(VoteStatus status) {
-        VotingRecord votingRecord = votingsById.get(status.getVotingId());
-        if (votingRecord == null) {
-            votingRecord = new VotingRecord();
-            votingsById.put(status.getVotingId(), votingRecord);
+        VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, status.getVotingId(), VotingRecord::new);
+        synchronized (votingRecord) {
+            MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, status.getMessageId(), MessageRecord::new);
+            synchronized (messageRecord) {
+                messageRecord.statuses.add(status);
+            }
         }
-        votingRecord.statuses.add(status);
     }
 
     @Override
     public void addVote(VoteResult result, String messageId, String serializedResult) {
-        VotingRecord votingRecord = votingsById.get(result.getVotingId());
-        if (votingRecord == null) {
-            votingRecord = new VotingRecord();
-            votingsById.put(result.getVotingId(), votingRecord);
+        VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, result.getVotingId(), VotingRecord::new);
+        synchronized (votingRecord) {
+            MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, messageId, MessageRecord::new);
+            synchronized (messageRecord) {
+                messageRecord.result = result;
+                messageRecord.serializedResult = serializedResult;
+            }
         }
-        votingRecord.resultsByMessageId.put(messageId, result);
-        votingRecord.serializedResultsByMessageId.put(messageId, serializedResult);
     }
 }
