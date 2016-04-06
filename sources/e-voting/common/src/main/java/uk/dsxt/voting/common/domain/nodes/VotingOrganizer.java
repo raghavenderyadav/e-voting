@@ -58,6 +58,8 @@ public class VotingOrganizer implements NetworkClient {
 
     private final PublicKey publicKey;
 
+    private final long calculateResultsDelay;
+
     private static class MessageRecord {
         VoteResult result;
         String serializedResult;
@@ -71,13 +73,14 @@ public class VotingOrganizer implements NetworkClient {
 
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey)
+    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey, long calculateResultsDelay)
         throws InternalLogicException, GeneralSecurityException {
         calculateResultsService = Executors.newScheduledThreadPool(10);
         this.messagesSerializer = messagesSerializer;
         this.privateKey = privateKey;
         this.cryptoHelper = cryptoProvider;
         this.participantsById = participantsById;
+        this.calculateResultsDelay = calculateResultsDelay;
         publicKey = cryptoHelper.loadPublicKey(participantsById.get(MasterNode.MASTER_HOLDER_ID).getPublicKey());
     }
 
@@ -92,7 +95,7 @@ public class VotingOrganizer implements NetworkClient {
         } catch (InternalLogicException e) {
             log.error("addNewVoting. addVoting failed. votingId={}", voting.getId(), e);
         }
-        calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + 60000, TimeUnit.MILLISECONDS);
+        calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + calculateResultsDelay, TimeUnit.MILLISECONDS);
         log.info("addNewVoting. Voting added. votingId={}", voting.getId());
     }
 

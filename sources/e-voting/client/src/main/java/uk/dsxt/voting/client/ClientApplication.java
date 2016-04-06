@@ -101,7 +101,8 @@ public class ClientApplication extends ResourceConfig {
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
-            votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            int calculateResultsDelay = Integer.parseInt(properties.getProperty("calculate.results.delay", "60")) * 1000;
+            votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, calculateResultsDelay);
             walletMessageConnector.addClient(votingOrganizer);
             clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
             acceptorWeb = null;
