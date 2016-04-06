@@ -64,7 +64,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         acceptVoteUrl = String.format("%s%s", baseUrl, ACCEPT_VOTE_URL_PART);
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
         receiptsFile = receiptsFilePath == null || receiptsFilePath.isEmpty() ? null : new File(receiptsFilePath);
-        scheduler.scheduleWithFixedDelay(this::sendNextVote, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::sendNextVote, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     @Override
