@@ -40,6 +40,11 @@ public class NxtWalletManager implements WalletManager {
     private Process nxtProcess;
     private boolean isForgeNow = false;
     private boolean isInitialized = false;
+    
+    private String lastBlockId;
+
+    private Set<String> loadedTransactions = new HashSet<>();
+    private Set<String> loadedBlocks = new HashSet<>();
 
     public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase) {
         this.nxtPropertiesPath = nxtPropertiesPath;
@@ -199,8 +204,10 @@ public class NxtWalletManager implements WalletManager {
     public List<Message> getNewMessages(long timestamp) {
         Set<String> resultIds = new HashSet<>();
         List<Message> result = new ArrayList<>();
-        List<Message> confirmedMessages = getConfirmedMessages(timestamp);
-        List<Message> unconfirmedMessages = getUnconfirmedMessages(timestamp);
+        List<Message> confirmedMessages = getConfirmedMessages();
+        List<Message> unconfirmedMessages = getUnconfirmedMessages();
+        log.debug("getNewMessages confirmed={} unconfirmed={}", 
+            confirmedMessages == null ? "null" : Integer.toString(confirmedMessages.size()), unconfirmedMessages == null ? "null" : Integer.toString(unconfirmedMessages.size()) );        
         if (confirmedMessages != null) {
             resultIds.addAll(confirmedMessages.stream().map(Message::getId).collect(Collectors.toList()));
             confirmedMessages.stream().forEach(result::add);
@@ -211,37 +218,46 @@ public class NxtWalletManager implements WalletManager {
         return result;
     }
 
-    private List<Message> getConfirmedMessages(long timestamp) {
-        TransactionsResponse result = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
-            keyToValue.put("account", mainAddress);
-            keyToValue.put("timestamp", "0");
-            keyToValue.put("withMessage", "true");
-        }, TransactionsResponse.class);
-        if (result == null)
-            return null;
-        try {
-            return Arrays.asList(result.getTransactions()).stream().
-                map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
-                collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("getConfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
-            return null;
+    private List<Message> getConfirmedMessages() {
+        List<Message> result = new ArrayList<>();
+        
+        BlockchainStatusResponse statusResult = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_STATUS, keyToValue -> {}, BlockchainStatusResponse.class);
+        for(String blockId = statusResult.getLastBlock(); blockId != null && !loadedBlocks.contains(blockId);) {
+            final String currentBlock = blockId;
+            BlockResponse blockResponse = sendApiRequest(WalletRequestType.GET_BLOCK, keyToValue -> {
+                keyToValue.put("block", currentBlock);
+                keyToValue.put("timestamp", "0");
+            }, BlockResponse.class);
+            for(String transactionId : blockResponse.getTransactions()) {
+                if (!loadedTransactions.contains(transactionId)) {
+                    Transaction transaction = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
+                        keyToValue.put("transaction", transactionId);
+                    }, Transaction.class);
+                    if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
+                        result.add(new Message(transactionId, transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
+                    }
+                    loadedTransactions.add(transactionId);
+                }
+            }
+            
+            loadedBlocks.add(blockId);
+            blockId = blockResponse.getPreviousBlock();
         }
+        return result;
     }
 
-    private List<Message> getUnconfirmedMessages(long timestamp) {
-        long secondsTimestamp = timestamp / 1000;
+    private List<Message> getUnconfirmedMessages() {
         UnconfirmedTransactionsResponse result = sendApiRequest(WalletRequestType.GET_UNCONFIRMED_TRANSACTIONS,
             keyToValue -> keyToValue.put("account", mainAddress), UnconfirmedTransactionsResponse.class);
         if (result == null)
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
-                filter(t -> t.getAttachment().isMessageIsText() && t.getTimestamp() >= secondsTimestamp).
+                filter(t -> t.getAttachment().isMessageIsText() && !loadedTransactions.add(t.getTransaction())).
                 map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                 collect(Collectors.toList());
         } catch (Exception e) {
-            log.error("getUnconfirmedMessages[{}] failed. Message: {}", timestamp, e.getMessage());
+            log.error("getUnconfirmedMessages failed. Message: {}", e.getMessage());
             return null;
         }
     }
