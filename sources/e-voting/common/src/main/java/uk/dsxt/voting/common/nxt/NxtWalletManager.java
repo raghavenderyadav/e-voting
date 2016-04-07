@@ -196,7 +196,7 @@ public class NxtWalletManager implements WalletManager {
             keyToValue.put("deadline", "60");
         }, SendTransactionResponse.class);
         if (transaction != null)
-            return Long.toString(Long.parseUnsignedLong(transaction.getTransactionId()));
+            return getNxtId(transaction.getTransactionId());
         return null;
     }
 
@@ -219,28 +219,40 @@ public class NxtWalletManager implements WalletManager {
     }
 
     private List<Message> getConfirmedMessages() {
-        List<Message> result = new ArrayList<>();
-        
         BlockchainStatusResponse statusResult = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_STATUS, keyToValue -> {}, BlockchainStatusResponse.class);
+        if (statusResult == null)
+            return null;
+        List<Message> result = new ArrayList<>();
         for(String blockId = statusResult.getLastBlock(); blockId != null && !loadedBlocks.contains(blockId);) {
             final String currentBlock = blockId;
             BlockResponse blockResponse = sendApiRequest(WalletRequestType.GET_BLOCK, keyToValue -> {
                 keyToValue.put("block", currentBlock);
                 keyToValue.put("timestamp", "0");
             }, BlockResponse.class);
+            if (blockResponse == null)
+                break;
+            boolean breakOnTransaction = false;
+            int tranCnt = 0;
             for(String transactionId : blockResponse.getTransactions()) {
                 if (!loadedTransactions.contains(transactionId)) {
                     Transaction transaction = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
                         keyToValue.put("transaction", transactionId);
                     }, Transaction.class);
+                    if (transaction == null) {
+                        breakOnTransaction = true;
+                        break;
+                    }
                     if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
-                        result.add(new Message(transactionId, transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
+                        result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
+                        tranCnt++;
                     }
                     loadedTransactions.add(transactionId);
                 }
             }
-            
-            loadedBlocks.add(blockId);
+            if (!breakOnTransaction) {
+                loadedBlocks.add(blockId);
+                log.debug("getConfirmedMessages loaded {} transactions from block {}", tranCnt, getNxtId(blockId));                
+            }
             blockId = blockResponse.getPreviousBlock();
         }
         return result;
@@ -254,7 +266,7 @@ public class NxtWalletManager implements WalletManager {
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                 filter(t -> t.getAttachment().isMessageIsText() && !loadedTransactions.add(t.getTransaction())).
-                map(t -> new Message(t.getTransaction(), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                 collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages failed. Message: {}", e.getMessage());
@@ -305,5 +317,9 @@ public class NxtWalletManager implements WalletManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getNxtId(String id) {
+        return Long.toString(Long.parseUnsignedLong(id));
     }
 }
