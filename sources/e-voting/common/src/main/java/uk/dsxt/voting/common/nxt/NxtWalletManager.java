@@ -232,26 +232,32 @@ public class NxtWalletManager implements WalletManager {
             if (blockResponse == null)
                 break;
             boolean breakOnTransaction = false;
-            int tranCnt = 0;
+            int allCnt = 0, dupCnt = 0, loadedCnt = 0, otherCnt = 0;
             for(String transactionId : blockResponse.getTransactions()) {
+                allCnt++;
                 if (!loadedTransactions.contains(transactionId)) {
                     Transaction transaction = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
                         keyToValue.put("transaction", transactionId);
                     }, Transaction.class);
                     if (transaction == null) {
                         breakOnTransaction = true;
+                        log.warn("break on transaction {} in block {}", getNxtId(transactionId), getNxtId(blockId));
                         break;
                     }
                     if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
                         result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
-                        tranCnt++;
+                        loadedCnt++;
+                    } else {
+                        log.debug("transaction without attachment {} in block {}", getNxtId(transactionId), getNxtId(blockId));
+                        otherCnt++;
                     }
                     loadedTransactions.add(transactionId);
-                }
+                } else
+                    dupCnt++;
             }
             if (!breakOnTransaction) {
                 loadedBlocks.add(blockId);
-                log.debug("getConfirmedMessages loaded {} transactions from block {}", tranCnt, getNxtId(blockId));                
+                log.debug("getConfirmedMessages all {} duplicates {} loaded {} other {} transactions from block {}", allCnt, dupCnt, loadedCnt, otherCnt, getNxtId(blockId));                
             }
             blockId = blockResponse.getPreviousBlock();
         }
