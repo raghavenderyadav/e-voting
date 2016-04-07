@@ -70,7 +70,7 @@ public class NodeCommunicationTest {
             "false",
             "true",
             "./gui-public/app",
-            "http://127.0.0.1:9000/holderAPI",
+            "http://127.0.0.1:9005/holderAPI",
             "credentials6.json",
             "clients6.json",
             "", //"state5.txt",
