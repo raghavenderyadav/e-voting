@@ -273,7 +273,7 @@ public class NxtWalletManager implements WalletManager {
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
-                filter(t -> t.getAttachment() != null && t.getAttachment().isMessageIsText() && !loadedTransactions.add(t.getTransaction())).
+                filter(t -> t.getAttachment() != null && t.getAttachment().isMessageIsText() && loadedTransactions.add(t.getTransaction())).
                 map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                 collect(Collectors.toList());
         } catch (Exception e) {
