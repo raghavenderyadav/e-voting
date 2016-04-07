@@ -103,7 +103,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
             log.error("sendNextVote failed. url={}", acceptVoteUrl, e);
             return;
         }
-        if (result == null) {
+        if (result == null || result.isEmpty()) {
             log.error("sendNextVote. result == null. url={}", acceptVoteUrl);
             return;
         }
@@ -115,7 +115,7 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
             try {
                 Files.write(receiptsFile.toPath(), Collections.singletonList(result), Charset.forName("utf-8"), StandardOpenOption.APPEND, StandardOpenOption.CREATE);
             } catch (IOException e) {
-                log.warn("sendNextVote. Couldn't save result to file: {}. error={}", receiptsFile.getAbsolutePath(), e.getMessage());
+                log.warn("sendNextVote. Couldn't save result to file: {}. result='{}' error={}", receiptsFile.getAbsolutePath(), result, e.getMessage());
             }
             
         }
