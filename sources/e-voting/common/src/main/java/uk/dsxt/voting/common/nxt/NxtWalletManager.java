@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.nxt.walletapi.*;
@@ -244,11 +245,12 @@ public class NxtWalletManager implements WalletManager {
                         log.warn("break on transaction {} in block {}", getNxtId(transactionId), getNxtId(blockId));
                         break;
                     }
-                    if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
+                    if (transaction.getAttachment() != null && transaction.getAttachment().getMessage() != null) {
                         result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
                         loadedCnt++;
                     } else {
-                        log.debug("transaction without attachment {} in block {}", getNxtId(transactionId), getNxtId(blockId));
+                        log.debug("transaction without message {} in block {} at {} type {}", 
+                            getNxtId(transactionId), getNxtId(blockId), new Instant(transaction.getTimestamp()* 1000L), transaction.getType());
                         otherCnt++;
                     }
                     loadedTransactions.add(transactionId);
@@ -271,7 +273,7 @@ public class NxtWalletManager implements WalletManager {
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
-                filter(t -> t.getAttachment().isMessageIsText() && !loadedTransactions.add(t.getTransaction())).
+                filter(t -> t.getAttachment() != null && t.getAttachment().getMessage() != null && !loadedTransactions.add(t.getTransaction())).
                 map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                 collect(Collectors.toList());
         } catch (Exception e) {
