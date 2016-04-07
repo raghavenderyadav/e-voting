@@ -47,7 +47,7 @@ public class NxtWalletManager implements WalletManager {
     private Set<String> loadedTransactions = new HashSet<>();
     private Set<String> loadedBlocks = new HashSet<>();
 
-    public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase) {
+    public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase, int connectionTimeout, int readTimeout) {
         this.nxtPropertiesPath = nxtPropertiesPath;
         this.name = name;
         this.mainAddress = mainAddress;
@@ -65,7 +65,7 @@ public class NxtWalletManager implements WalletManager {
             }
         }
 
-        httpHelper = new HttpHelper(5000, 5000);
+        httpHelper = new HttpHelper(connectionTimeout, readTimeout);
 
         mapper = new ObjectMapper();
         mapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
