@@ -129,7 +129,7 @@ public class MessageHandler {
                 continue;
             }
             try {
-                log.debug("checkNewMessages. handle message id={}", message.getId());
+                //log.debug("checkNewMessages. handle message id={}", message.getId());
                 MessageContent messageContent = new MessageContent(message.getBody());
                 if (messageContent == null) {
                     log.debug("checkNewMessages. message id={} has no content", message.getId());
@@ -141,7 +141,7 @@ public class MessageHandler {
                     log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
                     continue;
                 }
-                log.debug("checkNewMessages. message id={} has key", message.getId());
+                //log.debug("checkNewMessages. message id={} has key", message.getId());
                 if (!messageContent.checkSign(authorKey, cryptoHelper)) {
                     log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
                     continue;
