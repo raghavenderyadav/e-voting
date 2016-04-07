@@ -62,7 +62,7 @@ public class VotingOrganizer implements NetworkClient {
 
     private static class MessageRecord {
         VoteResult result;
-        String serializedResult;
+        String resultDigest;
         List<VoteStatus> statuses = new ArrayList<>();
     }
 
@@ -119,7 +119,6 @@ public class VotingOrganizer implements NetworkClient {
                         log.warn("calculateResults. messageRecord without result. messageId={}", messageId);
                         continue;
                     }
-                    String voteString = messageRecord.serializedResult;
                     VoteResult result = messageRecord.result;
                     if (messageRecord.statuses.size() == 0) {
                         log.warn("calculateResults. messageRecord without status. messageId={} ownerId={}", messageId, result.getHolderId());
@@ -146,13 +145,8 @@ public class VotingOrganizer implements NetworkClient {
                             log.error("calculateResults. VoteStatus verify signature failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
                             continue;
                         }
-                        try {
-                            if (!cryptoHelper.getDigest(voteString).equals(status.getVoteDigest())) {
-                                log.error("calculateResults. VoteStatus vote digest is incorrect. messageId={} ownerId={}", messageId, result.getHolderId());
-                                continue;
-                            }
-                        } catch (NoSuchAlgorithmException e) {
-                            log.error("calculateResults. getDigest failed. messageId={} ownerId={} error={}", messageId, result.getHolderId(), e.getMessage());
+                        if (messageRecord.resultDigest == null || !messageRecord.resultDigest.equals(status.getVoteDigest())) {
+                            log.error("calculateResults. VoteStatus vote digest is incorrect. messageId={} ownerId={}", messageId, result.getHolderId());
                             continue;
                         }
                         totalResult.add(result);
@@ -199,7 +193,11 @@ public class VotingOrganizer implements NetworkClient {
             MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, messageId, MessageRecord::new);
             synchronized (messageRecord) {
                 messageRecord.result = result;
-                messageRecord.serializedResult = serializedResult;
+                try {
+                    messageRecord.resultDigest = cryptoHelper.getDigest(serializedResult);
+                } catch (NoSuchAlgorithmException e) {
+                    log.error("addVote. getDigest failed: {}", e.getMessage());
+                }
             }
         }
     }
