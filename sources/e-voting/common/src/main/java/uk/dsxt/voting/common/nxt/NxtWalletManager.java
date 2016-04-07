@@ -237,7 +237,7 @@ public class NxtWalletManager implements WalletManager {
             for(String transactionId : blockResponse.getTransactions()) {
                 allCnt++;
                 if (!loadedTransactions.contains(transactionId)) {
-                    Transaction transaction = sendApiRequest(WalletRequestType.GET_BLOCKCHAIN_TRANSACTIONS, keyToValue -> {
+                    Transaction transaction = sendApiRequest(WalletRequestType.GET_TRANSACTION, keyToValue -> {
                         keyToValue.put("transaction", transactionId);
                     }, Transaction.class);
                     if (transaction == null) {
@@ -245,7 +245,7 @@ public class NxtWalletManager implements WalletManager {
                         log.warn("break on transaction {} in block {}", getNxtId(transactionId), getNxtId(blockId));
                         break;
                     }
-                    if (transaction.getAttachment() != null && transaction.getAttachment().getMessage() != null) {
+                    if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
                         result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
                         loadedCnt++;
                     } else {
@@ -273,7 +273,7 @@ public class NxtWalletManager implements WalletManager {
             return null;
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
-                filter(t -> t.getAttachment() != null && t.getAttachment().getMessage() != null && !loadedTransactions.add(t.getTransaction())).
+                filter(t -> t.getAttachment() != null && t.getAttachment().isMessageIsText() && !loadedTransactions.add(t.getTransaction())).
                 map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
                 collect(Collectors.toList());
         } catch (Exception e) {
