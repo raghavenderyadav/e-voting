@@ -59,11 +59,21 @@ public class VoteScheduler {
                 long delay = Integer.parseInt(terms[0]);
                 if (delay <= 0) {
                     log.debug("Immediate vote votingId={} ownerId={}", voteResult.getVotingId(), voteResult.getHolderId());
-                    assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
+                    try {
+                        assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
+                    } catch (InternalLogicException e) {
+                        log.error("addClientVote votingId={} ownerId={} failed: {}", voteResult.getVotingId(), voteResult.getHolderId(), e.getMessage());
+                    }
                 } else {
                     delay += shift;
                     log.debug("Schedule vote votingId={} ownerId={} on {}", voteResult.getVotingId(), voteResult.getHolderId(), new Instant(System.currentTimeMillis() + delay*1000));
-                    scheduler.schedule(() -> assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE), delay, TimeUnit.SECONDS);
+                    scheduler.schedule(() ->{
+                        try {
+                            assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
+                        } catch (InternalLogicException e) {
+                            log.error("addClientVote votingId={} ownerId={} failed: {}", voteResult.getVotingId(), voteResult.getHolderId(), e.getMessage());
+                        }
+                    } , delay, TimeUnit.SECONDS);
                 }
 
                 cnt++;
