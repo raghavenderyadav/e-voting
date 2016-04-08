@@ -150,6 +150,7 @@ public class VotingOrganizer implements NetworkClient {
                             continue;
                         }
                         totalResult.add(result);
+                        log.debug("calculateResults. votingId={}. Add vote from {} packetSize={} sumSize={}", votingId, result.getHolderId(), result.getPacketSize(), totalResult.getPacketSize());
                         break;
                     }
                 }
