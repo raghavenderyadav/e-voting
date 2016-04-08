@@ -76,29 +76,31 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVoting(Voting voting) throws InternalLogicException {
+    public String addVoting(Voting voting) {
         return send(TYPE_VOTING, serializer.serialize(voting));
     }
 
     @Override
-    public String addVotingTotalResult(VoteResult result, Voting voting) throws InternalLogicException {
+    public String addVotingTotalResult(VoteResult result, Voting voting) {
+        String body;
         try {
-            return send(TYPE_VOTING_TOTAL_RESULT, serializer.serialize(result, voting));
+            body = serializer.serialize(result, voting);
         } catch (InternalLogicException e) {
             log.error("addVotingTotalResult. Serialization failed. holderId={} votingId={}", result.getHolderId(), result.getVotingId());
             return null;
         }
+        return send(TYPE_VOTING_TOTAL_RESULT, body);
     }
 
     @Override
-    public String addVoteStatus(VoteStatus status) throws InternalLogicException {
+    public String addVoteStatus(VoteStatus status) {
         String id = send(TYPE_VOTE_STATUS, serializer.serialize(status));
         log.debug("addVoteStatus. vote messageId={} status={} status messageId={}", status.getMessageId(), status.getStatus(), id);
         return id;
     }
 
     @Override
-    public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) throws InternalLogicException {
+    public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) {
         Participant participant = participantsById.get(masterId);
         if (participant == null) {
             log.error("addVote. master node {} not found holderId={}", masterId, holderId);
@@ -119,13 +121,14 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         return send(TYPE_VOTE, encryptedMessage);
     }
 
-    private String send(String messageType, String messageBody) throws InternalLogicException {
+    private String send(String messageType, String messageBody) {
         Map<String, String> fields = new HashMap<>();
         fields.put(FIELD_BODY, messageBody);
         try {
             String id = walletManager.sendMessage(MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields));
             if (id == null) {
-                throw new InternalLogicException(String.format("send %s fails. holderId=%s", messageType, holderId));
+                log.error("send {} fails. holderId={}", messageType, holderId);
+                return null;
             }
             else
                 log.info("{} sent. holderId={} id={}", messageType, holderId, id);
