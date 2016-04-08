@@ -129,11 +129,6 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
             log.info("sendNextVote. Vote sent, receipt.status={} clientPacketResidual={} packetSize={}", receipt.getStatus(), parameters.get("clientPacketResidual"), parameters.get("packetSize"));
-            if (receipt.getStatus() != VoteResultStatus.OK) {
-                BigDecimal packetSize = new BigDecimal(parameters.get("packetSize"));
-                skippedPacketSize = skippedPacketSize == null ? packetSize : skippedPacketSize.add(packetSize);
-                log.warn("sendNextVote. skippedPacketSize={} packetSize={}", skippedPacketSize, packetSize);
-            }
         } catch (IOException e) {
             log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }

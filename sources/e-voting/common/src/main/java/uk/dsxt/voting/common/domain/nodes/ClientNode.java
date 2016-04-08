@@ -185,6 +185,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                         parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
                     }
                 }
+            } else if (status == VoteResultStatus.TooLowResidual) {
+                votingRecord.clientResidualsByClientId.put(client.getParticipantId(), clientPacketResidual);
+                votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
             }
         }
         if (status != VoteResultStatus.OK) {
@@ -214,11 +217,14 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (prevResidual == null) {
             prevResidual = client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity());
         }
-        if (prevResidual.subtract(packetSize).compareTo(clientPacketResidual) != 0) {
-            log.warn("checkVote. invalid clientPacketResidual {} (expected {}). Voting={} client={} packetSize={} prevResidual={}", 
+        int compareResult = prevResidual.subtract(packetSize).compareTo(clientPacketResidual);
+        if (compareResult < 0) {
+            log.warn("checkVote. Too big clientPacketResidual {} (expected {}). Voting={} client={} packetSize={} prevResidual={}", 
                 clientPacketResidual, prevResidual.subtract(packetSize), votingRecord.voting.getId(), client.getParticipantId(), packetSize, prevResidual);
-            return VoteResultStatus.IncorrectResidual;
-        }
+            return VoteResultStatus.TooBigResidual;
+        } else if (compareResult > 0)
+            log.warn("checkVote. Too low clientPacketResidual {} (expected {}). Voting={} client={} packetSize={} prevResidual={}",
+                clientPacketResidual, prevResidual.subtract(packetSize), votingRecord.voting.getId(), client.getParticipantId(), packetSize, prevResidual);
         
         return VoteResultStatus.OK;
     }

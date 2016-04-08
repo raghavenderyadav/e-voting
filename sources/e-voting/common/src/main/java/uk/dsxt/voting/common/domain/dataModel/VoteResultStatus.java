@@ -25,6 +25,7 @@ public enum VoteResultStatus {
     OK,
     SignatureFailed,
     IncorrectMessage,
-    IncorrectResidual,
+    TooBigResidual,
+    TooLowResidual,
     InternalError,
 }
