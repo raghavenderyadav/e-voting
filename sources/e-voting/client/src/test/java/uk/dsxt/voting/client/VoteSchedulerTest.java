@@ -56,7 +56,7 @@ public class VoteSchedulerTest {
             return new ClientVoteReceipt("", "1", "", 0, "");
         }).when(client).addClientVote(anyObject(), anyString());
 
-        VoteScheduler scheduler = new VoteScheduler(client, messages, "001");
+        VoteScheduler scheduler = new VoteScheduler(client, messages, "001", 0);
         Thread.sleep(100);
 
         assertEquals(2, sentResults.size());
