@@ -314,6 +314,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not sign vote");
         }
         String tranId = network.addVote(result, serializedVote, signature, nodeSignature);
+        if (tranId == null)
+            throw new InternalLogicException(String.format("addClientVote. Can not add vote to blockchain. votingId=%s clientId=%s", result.getVotingId(), result.getHolderId()));
         String voteDigest;
         try {
             voteDigest = cryptoHelper.getDigest(serializedVote);
