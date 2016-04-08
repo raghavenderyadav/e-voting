@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import org.eclipse.jetty.util.ArrayQueue;
 import uk.dsxt.voting.common.demo.NetworkConnectorDemo;
 import uk.dsxt.voting.common.domain.dataModel.NodeVoteReceipt;
+import uk.dsxt.voting.common.domain.dataModel.VoteResultStatus;
 import uk.dsxt.voting.common.domain.nodes.VoteAcceptor;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.web.HttpHelper;
@@ -58,6 +59,8 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
     private final File receiptsFile;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    
+    private BigDecimal skippedPacketSize;
 
     public CryptoVoteAcceptorWeb(String baseUrl, int connectionTimeout, int readTimeout, String receiptsFilePath) {
         super();
@@ -93,6 +96,10 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         if (parameters == null)
             return;
+        if (skippedPacketSize != null) {
+            BigDecimal clientPacketResidual = new BigDecimal(parameters.get("clientPacketResidual"));
+            parameters.put("clientPacketResidual", clientPacketResidual.add(skippedPacketSize).toPlainString());
+        }
         String result;
         try {
             result = httpHelper.request(acceptVoteUrl, parameters, RequestType.POST);
@@ -122,6 +129,11 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
             log.info("sendNextVote. Vote sent, receipt.status={} clientPacketResidual={} packetSize={}", receipt.getStatus(), parameters.get("clientPacketResidual"), parameters.get("packetSize"));
+            if (receipt.getStatus() != VoteResultStatus.OK) {
+                BigDecimal packetSize = new BigDecimal(parameters.get("packetSize"));
+                skippedPacketSize = skippedPacketSize == null ? packetSize : skippedPacketSize.add(packetSize);
+                log.warn("sendNextVote. skippedPacketSize={} packetSize={}", skippedPacketSize, packetSize);
+            }
         } catch (IOException e) {
             log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }
