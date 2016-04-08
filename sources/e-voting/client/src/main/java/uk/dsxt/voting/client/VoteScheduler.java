@@ -36,7 +36,7 @@ public class VoteScheduler {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
-    public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId) throws InternalLogicException {
+    public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId, long shift) throws InternalLogicException {
 
         if (messagesFileContent == null) {
             log.info("messagesFile not found");
@@ -44,7 +44,8 @@ public class VoteScheduler {
         }
 
         String[] lines = messagesFileContent.split("\\r?\\n");
-        int cnt = 0, maxDelay = 0;
+        int cnt = 0;
+        long maxDelay = 0;
         for (String line : lines) {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#"))
@@ -55,11 +56,12 @@ public class VoteScheduler {
                 if (terms.length < 2 || terms.length > 3)
                     throw new IllegalArgumentException(String.format("Vote schedule record can not be created from string with %d terms (%s)", terms.length, line));
                 VoteResult voteResult = new VoteResult(terms[1]);
-                int delay = Integer.parseInt(terms[0]);
+                long delay = Integer.parseInt(terms[0]);
                 if (delay <= 0) {
                     log.debug("Immediate vote votingId={} ownerId={}", voteResult.getVotingId(), voteResult.getHolderId());
                     assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE);
                 } else {
+                    delay += shift;
                     log.debug("Schedule vote votingId={} ownerId={} on {}", voteResult.getVotingId(), voteResult.getHolderId(), new Instant(System.currentTimeMillis() + delay*1000));
                     scheduler.schedule(() -> assetsHolder.addClientVote(voteResult, AssetsHolder.EMPTY_SIGNATURE), delay, TimeUnit.SECONDS);
                 }

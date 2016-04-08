@@ -27,9 +27,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import uk.dsxt.voting.client.auth.AuthManager;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.cryptoVote.CryptoVoteAcceptorWeb;
+import uk.dsxt.voting.common.demo.ResultBilderDecorator;
 import uk.dsxt.voting.common.demo.ResultsBuilder;
 import uk.dsxt.voting.common.demo.ResultsBuilderWeb;
-import uk.dsxt.voting.common.demo.ResultBilderDecorator;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
@@ -144,7 +144,7 @@ public class ClientApplication extends ResourceConfig {
         HolderApiResource holderApiResource = new HolderApiResource(clientNode);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
-        voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId);
+        voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId, 2 * (newMessagesRequestInterval / 1000));
         networkScheduler = walletOffSchedule == null ? null : new NetworkScheduler(walletOffSchedule, walletManager, acceptorWeb, holderApiResource);
     }
 
