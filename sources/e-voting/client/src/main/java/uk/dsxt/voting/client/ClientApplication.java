@@ -136,19 +136,7 @@ public class ClientApplication extends ResourceConfig {
                     long now = System.currentTimeMillis();
                     voting = new Voting(voting.getId(), voting.getName(), now, now + voting.getEndTimestamp() - voting.getBeginTimestamp(), voting.getQuestions(), voting.getSecurity());
                 }
-                boolean found = false;
-                while (!found) {
-                    votingOrganizer.addNewVoting(voting);
-                    Thread.sleep(10000);
-                    for (Voting receivedVoting : clientNode.getVotings()) {
-                        if (voting.getId().equals(receivedVoting.getId())) {
-                            log.debug("Voting with id {} was accepted", voting.getId());
-                            found = true;
-                            break;
-                        }
-                    }
-                    log.debug("Voting with id {} was not accepted yet", voting.getId());
-                }
+                votingOrganizer.addNewVoting(voting);
             }
         }
 
