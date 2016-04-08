@@ -107,6 +107,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         VoteResultStatus status;
         VotingRecord votingRecord = votingsById.get(votingId);
         if (votingRecord == null) {
+            log.error("acceptVote. voting not found. clientId={} transactionId={}", clientId, transactionId);
             status = VoteResultStatus.IncorrectMessage;
         } else {
             Client client;
@@ -114,21 +115,26 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                 client = votingRecord.clients.get(clientId);
             }
             if (client == null) {
+                log.error("acceptVote. client not found. clientId={} transactionId={}", clientId, transactionId);
                 status = VoteResultStatus.IncorrectMessage;
             } else {
                 Participant participant = participantsById.get(clientId);
                 if (participant == null) {
+                    log.error("acceptVote. participant not found. clientId={} transactionId={}", clientId, transactionId);
                     status = VoteResultStatus.IncorrectMessage;
                 } else if (participant.getPublicKey() == null) {
+                    log.error("acceptVote. participant has no public key. clientId={} transactionId={}", clientId, transactionId);
                     status = VoteResultStatus.IncorrectMessage;
                 } else {
                     try {
                         if (!cryptoHelper.verifySignature(inputMessage, clientSignature, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                            log.error("acceptVote. Signature is incorrect. clientId={} transactionId={}", clientId, transactionId);
                             status = VoteResultStatus.SignatureFailed;
                         } else {
                             status = addVoteAndHandleErrors(votingRecord, client, transactionId, packetSize, clientPacketResidual, encryptedData, voteDigest, System.currentTimeMillis());
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                        log.error("acceptVote. verifySignature failed. clientId={} transactionId={} error={}", clientId, transactionId, e.getMessage());
                         status = VoteResultStatus.SignatureFailed;
                     }
                 }
@@ -140,7 +146,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         try {
             receiptSign = cryptoHelper.createSignature(signedText, privateKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            throw new InternalLogicException("Can not sign vote");
+            throw new InternalLogicException(String.format("Can not sign vote clientId=%s transactionId=%s", clientId, transactionId));
         }
         return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
     }

@@ -93,7 +93,7 @@ public class MasterNode extends ClientNode {
             try {
                 decryptedData = cryptoHelper.decrypt(encryptedData, privateKey);
             } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                log.error("handleVote. Failed to decrypt data. error={}", e.getMessage());
+                log.error("handleVote. Failed to decrypt data. transactionId={} error={}", transactionId, e.getMessage());
                 return VoteResultStatus.SignatureFailed;
             }
             String[] decryptedParts = MessageBuilder.splitMessage(decryptedData);
@@ -102,20 +102,20 @@ public class MasterNode extends ClientNode {
                 if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
                     Participant participant = participantsById.get(decryptedParts[0]);
                     if (participant == null) {
-                        log.error("handleVote. Owner {} not found", decryptedParts[0]);
+                        log.error("handleVote. Owner {} not found. transactionId={}", decryptedParts[0], transactionId);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     if (participant.getPublicKey() == null) {
-                        log.error("handleVote. Owner {} has no public key", decryptedParts[0]);
+                        log.error("handleVote. Owner {} has no public key. transactionId={}", decryptedParts[0], transactionId);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
                         if (!cryptoHelper.verifySignature(decryptedParts[0], sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
-                            log.error("handleVote. Invalid signature of owner {}", decryptedParts[0]);
+                            log.error("handleVote. Invalid signature of owner {}. transactionId={}", decryptedParts[0], transactionId);
                             return VoteResultStatus.SignatureFailed;
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                        log.error("handleVote. Failed to check owner signature. participantId={} error={}", decryptedParts[0], e.getMessage());
+                        log.error("handleVote. Failed to check owner signature. participantId={} transactionId={} error={}", decryptedParts[0], transactionId, e.getMessage());
                         return VoteResultStatus.SignatureFailed;
                     }
                 }
@@ -134,24 +134,24 @@ public class MasterNode extends ClientNode {
                 String sign = decryptedParts[2];
                 Participant participant = participantsById.get(participantId);
                 if (participant == null) {
-                    log.error("handleVote. Participant {} not found", participantId);
+                    log.error("handleVote. Participant {} not found. transactionId={}", participantId, transactionId);
                     return VoteResultStatus.IncorrectMessage;
                 }
                 if (participant.getPublicKey() == null) {
-                    log.error("handleVote. Participant {} has no public key", participantId);
+                    log.error("handleVote. Participant {} has no public key. transactionId={}", participantId, transactionId);
                     return VoteResultStatus.IncorrectMessage;
                 }
                 try {
                     if (!cryptoHelper.verifySignature(MessageBuilder.buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
-                        log.error("handleVote. Invalid signature of participant {}", participantId);
+                        log.error("handleVote. Invalid signature of participant {}. transactionId={}", participantId, transactionId);
                         return VoteResultStatus.SignatureFailed;
                     }
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("handleVote. Failed to check participant signature. participantId={} error={}", participantId, e.getMessage());
+                    log.error("handleVote. Failed to check participant signature. participantId={}. transactionId={} error={}", participantId, transactionId, e.getMessage());
                     return VoteResultStatus.SignatureFailed;
                 }
             } else {
-                log.error("handleVote. decryptedData contains {} parts.", decryptedParts.length);
+                log.error("handleVote. decryptedData contains {}. transactionId={} parts.", transactionId, decryptedParts.length);
                 return VoteResultStatus.IncorrectMessage;
             }
         }
