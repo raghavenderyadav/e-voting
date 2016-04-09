@@ -190,15 +190,17 @@ public class VotingOrganizer implements NetworkClient {
     @Override
     public void addVote(VoteResult result, String messageId, String serializedResult) {
         VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, result.getVotingId(), VotingRecord::new);
+        String digest = null;
+        try {
+            digest = cryptoHelper.getDigest(serializedResult);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("addVote. getDigest failed: {}", e.getMessage());
+        }
         synchronized (votingRecord) {
             MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, messageId, MessageRecord::new);
             synchronized (messageRecord) {
                 messageRecord.result = result;
-                try {
-                    messageRecord.resultDigest = cryptoHelper.getDigest(serializedResult);
-                } catch (NoSuchAlgorithmException e) {
-                    log.error("addVote. getDigest failed: {}", e.getMessage());
-                }
+                messageRecord.resultDigest = digest;
             }
         }
     }
