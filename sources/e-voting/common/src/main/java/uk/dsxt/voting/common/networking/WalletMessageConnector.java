@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -69,6 +71,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final String holderId;
 
     private final String masterId;
+    
+    private final ExecutorService voteMessagesExecutor = Executors.newFixedThreadPool(10);
 
     public void addClient(NetworkClient client) {
         messageReceivers.add(client);
@@ -156,31 +160,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             switch (type) {
                 case TYPE_VOTE:
-                    if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                        String decryptedBody;
-                        try {
-                            decryptedBody = cryptoHelper.decrypt(body, privateKey);
-                        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                            log.error("Undecrypted VOTE message {}. holderId={}", messageId, holderId);
-                            break;
-                        }
-                        String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
-                        if (messageParts.length != 3) {
-                            log.error("VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
-                            break;
-                        }
-                        VoteResult result = serializer.deserializeVoteResult(messageParts[0]);
-                        if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
-                            !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
-                            log.error("VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
-                            break;
-                        }
-                        if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], cryptoHelper.loadPublicKey(participantsById.get(messageContent.getAuthor()).getPublicKey()))) {
-                            log.error("VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
-                            break;
-                        }
-                        sendMessage(r -> r.addVote(result, messageId, messageParts[0]));
-                    }
+                    voteMessagesExecutor.submit(() -> handleVote(messageContent, messageId, body));
                     break;
                 case TYPE_VOTE_STATUS:
                     VoteStatus status = serializer.deserializeVoteStatus(body);
@@ -205,8 +185,46 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 default:
                     log.warn("handleNewMessage. Unknown message type: {} messageId={} holderId={}", type, messageId, holderId);
             }
-        } catch (GeneralSecurityException | UnsupportedEncodingException | InternalLogicException e) {
+        } catch (InternalLogicException e) {
             log.error("handleNewMessage fails. message type={} messageId={} holderId={}", type, messageId, holderId, e);
+        }
+    }
+
+    private void handleVote(MessageContent messageContent, String messageId, String body) {
+        if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
+            String decryptedBody;
+            try {
+                decryptedBody = cryptoHelper.decrypt(body, privateKey);
+            } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                log.error("handleVote. Undecrypted VOTE message {}. holderId={}", messageId, holderId);
+                return;
+            }
+            String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
+            if (messageParts.length != 3) {
+                log.error("handleVote. VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
+                return;
+            }
+            VoteResult result;
+            try {
+                result = serializer.deserializeVoteResult(messageParts[0]);
+            } catch (InternalLogicException e) {
+                log.error("handleVote fails. deserializeVoteResult fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
+                return;
+            }
+            try {
+                if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
+                    !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
+                    log.error("handleVote. VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
+                    return;
+                }
+                if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], cryptoHelper.loadPublicKey(participantsById.get(messageContent.getAuthor()).getPublicKey()))) {
+                    log.error("handleVote. VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
+                    return;
+                }
+            } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                log.error("handleVote fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
+            }
+            sendMessage(r -> r.addVote(result, messageId, messageParts[0]));
         }
     }
 }
