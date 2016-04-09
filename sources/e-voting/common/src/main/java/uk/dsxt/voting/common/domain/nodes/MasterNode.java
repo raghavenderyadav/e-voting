@@ -53,7 +53,7 @@ public class MasterNode extends ClientNode {
 
         @Override
         public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
-            handleVoteExecutor.submit(() -> handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest));
+            handleVoteExecutor.execute(() -> handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest));
             return null; 
         }
     }
