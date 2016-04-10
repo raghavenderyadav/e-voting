@@ -46,6 +46,27 @@ public class Iso20022Serializer extends SimpleSerializer {
     private static final String MULTI_ANSWER_TITLE = "candidate";
     private static final String SINGLE_ANSWER_TITLE = "resolution";
 
+    private final JAXBContext miContext;
+    private final JAXBContext mnContext;
+
+    public Iso20022Serializer() {
+        JAXBContext iContext, nContext;
+        try {
+            iContext = JAXBContext.newInstance(MeetingInstruction.class);
+        } catch (JAXBException e) {
+            log.error("Iso20022Serializer. create miContext failed: {}", e.getMessage());
+            iContext = null;
+        }
+        try {
+            nContext = JAXBContext.newInstance(MeetingNotification.class);
+        } catch (JAXBException e) {
+            log.error("Iso20022Serializer. create mnContext failed: {}", e.getMessage());
+            nContext = null;
+        }
+        miContext = iContext;
+        mnContext = nContext;
+    }
+    
     @Override
     public String serialize(Voting voting) {
         try {
@@ -95,8 +116,7 @@ public class Iso20022Serializer extends SimpleSerializer {
             MeetingNotification mn = new MeetingNotification();
             mn.setDocument(document);
             //convert JAXB object to string
-            JAXBContext context = JAXBContext.newInstance(MeetingNotification.class);
-            Marshaller m = context.createMarshaller();
+            Marshaller m = mnContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             m.marshal(mn, stream);
@@ -108,12 +128,11 @@ public class Iso20022Serializer extends SimpleSerializer {
 
     @Override
     public Voting deserializeVoting(String message) throws InternalLogicException {
-        MeetingNotification mn = null;
+        MeetingNotification mn;
         try {
-            JAXBContext miContext = JAXBContext.newInstance(MeetingNotification.class);
-            Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
-            StringReader miReader = new StringReader(message);
-            mn = (MeetingNotification) JAXBIntrospector.getValue(miUnmarshaller.unmarshal(miReader));
+            Unmarshaller unmarshaller = mnContext.createUnmarshaller();
+            StringReader reader = new StringReader(message);
+            mn = (MeetingNotification) JAXBIntrospector.getValue(unmarshaller.unmarshal(reader));
         } catch (JAXBException e) {
             throw new InternalLogicException(String.format("Couldn't deserialize message %s. Reason: %s", message, e.getMessage()));
         }
@@ -194,8 +213,7 @@ public class Iso20022Serializer extends SimpleSerializer {
         //convert JAXB object to string
         String voteResultString;
         try {
-            JAXBContext context = JAXBContext.newInstance(MeetingInstruction.class);
-            Marshaller m = context.createMarshaller();
+            Marshaller m = miContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             m.marshal(mi, stream);
@@ -214,14 +232,13 @@ public class Iso20022Serializer extends SimpleSerializer {
 
         MeetingInstruction mi;
         try {
-            JAXBContext miContext = JAXBContext.newInstance(MeetingInstruction.class);
-            Unmarshaller miUnmarshaller = miContext.createUnmarshaller();
-            StringReader miReader = new StringReader(messages[0]);
-            mi = (MeetingInstruction) JAXBIntrospector.getValue(miUnmarshaller.unmarshal(miReader));
+            Unmarshaller unmarshaller = miContext.createUnmarshaller();
+            StringReader reader = new StringReader(messages[0]);
+            mi = (MeetingInstruction) JAXBIntrospector.getValue(unmarshaller.unmarshal(reader));
         } catch (JAXBException e) {
             throw new InternalLogicException(String.format("Couldn't deserialize message %s. Reason: %s", messages[0], e.getMessage()));
         }
-
+        
         String votingId = mi.getDocument().getMtgInstr().getMtgRef().getMtgId();
         Instruction2 instruction = mi.getDocument().getMtgInstr().getInstr().get(0); // for now we suggest that there is only one instruction (without aggregation from ND)
         String holderId = instruction.getAcctDtls().getAcctId();
