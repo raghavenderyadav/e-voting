@@ -32,12 +32,13 @@ public class NxtWalletManager implements WalletManager {
     private final HttpHelper httpHelper;
     private final List<String> javaOptions = new ArrayList<>();
 
-    private String passphrase;
+    private final String passphrase;
+    private final String name;
+    private final String nxtPropertiesPath;
+    private final boolean useUncommittedTransactions;
+
     private String accountId;
     private String selfAccount;
-    private String name;
-    private String nxtPropertiesPath;
-
     private Process nxtProcess;
     private boolean isForgeNow = false;
     private boolean isInitialized = false;
@@ -47,11 +48,13 @@ public class NxtWalletManager implements WalletManager {
     private Set<String> loadedTransactions = new HashSet<>();
     private Set<String> loadedBlocks = new HashSet<>();
 
-    public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase, int connectionTimeout, int readTimeout) {
+    public NxtWalletManager(Properties properties, String nxtPropertiesPath, String name, String mainAddress, String passphrase, 
+                            int connectionTimeout, int readTimeout) {
         this.nxtPropertiesPath = nxtPropertiesPath;
         this.name = name;
         this.mainAddress = mainAddress;
         this.passphrase = passphrase;
+        this.useUncommittedTransactions = Boolean.valueOf(properties.getProperty("nxt.useUncommittedTransactions", Boolean.FALSE.toString()));
         workingDir = new File(System.getProperty("user.dir"));
         log.info("Working directory (user.dir): {}", workingDir.getAbsolutePath());
 
@@ -206,7 +209,7 @@ public class NxtWalletManager implements WalletManager {
         Set<String> resultIds = new HashSet<>();
         List<Message> result = new ArrayList<>();
         List<Message> confirmedMessages = getConfirmedMessages();
-        List<Message> unconfirmedMessages = getUnconfirmedMessages();
+        List<Message> unconfirmedMessages = useUncommittedTransactions ? getUnconfirmedMessages() : null;
         log.debug("getNewMessages confirmed={} unconfirmed={}", 
             confirmedMessages == null ? "null" : Integer.toString(confirmedMessages.size()), unconfirmedMessages == null ? "null" : Integer.toString(unconfirmedMessages.size()) );        
         if (confirmedMessages != null) {
