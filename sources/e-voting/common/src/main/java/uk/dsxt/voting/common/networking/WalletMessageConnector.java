@@ -153,18 +153,18 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    public void handleNewMessage(MessageContent messageContent, String messageId) {
+    public void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
         log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
         try {
             switch (type) {
                 case TYPE_VOTE:
-                    voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body));
+                    voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted));
                     break;
                 case TYPE_VOTE_STATUS:
                     VoteStatus status = serializer.deserializeVoteStatus(body);
-                    sendMessage(r -> r.addVoteStatus(status));
+                    sendMessage(r -> r.addVoteStatus(status, messageId, isCommitted));
                     break;
                 case TYPE_VOTING:
                     if (!masterId.equals(messageContent.getAuthor())) {
@@ -190,7 +190,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    private void handleVote(MessageContent messageContent, String messageId, String body) {
+    private void handleVote(MessageContent messageContent, String messageId, String body, boolean isCommitted) {
         try{
             if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
                 String decryptedBody;
@@ -225,7 +225,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("handleVote fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
                 }
-                sendMessage(r -> r.addVote(result, messageId, messageParts[0]));
+                sendMessage(r -> r.addVote(result, messageId, messageParts[0], isCommitted));
                 log.debug("VOTE handled  messageId={} holderId={}", messageId, holderId);
             }
         } catch (Exception e) {

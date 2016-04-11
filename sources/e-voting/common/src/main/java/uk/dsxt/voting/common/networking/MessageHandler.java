@@ -39,7 +39,7 @@ public class MessageHandler {
 
     @FunctionalInterface
     public interface MessageReceiver {
-        void handleNewMessage(MessageContent messageContent, String messageId);
+        void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted);
     }
 
     private static final long MAX_MESSAGE_DELAY = 30 * 60 * 1000;
@@ -147,7 +147,7 @@ public class MessageHandler {
                     continue;
                 }
                 //log.debug("checkNewMessages. message id={} signature verified", message.getId());
-                handleNewMessage(messageContent, message.getId());
+                handleNewMessage(messageContent, message.getId(), message.isCommitted());
                 //log.debug("checkNewMessages. message id={} handled", message.getId());
                 handledCnt++;
             } catch (Exception e) {
@@ -158,7 +158,7 @@ public class MessageHandler {
         log.debug("checkNewMessages ends handledCnt={}, skippedCnt={}, errorsCnt={}", handledCnt, skippedCnt, errorsCnt);
     }
 
-    protected void handleNewMessage(MessageContent messageContent, String messageId) {
-        messageReceiver.handleNewMessage(messageContent, messageId);
+    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
+        messageReceiver.handleNewMessage(messageContent, messageId, isCommitted);
     }
 }

@@ -33,7 +33,7 @@ public class MockWalletManager implements WalletManager {
             return null;
         synchronized (allMessages) {
             String id = String.format("MSG-%d", ++lastMessageId);
-            allMessages.add(new Message(id, body));
+            allMessages.add(new Message(id, body, true));
             return id;
         }
     }

@@ -43,12 +43,12 @@ public class MasterNode extends ClientNode {
     
     private final ExecutorService handleVoteExecutor = Executors.newFixedThreadPool(10);
 
-    public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
+    public MasterNode(long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
-        super(MASTER_HOLDER_ID, messagesSerializer, cryptoProvider, participantsById, privateKey, null, null, null);
+        super(MASTER_HOLDER_ID, confirmTimeout, messagesSerializer, cryptoProvider, participantsById, privateKey, null, null, null);
         parentHolder = new VoteChecker();
     }
-    
+
     private class VoteChecker implements VoteAcceptor {
 
         @Override
@@ -59,7 +59,7 @@ public class MasterNode extends ClientNode {
     }
     
     private void handleVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) {
-        VoteResultStatus status = null;
+        VoteResultStatus status;
         try {
             status = handleVote(transactionId, votingId, encryptedData, voteDigest);
         } catch (InternalLogicException e) {
@@ -67,24 +67,8 @@ public class MasterNode extends ClientNode {
             log.error("handleVote failed: {}", e.getMessage());
         }
         if (status != VoteResultStatus.OK) {
-            try {
-                network.addVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
-            } catch (InternalLogicException e) {
-                log.error("handleVote. addVoteStatus failed: {}", e.getMessage());
-            }
+            voteStatusSender.sendVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         }
-        /*
-        String inputMessage = buildMessage(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest);
-        long now = System.currentTimeMillis();
-        String signedText = MessageBuilder.buildMessage(inputMessage, Long.toString(now), status.toString());
-        String receiptSign;
-        try {
-            receiptSign = cryptoHelper.createSignature(signedText, privateKey);
-        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            throw new InternalLogicException("Can not sign vote");
-        }
-        return new NodeVoteReceipt(inputMessage, now, status, receiptSign);
-        */
     }
     
     private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) throws InternalLogicException {
@@ -126,7 +110,7 @@ public class MasterNode extends ClientNode {
                     log.error("handleVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
                     return VoteResultStatus.InternalError;
                 }
-                network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
+                voteStatusSender.sendVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
                 return VoteResultStatus.OK;
             } else if (decryptedParts.length == 3) {
                 encryptedData = decryptedParts[0];

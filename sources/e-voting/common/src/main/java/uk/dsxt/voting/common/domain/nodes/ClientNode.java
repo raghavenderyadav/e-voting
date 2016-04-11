@@ -21,6 +21,7 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
@@ -68,7 +69,10 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     
     private final static long VOTE_MAX_DELAY = 60000;
 
-    public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey,
+    @Getter
+    protected final VoteStatusSender voteStatusSender;
+
+    public ClientNode(String participantId, long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey,
                       VoteAcceptor parentHolder, String state, Consumer<String> stateSaver)
         throws InternalLogicException, GeneralSecurityException {
         this.participantId = participantId;
@@ -84,12 +88,14 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (masterNode.getPublicKey() == null)
             throw new InternalLogicException(String.format("Master node %s has no public key", MasterNode.MASTER_HOLDER_ID));
         masterNodePublicKey = cryptoProvider.loadPublicKey(masterNode.getPublicKey());
+        voteStatusSender = new VoteStatusSender(confirmTimeout);
         if (state != null)
             loadState(state);
     }
 
     @Override
     public void setNetworkMessagesSender(NetworkMessagesSender networkMessagesSender) {
+        voteStatusSender.setNetworkMessagesSender(networkMessagesSender);
         network = networkMessagesSender;
     }
 
@@ -191,7 +197,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             }
         }
         if (status != VoteResultStatus.OK) {
-            network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
+            voteStatusSender.sendVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } 
         return status;
     }
@@ -403,7 +409,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public void addVoteStatus(VoteStatus status) {
+    public void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted) {
         VotingRecord votingRecord = votingsById.get(status.getVotingId());
         if (votingRecord == null) {
             log.warn("addVoteStatus. Voting not found {}", status.getVotingId());
@@ -415,7 +421,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public synchronized void addVote(VoteResult result, String messageId, String serializedResult) {
+    public synchronized void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted) {
     }
 
     protected String buildMessage(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest) {

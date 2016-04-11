@@ -230,7 +230,7 @@ public class NxtWalletManager implements WalletManager {
                         break;
                     }
                     if (transaction.getAttachment() != null && transaction.getAttachment().isMessageIsText()) {
-                        result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8)));
+                        result.add(new Message(getNxtId(transactionId), transaction.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), true));
                         loadedCnt++;
                     } else {
                         log.debug("transaction without message {} in block {} at {} type {}", 
@@ -258,7 +258,7 @@ public class NxtWalletManager implements WalletManager {
         try {
             return Arrays.asList(result.getUnconfirmedTransactions()).stream().
                 filter(t -> t.getAttachment() != null && t.getAttachment().isMessageIsText() && loadedTransactions.add(t.getTransaction())).
-                map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8))).
+                map(t -> new Message(getNxtId(t.getTransaction()), t.getAttachment().getMessage().getBytes(StandardCharsets.UTF_8), false)).
                 collect(Collectors.toList());
         } catch (Exception e) {
             log.error("getUnconfirmedMessages failed. Message: {}", e.getMessage());

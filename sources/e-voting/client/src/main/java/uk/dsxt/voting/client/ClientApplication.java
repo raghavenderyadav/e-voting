@@ -98,19 +98,20 @@ public class ClientApplication extends ResourceConfig {
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
         CryptoVoteAcceptorWeb acceptorWeb;
+        long confirmTimeout = Integer.parseInt(properties.getProperty("messages.confirm.timeout", "180")) * 1000;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             int calculateResultsDelay = Integer.parseInt(properties.getProperty("calculate.results.delay", "60")) * 1000;
             votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, calculateResultsDelay);
             walletMessageConnector.addClient(votingOrganizer);
-            clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            clientNode = new MasterNode(confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
             acceptorWeb = null;
         } else {
             votingOrganizer = null;
             StateFileSerializer stateFileSerializer = new StateFileSerializer(stateFilePath);
             acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
-            clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb, stateFileSerializer.load(), stateFileSerializer::save);
+            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb, stateFileSerializer.load(), stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
 
@@ -120,6 +121,7 @@ public class ClientApplication extends ResourceConfig {
             ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
             walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
         }
+        walletMessageConnector.addClient(clientNode.getVoteStatusSender());
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnector::handleNewMessage);
 

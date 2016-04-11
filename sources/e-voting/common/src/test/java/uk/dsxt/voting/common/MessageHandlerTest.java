@@ -53,11 +53,11 @@ public class MessageHandlerTest {
 
         WalletManager walletManager = mock(WalletManager.class);
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("m0", MessageContent.buildOutputMessage("X0", "10", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
-        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
-        messages.add(new Message("m2", MessageContent.buildOutputMessage("X2", "01", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
-        messages.add(new Message("m3", MessageContent.buildOutputMessage("X3", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
-        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null)));
+        messages.add(new Message("m0", MessageContent.buildOutputMessage("X0", "10", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null), true));
+        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null), true));
+        messages.add(new Message("m2", MessageContent.buildOutputMessage("X2", "01", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null), true));
+        messages.add(new Message("m3", MessageContent.buildOutputMessage("X3", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null), true));
+        messages.add(new Message("m1", MessageContent.buildOutputMessage("X1", "00", cryptoHelper.loadPrivateKey(keys[0].getPrivateKey()), cryptoHelper, null), true));
         when(walletManager.getNewMessages(0)).thenReturn(messages);
 
         List<MessageContent> filteredContents = new ArrayList<>();
@@ -65,7 +65,7 @@ public class MessageHandlerTest {
 
         MessageHandler handler = new MessageHandler(walletManager, CryptoHelper.DEFAULT_CRYPTO_HELPER, participants) {
             @Override
-            protected void handleNewMessage(MessageContent messageContent, String messageId) {
+            protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
                 filteredContents.add(messageContent);
                 filteredIds.add(messageId);
             }
