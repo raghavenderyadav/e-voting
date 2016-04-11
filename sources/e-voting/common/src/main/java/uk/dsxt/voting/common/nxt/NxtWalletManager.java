@@ -40,10 +40,7 @@ public class NxtWalletManager implements WalletManager {
     private String accountId;
     private String selfAccount;
     private Process nxtProcess;
-    private boolean isForgeNow = false;
     private boolean isInitialized = false;
-    
-    private String lastBlockId;
 
     private Set<String> loadedTransactions = new HashSet<>();
     private Set<String> loadedBlocks = new HashSet<>();
@@ -95,8 +92,6 @@ public class NxtWalletManager implements WalletManager {
     }
 
     private <T> T sendApiRequest(WalletRequestType type, String secretPhrase, Consumer<Map<String, String>> argumentsBuilder, Class<T> tClass) {
-        if (type != WalletRequestType.GET_ACCOUNT_ID && type != WalletRequestType.GET_BLOCK)
-            waitInitialize();
         return sendApiRequest(type, keyToValue -> {
             keyToValue.put("secretPhrase", secretPhrase);
             argumentsBuilder.accept(keyToValue);
@@ -105,26 +100,12 @@ public class NxtWalletManager implements WalletManager {
 
     private <T> T sendApiRequest(WalletRequestType type, Consumer<Map<String, String>> argumentsBuilder, Class<T> tClass) {
         try {
-            if (type != WalletRequestType.GET_ACCOUNT_ID && type != WalletRequestType.GET_BLOCK)
+            if (type != WalletRequestType.GET_ACCOUNT_ID)
                 waitInitialize();
             Map<String, String> arguments = new LinkedHashMap<>();
             arguments.put("requestType", type.toString());
             argumentsBuilder.accept(arguments);
-            StringBuilder url = new StringBuilder();
-            url.append("http://localhost:");
-            url.append(port);
-           /* url.append("/nxt?");
-            for (Map.Entry<String, String> keyToValue : arguments.entrySet()) {
-                url.append(keyToValue.getKey());
-                url.append("=");
-                url.append(URLEncoder.encode(keyToValue.getValue(), StandardCharsets.UTF_8.toString()));
-                url.append("&");
-            }
-            if (url.lastIndexOf("&") == url.length() - 1)
-                url.replace(url.length() - 1, url.length(), "");
-            String response = httpHelper.request(url.toString(), RequestType.POST);*/
-            url.append("/nxt");
-            String response = httpHelper.request(url.toString(), arguments, RequestType.POST);
+            String response = httpHelper.request(String.format("http://localhost:%s/nxt", port), arguments, RequestType.POST);
             T result = null;
             try {
                 result = mapper.readValue(response, tClass);
@@ -151,7 +132,6 @@ public class NxtWalletManager implements WalletManager {
             cmd.add(nxtPropertiesPath);
 
             log.debug("Starting nxt wallet process: {}", StringUtils.join(cmd, " "));
-
             ProcessBuilder processBuilder = new ProcessBuilder();
             processBuilder.directory(workingDir);
             processBuilder.redirectError(new File(String.format("./logs/wallet_err_%s.log", name)));
@@ -174,6 +154,7 @@ public class NxtWalletManager implements WalletManager {
 
     @Override
     public void stop() {
+        isInitialized = false;
         try {
             if (nxtProcess.isAlive())
                 nxtProcess.destroyForcibly();
@@ -288,17 +269,18 @@ public class NxtWalletManager implements WalletManager {
     private boolean startForging() {
         StartForgingResponse response = sendApiRequest(WalletRequestType.START_FORGING, passphrase, keyToValue -> {
         }, StartForgingResponse.class);
+        log.debug("startForging. response={}", response);
         return response != null;
     }
 
     private void waitInitialize() {
         if (passphrase == null || passphrase.isEmpty()) {
-            log.warn("Start without address. Password is null or empty.");
+            log.warn("waitInitialize. Start without address. Password is null or empty.");
             return;
         }
         if (selfAccount != null)
             return;
-        log.info("Start wallet initialization...");
+        log.info("waitInitialize. Start wallet initialization...");
         while ((accountId == null || selfAccount == null) && !Thread.currentThread().isInterrupted()) {
             try {
                 if (accountId == null || selfAccount == null) {
@@ -311,15 +293,15 @@ public class NxtWalletManager implements WalletManager {
                 }
                 sleep(100);
             } catch (Exception e) {
-                log.error("waitInitialize. Error: {}", e.getMessage());
+                log.error("waitInitialize. waitInitialize. Error: {}", e.getMessage());
             }
         }
-        log.info("Wallet initialization finished. selfAccount={}", selfAccount);
-        isInitialized = true;
-        while (!isForgeNow && !Thread.currentThread().isInterrupted()) {
-            isForgeNow = startForging();
+        log.info("waitInitialize. selfAccount={}", selfAccount);
+        while (!startForging() && !Thread.currentThread().isInterrupted()) {
             sleep(100);
         }
+        log.info("waitInitialize. finished.");
+        isInitialized = true;
     }
 
     private void sleep(long millis) {
