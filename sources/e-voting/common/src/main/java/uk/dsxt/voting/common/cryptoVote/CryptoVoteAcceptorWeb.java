@@ -59,15 +59,13 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
     private final File receiptsFile;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    
-    private BigDecimal skippedPacketSize;
 
     public CryptoVoteAcceptorWeb(String baseUrl, int connectionTimeout, int readTimeout, String receiptsFilePath) {
         super();
         acceptVoteUrl = String.format("%s%s", baseUrl, ACCEPT_VOTE_URL_PART);
         httpHelper = new HttpHelper(connectionTimeout, readTimeout);
         receiptsFile = receiptsFilePath == null || receiptsFilePath.isEmpty() ? null : new File(receiptsFilePath);
-        scheduler.scheduleWithFixedDelay(this::sendNextVote, 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(this::sendNextVote, 0, 5, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -96,10 +94,6 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         if (parameters == null)
             return;
-        if (skippedPacketSize != null) {
-            BigDecimal clientPacketResidual = new BigDecimal(parameters.get("clientPacketResidual"));
-            parameters.put("clientPacketResidual", clientPacketResidual.add(skippedPacketSize).toPlainString());
-        }
         String result;
         try {
             result = httpHelper.request(acceptVoteUrl, parameters, RequestType.POST);
