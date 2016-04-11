@@ -82,7 +82,8 @@ public class VoteStatusSender implements NetworkClient {
         synchronized (statuses) {
             for(Map.Entry<String, StatusRecord> statusEntry : statuses.entrySet()) {
                 if (statusEntry.getValue().getTimestamp() < thresholdTime) {
-                    log.warn("checkUnconfirmedMessages. Message {} was sent at {} - resend", statusEntry.getKey(), new Instant(statusEntry.getValue().getTimestamp()));
+                    log.warn("checkUnconfirmedMessages. Message {} with status of {} was sent at {} - resend.", 
+                        statusEntry.getKey(), statusEntry.getValue().getStatus().getMessageId(), new Instant(statusEntry.getValue().getTimestamp()));
                     unconfirmedStatuses.add(statusEntry.getValue().getStatus());
                     unconfirmedMessageIds.add(statusEntry.getKey());
                 }
