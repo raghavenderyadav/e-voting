@@ -22,8 +22,6 @@
 package uk.dsxt.voting.common.utils.crypto;
 
 
-import lombok.Value;
-
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -75,7 +73,7 @@ public class CryptoKeysGenerator {
     
     public static void main(String[] args) throws Exception {
         int count = Integer.parseInt(args[0]);
-        CryptoKeysGenerator cryptoKeysGenerator = CryptoHelper.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator();
+        CryptoKeysGenerator cryptoKeysGenerator = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER.createCryptoKeysGenerator();
         for (int i = 0; i < count; i++) {
             KeyPair keyPair = cryptoKeysGenerator.generateKeyPair();
             System.out.printf("public: %s%nprivate: %s%n%n", keyPair.getPublicKey(), keyPair.getPrivateKey());

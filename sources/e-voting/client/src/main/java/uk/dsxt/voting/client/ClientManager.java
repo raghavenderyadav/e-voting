@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import uk.dsxt.voting.client.datamodel.*;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.domain.nodes.AssetsHolder;
-import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
+import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
@@ -49,25 +49,26 @@ public class ClientManager {
         String xmlToSign;
     }
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    Iso20022Serializer serializer = new Iso20022Serializer();
+    private final MessagesSerializer serializer;
 
-    AssetsHolder assetsHolder;
+    private final AssetsHolder assetsHolder;
 
-    Logger audit;
+    private final Logger audit;
 
+    private final ConcurrentMap<String, SignatureInfo> signInfoByKey = new ConcurrentHashMap<>();
 
-    ConcurrentMap<String, SignatureInfo> signInfoByKey = new ConcurrentHashMap<>();
-
-    CryptoHelper helper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+    private final CryptoHelper cryptoHelper;
 
     Map<String, Participant> participantsById;
 
-    public ClientManager(AssetsHolder assetsHolder, Logger audit, Map<String, Participant> participantsById) {
+    public ClientManager(AssetsHolder assetsHolder, CryptoHelper cryptoHelper, MessagesSerializer serializer, Logger audit, Map<String, Participant> participantsById) {
         this.assetsHolder = assetsHolder;
         this.audit = audit;
         this.participantsById = participantsById;
+        this.cryptoHelper = cryptoHelper;
+        this.serializer = serializer;
     }
 
     public RequestResult getVotings(String clientId) {
@@ -150,7 +151,7 @@ public class ClientManager {
         if (isSign) {
             String documentString = info.getXmlToSign();
             try {
-                boolean result = helper.verifySignature(documentString, signature, helper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
+                boolean result = cryptoHelper.verifySignature(documentString, signature, cryptoHelper.loadPublicKey(participantsById.get(clientId).getPublicKey()));
                 if (!result) {
                     log.error("signVote failed. Incorrect signature {} for client {} and voting {}", signature, clientId, votingId);
                     return new RequestResult<>(APIException.INVALID_SIGNATURE);

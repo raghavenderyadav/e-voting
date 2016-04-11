@@ -23,7 +23,7 @@ package uk.dsxt.voting.common;
 
 import org.junit.Test;
 import uk.dsxt.voting.common.messaging.MessageContent;
-import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
 import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 
 public class MessageContentTest {
 
-    private CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+    private CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
     @Test
     public void testValidMessage() throws Exception {

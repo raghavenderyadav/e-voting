@@ -23,7 +23,6 @@ package uk.dsxt.voting.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -33,7 +32,7 @@ import uk.dsxt.voting.client.datamodel.ClientCredentials;
 import uk.dsxt.voting.client.datamodel.ClientsOnTime;
 import uk.dsxt.voting.common.domain.dataModel.*;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
-import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
 import java.io.File;
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -51,7 +49,7 @@ public class TestDataGenerator {
     private final static String SECURITY = "security";
     private final static String MASTER_PASSWORD = "master_password";
 
-    private final static CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+    private final static CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
     @Value
     @AllArgsConstructor

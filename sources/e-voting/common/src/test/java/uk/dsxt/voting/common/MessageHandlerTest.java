@@ -28,8 +28,7 @@ import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.networking.*;
-import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
-import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ import static org.junit.Assert.*;
 
 public class MessageHandlerTest {
 
-    private final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+    private final CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
     @Test
     public void testMessageFilter() throws Exception {
@@ -63,7 +62,7 @@ public class MessageHandlerTest {
         List<MessageContent> filteredContents = new ArrayList<>();
         List<String> filteredIds = new ArrayList<>();
 
-        MessageHandler handler = new MessageHandler(walletManager, CryptoHelper.DEFAULT_CRYPTO_HELPER, participants) {
+        MessageHandler handler = new MessageHandler(walletManager, CryptoHelperImpl.DEFAULT_CRYPTO_HELPER, participants) {
             @Override
             protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
                 filteredContents.add(messageContent);
