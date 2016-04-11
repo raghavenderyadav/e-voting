@@ -22,7 +22,7 @@
 package uk.dsxt.voting.common;
 
 import org.junit.Test;
-import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
 import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CryptoTest {
 
-    private final CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+    private final CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
     @Test
     public void testSignature() throws Exception {

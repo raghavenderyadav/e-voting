@@ -49,6 +49,8 @@ import uk.dsxt.voting.common.registries.RegistriesServerWeb;
 import uk.dsxt.voting.common.utils.InternalLogicException;
 import uk.dsxt.voting.common.utils.PropertiesHelper;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
+import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
+import uk.dsxt.voting.common.utils.crypto.MockCryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 
 import javax.ws.rs.ApplicationPath;
@@ -71,7 +73,8 @@ public class ClientApplication extends ResourceConfig {
     public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
                              String mainAddress, String passphrase, String nxtPropertiesPath,
                              String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit) throws Exception {
-        CryptoHelper cryptoHelper = CryptoHelper.DEFAULT_CRYPTO_HELPER;
+        final boolean useMockCryptoHelper = Boolean.valueOf(properties.getProperty("mock.cryptoHelper", Boolean.TRUE.toString()));
+        CryptoHelper cryptoHelper = useMockCryptoHelper ? new MockCryptoHelper() : CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
         String registriesServerUrl = properties.getProperty("register.server.url");
@@ -144,7 +147,7 @@ public class ClientApplication extends ResourceConfig {
 
         JettyRunner.configureMapper(this);
         HolderApiResource holderApiResource = new HolderApiResource(clientNode);
-        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
+        this.registerInstances(new VotingApiResource(new ClientManager(clientNode, cryptoHelper, messagesSerializer, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
         voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId, 2 * (newMessagesRequestInterval / 1000));
         networkScheduler = walletOffSchedule == null ? null : new NetworkScheduler(walletOffSchedule, walletManager, acceptorWeb, holderApiResource);
