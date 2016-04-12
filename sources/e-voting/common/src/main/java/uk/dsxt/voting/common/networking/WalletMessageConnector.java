@@ -23,7 +23,6 @@ package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
@@ -37,6 +36,7 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,21 +58,35 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final WalletManager walletManager;
 
-    private final List<NetworkMessagesReceiver> messageReceivers = new ArrayList<>();
-
     private final MessagesSerializer serializer;
 
     private final CryptoHelper cryptoHelper;
 
-    private final Map<String, Participant> participantsById;
+    private final Map<String, PublicKey> participantKeysById;
 
     private final PrivateKey privateKey;
 
     private final String holderId;
 
     private final String masterId;
+
+    private final List<NetworkMessagesReceiver> messageReceivers = new ArrayList<>();
     
     private final ExecutorService voteMessagesExecutor = Executors.newFixedThreadPool(10);
+
+    private final PublicKey masterKey;
+
+    public WalletMessageConnector(WalletManager walletManager, MessagesSerializer serializer, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById,
+                                  PrivateKey privateKey, String holderId, String masterId) {
+        this.walletManager = walletManager;
+        this.serializer = serializer;
+        this.cryptoHelper = cryptoHelper;
+        this.participantKeysById = participantKeysById;
+        this.privateKey = privateKey;
+        this.holderId = holderId;
+        this.masterId = masterId;
+        this.masterKey = participantKeysById.get(masterId);
+    }
 
     public void addClient(NetworkClient client) {
         messageReceivers.add(client);
@@ -105,19 +119,10 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     @Override
     public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) {
-        Participant participant = participantsById.get(masterId);
-        if (participant == null) {
-            log.error("addVote. master node {} not found holderId={}", masterId, holderId);
-            return null;
-        }
-        if (participant.getPublicKey() == null) {
-            log.error("addVote. master node {} does not have public key holderId={}", masterId, holderId);
-            return null;
-        }
         String message = MessageBuilder.buildMessage(serializedVote, ownerSignature, nodeSignature);
         String encryptedMessage;
         try {
-            encryptedMessage = cryptoHelper.encrypt(message, cryptoHelper.loadPublicKey(participant.getPublicKey()));
+            encryptedMessage = cryptoHelper.encrypt(message, masterKey);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("addVote. can not encrypt message. receiverId={}. error={} holderId={}", masterId, e.getMessage(), holderId);
             return null;
@@ -220,11 +225,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             }
             try {
                 if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
-                    !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
+                    !cryptoHelper.verifySignature(messageParts[0], messageParts[1], participantKeysById.get(result.getHolderId()))) {
                     log.error("handleVote. VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                     return;
                 }
-                if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], cryptoHelper.loadPublicKey(participantsById.get(messageContent.getAuthor()).getPublicKey()))) {
+                if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], participantKeysById.get(messageContent.getAuthor()))) {
                     log.error("handleVote. VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                     return;
                 }

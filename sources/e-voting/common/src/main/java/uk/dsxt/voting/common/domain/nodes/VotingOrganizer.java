@@ -54,8 +54,6 @@ public class VotingOrganizer implements NetworkClient {
 
     private final MessagesSerializer messagesSerializer;
 
-    private final Map<String, Participant> participantsById;
-
     private final PublicKey publicKey;
 
     private final long calculateResultsDelay;
@@ -73,15 +71,14 @@ public class VotingOrganizer implements NetworkClient {
 
     private final Map<String, VotingRecord> votingsById = new HashMap<>();
 
-    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey, long calculateResultsDelay)
+    public VotingOrganizer(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey, long calculateResultsDelay)
         throws InternalLogicException, GeneralSecurityException {
         calculateResultsService = Executors.newScheduledThreadPool(10);
         this.messagesSerializer = messagesSerializer;
         this.privateKey = privateKey;
         this.cryptoHelper = cryptoProvider;
-        this.participantsById = participantsById;
         this.calculateResultsDelay = calculateResultsDelay;
-        publicKey = cryptoHelper.loadPublicKey(participantsById.get(MasterNode.MASTER_HOLDER_ID).getPublicKey());
+        publicKey = participantKeysById.get(MasterNode.MASTER_HOLDER_ID);
     }
 
     @Override

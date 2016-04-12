@@ -54,8 +54,11 @@ import uk.dsxt.voting.common.utils.crypto.MockCryptoHelper;
 import uk.dsxt.voting.common.utils.web.JettyRunner;
 
 import javax.ws.rs.ApplicationPath;
+import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -90,13 +93,24 @@ public class ClientApplication extends ResourceConfig {
 
         Participant[] participants = registriesServer.getParticipants();
         Map<String, Participant> participantsById = Arrays.stream(participants).collect(Collectors.toMap(Participant::getId, Function.identity()));
+        Map<String, PublicKey> participantKeysById = new HashMap<>();
+        for(Participant participant : participants) {
+            if (participant.getPublicKey() == null || participant.getPublicKey().isEmpty())
+                continue;
+            try {
+                PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
+                participantKeysById.put(participant.getId(), key);
+            } catch (GeneralSecurityException e) {
+                log.error("ClientApplication. Load participant {} public key failed: {}", participant.getId(), e.getMessage());
+            }
+        }
 
         PrivateKey ownerPrivateKey = cryptoHelper.loadPrivateKey(privateKey);
 
         final boolean useSimpleSerializer = Boolean.valueOf(properties.getProperty("mock.serializer", Boolean.TRUE.toString()));
         MessagesSerializer messagesSerializer = useSimpleSerializer ? new SimpleSerializer() : new Iso20022Serializer();
         
-        WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+        WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
 
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
@@ -106,15 +120,15 @@ public class ClientApplication extends ResourceConfig {
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             int calculateResultsDelay = Integer.parseInt(properties.getProperty("calculate.results.delay", "60")) * 1000;
-            votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, calculateResultsDelay);
+            votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, calculateResultsDelay);
             walletMessageConnector.addClient(votingOrganizer);
-            clientNode = new MasterNode(confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey);
+            clientNode = new MasterNode(confirmTimeout, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey);
             acceptorWeb = null;
         } else {
             votingOrganizer = null;
             StateFileSerializer stateFileSerializer = stateFilePath == null || stateFilePath.isEmpty() ? null : new StateFileSerializer(stateFilePath);
             acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
-            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb,
+            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, acceptorWeb,
                 stateFileSerializer == null ? null : stateFileSerializer.load(), stateFileSerializer == null ? null : stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
@@ -127,7 +141,7 @@ public class ClientApplication extends ResourceConfig {
         }
         walletMessageConnector.addClient(clientNode.getVoteStatusSender());
 
-        messageHandler = new MessageHandler(walletManager, cryptoHelper, participants, walletMessageConnector::handleNewMessage);
+        messageHandler = new MessageHandler(walletManager, cryptoHelper, participantKeysById, walletMessageConnector::handleNewMessage);
 
         messageHandler.run(newMessagesRequestInterval);
 

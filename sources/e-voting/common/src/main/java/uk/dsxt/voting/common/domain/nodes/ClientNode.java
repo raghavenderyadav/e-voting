@@ -56,7 +56,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     private final String participantId;
 
-    protected final Map<String, Participant> participantsById;
+    protected final Map<String, PublicKey> participantKeysById;
 
     protected final PrivateKey privateKey;
 
@@ -85,23 +85,20 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     @Getter
     protected final VoteStatusSender voteStatusSender;
 
-    public ClientNode(String participantId, long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey,
+    public ClientNode(String participantId, long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey,
                       VoteAcceptor parentHolder, String state, Consumer<String> stateSaver)
         throws InternalLogicException, GeneralSecurityException {
         this.participantId = participantId;
         this.messagesSerializer = messagesSerializer;
         this.privateKey = privateKey;
         this.cryptoHelper = cryptoProvider;
-        this.participantsById = participantsById;
+        this.participantKeysById = participantKeysById;
         this.parentHolder = parentHolder;
         this.stateSaver = stateSaver;
         this.confirmTimeout = confirmTimeout;
-        Participant masterNode = participantsById.get(MasterNode.MASTER_HOLDER_ID);
-        if (masterNode == null)
-            throw new InternalLogicException(String.format("Master node %s not found", MasterNode.MASTER_HOLDER_ID));
-        if (masterNode.getPublicKey() == null)
+        masterNodePublicKey = participantKeysById.get(MasterNode.MASTER_HOLDER_ID);
+        if (masterNodePublicKey == null)
             throw new InternalLogicException(String.format("Master node %s has no public key", MasterNode.MASTER_HOLDER_ID));
-        masterNodePublicKey = cryptoProvider.loadPublicKey(masterNode.getPublicKey());
         voteStatusSender = new VoteStatusSender(confirmTimeout);
         if (state != null)
             loadState(state);
@@ -139,16 +136,13 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                 log.error("acceptVote. client not found. clientId={} transactionId={}", clientId, transactionId);
                 status = VoteResultStatus.IncorrectMessage;
             } else {
-                Participant participant = participantsById.get(clientId);
-                if (participant == null) {
-                    log.error("acceptVote. participant not found. clientId={} transactionId={}", clientId, transactionId);
-                    status = VoteResultStatus.IncorrectMessage;
-                } else if (participant.getPublicKey() == null) {
-                    log.error("acceptVote. participant has no public key. clientId={} transactionId={}", clientId, transactionId);
+                PublicKey participantKey = participantKeysById.get(clientId);
+                if (participantKey == null) {
+                    log.error("acceptVote. participant not found or has no public key. clientId={} transactionId={}", clientId, transactionId);
                     status = VoteResultStatus.IncorrectMessage;
                 } else {
                     try {
-                        if (!cryptoHelper.verifySignature(inputMessage, clientSignature, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                        if (!cryptoHelper.verifySignature(inputMessage, clientSignature, participantKey)) {
                             log.error("acceptVote. Signature is incorrect. clientId={} transactionId={}", clientId, transactionId);
                             status = VoteResultStatus.SignatureFailed;
                         } else {

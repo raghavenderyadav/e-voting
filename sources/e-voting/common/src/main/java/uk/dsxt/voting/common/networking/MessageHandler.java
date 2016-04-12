@@ -22,12 +22,10 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.extern.log4j.Log4j2;
-import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.messaging.MessageContent;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -50,7 +48,7 @@ public class MessageHandler {
 
     private final MessageReceiver messageReceiver;
 
-    private final Map<String, PublicKey> publicKeysById = new HashMap<>();
+    private final Map<String, PublicKey> publicKeysById;
 
     private final Set<String> handledMessageIDs = new HashSet<>();
 
@@ -58,38 +56,20 @@ public class MessageHandler {
 
     private final ScheduledExecutorService handleMessagesService = Executors.newSingleThreadScheduledExecutor();
 
-    public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants, MessageReceiver messageReceiver) {
+    public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById, MessageReceiver messageReceiver) {
         this.walletManager = walletManager;
         this.cryptoHelper = cryptoHelper;
         this.messageReceiver = messageReceiver;
-        for(Participant participant : participants) {
-            if (participant.getPublicKey() != null) {
-                try {
-                    PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
-                    publicKeysById.put(participant.getId(), key);
-                } catch (GeneralSecurityException e) {
-                    log.error("Can not extract public key for participant {}({})", participant.getName(), participant.getId());
-                }
-            }
-        }
+        publicKeysById = participantKeysById;
 
         walletManager.start();
     }
 
-    protected MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Participant[] participants) {
+    protected MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById) {
         this.walletManager = walletManager;
         this.cryptoHelper = cryptoHelper;
         this.messageReceiver = null;
-        for(Participant participant : participants) {
-            if (participant.getPublicKey() != null) {
-                try {
-                    PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
-                    publicKeysById.put(participant.getId(), key);
-                } catch (GeneralSecurityException e) {
-                    log.error("Can not extract public key for participant {}({})", participant.getName(), participant.getId());
-                }
-            }
-        }
+        publicKeysById = participantKeysById;
 
         walletManager.start();
     }

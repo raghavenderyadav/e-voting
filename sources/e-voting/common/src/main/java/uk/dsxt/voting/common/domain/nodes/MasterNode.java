@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,9 +44,9 @@ public class MasterNode extends ClientNode {
     
     private final ExecutorService handleVoteExecutor = Executors.newFixedThreadPool(10);
 
-    public MasterNode(long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, Participant> participantsById, PrivateKey privateKey) 
+    public MasterNode(long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
-        super(MASTER_HOLDER_ID, confirmTimeout, messagesSerializer, cryptoProvider, participantsById, privateKey, null, null, null);
+        super(MASTER_HOLDER_ID, confirmTimeout, messagesSerializer, cryptoProvider, participantKeysById, privateKey, null, null, null);
         parentHolder = new VoteChecker();
     }
 
@@ -84,17 +85,13 @@ public class MasterNode extends ClientNode {
             if (decryptedParts.length == 2) {
                 String sign = decryptedParts[1];
                 if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
-                    Participant participant = participantsById.get(decryptedParts[0]);
-                    if (participant == null) {
-                        log.error("handleVote. Owner {} not found. transactionId={}", decryptedParts[0], transactionId);
-                        return VoteResultStatus.IncorrectMessage;
-                    }
-                    if (participant.getPublicKey() == null) {
-                        log.error("handleVote. Owner {} has no public key. transactionId={}", decryptedParts[0], transactionId);
+                    PublicKey participantKey = participantKeysById.get(decryptedParts[0]);
+                    if (participantKey == null) {
+                        log.error("handleVote. Owner {} not found or has no public key. transactionId={}", decryptedParts[0], transactionId);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
-                        if (!cryptoHelper.verifySignature(decryptedParts[0], sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                        if (!cryptoHelper.verifySignature(decryptedParts[0], sign, participantKey)) {
                             log.error("handleVote. Invalid signature of owner {}. transactionId={}", decryptedParts[0], transactionId);
                             return VoteResultStatus.SignatureFailed;
                         }
@@ -116,17 +113,13 @@ public class MasterNode extends ClientNode {
                 encryptedData = decryptedParts[0];
                 String participantId = decryptedParts[1];
                 String sign = decryptedParts[2];
-                Participant participant = participantsById.get(participantId);
-                if (participant == null) {
-                    log.error("handleVote. Participant {} not found. transactionId={}", participantId, transactionId);
-                    return VoteResultStatus.IncorrectMessage;
-                }
-                if (participant.getPublicKey() == null) {
-                    log.error("handleVote. Participant {} has no public key. transactionId={}", participantId, transactionId);
+                PublicKey participantKey = participantKeysById.get(participantId);
+                if (participantKey == null) {
+                    log.error("handleVote. Participant {} not found or has no public key. transactionId={}", decryptedParts[0], transactionId);
                     return VoteResultStatus.IncorrectMessage;
                 }
                 try {
-                    if (!cryptoHelper.verifySignature(MessageBuilder.buildMessage(encryptedData, participantId), sign, cryptoHelper.loadPublicKey(participant.getPublicKey()))) {
+                    if (!cryptoHelper.verifySignature(MessageBuilder.buildMessage(encryptedData, participantId), sign, participantKey)) {
                         log.error("handleVote. Invalid signature of participant {}. transactionId={}", participantId, transactionId);
                         return VoteResultStatus.SignatureFailed;
                     }

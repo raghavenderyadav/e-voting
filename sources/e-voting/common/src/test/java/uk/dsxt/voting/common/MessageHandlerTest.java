@@ -30,8 +30,12 @@ import uk.dsxt.voting.common.networking.WalletManager;
 import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 
+import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -49,6 +53,13 @@ public class MessageHandlerTest {
         participants[0] = new Participant("00", "name00", keys[0].getPublicKey());
         participants[1] = new Participant("01", "name01", keys[1].getPublicKey());
         participants[2] = new Participant("02", "name02", keys[2].getPublicKey());
+        Map<String, PublicKey> participantKeysById = new HashMap<>();
+        for(Participant participant : participants) {
+            if (participant.getPublicKey() == null || participant.getPublicKey().isEmpty())
+                continue;
+            PublicKey key = cryptoHelper.loadPublicKey(participant.getPublicKey());
+            participantKeysById.put(participant.getId(), key);
+        }
 
         WalletManager walletManager = mock(WalletManager.class);
         List<Message> messages = new ArrayList<>();
@@ -62,7 +73,7 @@ public class MessageHandlerTest {
         List<MessageContent> filteredContents = new ArrayList<>();
         List<String> filteredIds = new ArrayList<>();
 
-        MessageHandler handler = new MessageHandler(walletManager, CryptoHelperImpl.DEFAULT_CRYPTO_HELPER, participants) {
+        MessageHandler handler = new MessageHandler(walletManager, CryptoHelperImpl.DEFAULT_CRYPTO_HELPER, participantKeysById) {
             @Override
             protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted, String authorId) {
                 filteredContents.add(messageContent);
