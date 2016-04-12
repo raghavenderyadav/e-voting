@@ -33,7 +33,7 @@ public interface NetworkMessagesReceiver {
 
     void addVotingTotalResult(VoteResult result);
 
-    void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted);
+    void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf);
 
-    void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted);
+    void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf);
 }

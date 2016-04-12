@@ -63,10 +63,13 @@ public class VoteStatusSender implements NetworkClient {
     }
     
     public void sendVoteStatus(VoteStatus status) {
-        String messageId;
+        String messageId = null;
         try {
             messageId = network.addVoteStatus(status);
         } catch (InternalLogicException e) {
+            log.error("sendVoteStatus failed. voteMessageId={} error={}", status.getMessageId(), e.getMessage());
+        }
+        if (messageId == null) {
             messageId = String.format("UM-%d", lastUnsentMessageId.incrementAndGet());
         }
         StatusRecord record = new StatusRecord(System.currentTimeMillis(), status);
@@ -104,15 +107,15 @@ public class VoteStatusSender implements NetworkClient {
     }
 
     @Override
-    public void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted) {
-        if (!isCommitted)
+    public void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf) {
+        if (!isCommitted || !isSelf)
             return;
         StatusRecord record;
         synchronized (statuses) {
             record = statuses.remove(messageId);
         }
         if (record == null) {
-            log.debug("addVoteStatus. Origin message not found. messageId={}", messageId);
+            log.warn("addVoteStatus. Origin message not found. messageId={}", messageId);
         }
     }
 
@@ -125,6 +128,6 @@ public class VoteStatusSender implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted) {
+    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
     }
 }

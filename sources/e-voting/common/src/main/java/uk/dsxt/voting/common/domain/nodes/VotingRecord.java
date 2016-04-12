@@ -37,8 +37,7 @@ class VotingRecord {
     VoteResult totalResult;
     Map<String, Client> clients = new HashMap<>();
     BigDecimal totalResidual = BigDecimal.ZERO;
-    Map<String, VoteResult> clientResultsByClientId = new HashMap<>();
-    Map<String, String> clientResultMessageIdsByClientId = new HashMap<>();
+    Map<String, OwnerRecord> ownerRecordsByClientId = new HashMap<>();
     Map<String, BigDecimal> clientResidualsByClientId = new HashMap<>();
     Map<String, VoteStatus> voteStatusesByMessageId = new HashMap<>();
 
@@ -46,15 +45,14 @@ class VotingRecord {
     }
     
     public String toString() {
-        return MessageBuilder.buildMessage(totalResidual.toPlainString(), serialize(clientResultsByClientId), serialize(clientResultMessageIdsByClientId), serialize(clientResidualsByClientId));
+        return MessageBuilder.buildMessage(totalResidual.toPlainString(), serialize(ownerRecordsByClientId), serialize(clientResidualsByClientId));
     }
     
     public VotingRecord(String string) {
         String[] terms = MessageBuilder.splitMessage(string);
         totalResidual = new BigDecimal(terms[0]);
-        clientResultsByClientId = deserialize(terms[1], VoteResult::new);
-        clientResultMessageIdsByClientId = deserialize(terms[2], s -> s);
-        clientResidualsByClientId = deserialize(terms[3], BigDecimal::new);
+        ownerRecordsByClientId = deserialize(terms[1], OwnerRecord::new);
+        clientResidualsByClientId = deserialize(terms[2], BigDecimal::new);
     }
     
     private <T> String serialize(Map<String, T> entries) {

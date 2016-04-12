@@ -43,7 +43,7 @@ public interface AssetsHolder extends VoteAcceptor {
 
     VoteResultAndStatus getClientVote(String votingId, String clientId);
 
-    ClientVoteReceipt addClientVote(VoteResult result, String signature) throws InternalLogicException;
+    void addClientVote(VoteResult result, String signature) throws InternalLogicException;
 
     BigDecimal getClientPacketSize(String votingId, String clientId);
 }

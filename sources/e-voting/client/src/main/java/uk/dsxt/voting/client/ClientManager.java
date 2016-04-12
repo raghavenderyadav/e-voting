@@ -164,9 +164,9 @@ public class ClientManager {
         } else {
             audit.info("signVote. Client {} doesn't want to sign document for voting {}", clientId, votingId);
         }
-        ClientVoteReceipt receipt = assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
+        assetsHolder.addClientVote(info.getVote(), isSign ? signature : AssetsHolder.EMPTY_SIGNATURE);
         signInfoByKey.remove(generateKeyForDocument(clientId, votingId));
-        return new RequestResult<>(new VoteReceiptWeb(receipt), null);
+        return new RequestResult(null, null);
     }
 
     private String generateKeyForDocument(String clientId, String votingId) {

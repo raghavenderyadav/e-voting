@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class VoteScheduler {
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(100);
 
     public VoteScheduler(AssetsHolder assetsHolder, String messagesFileContent, String holderId, long shift) throws InternalLogicException {
 

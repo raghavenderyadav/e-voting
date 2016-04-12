@@ -1,11 +1,22 @@
 package uk.dsxt.voting.common.domain.dataModel;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Value
+@Data
 @AllArgsConstructor
 public class VoteResultAndStatus {
-    VoteResult result;
-    VoteStatus status;
+    @Getter
+    @Setter
+    private VoteResult result;
+
+    @Getter
+    @Setter
+    private VoteStatus status;
+    
+    @Getter
+    @Setter
+    private ClientVoteReceipt receipt;
 }

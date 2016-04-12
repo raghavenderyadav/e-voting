@@ -160,11 +160,13 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             switch (type) {
                 case TYPE_VOTE:
-                    voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted));
+                    if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
+                        voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted, holderId.equals(messageContent.getAuthor())));
+                    }
                     break;
                 case TYPE_VOTE_STATUS:
                     VoteStatus status = serializer.deserializeVoteStatus(body);
-                    sendMessage(r -> r.addVoteStatus(status, messageId, isCommitted));
+                    sendMessage(r -> r.addVoteStatus(status, messageId, isCommitted, holderId.equals(messageContent.getAuthor())));
                     break;
                 case TYPE_VOTING:
                     if (!masterId.equals(messageContent.getAuthor())) {
@@ -190,44 +192,42 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    private void handleVote(MessageContent messageContent, String messageId, String body, boolean isCommitted) {
+    private void handleVote(MessageContent messageContent, String messageId, String body, boolean isCommitted, boolean isSelf) {
         try{
-            if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                String decryptedBody;
-                try {
-                    decryptedBody = cryptoHelper.decrypt(body, privateKey);
-                } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("handleVote. Undecrypted VOTE message {}. holderId={}", messageId, holderId);
-                    return;
-                }
-                String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
-                if (messageParts.length != 3) {
-                    log.error("handleVote. VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
-                    return;
-                }
-                VoteResult result;
-                try {
-                    result = serializer.deserializeVoteResult(messageParts[0]);
-                } catch (InternalLogicException e) {
-                    log.error("handleVote fails. deserializeVoteResult fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
-                    return;
-                }
-                try {
-                    if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
-                        !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
-                        log.error("handleVote. VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
-                        return;
-                    }
-                    if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], cryptoHelper.loadPublicKey(participantsById.get(messageContent.getAuthor()).getPublicKey()))) {
-                        log.error("handleVote. VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
-                        return;
-                    }
-                } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("handleVote fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
-                }
-                sendMessage(r -> r.addVote(result, messageId, messageParts[0], isCommitted));
-                log.debug("VOTE handled  messageId={} holderId={}", messageId, holderId);
+            String decryptedBody;
+            try {
+                decryptedBody = cryptoHelper.decrypt(body, privateKey);
+            } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                log.error("handleVote. Undecrypted VOTE message {}. holderId={}", messageId, holderId);
+                return;
             }
+            String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
+            if (messageParts.length != 3) {
+                log.error("handleVote. VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
+                return;
+            }
+            VoteResult result;
+            try {
+                result = serializer.deserializeVoteResult(messageParts[0]);
+            } catch (InternalLogicException e) {
+                log.error("handleVote fails. deserializeVoteResult fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
+                return;
+            }
+            try {
+                if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
+                    !cryptoHelper.verifySignature(messageParts[0], messageParts[1], cryptoHelper.loadPublicKey(participantsById.get(result.getHolderId()).getPublicKey()))) {
+                    log.error("handleVote. VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
+                    return;
+                }
+                if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], cryptoHelper.loadPublicKey(participantsById.get(messageContent.getAuthor()).getPublicKey()))) {
+                    log.error("handleVote. VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
+                    return;
+                }
+            } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+                log.error("handleVote fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
+            }
+            sendMessage(r -> r.addVote(result, messageId, messageParts[0], isCommitted, isSelf));
+            log.debug("VOTE handled  messageId={} holderId={}", messageId, holderId);
         } catch (Exception e) {
             log.error("handleVote fails. messageId={} holderId={}", messageId, holderId, e);
         }

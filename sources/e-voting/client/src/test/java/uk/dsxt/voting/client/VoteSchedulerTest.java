@@ -51,7 +51,7 @@ public class VoteSchedulerTest {
 
         List<VoteResult> sentResults = new ArrayList<>();
         AssetsHolder client = mock(AssetsHolder.class);
-        ClientVoteReceipt receipt = doAnswer(invocation -> {
+        doAnswer(invocation -> {
             sentResults.add((VoteResult) invocation.getArguments()[0]);
             return new ClientVoteReceipt("", "1", "", 0, "");
         }).when(client).addClientVote(anyObject(), anyString());

@@ -177,7 +177,7 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     @Override
-    public synchronized void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted) {
+    public synchronized void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf) {
         VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, status.getVotingId(), VotingRecord::new);
         synchronized (votingRecord) {
             MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, status.getMessageId(), MessageRecord::new);
@@ -188,7 +188,7 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted) {
+    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
         VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, result.getVotingId(), VotingRecord::new);
         String digest = null;
         try {
