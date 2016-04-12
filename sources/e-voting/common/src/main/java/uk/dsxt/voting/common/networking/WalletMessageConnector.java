@@ -164,7 +164,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             switch (type) {
                 case TYPE_VOTE:
-                    if (isSelf || holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
+                    if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
                         voteMessagesExecutor.execute(() -> addVoteToMaster(messageContent, messageId, body, isCommitted, isSelf));
                     }
                     sendMessage(r -> r.notifyVote(messageId, isCommitted, isSelf));
