@@ -150,7 +150,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             try {
                 action.accept(messagesReceiver);
             } catch (Exception e) {
-                log.error("sendMessage fails. holderId={}", holderId, e);
+                log.error(String.format("sendMessage fails. holderId=%s", holderId), e);
             }
         }
     }
@@ -193,7 +193,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                     log.warn("handleNewMessage. Unknown message type: {} messageId={} holderId={}", type, messageId, holderId);
             }
         } catch (InternalLogicException e) {
-            log.error("handleNewMessage fails. message type={} messageId={} holderId={}", type, messageId, holderId, e);
+            log.error("handleNewMessage fails. message type={} messageId={} holderId={} error={}", type, messageId, holderId, e.getMessage());
         }
     }
 
@@ -234,7 +234,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             sendMessage(r -> r.addVoteToMaster(result, messageId, messageParts[0], isCommitted, isSelf));
             log.debug("VOTE handled  messageId={} holderId={}", messageId, holderId);
         } catch (Exception e) {
-            log.error("handleVote fails. messageId={} holderId={}", messageId, holderId, e);
+            log.error(String.format("handleVote fails. messageId=%s holderId=%s", messageId, holderId), e);
         }
     }
 }

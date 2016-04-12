@@ -131,7 +131,7 @@ public class JettyRunner {
             log.info("Jetty server started {} on port {}", application.getClass(), port);
             return server;
         } catch (Exception e) {
-            log.error("Jetty start failed {}.", application.getClass(), e);
+            log.error(String.format("Jetty start failed %s.", application.getClass()), e);
             return null;
         }
     }

@@ -69,7 +69,7 @@ public class VotingClientMain {
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {
-            log.error("Error occurred in module {}", MODULE_NAME, e);
+            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
         }
     }
 

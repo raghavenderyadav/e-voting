@@ -145,7 +145,7 @@ public class TestsLauncher implements BaseTestsLauncher {
             ResultsBuilderMain.shutdown();
             log.info("Testing finished");
         } catch (Exception e) {
-            log.error("Error occurred in module {}", MODULE_NAME, e);
+            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
         }
     }
 
@@ -238,7 +238,7 @@ public class TestsLauncher implements BaseTestsLauncher {
             processesByName.put(name, process);
             log.info("Process {} started", name);
         } catch (Exception e) {
-            log.error("Can't run process {}. Error: {}", e.getMessage(), name, e);
+            log.error(String.format("Can't run process %s", name), e);
         }
     }
 
@@ -248,7 +248,7 @@ public class TestsLauncher implements BaseTestsLauncher {
                 processEntry.getValue().destroy();
                 log.info("Process {} killed", processEntry.getKey());
             } catch (Exception e) {
-                log.error("Can't kill process {}. Error: {}", e.getMessage(), processEntry.getKey(), e);
+                log.error(String.format("Can't kill process %s", processEntry.getKey()), e);
             }
         }
     }
@@ -262,7 +262,7 @@ public class TestsLauncher implements BaseTestsLauncher {
             process.destroy();
             log.info("Process {} killed", name);
         } catch (Exception e) {
-            log.error("Can't kill process {}. Error: {}", e.getMessage(), name, e);
+            log.error(String.format("Can't kill process %s", name), e);
         }
         processesByName.remove(name);
     }

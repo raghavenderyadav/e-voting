@@ -60,7 +60,7 @@ public class PropertiesHelper {
                 properties.load(resourceStream);
                 log.info("Loading {} properties from file: {}", moduleName.toUpperCase(), propertiesURL);
             } catch (Exception e) {
-                log.error("Couldn't load {} properties from file: {}", moduleName.toUpperCase(), propertiesURL, e);
+                log.error(String.format("Couldn't load %s properties from file: %s", moduleName.toUpperCase(), propertiesURL), e);
             }
         } else {
             log.info("Couldn't find {} properties file", moduleName.toUpperCase());
@@ -121,7 +121,7 @@ public class PropertiesHelper {
             try {
                 return confFile.toURI().toURL();
             } catch (MalformedURLException e) {
-                log.error("Couldn't get URL from file: {}", confFile, e);
+                log.error("Couldn't get URL from file: {}. error={}", confFile, e.getMessage());
             }
         }
         return getResource(fileName);

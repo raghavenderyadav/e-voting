@@ -67,7 +67,7 @@ public class VotingApiResource implements VotingAPI {
             log.debug("{} called. params: [{}]", name, params);
             return request.get();
         } catch (Exception ex) {
-            log.error("{} failed. params: [{}]", name, params, ex);
+            log.error(String.format("%s failed. params: [%s]", name, params), ex);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }

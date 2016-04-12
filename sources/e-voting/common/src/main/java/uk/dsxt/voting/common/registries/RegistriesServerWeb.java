@@ -66,12 +66,12 @@ public class RegistriesServerWeb implements RegistriesServer {
                 } catch (ConnectException connEx) {
                     log.error("{} failed. Couldn't establish connection. url={}. Reason: {}", name, url, connEx.getMessage());
                 } catch (Exception ex) {
-                    log.error("{} failed. url={}", name, url, ex);
+                    log.error(String.format("%s failed. url=%s", name, url), ex);
                 }
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            log.error("{} failed. InterruptedException. url={}", name, url, e);
+            log.error("{} failed. InterruptedException. url={}", name, url);
         }
         return null;
     }

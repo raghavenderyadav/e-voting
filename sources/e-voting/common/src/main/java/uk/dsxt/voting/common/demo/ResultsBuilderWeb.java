@@ -54,7 +54,7 @@ public class ResultsBuilderWeb implements ResultsBuilder {
         } catch (ConnectException | InternalLogicException e) {
             log.error("ResultsBuilderWeb: {} failed. url={}. error={}.", name, url, e.getMessage());
         } catch (IOException e) {
-            log.error("ResultsBuilderWeb: {} failed. url={}.", name, url, e);
+            log.error(String.format("ResultsBuilderWeb: %s failed. url=%s.", name, url), e);
         }
     }
 

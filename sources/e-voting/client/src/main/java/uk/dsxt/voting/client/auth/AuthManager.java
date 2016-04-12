@@ -88,7 +88,7 @@ public class AuthManager {
                 return new RequestResult<>(APIException.INCORRECT_LOGIN_OR_PASSWORD);
             }
         } catch (InternalLogicException e) {
-            log.error("login failed. clientId {}", clientId, e);
+            log.error("login failed. clientId {} error={}", clientId, e.getMessage());
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }

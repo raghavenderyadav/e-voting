@@ -132,7 +132,7 @@ public class ClientManager {
             log.error("vote method failed. Couldn't parse votingChoice JSON. votingId: {}, votingChoice: {}", votingId, votingChoice, je.getMessage());
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         } catch (Exception e) {
-            log.error("vote method failed. Couldn't process votingChoice. votingId: {}, votingChoice: {}", votingId, votingChoice, e);
+            log.error(String.format("vote method failed. Couldn't process votingChoice. votingId: %s, votingChoice: %s", votingId, votingChoice), e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
         }
     }

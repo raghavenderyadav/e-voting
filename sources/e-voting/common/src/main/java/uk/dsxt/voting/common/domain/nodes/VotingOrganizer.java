@@ -93,7 +93,7 @@ public class VotingOrganizer implements NetworkClient {
         try {
             network.addVoting(voting);
         } catch (InternalLogicException e) {
-            log.error("addNewVoting. addVoting failed. votingId={}", voting.getId(), e);
+            log.error("addNewVoting. addVoting failed. votingId={} error={}", voting.getId(), e.getMessage());
         }
         calculateResultsService.schedule(() -> calculateResults(voting.getId()), Math.max(voting.getEndTimestamp() - System.currentTimeMillis(), 0) + calculateResultsDelay, TimeUnit.MILLISECONDS);
         log.info("addNewVoting. Voting added. votingId={}", voting.getId());

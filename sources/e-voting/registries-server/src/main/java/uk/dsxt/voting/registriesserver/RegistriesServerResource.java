@@ -44,7 +44,7 @@ public class RegistriesServerResource implements RegistriesServer {
         try {
             return request.get();
         } catch (Exception ex) {
-            log.error("{} failed", name, ex);
+            log.error(String.format("%s failed", name), ex);
             try {
                 log.warn("stop called.");
                 RegistriesServerMain.shutdown();

@@ -89,7 +89,7 @@ class CrossDomainFilter extends ProxyHandler {
             if (log.isTraceEnabled())
                 log.trace("handled target={} status={} in {} ms", target, response.getStatus(), System.currentTimeMillis() - start);
         } catch (Exception e) {
-            log.error("handle failed. target={} remoteAddr={}", target, request.getRemoteAddr() == null ? "null" : request.getRemoteAddr(), e);
+            log.error(String.format("handle failed. target=%s remoteAddr=%s", target, request.getRemoteAddr() == null ? "null" : request.getRemoteAddr()), e);
         }
     }
 }

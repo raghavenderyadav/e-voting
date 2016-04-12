@@ -61,7 +61,7 @@ public class NetworkScheduler {
                             if (connector != null)
                                 connector.stop();
                         } catch (Exception e) {
-                            log.error("Can not stop network connector {}", connector.getClass(), e);
+                            log.error(String.format("Can not stop network connector %s", connector.getClass()), e);
                         }
                     }
                 }, begin + sec, TimeUnit.SECONDS);
@@ -71,7 +71,7 @@ public class NetworkScheduler {
                             if (connector != null)
                                 connector.start();
                         } catch (Exception e) {
-                            log.error("Can not start network connector {}", connector.getClass(), e);
+                            log.error(String.format("Can not start network connector %s", connector.getClass()), e);
                         }
                     }
                 }, end + sec, TimeUnit.SECONDS);

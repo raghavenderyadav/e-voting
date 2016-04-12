@@ -44,7 +44,7 @@ public class RegistriesServerMain {
         } catch (InternalLogicException e) {
             log.error("Logic exception in module {}. Reason: {}", MODULE_NAME, e.getMessage());
         } catch (Exception e) {
-            log.error("Error occurred in module {}", MODULE_NAME, e);
+            log.error(String.format("Error occurred in module %s", MODULE_NAME), e);
         }
     }
 
