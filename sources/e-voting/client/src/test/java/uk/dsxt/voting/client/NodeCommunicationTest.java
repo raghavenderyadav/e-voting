@@ -21,9 +21,14 @@
 
 package uk.dsxt.voting.client;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
+@Ignore
 public class NodeCommunicationTest {
     //1.1-2-5,1.2-1-23,2.1-1-7,2.1.multi-2.1.1-2,2.1.multi-2.1.2-2,3.1-1-2
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         VotingClientMain.main(new String[]{
             "./conf/nxt-default.properties",
             "NXT-9PHW-CVXU-2TDY-H4878",
