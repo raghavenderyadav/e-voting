@@ -89,6 +89,8 @@ public class MessageContent {
 
     public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, CryptoHelper cryptoHelper, Map<String, String> fields)
             throws GeneralSecurityException, UnsupportedEncodingException {
+        if (fields == null)
+            fields = new HashMap<>();
         fields.put(FIELD_TYPE, type);
         fields.put(FIELD_AUTHOR, authorId);
         fields.put(FIELD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
