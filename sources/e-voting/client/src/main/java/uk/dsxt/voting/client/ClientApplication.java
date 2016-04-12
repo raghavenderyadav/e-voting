@@ -112,9 +112,10 @@ public class ClientApplication extends ResourceConfig {
             acceptorWeb = null;
         } else {
             votingOrganizer = null;
-            StateFileSerializer stateFileSerializer = new StateFileSerializer(stateFilePath);
+            StateFileSerializer stateFileSerializer = stateFilePath == null || stateFilePath.isEmpty() ? null : new StateFileSerializer(stateFilePath);
             acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
-            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb, stateFileSerializer.load(), stateFileSerializer::save);
+            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantsById, ownerPrivateKey, acceptorWeb,
+                stateFileSerializer == null ? null : stateFileSerializer.load(), stateFileSerializer == null ? null : stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
 
