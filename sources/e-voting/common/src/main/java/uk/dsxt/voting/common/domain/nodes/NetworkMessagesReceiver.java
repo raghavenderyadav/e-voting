@@ -35,5 +35,7 @@ public interface NetworkMessagesReceiver {
 
     void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf);
 
-    void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf);
+    void addVoteToMaster(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf);
+
+    void notifyVote(String messageId, boolean isCommitted, boolean isSelf);
 }

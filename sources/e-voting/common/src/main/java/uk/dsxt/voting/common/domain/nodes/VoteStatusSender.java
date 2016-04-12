@@ -128,6 +128,10 @@ public class VoteStatusSender implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
+    public void addVoteToMaster(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
+    }
+
+    @Override
+    public void notifyVote(String messageId, boolean isCommitted, boolean isSelf) {
     }
 }

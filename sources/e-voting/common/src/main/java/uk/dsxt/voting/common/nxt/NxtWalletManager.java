@@ -166,14 +166,10 @@ public class NxtWalletManager implements WalletManager {
 
     @Override
     public String sendMessage(byte[] body) {
-        return sendMessage(mainAddress, body);
+        return sendMessage(mainAddress, body, passphrase);
     }
 
-    public String sendMessage(String recipient, byte[] body) {
-        return sendMessage(recipient, body, passphrase);
-    }
-
-    public String sendMessage(String recipient, byte[] body, String senderPassword) {
+    private String sendMessage(String recipient, byte[] body, String senderPassword) {
         SendTransactionResponse transaction = sendApiRequest(WalletRequestType.SEND_MESSAGE, senderPassword, keyToValue -> {
             keyToValue.put("recipient", recipient);
             keyToValue.put("feeNQT", "0");

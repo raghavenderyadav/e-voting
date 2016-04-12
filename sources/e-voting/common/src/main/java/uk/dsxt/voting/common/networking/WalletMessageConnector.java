@@ -134,8 +134,10 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 log.error("send {} fails. holderId={}", messageType, holderId);
                 return null;
             }
-            else
+            else {
                 log.info("{} sent. holderId={} id={}", messageType, holderId, id);
+                id = fields.get(MessageContent.FIELD_UID);
+            }
             return id;
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
@@ -153,17 +155,19 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    public void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
+    public void handleNewMessage(MessageContent messageContent, String msgId, boolean isCommitted) {
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
         boolean isSelf = holderId.equals(messageContent.getAuthor());
+        String messageId = messageContent.getUID();
         log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
         try {
             switch (type) {
                 case TYPE_VOTE:
                     if (isSelf || holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                        voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted, isSelf));
+                        voteMessagesExecutor.execute(() -> addVoteToMaster(messageContent, messageId, body, isCommitted, isSelf));
                     }
+                    sendMessage(r -> r.notifyVote(messageId, isCommitted, isSelf));
                     break;
                 case TYPE_VOTE_STATUS:
                     VoteStatus status = serializer.deserializeVoteStatus(body);
@@ -193,7 +197,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    private void handleVote(MessageContent messageContent, String messageId, String body, boolean isCommitted, boolean isSelf) {
+    private void addVoteToMaster(MessageContent messageContent, String messageId, String body, boolean isCommitted, boolean isSelf) {
         try{
             String decryptedBody;
             try {
@@ -227,7 +231,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                 log.error("handleVote fails. messageId={} holderId={} error={}", messageId, holderId, e.getMessage());
             }
-            sendMessage(r -> r.addVote(result, messageId, messageParts[0], isCommitted, isSelf));
+            sendMessage(r -> r.addVoteToMaster(result, messageId, messageParts[0], isCommitted, isSelf));
             log.debug("VOTE handled  messageId={} holderId={}", messageId, holderId);
         } catch (Exception e) {
             log.error("handleVote fails. messageId={} holderId={}", messageId, holderId, e);

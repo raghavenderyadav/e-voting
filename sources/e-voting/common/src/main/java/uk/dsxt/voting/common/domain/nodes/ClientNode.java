@@ -473,7 +473,11 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
+    public void addVoteToMaster(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
+    }
+
+    @Override
+    public void notifyVote(String messageId, boolean isCommitted, boolean isSelf) {
         if (!isCommitted || !isSelf)
             return;
         OwnerRecord ownerRecord;
@@ -481,30 +485,27 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             ownerRecord = ownerRecordsByMessageId.get(messageId);
         }
         if (ownerRecord != null) {
+            VoteResult result = ownerRecord.resultAndStatus.getResult();
             synchronized (ownerRecord) {
                 ownerRecord.sendVoteTimestamp = Long.MAX_VALUE;
                 long now = System.currentTimeMillis();
-                if (!result.equals(ownerRecord.resultAndStatus.getResult())) {
-                    log.error("addVote. result in message does not equals origin owner result");
-                    return;
-                }
                 String signedText = MessageBuilder.buildMessage(ownerRecord.serializedVote, ownerRecord.voteMessageId, ownerRecord.voteDigest, Long.toString(now));
                 String receiptSign = null;
                 try {
                     receiptSign = cryptoHelper.createSignature(signedText, privateKey);
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    log.error("addVote. Can not sign vote. ownerId={} error={}", result.getHolderId(), e.getMessage());
+                    log.error("notifyVote. Can not sign vote. ownerId={} error={}", result.getHolderId(), e.getMessage());
                 }
                 String encryptedData = null;
                 try {
                     encryptedData = encryptToMasterNode(result.getHolderId(), ownerRecord.signature);
                 } catch (InternalLogicException e) {
-                    log.error("addVote. Can not encrypt vote data. ownerId={} error={}", result.getHolderId(), e.getMessage());
+                    log.error("notifyVote. Can not encrypt vote data. ownerId={} error={}", result.getHolderId(), e.getMessage());
                 }
                 ownerRecord.resultAndStatus.setReceipt(new ClientVoteReceipt(ownerRecord.serializedVote, ownerRecord.voteMessageId, ownerRecord.voteDigest, now, receiptSign));
                 VotingRecord votingRecord = votingsById.get(result.getVotingId());
                 if (votingRecord == null) {
-                    log.error("addVote. Voting not found. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
+                    log.error("notifyVote. Voting not found. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
                     return;
                 }
                 Client client;
@@ -512,7 +513,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                     client = votingRecord.clients.get(result.getHolderId());
                 }
                 if (client == null) {
-                    log.error("addVote. Client not found. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
+                    log.error("notifyVote. Client not found. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
                     return;
                 }
 
@@ -521,14 +522,14 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                         client.getPacketSizeBySecurity().get(votingRecord.voting.getSecurity()).subtract(result.getPacketSize()),
                         encryptedData, ownerRecord.voteDigest, System.currentTimeMillis());
                 } catch (InternalLogicException e) {
-                    log.error("addVote. Can not add vote. ownerId={} error={}", result.getHolderId(), e.getMessage());
+                    log.error("notifyVote. Can not add vote. ownerId={} error={}", result.getHolderId(), e.getMessage());
                 }
-                log.debug("addVote. Vote added. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
+                log.debug("notifyVote. Vote added. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
             }
             if (stateSaver != null)
                 stateSaver.accept(collectState());
         } else {
-            log.warn("addVote. Can not find vote. ownerId={} votingId={} messageId={}", result.getHolderId(), result.getVotingId(), messageId);
+            log.warn("notifyVote. Can not find vote. messageId={}", messageId);
         }
     }
 

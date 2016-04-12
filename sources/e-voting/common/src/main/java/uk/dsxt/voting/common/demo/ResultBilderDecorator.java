@@ -38,8 +38,13 @@ public class ResultBilderDecorator implements NetworkClient {
     }
 
     @Override
-    public void addVote(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
-        networkClient.addVote(result, messageId, serializedResult, isCommitted, isSelf);
+    public void addVoteToMaster(VoteResult result, String messageId, String serializedResult, boolean isCommitted, boolean isSelf) {
+        networkClient.addVoteToMaster(result, messageId, serializedResult, isCommitted, isSelf);
+    }
+
+    @Override
+    public void notifyVote(String messageId, boolean isCommitted, boolean isSelf) {
+        networkClient.notifyVote(messageId, isCommitted, isSelf);
     }
 
     @Override

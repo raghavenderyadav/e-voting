@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MessageContent {
@@ -36,6 +37,7 @@ public class MessageContent {
     private static final String FIELD_AUTHOR = "AUTHOR";
     private static final String FIELD_SIGN = "SIGN";
     private static final String FIELD_TIMESTAMP = "TIMESTAMP";
+    public static final String FIELD_UID = "UID";
 
     private static final String CHARSET = "UTF-8";
 
@@ -56,8 +58,8 @@ public class MessageContent {
             throw new IllegalArgumentException("Message does not contain AUTHOR field");
         if (getField(FIELD_SIGN) == null)
             throw new IllegalArgumentException("Message does not contain SIGN field");
-        if (getField(FIELD_TIMESTAMP) == null)
-            throw new IllegalArgumentException("Message does not contain TIMESTAMP field");
+        if (getField(FIELD_UID) == null)
+            throw new IllegalArgumentException("Message does not contain FIELD_UID field");
     }
 
     public boolean checkSign(PublicKey publicKey, CryptoHelper cryptoHelper) throws GeneralSecurityException, UnsupportedEncodingException {
@@ -81,12 +83,16 @@ public class MessageContent {
         return getField(FIELD_TYPE);
     }
 
-    public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, CryptoHelper cryptoHelper, Map<String, String> content)
+    public String getUID() {
+        return getField(FIELD_UID);
+    }
+
+    public static byte[] buildOutputMessage(String type, String authorId, PrivateKey privateKey, CryptoHelper cryptoHelper, Map<String, String> fields)
             throws GeneralSecurityException, UnsupportedEncodingException {
-        Map<String, String> fields = content == null ? new HashMap<>() : new HashMap<>(content);
         fields.put(FIELD_TYPE, type);
         fields.put(FIELD_AUTHOR, authorId);
         fields.put(FIELD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
+        fields.put(FIELD_UID, UUID.randomUUID().toString());
         String contentString = buildContentWithoutSign(fields);
         String signature = cryptoHelper.createSignature(contentString, privateKey);
         contentString += String.format(";%s=%s", FIELD_SIGN, signature);
