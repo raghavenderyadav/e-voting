@@ -81,7 +81,7 @@ public class VoteScheduler {
                     maxDelay = delay;
             }
         }
-        log.info("VoteScheduler #{} loaded {} records, maxDelay={}", holderId, cnt, maxDelay);
+        log.info("VoteScheduler #{} loaded {} records, maxDelay={} lastTime={}", holderId, cnt, maxDelay, new Instant(System.currentTimeMillis() + maxDelay*1000));
     }
 
     public void stop() {

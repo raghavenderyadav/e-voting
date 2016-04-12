@@ -54,6 +54,8 @@
       <AppenderRef ref="File"/>
     </Root>
     <Logger name="uk.dsxt.voting.common.networking.MessageHandler" level="debug"/>
+    <Logger name="uk.dsxt.voting.common.domain.nodes.VotingOrganizer" level="info"/>
+    <Logger name="uk.dsxt.voting.client.VoteScheduler" level="info"/>
 
   </Loggers>
 </Configuration>

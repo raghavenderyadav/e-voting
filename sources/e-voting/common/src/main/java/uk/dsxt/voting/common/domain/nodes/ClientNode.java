@@ -356,6 +356,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             }
             ownerRecord.sendVoteTimestamp = System.currentTimeMillis();
             synchronized (ownerRecordsByMessageId) {
+                log.debug("sendVote. ownerId={} messageId={}", ownerRecord.resultAndStatus.getResult().getHolderId(), ownerRecord.voteMessageId);
                 ownerRecordsByMessageId.put(ownerRecord.voteMessageId, ownerRecord);
             }
         }
