@@ -156,17 +156,18 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     public void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
+        boolean isSelf = holderId.equals(messageContent.getAuthor());
         log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
         try {
             switch (type) {
                 case TYPE_VOTE:
-                    if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                        voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted, holderId.equals(messageContent.getAuthor())));
+                    if (isSelf || holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
+                        voteMessagesExecutor.execute(() -> handleVote(messageContent, messageId, body, isCommitted, isSelf));
                     }
                     break;
                 case TYPE_VOTE_STATUS:
                     VoteStatus status = serializer.deserializeVoteStatus(body);
-                    sendMessage(r -> r.addVoteStatus(status, messageId, isCommitted, holderId.equals(messageContent.getAuthor())));
+                    sendMessage(r -> r.addVoteStatus(status, messageId, isCommitted, isSelf));
                     break;
                 case TYPE_VOTING:
                     if (!masterId.equals(messageContent.getAuthor())) {
