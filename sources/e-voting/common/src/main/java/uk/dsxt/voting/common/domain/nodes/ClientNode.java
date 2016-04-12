@@ -353,6 +353,8 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             }
             if (ownerRecord.voteMessageId == null) {
                 ownerRecord.voteMessageId = String.format("UM-%d", lastUnsentMessageId.incrementAndGet());
+                log.warn("sendVote probably failed. votingId={} ownerId={}",
+                    ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId());
             }
             ownerRecord.sendVoteTimestamp = System.currentTimeMillis();
             synchronized (ownerRecordsByMessageId) {

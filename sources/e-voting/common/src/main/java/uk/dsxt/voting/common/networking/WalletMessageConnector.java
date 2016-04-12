@@ -131,7 +131,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         try {
             String id = walletManager.sendMessage(MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields));
             if (id == null) {
-                log.error("send {} fails. holderId={}", messageType, holderId);
+                log.error("send {} fails. holderId={} messageid={}", messageType, holderId, fields.get(MessageContent.FIELD_UID));
                 return null;
             }
             else {
@@ -155,12 +155,12 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    public void handleNewMessage(MessageContent messageContent, String msgId, boolean isCommitted) {
+    public void handleNewMessage(MessageContent messageContent, String msgId, boolean isCommitted, String authorId) {
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
         boolean isSelf = holderId.equals(messageContent.getAuthor());
         String messageId = messageContent.getUID();
-        log.debug("handleNewMessage. message type={} messageId={}. holderId={}", type, messageId, holderId);
+        log.debug("handleNewMessage. message type={} messageId={}. holderId={} authorId={}", type, messageId, holderId, authorId);
         try {
             switch (type) {
                 case TYPE_VOTE:

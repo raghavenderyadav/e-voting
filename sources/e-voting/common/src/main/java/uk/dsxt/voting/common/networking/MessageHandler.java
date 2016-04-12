@@ -39,7 +39,7 @@ public class MessageHandler {
 
     @FunctionalInterface
     public interface MessageReceiver {
-        void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted);
+        void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted, String authorId);
     }
 
     private static final long MAX_MESSAGE_DELAY = 30 * 60 * 1000;
@@ -135,8 +135,9 @@ public class MessageHandler {
                     log.debug("checkNewMessages. message id={} has no content", message.getId());
                     continue;
                 }
-                log.debug("checkNewMessages. handle message id={} type={} author={}", message.getId(), messageContent.getType(), messageContent.getAuthor());
-                PublicKey authorKey = publicKeysById.get(messageContent.getAuthor());
+                //log.debug("checkNewMessages. handle message id={} type={} author={}", message.getId(), messageContent.getType(), messageContent.getAuthor());
+                String authorId = messageContent.getAuthor();
+                PublicKey authorKey = publicKeysById.get(authorId);
                 if (authorKey == null) {
                     log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
                     continue;
@@ -147,7 +148,7 @@ public class MessageHandler {
                     continue;
                 }
                 //log.debug("checkNewMessages. message id={} signature verified", message.getId());
-                handleNewMessage(messageContent, message.getId(), message.isCommitted());
+                handleNewMessage(messageContent, message.getId(), message.isCommitted(), authorId);
                 //log.debug("checkNewMessages. message id={} handled", message.getId());
                 handledCnt++;
             } catch (Exception e) {
@@ -158,7 +159,7 @@ public class MessageHandler {
         log.debug("checkNewMessages ends handledCnt={}, skippedCnt={}, errorsCnt={}", handledCnt, skippedCnt, errorsCnt);
     }
 
-    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
-        messageReceiver.handleNewMessage(messageContent, messageId, isCommitted);
+    protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted, String authorId) {
+        messageReceiver.handleNewMessage(messageContent, messageId, isCommitted, authorId);
     }
 }

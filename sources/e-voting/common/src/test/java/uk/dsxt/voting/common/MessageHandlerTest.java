@@ -64,7 +64,7 @@ public class MessageHandlerTest {
 
         MessageHandler handler = new MessageHandler(walletManager, CryptoHelperImpl.DEFAULT_CRYPTO_HELPER, participants) {
             @Override
-            protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted) {
+            protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted, String authorId) {
                 filteredContents.add(messageContent);
                 filteredIds.add(messageId);
             }
