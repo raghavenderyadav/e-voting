@@ -80,6 +80,7 @@ public class ClientApplication extends ResourceConfig {
         CryptoHelper cryptoHelper = useMockCryptoHelper ? new MockCryptoHelper() : CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
         long newMessagesRequestInterval = Integer.parseInt(properties.getProperty("new_messages.request_interval", "1")) * 1000;
+        long voteShedulerShift = Integer.parseInt(properties.getProperty("vote.sheduler.shift", "120"));
         String registriesServerUrl = properties.getProperty("register.server.url");
         String resultsBuilderUrl = properties.getProperty("results.builder.url");
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout", "15000"));
@@ -164,7 +165,7 @@ public class ClientApplication extends ResourceConfig {
         HolderApiResource holderApiResource = new HolderApiResource(clientNode);
         this.registerInstances(new VotingApiResource(new ClientManager(clientNode, cryptoHelper, messagesSerializer, audit, participantsById), new AuthManager(credentialsFilePath, audit, participantsById)), holderApiResource);
 
-        voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId, 2 * (newMessagesRequestInterval / 1000));
+        voteScheduler = messagesFileContent == null ? null : new VoteScheduler(clientNode, messagesFileContent, ownerId, voteShedulerShift);
         networkScheduler = walletOffSchedule == null ? null : new NetworkScheduler(walletOffSchedule, walletManager, acceptorWeb, holderApiResource);
     }
 
