@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -116,8 +114,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     }
 
     @Override
-    public String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) {
-        String message = MessageBuilder.buildMessage(serializedVote, ownerSignature, nodeSignature);
+    public String addVote(VoteResult result, String serializedVote, String ownerSignature) {
+        String message = MessageBuilder.buildMessage(serializedVote, ownerSignature);
         String encryptedMessage;
         try {
             encryptedMessage = cryptoHelper.encrypt(message, masterKey);
@@ -163,12 +161,12 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         String type = messageContent.getType();
         boolean isSelf = holderId.equals(messageContent.getAuthor());
         String messageId = messageContent.getUID();
-        log.debug("handleNewMessage. message type={} messageId={}. holderId={} authorId={}", type, messageId, holderId, authorId);
+        log.debug("handleNewMessage. message type={}. holderId={} authorId={}  messageId={} tranId={}", type, holderId, authorId, messageId, msgId);
         try {
             switch (type) {
                 case TYPE_VOTE:
                     if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                        addVoteToMaster(messageContent, messageId, body, isCommitted, isSelf);
+                        addVoteToMaster(messageId, body, isCommitted, isSelf);
                     }
                     sendMessage(r -> r.notifyVote(messageId, isCommitted, isSelf));
                     break;
@@ -200,7 +198,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         }
     }
 
-    private void addVoteToMaster(MessageContent messageContent, String messageId, String body, boolean isCommitted, boolean isSelf) {
+    private void addVoteToMaster(String messageId, String body, boolean isCommitted, boolean isSelf) {
         try{
             String decryptedBody;
             try {
@@ -210,7 +208,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 return;
             }
             String[] messageParts = MessageBuilder.splitMessage(decryptedBody);
-            if (messageParts.length != 3) {
+            if (messageParts.length != 2) {
                 log.error("handleVote. VOTE message {} has invalid number of parts {}. holderId={} decryptedBody={}", messageId, messageParts.length, holderId, decryptedBody);
                 return;
             }
@@ -225,10 +223,6 @@ public class WalletMessageConnector implements NetworkMessagesSender {
                 if (!messageParts[1].equals(AssetsHolder.EMPTY_SIGNATURE) &&
                     !cryptoHelper.verifySignature(messageParts[0], messageParts[1], participantKeysById.get(result.getHolderId()))) {
                     log.error("handleVote. VOTE message {} has invalid owner signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
-                    return;
-                }
-                if (!cryptoHelper.verifySignature(messageParts[0], messageParts[2], participantKeysById.get(messageContent.getAuthor()))) {
-                    log.error("handleVote. VOTE message {} has invalid node signature. holderId={} result={} decryptedBody={}", messageId, holderId, result, decryptedBody);
                     return;
                 }
             } catch (GeneralSecurityException | UnsupportedEncodingException e) {

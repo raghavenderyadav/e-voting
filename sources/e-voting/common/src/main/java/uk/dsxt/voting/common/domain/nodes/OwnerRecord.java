@@ -29,7 +29,6 @@ public class OwnerRecord {
     final VoteResultAndStatus resultAndStatus;
     final String serializedVote;
     final String signature;
-    final String nodeSignature;
     final String voteDigest;
     String voteMessageId;
     long sendVoteTimestamp;
@@ -38,29 +37,27 @@ public class OwnerRecord {
     public String toString() {
         //TODO save receipt and status
         return MessageBuilder.buildMessage(voteMessageId, Long.toString(sendVoteTimestamp), resultAndStatus.getResult().toString(), 
-            serializedVote, signature, nodeSignature, voteDigest);
+            serializedVote, signature, voteDigest);
     }
     
     public OwnerRecord(String string) {
         if (string == null)
             throw new IllegalArgumentException("OwnerRecord can not be created from null string");
         String[] terms = MessageBuilder.splitMessage(string);
-        if (terms.length != 7)
+        if (terms.length != 6)
             throw new IllegalArgumentException(String.format("OwnerRecord can not be created from string with %d parts", terms.length));
         voteMessageId = terms[0];
         sendVoteTimestamp = Long.parseLong(terms[1]);
         resultAndStatus = new VoteResultAndStatus(new VoteResult(terms[2]), null, null);
         serializedVote = terms[3];
         signature = terms[4];
-        nodeSignature = terms[5];
-        voteDigest = terms[6];
+        voteDigest = terms[5];
     }
     
-    public OwnerRecord(VoteResult result, String serializedVote, String signature, String nodeSignature, String voteDigest) {
+    public OwnerRecord(VoteResult result, String serializedVote, String signature, String voteDigest) {
         this.resultAndStatus = new VoteResultAndStatus(result, null, null);
         this.serializedVote = serializedVote;
         this.signature = signature;
-        this.nodeSignature = nodeSignature;
         this.voteDigest = voteDigest;
     }
 }

@@ -313,13 +313,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (error != null) {
             throw new InternalLogicException(String.format("addClientVote. Incorrect vote. votingId=%s clientId=%s. error=%s", result.getVotingId(), result.getHolderId(), error));
         }
-        String nodeSignature;
         String serializedVote = messagesSerializer.serialize(result, votingRecord.voting);
-        try {
-            nodeSignature = cryptoHelper.createSignature(serializedVote, privateKey);
-        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-            throw new InternalLogicException("Can not sign vote");
-        }
         String voteDigest;
         try {
             voteDigest = cryptoHelper.getDigest(serializedVote);
@@ -327,7 +321,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             throw new InternalLogicException("Can not calculate hash");
         }
 
-        OwnerRecord ownerRecord = new OwnerRecord(result, serializedVote, signature, nodeSignature, voteDigest);
+        OwnerRecord ownerRecord = new OwnerRecord(result, serializedVote, signature, voteDigest);
         sendVote(ownerRecord);
         synchronized (votingRecord) {
             votingRecord.ownerRecordsByClientId.put(result.getHolderId(), ownerRecord);
@@ -340,7 +334,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         synchronized (ownerRecord) {
             ownerRecord.voteMessageId = null;
             try {
-                ownerRecord.voteMessageId = network.addVote(ownerRecord.resultAndStatus.getResult(), ownerRecord.serializedVote, ownerRecord.signature, ownerRecord.nodeSignature);
+                ownerRecord.voteMessageId = network.addVote(ownerRecord.resultAndStatus.getResult(), ownerRecord.serializedVote, ownerRecord.signature);
             } catch (InternalLogicException e) {
                 log.error("sendVote failed. votingId={} ownerId={} error={}", 
                     ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId(), e.getMessage());

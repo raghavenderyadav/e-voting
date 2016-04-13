@@ -34,6 +34,6 @@ public interface NetworkMessagesSender {
 
     String addVoteStatus(VoteStatus status) throws InternalLogicException;
 
-    String addVote(VoteResult result, String serializedVote, String ownerSignature, String nodeSignature) throws InternalLogicException;
+    String addVote(VoteResult result, String serializedVote, String ownerSignature) throws InternalLogicException;
 
 }
