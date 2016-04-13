@@ -85,12 +85,12 @@ public class TestDataGenerator {
                 throw new IllegalArgumentException("Invalid arguments count exception.");
             }
             int argId = 0;
-            String name = args.length == 0 ? "1" : args[argId++];
-            int totalParticipant = args.length == 0 ? 20 : Integer.parseInt(args[argId++]);
-            int holdersCount = args.length == 0 ? 4 : Integer.parseInt(args[argId++]);
+            String name = args.length == 0 ? "ss_10_100000_30" : args[argId++];
+            int totalParticipant = args.length == 0 ? 100000 : Integer.parseInt(args[argId++]);
+            int holdersCount = args.length == 0 ? 10 : Integer.parseInt(args[argId++]);
             int vmCount = args.length == 0 ? 1 : Integer.parseInt(args[argId++]);
             int levelsCount = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
-            int minutes = args.length == 0 ? 3 : Integer.parseInt(args[argId++]);
+            int minutes = args.length == 0 ? 30 : Integer.parseInt(args[argId++]);
             boolean generateVotes = args.length == 0 ? true : Boolean.parseBoolean(args[argId++]);
             int victimsCount = args.length == 0 ? 0 : Integer.parseInt(args[argId++]);
             boolean generateDisconnect = args.length == 0 ? false : Boolean.parseBoolean(args[argId++]);
@@ -131,25 +131,25 @@ public class TestDataGenerator {
                 role = ParticipantRole.Owner;
             HashMap<String, BigDecimal> securities = new HashMap<>();
             securities.put(SECURITY, role == ParticipantRole.Owner ? new BigDecimal(randomInt(15, 100)) : BigDecimal.ZERO);
-            int ownerIdx = role == ParticipantRole.NRD ? -1 : i < 6 ? 0 : randomInt(0, Math.min(i, holdersCount)-1);
+            int ownerIdx = role == ParticipantRole.NRD ? -1 : i < 6 ? 0 : randomInt(0, Math.min(i, holdersCount) - 1);
             VoteResult vote = role != ParticipantRole.Owner ? null : generateVote(Integer.toString(i), securities, voting);
             clients[i] = new ClientFullInfo(securities, i, ownerIdx, role, keys[i].getPrivateKey(), keys[i].getPublicKey(), String.format("Random name #%d", i), vote, new ArrayList<>(), false, true, "");
             participants[i] = new Participant(i == 0 ? "00" : Integer.toString(i), clients[i].getName(), clients[i].getPublicKey());
             if (role != ParticipantRole.NRD) {
                 clients[ownerIdx].clients.add(clients[i]);
-                for(; ownerIdx >= 0; ownerIdx = clients[ownerIdx].getHolderId()) {
-                    for(Map.Entry<String, BigDecimal> secEntry : securities.entrySet()) {
+                for (; ownerIdx >= 0; ownerIdx = clients[ownerIdx].getHolderId()) {
+                    for (Map.Entry<String, BigDecimal> secEntry : securities.entrySet()) {
                         clients[ownerIdx].getPacketSizeBySecurity().put(secEntry.getKey(), clients[ownerIdx].getPacketSizeBySecurity().get(secEntry.getKey()).add(secEntry.getValue()));
                     }
                 }
             }
         }
-        
+
         if (victimsCount > 0) {
             ThreadLocalRandom.current().ints(1, holdersCount - 1).distinct().limit(victimsCount).forEach(i -> clients[i].setVictim(true));
             ThreadLocalRandom.current().ints(1, holdersCount - 1).filter(i -> !clients[i].isVictim()).distinct().limit(victimsCount).forEach(i -> clients[i].setHonest(false));
         }
-        
+
         saveData(clients, participants, name, voting, holdersCount, vmCount, minutes, generateVotes, generateDisconnect, disconnectNodes);
     }
 
@@ -181,12 +181,14 @@ public class TestDataGenerator {
                     int amount = randomInt(0, vote.getPacketSize().subtract(totalSum).intValue());
                     BigDecimal voteAmount = new BigDecimal(amount);
                     totalSum = totalSum.add(voteAmount);
-                    vote.setAnswer(questionId, answerId, voteAmount);
+                    if (voteAmount.compareTo(BigDecimal.ZERO) > 0)
+                        vote.setAnswer(questionId, answerId, voteAmount);
                 }
             } else {
                 String answerId = voting.getQuestions()[j].getAnswers()[randomInt(0, voting.getQuestions()[j].getAnswers().length - 1)].getId();
                 BigDecimal voteAmount = new BigDecimal(randomInt(0, vote.getPacketSize().intValue()));
-                vote.setAnswer(questionId, answerId, voteAmount);
+                if (voteAmount.compareTo(BigDecimal.ZERO) > 0)
+                    vote.setAnswer(questionId, answerId, voteAmount);
             }
         }
         return vote;
