@@ -21,31 +21,32 @@
 
 package uk.dsxt.voting.common;
 
+import org.junit.Ignore;
 import org.junit.Test;
-import uk.dsxt.voting.common.utils.crypto.KeyPair;
 import uk.dsxt.voting.common.domain.dataModel.Participant;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.messaging.MessageContent;
+import uk.dsxt.voting.common.networking.MessageHandler;
 import uk.dsxt.voting.common.networking.WalletManager;
-import uk.dsxt.voting.common.networking.*;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
+import uk.dsxt.voting.common.utils.crypto.KeyPair;
 
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MessageHandlerTest {
 
     private final CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
     @Test
+    @Ignore
     public void testMessageFilter() throws Exception {
         KeyPair[] keys = cryptoHelper.createCryptoKeysGenerator().generateKeys(3);
 
