@@ -21,6 +21,7 @@
 
 package uk.dsxt.voting.common;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.dsxt.voting.common.utils.crypto.CryptoHelperImpl;
 import uk.dsxt.voting.common.utils.crypto.CryptoKeysGenerator;
@@ -108,9 +109,52 @@ public class CryptoTest {
         String decryptedTextSaved = cryptoHelper.decrypt(encryptedTextSaved, privateSaved);
         assertEquals(originalText, decryptedTextSaved);
     }
+
     @Test
     public void testDigest() throws Exception {
         assertEquals(cryptoHelper.getDigest("AAA"), cryptoHelper.getDigest("AAA"));
         assertNotEquals(cryptoHelper.getDigest("AAA"), cryptoHelper.getDigest("AAB"));
+    }
+
+    @Test
+    @Ignore
+    public void testPerformance() throws Exception {
+        CryptoKeysGenerator gen = cryptoHelper.createCryptoKeysGenerator();
+        KeyPair pair = gen.generateKeyPair();
+        PrivateKey privateKey = cryptoHelper.loadPrivateKey(pair.getPrivateKey());
+        PublicKey publicKey = cryptoHelper.loadPublicKey(pair.getPublicKey());
+        String text = "1234567890";
+        for(int i = 0; i < 8; i++) {
+            text = text + text;
+        }
+        long start;
+        int cnt;
+        
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
+            cryptoHelper.getDigest("text");
+            cnt++;
+        }
+        System.out.println("Digest: " + cnt);
+        
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
+            String signature = cryptoHelper.createSignature(text, privateKey);
+            cryptoHelper.verifySignature(text, signature, publicKey);
+            cnt++;
+        }
+        System.out.println("Sign: " + cnt);
+
+        String encrypted = cryptoHelper.encrypt(text, publicKey);
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
+            encrypted = cryptoHelper.encrypt(text, publicKey);
+            cryptoHelper.decrypt(encrypted, privateKey);
+            cnt++;
+        }
+        System.out.println("Encrypt: " + cnt);
     }
 }
