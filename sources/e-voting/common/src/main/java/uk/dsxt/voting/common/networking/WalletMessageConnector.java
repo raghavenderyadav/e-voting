@@ -71,8 +71,6 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final String masterId;
 
     private final List<NetworkMessagesReceiver> messageReceivers = new ArrayList<>();
-    
-    private final ExecutorService voteMessagesExecutor = Executors.newFixedThreadPool(10);
 
     private final PublicKey masterKey;
 
@@ -170,7 +168,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             switch (type) {
                 case TYPE_VOTE:
                     if (holderId.equals(MasterNode.MASTER_HOLDER_ID)) {
-                        voteMessagesExecutor.execute(() -> addVoteToMaster(messageContent, messageId, body, isCommitted, isSelf));
+                        addVoteToMaster(messageContent, messageId, body, isCommitted, isSelf);
                     }
                     sendMessage(r -> r.notifyVote(messageId, isCommitted, isSelf));
                     break;

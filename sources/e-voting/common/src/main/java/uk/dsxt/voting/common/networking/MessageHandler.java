@@ -28,6 +28,7 @@ import uk.dsxt.voting.common.utils.crypto.CryptoHelper;
 
 import java.security.PublicKey;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,7 @@ public class MessageHandler {
 
     private static final long MAX_MESSAGE_DELAY = 30 * 60 * 1000;
 
-    protected final WalletManager walletManager;
+    private final WalletManager walletManager;
 
     private final CryptoHelper cryptoHelper;
 
@@ -55,6 +56,8 @@ public class MessageHandler {
     private long lastNewMessagesRequestTime;
 
     private final ScheduledExecutorService handleMessagesService = Executors.newSingleThreadScheduledExecutor();
+
+    private final ExecutorService messagesHandler = Executors.newFixedThreadPool(10);
 
     public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById, MessageReceiver messageReceiver) {
         this.walletManager = walletManager;
@@ -100,43 +103,40 @@ public class MessageHandler {
             log.debug("checkNewMessages ends - no messages");
             return;
         }
-        int handledCnt = 0, skippedCnt = 0, errorsCnt = 0;
+        int skippedCnt = 0;
         for(Message message : newMessages) {
             //log.debug("checkNewMessages. id={}", message.getId());
             if (!handledMessageIDs.add(message.getId())) {
                 skippedCnt++;
                 //log.debug("checkNewMessages. message skipped id={}", message.getId());
-                continue;
-            }
-            try {
-                //log.debug("checkNewMessages. handle message id={}", message.getId());
-                MessageContent messageContent = new MessageContent(message.getBody());
-                if (messageContent == null) {
-                    log.debug("checkNewMessages. message id={} has no content", message.getId());
-                    continue;
-                }
-                //log.debug("checkNewMessages. handle message id={} type={} author={}", message.getId(), messageContent.getType(), messageContent.getAuthor());
-                String authorId = messageContent.getAuthor();
-                PublicKey authorKey = publicKeysById.get(authorId);
-                if (authorKey == null) {
-                    log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
-                    continue;
-                }
-                //log.debug("checkNewMessages. message id={} has key", message.getId());
-                if (!messageContent.checkSign(authorKey, cryptoHelper)) {
-                    log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
-                    continue;
-                }
-                //log.debug("checkNewMessages. message id={} signature verified", message.getId());
-                handleNewMessage(messageContent, message.getId(), message.isCommitted(), authorId);
-                //log.debug("checkNewMessages. message id={} handled", message.getId());
-                handledCnt++;
-            } catch (Exception e) {
-                log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
-                errorsCnt++;
+            } else {
+                messagesHandler.execute(() -> handleMessage(message));
             }
         }
-        log.debug("checkNewMessages ends handledCnt={}, skippedCnt={}, errorsCnt={}", handledCnt, skippedCnt, errorsCnt);
+        log.debug("checkNewMessages ends allCnt={}, skippedCnt={}, errorsCnt={}", newMessages.size(), skippedCnt);
+    }
+
+    private void handleMessage(Message message) {
+        try {
+            MessageContent messageContent = new MessageContent(message.getBody());
+            //log.debug("checkNewMessages. handle message id={} type={} author={}", message.getId(), messageContent.getType(), messageContent.getAuthor());
+            String authorId = messageContent.getAuthor();
+            PublicKey authorKey = publicKeysById.get(authorId);
+            if (authorKey == null) {
+                log.warn("Message {} author {} not found", message.getId(), messageContent.getAuthor());
+                return;
+            }
+            //log.debug("checkNewMessages. message id={} has key", message.getId());
+            if (!messageContent.checkSign(authorKey, cryptoHelper)) {
+                log.warn("Message {} author {} signature is incorrect", message.getId(), messageContent.getAuthor());
+                return;
+            }
+            //log.debug("checkNewMessages. message id={} signature verified", message.getId());
+            handleNewMessage(messageContent, message.getId(), message.isCommitted(), authorId);
+            //log.debug("checkNewMessages. message id={} handled", message.getId());
+        } catch (Exception e) {
+            log.error("Can not handle message {}: {}", message.getId(), e.getMessage());
+        }
     }
 
     protected void handleNewMessage(MessageContent messageContent, String messageId, boolean isCommitted, String authorId) {
