@@ -76,16 +76,9 @@ public class ClientNode implements AssetsHolder, NetworkClient {
 
     private final AtomicLong lastUnsentMessageId = new AtomicLong();
 
-    private final ScheduledExecutorService unconfirmedVotesChecker = Executors.newSingleThreadScheduledExecutor();
-
-    private final long confirmTimeout;
-
     private final Map<String, OwnerRecord> ownerRecordsByMessageId = new HashMap<>();
 
-    @Getter
-    protected final VoteStatusSender voteStatusSender;
-
-    public ClientNode(String participantId, long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey,
+    public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey,
                       VoteAcceptor parentHolder, String state, Consumer<String> stateSaver)
         throws InternalLogicException, GeneralSecurityException {
         this.participantId = participantId;
@@ -95,19 +88,15 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         this.participantKeysById = participantKeysById;
         this.parentHolder = parentHolder;
         this.stateSaver = stateSaver;
-        this.confirmTimeout = confirmTimeout;
         masterNodePublicKey = participantKeysById.get(MasterNode.MASTER_HOLDER_ID);
         if (masterNodePublicKey == null)
             throw new InternalLogicException(String.format("Master node %s has no public key", MasterNode.MASTER_HOLDER_ID));
-        voteStatusSender = new VoteStatusSender(confirmTimeout);
         if (state != null)
             loadState(state);
-        unconfirmedVotesChecker.scheduleWithFixedDelay(this::checkUnconfirmedVotes, 1, 1, TimeUnit.MINUTES);
     }
 
     @Override
     public void setNetworkMessagesSender(NetworkMessagesSender networkMessagesSender) {
-        voteStatusSender.setNetworkMessagesSender(networkMessagesSender);
         network = networkMessagesSender;
     }
 
@@ -206,7 +195,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             }
         }
         if (status != VoteResultStatus.OK) {
-            voteStatusSender.sendVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
+            network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } 
         return status;
     }
@@ -322,7 +311,21 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         }
 
         OwnerRecord ownerRecord = new OwnerRecord(result, serializedVote, signature, voteDigest);
-        sendVote(ownerRecord);
+        try {
+            ownerRecord.voteMessageId = network.addVote(ownerRecord.resultAndStatus.getResult(), ownerRecord.serializedVote, ownerRecord.signature);
+        } catch (InternalLogicException e) {
+            log.error("sendVote failed. votingId={} ownerId={} error={}",
+                ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId(), e.getMessage());
+        }
+        if (ownerRecord.voteMessageId == null) {
+            ownerRecord.voteMessageId = String.format("UM-%d", lastUnsentMessageId.incrementAndGet());
+            log.warn("sendVote probably failed. votingId={} ownerId={}",
+                ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId());
+        }
+        synchronized (ownerRecordsByMessageId) {
+            log.debug("sendVote. ownerId={} messageId={}", ownerRecord.resultAndStatus.getResult().getHolderId(), ownerRecord.voteMessageId);
+            ownerRecordsByMessageId.put(ownerRecord.voteMessageId, ownerRecord);
+        }
         synchronized (votingRecord) {
             votingRecord.ownerRecordsByClientId.put(result.getHolderId(), ownerRecord);
         }
@@ -330,53 +333,6 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             stateSaver.accept(collectState());
     }
     
-    private void sendVote(OwnerRecord ownerRecord) {
-        synchronized (ownerRecord) {
-            ownerRecord.voteMessageId = null;
-            try {
-                ownerRecord.voteMessageId = network.addVote(ownerRecord.resultAndStatus.getResult(), ownerRecord.serializedVote, ownerRecord.signature);
-            } catch (InternalLogicException e) {
-                log.error("sendVote failed. votingId={} ownerId={} error={}", 
-                    ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId(), e.getMessage());
-            }
-            if (ownerRecord.voteMessageId == null) {
-                ownerRecord.voteMessageId = String.format("UM-%d", lastUnsentMessageId.incrementAndGet());
-                log.warn("sendVote probably failed. votingId={} ownerId={}",
-                    ownerRecord.resultAndStatus.getResult().getVotingId(), ownerRecord.resultAndStatus.getResult().getHolderId());
-            }
-            ownerRecord.sendVoteTimestamp = System.currentTimeMillis();
-            synchronized (ownerRecordsByMessageId) {
-                log.debug("sendVote. ownerId={} messageId={}", ownerRecord.resultAndStatus.getResult().getHolderId(), ownerRecord.voteMessageId);
-                ownerRecordsByMessageId.put(ownerRecord.voteMessageId, ownerRecord);
-            }
-        }
-    }
-
-    private void checkUnconfirmedVotes() {
-        List<OwnerRecord> unconfirmedVotes = new ArrayList<>();
-        List<String> unconfirmedMessageIds = new ArrayList<>();
-        long thresholdTime = System.currentTimeMillis() - confirmTimeout;
-        synchronized (ownerRecordsByMessageId) {
-            for(Map.Entry<String, OwnerRecord> voteEntry : ownerRecordsByMessageId.entrySet()) {
-                synchronized (voteEntry.getValue()) {
-                    if (voteEntry.getValue().resultAndStatus.getStatus() == null && voteEntry.getValue().sendVoteTimestamp < thresholdTime) {
-                        log.warn("checkUnconfirmedVotes. Vote from {} with status of {} was sent at {} - resend.",
-                            voteEntry.getKey(), voteEntry.getValue().resultAndStatus.getResult().getHolderId(), new Instant(voteEntry.getValue().sendVoteTimestamp));
-                        unconfirmedVotes.add(voteEntry.getValue());
-                        unconfirmedMessageIds.add(voteEntry.getKey());
-                    }
-                }
-            }
-            for(String messageId : unconfirmedMessageIds) {
-                ownerRecordsByMessageId.remove(messageId);
-            }
-        }
-        for(OwnerRecord ownerRecord : unconfirmedVotes) {
-            sendVote(ownerRecord);
-        }
-        log.debug("checkUnconfirmedVotes finshed {} messages resent", unconfirmedMessageIds.size());
-    }
-
     @Override
     public BigDecimal getClientPacketSize(String votingId, String clientId) {
         VotingRecord votingRecord = votingsById.get(votingId);
@@ -477,7 +433,6 @@ public class ClientNode implements AssetsHolder, NetworkClient {
         if (ownerRecord != null) {
             VoteResult result = ownerRecord.resultAndStatus.getResult();
             synchronized (ownerRecord) {
-                ownerRecord.sendVoteTimestamp = Long.MAX_VALUE;
                 long now = System.currentTimeMillis();
                 String signedText = MessageBuilder.buildMessage(ownerRecord.serializedVote, ownerRecord.voteMessageId, ownerRecord.voteDigest, Long.toString(now));
                 String receiptSign = null;

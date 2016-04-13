@@ -22,7 +22,9 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
+import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteStatus;
 import uk.dsxt.voting.common.domain.dataModel.Voting;
@@ -41,6 +43,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -72,8 +77,20 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final PublicKey masterKey;
 
+    private final ScheduledExecutorService unconfirmedMessagesChecker = Executors.newSingleThreadScheduledExecutor();
+
+    private static class MessageRecord {
+        long timestamp;
+        String uid;
+        byte[] body;
+    }
+
+    private final Map<String, MessageRecord> unconfirmedMessages = new HashMap<>();
+
+    private final long confirmTimeout;
+
     public WalletMessageConnector(WalletManager walletManager, MessagesSerializer serializer, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById,
-                                  PrivateKey privateKey, String holderId, String masterId) {
+                                  PrivateKey privateKey, String holderId, String masterId, long confirmTimeout) {
         this.walletManager = walletManager;
         this.serializer = serializer;
         this.cryptoHelper = cryptoHelper;
@@ -81,7 +98,9 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         this.privateKey = privateKey;
         this.holderId = holderId;
         this.masterId = masterId;
+        this.confirmTimeout = confirmTimeout;
         this.masterKey = participantKeysById.get(masterId);
+        unconfirmedMessagesChecker.scheduleWithFixedDelay(this::checkUnconfirmedMessages, 1, 1, TimeUnit.MINUTES);
     }
 
     public void addClient(NetworkClient client) {
@@ -129,21 +148,48 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private String send(String messageType, String messageBody) {
         Map<String, String> fields = new HashMap<>();
         fields.put(FIELD_BODY, messageBody);
+        MessageRecord messageRecord = new MessageRecord();
         try {
-            String id = walletManager.sendMessage(MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields));
-            if (id == null) {
-                log.error("send {} fails. holderId={} messageid={}", messageType, holderId, fields.get(MessageContent.FIELD_UID));
-                return null;
-            }
-            else {
-                log.info("{} sent. holderId={} id={}", messageType, holderId, id);
-                id = fields.get(MessageContent.FIELD_UID);
-            }
-            return id;
+            messageRecord.body = MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields);
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
             return null;
         }
+        messageRecord.uid = fields.get(MessageContent.FIELD_UID);
+        send(messageRecord);
+        synchronized (unconfirmedMessages) {
+            unconfirmedMessages.put(messageRecord.uid, messageRecord);
+        }
+        return messageRecord.uid;
+    }
+    
+    private void send(MessageRecord messageRecord) {
+        messageRecord.timestamp = System.currentTimeMillis();
+        String id = walletManager.sendMessage(messageRecord.body);
+        if (id == null) {
+            log.error("send fails. holderId={} messageId={}", holderId, messageRecord.uid);
+        }
+        else {
+            log.info("sent. holderId={} messageId={} tranId={}", holderId, messageRecord.uid, id);
+        }
+    }
+
+    private void checkUnconfirmedMessages() {
+        List<MessageRecord> overdueMessages = new ArrayList<>();
+        long thresholdTime = System.currentTimeMillis() - confirmTimeout;
+        synchronized (unconfirmedMessages) {
+            for(Map.Entry<String, MessageRecord> statusEntry : unconfirmedMessages.entrySet()) {
+                if (statusEntry.getValue().timestamp < thresholdTime) {
+                    log.warn("checkUnconfirmedMessages. Message {} was sent at {} - resend.",
+                        statusEntry.getKey(), new Instant(statusEntry.getValue().timestamp));
+                    overdueMessages.add(statusEntry.getValue());
+                }
+            }
+        }
+        for(MessageRecord messageRecord : overdueMessages) {
+            send(messageRecord);
+        }
+        log.debug("checkUnconfirmedMessages. {} messages resent", overdueMessages.size());
     }
 
     private void sendMessage(Consumer<NetworkMessagesReceiver> action) {
@@ -162,6 +208,9 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         boolean isSelf = holderId.equals(messageContent.getAuthor());
         String messageId = messageContent.getUID();
         log.debug("handleNewMessage. message type={}. holderId={} authorId={}  messageId={} tranId={}", type, holderId, authorId, messageId, msgId);
+        synchronized (unconfirmedMessages) {
+            unconfirmedMessages.remove(messageId);
+        }
         try {
             switch (type) {
                 case TYPE_VOTE:

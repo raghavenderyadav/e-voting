@@ -110,26 +110,27 @@ public class ClientApplication extends ResourceConfig {
 
         final boolean useSimpleSerializer = Boolean.valueOf(properties.getProperty("mock.serializer", Boolean.TRUE.toString()));
         MessagesSerializer messagesSerializer = useSimpleSerializer ? new SimpleSerializer() : new Iso20022Serializer();
-        
-        WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID);
+
+        long confirmTimeout = Integer.parseInt(properties.getProperty("messages.confirm.timeout", "180")) * 1000;
+        WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, 
+            cryptoHelper, participantKeysById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID, confirmTimeout);
 
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
         CryptoVoteAcceptorWeb acceptorWeb;
-        long confirmTimeout = Integer.parseInt(properties.getProperty("messages.confirm.timeout", "180")) * 1000;
         if (isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId))
             throw new IllegalArgumentException("isMain != MasterNode.MASTER_HOLDER_ID.equals(ownerId)");
         if (isMain) {
             int calculateResultsDelay = Integer.parseInt(properties.getProperty("calculate.results.delay", "60")) * 1000;
             votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, calculateResultsDelay);
             walletMessageConnector.addClient(votingOrganizer);
-            clientNode = new MasterNode(confirmTimeout, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey);
+            clientNode = new MasterNode(messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey);
             acceptorWeb = null;
         } else {
             votingOrganizer = null;
             StateFileSerializer stateFileSerializer = stateFilePath == null || stateFilePath.isEmpty() ? null : new StateFileSerializer(stateFilePath);
             acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
-            clientNode = new ClientNode(ownerId, confirmTimeout, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, acceptorWeb,
+            clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, acceptorWeb,
                 stateFileSerializer == null ? null : stateFileSerializer.load(), stateFileSerializer == null ? null : stateFileSerializer::save);
         }
         loadClients(clientNode, clientsFilePath);
@@ -140,7 +141,6 @@ public class ClientApplication extends ResourceConfig {
             ResultsBuilder resultsBuilder = new ResultsBuilderWeb(resultsBuilderUrl, connectionTimeout, readTimeout);
             walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
         }
-        walletMessageConnector.addClient(clientNode.getVoteStatusSender());
 
         messageHandler = new MessageHandler(walletManager, cryptoHelper, participantKeysById, walletMessageConnector::handleNewMessage);
 

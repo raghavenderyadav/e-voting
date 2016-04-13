@@ -134,7 +134,7 @@ public class VotingOrganizer implements NetworkClient {
                             continue;
                         }
                         try {
-                            if (!cryptoHelper.verifySignature(result.getHolderId(), status.getVoteSign(), publicKey)) {
+                            if (!cryptoHelper.verifySignature(messageRecord.resultDigest, status.getVoteSign(), publicKey)) {
                                 log.error("calculateResults. VoteStatus with incorrect signature. messageId={} ownerId={}", messageId, result.getHolderId());
                                 continue;
                             }

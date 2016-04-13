@@ -51,7 +51,7 @@ import java.util.Map;
 public class HandleNewMessagesTest {
     
     @Test
-    public void test() throws Exception {
+    public void testVotingOrganizer() throws Exception {
         CryptoHelperImpl cryptoHelper = CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
         WalletManager walletManager = new MockWalletManager();
         MessagesSerializer messagesSerializer = new Iso20022Serializer();
@@ -60,18 +60,17 @@ public class HandleNewMessagesTest {
         String publicKey ="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjnJns3ZPOCfUFCD5elEZ5Sa5wsmwU7JbqlXFsXXVQESyxNZNnZOQAOIu4CdcR2qSgEC+xd143E2aZYrVnz9o8YkzDAXGKjBt9XcuX/dL/gfuI7sEL6SaCEmIV2gVLWcXKLNNemXGPMpV06al07eTAkl6EjL30hnQRO+GnKHRurC18J7pDajgUoFP0iZFVj8bY29eHBBdgl0UJJTSrPNwdNxCw1O/tPLXhYfPTKJ/ah4lEfFqggDzGk5tKliGy78Rq/fS2US4MQk3vB4I9jHdqE/Ob6EHbnpXZZfxCj+laSAYMzqowaDHP93FI3fBuX5nUGRDytrXlhOIDvRufXExBQIDAQAB";
         participantKeysById.put("00", cryptoHelper.loadPublicKey(publicKey));
         WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper,
-            participantKeysById, privateKey, "00", MasterNode.MASTER_HOLDER_ID);
+            participantKeysById, privateKey, "00", MasterNode.MASTER_HOLDER_ID, 10000000);
         VotingOrganizer votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantKeysById, privateKey, 10000000);
         walletMessageConnector.addClient(votingOrganizer);
         Voting voting = new Voting("v0", "v0", System.currentTimeMillis(), System.currentTimeMillis() + 10000000, new Question[0], "sec");
         votingOrganizer.addVoting(voting);
         VoteResult result = new VoteResult("vo", "00", BigDecimal.TEN);
         String serializedVote = messagesSerializer.serialize(result, voting);
-        String nodeSignature = cryptoHelper.createSignature(serializedVote, privateKey);
-        String message = MessageBuilder.buildMessage(serializedVote, AssetsHolder.EMPTY_SIGNATURE, nodeSignature);
-        String encryptedMessage = cryptoHelper.encrypt(message, cryptoHelper.loadPublicKey(publicKey));
+        String voteMessage = MessageBuilder.buildMessage(serializedVote, AssetsHolder.EMPTY_SIGNATURE);
+        String encryptedVoteMessage = cryptoHelper.encrypt(voteMessage, cryptoHelper.loadPublicKey(publicKey));
         Map<String, String> content = new HashMap();
-        content.put("BODY", encryptedMessage);
+        content.put("BODY", encryptedVoteMessage);
         MessageContent messageContent = new MessageContent(MessageContent.buildOutputMessage("VOTE", "00", privateKey, cryptoHelper, content));
         for(int i = 0; i < 100000; i++) {
             walletMessageConnector.handleNewMessage(messageContent, Integer.toString(i), true, "00");

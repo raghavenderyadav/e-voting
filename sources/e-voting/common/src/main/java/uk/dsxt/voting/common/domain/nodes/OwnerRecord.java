@@ -31,12 +31,11 @@ public class OwnerRecord {
     final String signature;
     final String voteDigest;
     String voteMessageId;
-    long sendVoteTimestamp;
     
     @Override
     public String toString() {
         //TODO save receipt and status
-        return MessageBuilder.buildMessage(voteMessageId, Long.toString(sendVoteTimestamp), resultAndStatus.getResult().toString(), 
+        return MessageBuilder.buildMessage(voteMessageId, resultAndStatus.getResult().toString(), 
             serializedVote, signature, voteDigest);
     }
     
@@ -44,14 +43,13 @@ public class OwnerRecord {
         if (string == null)
             throw new IllegalArgumentException("OwnerRecord can not be created from null string");
         String[] terms = MessageBuilder.splitMessage(string);
-        if (terms.length != 6)
+        if (terms.length != 5)
             throw new IllegalArgumentException(String.format("OwnerRecord can not be created from string with %d parts", terms.length));
         voteMessageId = terms[0];
-        sendVoteTimestamp = Long.parseLong(terms[1]);
-        resultAndStatus = new VoteResultAndStatus(new VoteResult(terms[2]), null, null);
-        serializedVote = terms[3];
-        signature = terms[4];
-        voteDigest = terms[5];
+        resultAndStatus = new VoteResultAndStatus(new VoteResult(terms[1]), null, null);
+        serializedVote = terms[2];
+        signature = terms[3];
+        voteDigest = terms[4];
     }
     
     public OwnerRecord(VoteResult result, String serializedVote, String signature, String voteDigest) {

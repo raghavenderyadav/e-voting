@@ -44,9 +44,9 @@ public class MasterNode extends ClientNode {
     
     private final ExecutorService handleVoteExecutor = Executors.newFixedThreadPool(10);
 
-    public MasterNode(long confirmTimeout, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey) 
+    public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
-        super(MASTER_HOLDER_ID, confirmTimeout, messagesSerializer, cryptoProvider, participantKeysById, privateKey, null, null, null);
+        super(MASTER_HOLDER_ID, messagesSerializer, cryptoProvider, participantKeysById, privateKey, null, null, null);
         parentHolder = new VoteChecker();
     }
 
@@ -68,7 +68,11 @@ public class MasterNode extends ClientNode {
             log.error("handleVote failed: {}", e.getMessage());
         }
         if (status != VoteResultStatus.OK) {
-            voteStatusSender.sendVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
+            try {
+                network.addVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
+            } catch (InternalLogicException e) {
+                log.error("handleVote. send vote failed: {}", e.getMessage());
+            }
         }
     }
     
@@ -108,7 +112,7 @@ public class MasterNode extends ClientNode {
                     log.error("handleVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
                     return VoteResultStatus.InternalError;
                 }
-                voteStatusSender.sendVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
+                network.addVoteStatus(new VoteStatus(votingId, transactionId, VoteResultStatus.OK, voteDigest, resultSign));
                 return VoteResultStatus.OK;
             } else if (decryptedParts.length == 3) {
                 encryptedData = decryptedParts[0];
