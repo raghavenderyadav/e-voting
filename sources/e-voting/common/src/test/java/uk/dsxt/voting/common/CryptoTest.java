@@ -136,25 +136,38 @@ public class CryptoTest {
             cryptoHelper.getDigest("text");
             cnt++;
         }
-        System.out.println("Digest: " + cnt);
-        
+        System.out.println("Digest: " + cnt/10);
+
+        String signature = cryptoHelper.createSignature(text, privateKey);
         start = System.currentTimeMillis();
         cnt= 0;
         while(System.currentTimeMillis() - start < 10000) {
-            String signature = cryptoHelper.createSignature(text, privateKey);
+            signature = cryptoHelper.createSignature(text, privateKey);
+            cnt++;
+        }
+        System.out.println("Sign: " + cnt/10);
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
             cryptoHelper.verifySignature(text, signature, publicKey);
             cnt++;
         }
-        System.out.println("Sign: " + cnt);
+        System.out.println("Verify: " + cnt/10);
 
         String encrypted = cryptoHelper.encrypt(text, publicKey);
         start = System.currentTimeMillis();
         cnt= 0;
         while(System.currentTimeMillis() - start < 10000) {
             encrypted = cryptoHelper.encrypt(text, publicKey);
+            cnt++;
+        }
+        System.out.println("Encrypt: " + cnt/10);
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
             cryptoHelper.decrypt(encrypted, privateKey);
             cnt++;
         }
-        System.out.println("Encrypt: " + cnt);
+        System.out.println("Decrypt: " + cnt/10);
     }
 }
