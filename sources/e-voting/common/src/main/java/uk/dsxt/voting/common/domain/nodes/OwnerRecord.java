@@ -21,6 +21,8 @@
 
 package uk.dsxt.voting.common.domain.nodes;
 
+import lombok.AllArgsConstructor;
+import uk.dsxt.voting.common.domain.dataModel.ClientVoteReceipt;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
 import uk.dsxt.voting.common.domain.dataModel.VoteResultAndStatus;
 import uk.dsxt.voting.common.utils.MessageBuilder;
@@ -30,7 +32,7 @@ public class OwnerRecord {
     final String serializedVote;
     final String signature;
     final String voteDigest;
-    String voteMessageId;
+    final String voteMessageId;
     
     @Override
     public String toString() {
@@ -46,16 +48,18 @@ public class OwnerRecord {
         if (terms.length != 5)
             throw new IllegalArgumentException(String.format("OwnerRecord can not be created from string with %d parts", terms.length));
         voteMessageId = terms[0];
+        //TODO add receipt
         resultAndStatus = new VoteResultAndStatus(new VoteResult(terms[1]), null, null);
         serializedVote = terms[2];
         signature = terms[3];
         voteDigest = terms[4];
     }
     
-    public OwnerRecord(VoteResult result, String serializedVote, String signature, String voteDigest) {
-        this.resultAndStatus = new VoteResultAndStatus(result, null, null);
+    public OwnerRecord(VoteResult result, String serializedVote, String signature, String voteDigest, String voteMessageId, ClientVoteReceipt receipt) {
+        this.resultAndStatus = new VoteResultAndStatus(result, null, receipt);
         this.serializedVote = serializedVote;
         this.signature = signature;
         this.voteDigest = voteDigest;
+        this.voteMessageId = voteMessageId;
     }
 }

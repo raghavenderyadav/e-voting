@@ -30,6 +30,7 @@ import uk.dsxt.voting.common.utils.MessageBuilder;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.function.Function;
 
 class VotingRecord {
@@ -38,21 +39,22 @@ class VotingRecord {
     Map<String, Client> clients = new HashMap<>();
     BigDecimal totalResidual = BigDecimal.ZERO;
     Map<String, OwnerRecord> ownerRecordsByClientId = new HashMap<>();
-    Map<String, BigDecimal> clientResidualsByClientId = new HashMap<>();
+    Map<String, SortedMap<BigDecimal, BigDecimal>> clientVoteRangesByClientId = new HashMap<>();
     Map<String, VoteStatus> voteStatusesByMessageId = new HashMap<>();
 
     public VotingRecord() {
     }
     
     public String toString() {
-        return MessageBuilder.buildMessage(totalResidual.toPlainString(), serialize(ownerRecordsByClientId), serialize(clientResidualsByClientId));
+        return MessageBuilder.buildMessage(totalResidual.toPlainString(), serialize(ownerRecordsByClientId), serialize(clientVoteRangesByClientId));
     }
     
     public VotingRecord(String string) {
         String[] terms = MessageBuilder.splitMessage(string);
         totalResidual = new BigDecimal(terms[0]);
         ownerRecordsByClientId = deserialize(terms[1], OwnerRecord::new);
-        clientResidualsByClientId = deserialize(terms[2], BigDecimal::new);
+        //TODO
+        //clientVoteRangesByClientId = deserialize(terms[2], BigDecimal::new);
     }
     
     private <T> String serialize(Map<String, T> entries) {
