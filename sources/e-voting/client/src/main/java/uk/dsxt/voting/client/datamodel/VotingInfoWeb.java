@@ -41,6 +41,8 @@ public class VotingInfoWeb {
     Long timer;
     String messageId;
     VoteResultStatus status;
+    Long timestamp;
+    String signature;
 
     @NonFinal
     @Setter
@@ -48,16 +50,19 @@ public class VotingInfoWeb {
 
     @JsonCreator
     public VotingInfoWeb(@JsonProperty("questions") QuestionWeb[] questions, @JsonProperty("amount") BigDecimal amount, @JsonProperty("timer") Long timer,
-                         @JsonProperty("messageId") String messageId, @JsonProperty("status") VoteResultStatus status) {
+                         @JsonProperty("messageId") String messageId, @JsonProperty("status") VoteResultStatus status, 
+                         @JsonProperty("timestamp") Long timestamp, @JsonProperty("signature") String signature) {
         this.questions = questions;
         this.amount = amount;
         this.timer = timer;
         this.messageId = messageId;
         this.status = status;
+        this.timestamp = timestamp;
+        this.signature = signature;
     }
 
     public VotingInfoWeb(QuestionWeb[] questions, BigDecimal amount, Long timer) {
-        this(questions, amount, timer, null, null);
+        this(questions, amount, timer, null, null, null, null);
     }
 
     public VotingInfoWeb(Voting voting, BigDecimal amount, long timer) {
@@ -70,5 +75,7 @@ public class VotingInfoWeb {
         this.timer = timer;
         this.messageId = null;
         this.status = null;
+        this.timestamp = null;
+        this.signature = null;
     }
 }

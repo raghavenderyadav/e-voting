@@ -39,6 +39,8 @@ public class VoteResultWeb {
     BigDecimal packetSize;
     VoteResultStatus status;
     String messageId;
+    Long timestamp;
+    String signature;
     // TODO Add answers for each question
 
     @JsonCreator
@@ -53,6 +55,8 @@ public class VoteResultWeb {
         this.packetSize = packetSize;
         this.status = status;
         this.messageId = messageId;
+        this.timestamp = null;
+        this.signature = null;
     }
 
     public VoteResultWeb(VoteResultAndStatus vr) {
@@ -63,5 +67,7 @@ public class VoteResultWeb {
         this.packetSize = vr.getResult().getPacketSize();
         this.status = vr.getStatus() == null ? null : vr.getStatus().getStatus();
         this.messageId = vr.getStatus() == null ? null : vr.getStatus().getMessageId();
+        this.timestamp = vr.getReceipt() == null ? null : vr.getReceipt().getTimestamp();
+        this.signature = vr.getReceipt() == null ? null : vr.getReceipt().getSignature();
     }
 }

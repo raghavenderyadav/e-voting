@@ -122,7 +122,7 @@ public class ClientManager {
                 }
             }
             //generate xml body and get vote results
-            VotingInfoWeb infoWeb = getVotingResults(result, voting, null);
+            VotingInfoWeb infoWeb = getVotingResults(result, voting, null, null);
             //serializing whole xml and put signature near xml (not using Sgnt field)
             String xmlBody = serializer.serialize(result, voting);
             signInfoByKey.put(generateKeyForDocument(clientId, votingId), new SignatureInfo(result, xmlBody));
@@ -182,20 +182,19 @@ public class ClientManager {
         final VoteResultAndStatus clientVote = assetsHolder.getClientVote(votingId, clientId);
         if (clientVote == null) {
             log.debug("votingResults. Client vote result with id={} for client with id={} not found.", votingId, clientId);
-            return new RequestResult<>(getVotingResults(new VoteResult(votingId, clientId), voting, null), null);
+            return new RequestResult<>(getVotingResults(new VoteResult(votingId, clientId), voting, null, null), null);
         }
-        return new RequestResult<>(getVotingResults(clientVote.getResult(), voting, clientVote.getStatus()), null);
+        return new RequestResult<>(getVotingResults(clientVote.getResult(), voting, clientVote.getStatus(), clientVote.getReceipt()), null);
     }
 
-    private VotingInfoWeb getVotingResults(VoteResult clientVote, Voting voting, VoteStatus voteStatus) {
+    private VotingInfoWeb getVotingResults(VoteResult clientVote, Voting voting, VoteStatus voteStatus, ClientVoteReceipt receipt) {
         List<QuestionWeb> results = new ArrayList<>();
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote, false));
         }
-        if (voteStatus != null)
-            return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()),
-                null, voteStatus.getMessageId(), voteStatus.getStatus());
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()), null);
+        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()),
+            null, voteStatus == null ? null : voteStatus.getMessageId(), voteStatus == null ? null : voteStatus.getStatus(),
+            receipt == null ? null : receipt.getTimestamp(), receipt == null ? null : receipt.getSignature());
     }
 
     public RequestResult getTime(String votingId) {

@@ -148,7 +148,7 @@ public class MockVotingApiResource implements VotingAPI {
     public RequestResult signVote(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId, @FormParam("isSign") Boolean isSign, @FormParam("sign") String signature) {
         try {
             log.debug("signVote method called. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature);
-            return new RequestResult<>(new VoteReceiptWeb("We accept your transaction", "dasfansdfjkans345dkfjn5445asdfshdf", Instant.now().getMillis() - 10000L, "signature"), null);
+            return new RequestResult<>(null, null);
         } catch (Exception e) {
             log.error("signVote method failed. cookie={}; votingId={}; isSign={}; signature={}", cookie, votingId, isSign, signature, e);
             return new RequestResult<>(APIException.UNKNOWN_EXCEPTION);
@@ -173,7 +173,7 @@ public class MockVotingApiResource implements VotingAPI {
         questions[0] = new QuestionWeb("1", "question_1_multi", answers1, true, 1);
         questions[1] = new QuestionWeb("2", "question_2_yes_no", answers2, false, 1);
         questions[2] = new QuestionWeb("3", "question_3_no_vote", new AnswerWeb[0], false, 1);
-        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), null, "asdkfhbwerjhwbejhsdhfsjjsjdf3k345k", VoteResultStatus.OK), null);
+        return new RequestResult<>(new VotingInfoWeb(questions, new BigDecimal(22), null, "asdkfhbwerjhwbejhsdhfsjjsjdf3k345k", VoteResultStatus.OK, System.currentTimeMillis(), "nodeSign"), null);
     }
 
     @POST
