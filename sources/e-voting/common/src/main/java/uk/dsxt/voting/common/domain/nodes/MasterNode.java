@@ -83,26 +83,27 @@ public class MasterNode extends ClientNode {
             }
             String[] decryptedParts = MessageBuilder.splitMessage(decryptedData);
             if (decryptedParts.length == 2) {
+                String ownerId = decryptedParts[0];
                 String sign = decryptedParts[1];
                 if (!sign.equals(AssetsHolder.EMPTY_SIGNATURE)) {
-                    PublicKey participantKey = participantKeysById.get(decryptedParts[0]);
+                    PublicKey participantKey = participantKeysById.get(ownerId);
                     if (participantKey == null) {
-                        log.error("handleVote. Owner {} not found or has no public key. transactionId={}", decryptedParts[0], transactionId);
+                        log.error("handleVote. Owner {} not found or has no public key. transactionId={}", ownerId, transactionId);
                         return VoteResultStatus.IncorrectMessage;
                     }
                     try {
-                        if (!cryptoHelper.verifySignature(decryptedParts[0], sign, participantKey)) {
-                            log.error("handleVote. Invalid signature of owner {}. transactionId={}", decryptedParts[0], transactionId);
+                        if (!cryptoHelper.verifySignature(voteDigest, sign, participantKey)) {
+                            log.error("handleVote. Invalid signature of owner {}. transactionId={}", ownerId, transactionId);
                             return VoteResultStatus.SignatureFailed;
                         }
                     } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                        log.error("handleVote. Failed to check owner signature. participantId={} transactionId={} error={}", decryptedParts[0], transactionId, e.getMessage());
+                        log.error("handleVote. Failed to check owner signature. participantId={} transactionId={} error={}", ownerId, transactionId, e.getMessage());
                         return VoteResultStatus.SignatureFailed;
                     }
                 }
                 String resultSign;
                 try {
-                    resultSign = cryptoHelper.createSignature(decryptedParts[0], privateKey);
+                    resultSign = cryptoHelper.createSignature(voteDigest, privateKey);
                 } catch (GeneralSecurityException | UnsupportedEncodingException e) {
                     log.error("handleVote. Failed to create signature owner signature. transactionId={} error={}", transactionId, e.getMessage());
                     return VoteResultStatus.InternalError;
