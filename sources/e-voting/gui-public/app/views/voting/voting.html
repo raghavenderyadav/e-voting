@@ -46,35 +46,7 @@
             </div>
           </div>
           <div ng-if="vc.phase === 3" class="form-horizontal">
-            <div class="form-group">
-              <label class="col-xs-3 control-label">ID</label>
-              <div class="col-xs-9">
-                <p class="form-control-static">
-                  {{vc.messageId}}
-                </p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-3 control-label">Vote time</label>
-              <div class="col-xs-9">
-                <p class="form-control-static">
-                  {{vc.voteTime | date: 'shortDate'}} {{vc.voteTime | date: 'mediumTime'}}
-                </p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-xs-3 control-label" for="signContent">Signing content</label>
-              <div class="col-xs-9">
-                  <textarea class="form-control" name="signContent" id="signContent" cols="30" rows="10" ng-model="vc.xml"></textarea>
-              </div>
-            </div>
-            <br>
-            <div class="form-group">
-              <label class="col-xs-3 control-label" for="signature">Signature key</label>
-              <div class="col-xs-9">
-                  <textarea class="form-control" name="signKey" id="signature" cols="30" rows="10" ng-model="vc.signature"></textarea>
-              </div>
-            </div>
+            <h3 class="panel-title">Your vote has been accepted</h3>
           </div>
         </div>
         <div class="panel-footer text-center">

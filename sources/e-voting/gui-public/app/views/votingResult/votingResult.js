@@ -26,6 +26,7 @@ angular
   .controller('VotingResultController',['votingResultInfo', '$state', function (votingResultInfo, $state) {
     var vrc = this;
     vrc.votingResult = [];
+    vrc.showReceipt = false;
     vrc.cancel = cancel;
 
     activate();
