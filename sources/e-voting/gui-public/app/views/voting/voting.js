@@ -88,16 +88,8 @@ angular
         isSign: vc.isSign
       }, signComplete);
 
-      function signComplete(data) {
-        if(data) {
-          vc.messageId = data.id;
-          vc.signature = data.signature;
-          vc.xml = data.message;
-          vc.voteTime = data.timestamp;
-          vc.phase = 3;
-        } else {
-          alert("Vote failed");
-        }
+      function signComplete() {
+        vc.phase = 3;
       }
     }
 

@@ -192,9 +192,12 @@ public class ClientManager {
         for (Question question : voting.getQuestions()) {
             results.add(new QuestionWeb(question, clientVote, false));
         }
-        return new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()),
+        VotingInfoWeb answer = new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), assetsHolder.getClientPacketSize(voting.getId(), clientVote.getHolderId()),
             null, voteStatus == null ? null : voteStatus.getMessageId(), voteStatus == null ? null : voteStatus.getStatus(),
             receipt == null ? null : receipt.getTimestamp(), receipt == null ? null : receipt.getSignature());
+        if (receipt != null)
+            answer.setXmlBody(receipt.getVoteResultMessage());
+        return answer;
     }
 
     public RequestResult getTime(String votingId) {
