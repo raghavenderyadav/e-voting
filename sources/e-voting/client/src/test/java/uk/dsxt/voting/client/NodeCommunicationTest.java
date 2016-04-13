@@ -28,7 +28,7 @@ import org.junit.Test;
 public class NodeCommunicationTest {
     //1.1-2-5,1.2-1-23,2.1-1-7,2.1.multi-2.1.1-2,2.1.multi-2.1.2-2,3.1-1-2
     @Test
-    public void test() {
+    public void test() throws Exception {
         VotingClientMain.main(new String[]{
             "./conf/nxt-default.properties",
             "NXT-9PHW-CVXU-2TDY-H4878",
@@ -80,6 +80,7 @@ public class NodeCommunicationTest {
             "clients6.json",
             "", //"state5.txt",
         });
+        Thread.sleep(1300 * 1000);
     }
     
 }
