@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -88,6 +89,10 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final Map<String, MessageRecord> unconfirmedMessages = new HashMap<>();
 
     private final long confirmTimeout;
+
+    private final AtomicLong sentMessages = new AtomicLong();
+    private final AtomicLong receivedMessages = new AtomicLong();
+    private final AtomicLong receivedSelfMessages = new AtomicLong();
 
     public WalletMessageConnector(WalletManager walletManager, MessagesSerializer serializer, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById,
                                   PrivateKey privateKey, String holderId, String masterId, long confirmTimeout) {
@@ -151,6 +156,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         MessageRecord messageRecord = new MessageRecord();
         try {
             messageRecord.body = MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields);
+            sentMessages.incrementAndGet();
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
             return null;
@@ -189,7 +195,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         for(MessageRecord messageRecord : overdueMessages) {
             send(messageRecord);
         }
-        log.debug("checkUnconfirmedMessages. {} messages resent", overdueMessages.size());
+        log.debug("checkUnconfirmedMessages. {} messages resent. Total sent {} received {}, self received {}", 
+            overdueMessages.size(), sentMessages.get(), receivedMessages.get(), receivedSelfMessages.get());
     }
 
     private void sendMessage(Consumer<NetworkMessagesReceiver> action) {
@@ -208,8 +215,11 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         boolean isSelf = holderId.equals(messageContent.getAuthor());
         String messageId = messageContent.getUID();
         log.debug("handleNewMessage. message type={}. holderId={} authorId={}  messageId={} tranId={}", type, holderId, authorId, messageId, msgId);
+        receivedMessages.incrementAndGet();
         synchronized (unconfirmedMessages) {
-            unconfirmedMessages.remove(messageId);
+            if (unconfirmedMessages.remove(messageId) != null) {
+                receivedSelfMessages.incrementAndGet();
+            }
         }
         try {
             switch (type) {
