@@ -60,7 +60,7 @@ public class HandleNewMessagesTest {
         String publicKey ="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjnJns3ZPOCfUFCD5elEZ5Sa5wsmwU7JbqlXFsXXVQESyxNZNnZOQAOIu4CdcR2qSgEC+xd143E2aZYrVnz9o8YkzDAXGKjBt9XcuX/dL/gfuI7sEL6SaCEmIV2gVLWcXKLNNemXGPMpV06al07eTAkl6EjL30hnQRO+GnKHRurC18J7pDajgUoFP0iZFVj8bY29eHBBdgl0UJJTSrPNwdNxCw1O/tPLXhYfPTKJ/ah4lEfFqggDzGk5tKliGy78Rq/fS2US4MQk3vB4I9jHdqE/Ob6EHbnpXZZfxCj+laSAYMzqowaDHP93FI3fBuX5nUGRDytrXlhOIDvRufXExBQIDAQAB";
         participantKeysById.put("00", cryptoHelper.loadPublicKey(publicKey));
         WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, cryptoHelper,
-            participantKeysById, privateKey, "00", MasterNode.MASTER_HOLDER_ID, 10000000);
+            participantKeysById, privateKey, "00", MasterNode.MASTER_HOLDER_ID, 10000000, 10);
         VotingOrganizer votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantKeysById, privateKey, 10000000);
         walletMessageConnector.addClient(votingOrganizer);
         Voting voting = new Voting("v0", "v0", System.currentTimeMillis(), System.currentTimeMillis() + 10000000, new Question[0], "sec");

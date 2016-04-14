@@ -22,7 +22,6 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +80,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final ScheduledExecutorService unconfirmedMessagesChecker = Executors.newSingleThreadScheduledExecutor();
 
+    private final ExecutorService messagesSender;
+
     private static class MessageRecord {
         private long timestamp;
         private final String uid;
@@ -110,7 +112,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     private final AtomicLong receivedSelfMessageCount = new AtomicLong();
 
     public WalletMessageConnector(WalletManager walletManager, MessagesSerializer serializer, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById,
-                                  PrivateKey privateKey, String holderId, String masterId, long confirmTimeout) {
+                                  PrivateKey privateKey, String holderId, String masterId, long confirmTimeout, int sendMessagesThreads) {
         this.walletManager = walletManager;
         this.serializer = serializer;
         this.cryptoHelper = cryptoHelper;
@@ -121,6 +123,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         this.confirmTimeout = confirmTimeout;
         this.masterKey = participantKeysById.get(masterId);
         unconfirmedMessagesChecker.scheduleWithFixedDelay(this::checkUnconfirmedMessages, 1, 1, TimeUnit.MINUTES);
+        messagesSender = Executors.newFixedThreadPool(sendMessagesThreads);
     }
 
     public void addClient(NetworkClient client) {
@@ -180,7 +183,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         synchronized (unconfirmedMessages) {
             unconfirmedMessages.put(messageRecord.uid, messageRecord);
         }
-        send(messageRecord);
+        messagesSender.execute(() -> send(messageRecord));
         return messageRecord.uid;
     }
     
@@ -210,7 +213,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             }
         }
         for(MessageRecord messageRecord : overdueMessages) {
-            send(messageRecord);
+            messagesSender.execute(() -> send(messageRecord));
         }
         log.debug("checkUnconfirmedMessages. {} messages resent. Total sent {} received {}, self received {}, send try {}", 
             overdueMessages.size(), sentMessageCount.get(), receivedMessageCount.get(), receivedSelfMessageCount.get(), sentMessageTryCount.get());

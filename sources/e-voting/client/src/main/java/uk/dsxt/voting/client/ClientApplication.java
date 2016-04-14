@@ -112,8 +112,9 @@ public class ClientApplication extends ResourceConfig {
         MessagesSerializer messagesSerializer = useSimpleSerializer ? new SimpleSerializer() : new Iso20022Serializer();
 
         long confirmTimeout = Integer.parseInt(properties.getProperty("messages.confirm.timeout", "180")) * 1000;
+        int nxtThreads = Integer.parseInt(properties.getProperty("messages.send.threads", "20"));
         WalletMessageConnector walletMessageConnector = new WalletMessageConnector(walletManager, messagesSerializer, 
-            cryptoHelper, participantKeysById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID, confirmTimeout);
+            cryptoHelper, participantKeysById, ownerPrivateKey, ownerId, MasterNode.MASTER_HOLDER_ID, confirmTimeout, nxtThreads);
 
         ClientNode clientNode;
         VotingOrganizer votingOrganizer;
