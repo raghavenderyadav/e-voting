@@ -71,8 +71,6 @@ public class ClientNode implements AssetsHolder, NetworkClient {
     
     private final static long VOTE_MAX_DELAY = 60000;
 
-    private final AtomicLong lastUnsentMessageId = new AtomicLong();
-
     private final Map<String, OwnerRecord> ownerRecordsByMessageId = new HashMap<>();
 
     public ClientNode(String participantId, MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey,

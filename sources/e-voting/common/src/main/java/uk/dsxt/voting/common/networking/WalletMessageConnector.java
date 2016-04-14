@@ -80,8 +80,6 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final ScheduledExecutorService unconfirmedMessagesChecker = Executors.newSingleThreadScheduledExecutor();
 
-    private final ExecutorService messagesHandler = Executors.newFixedThreadPool(10);
-
     private static class MessageRecord {
         long timestamp;
         String uid;
