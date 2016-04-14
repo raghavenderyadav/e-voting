@@ -204,4 +204,40 @@ public class XmlTest {
         assertEquals(voting.getQuestions()[0].getId(), loaded.getQuestions()[0].getId());
         assertEquals(voting.getQuestions()[0].getAnswers().length, loaded.getQuestions()[0].getAnswers().length);
     }
+    
+    @Test
+    @Ignore
+    public void testPerformance() throws Exception {
+        Iso20022Serializer serializer = new Iso20022Serializer();
+        MessagesSerializer simpleSerializer = new SimpleSerializer();
+        //deserialize voting
+        String votingXml = PropertiesHelper.getResourceString("voting_cumulative.xml", "windows-1251");
+        Voting voting = serializer.deserializeVoting(votingXml);
+        assertNotNull(voting);
+
+        //deserialization from xml file
+        String voteResultXml = PropertiesHelper.getResourceString("voteResult_cumulative.xml", "windows-1251");
+        String serializedVoteResult = MessageBuilder.buildMessage(voteResultXml, simpleSerializer.serialize(voting));
+        VoteResult voteResult = serializer.deserializeVoteResult(serializedVoteResult);
+        assertNotNull(voteResult);
+
+        long start;
+        int cnt;
+
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
+            serializer.serialize(voteResult, voting);
+            cnt++;
+        }
+        System.out.println("Serialize: " + cnt/10);
+
+        start = System.currentTimeMillis();
+        cnt= 0;
+        while(System.currentTimeMillis() - start < 10000) {
+            serializer.deserializeVoteResult(serializedVoteResult);
+            cnt++;
+        }
+        System.out.println("Deserialize: " + cnt/10);
+    }
 }
