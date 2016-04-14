@@ -36,6 +36,7 @@ import java.security.PublicKey;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Log4j2
 public class MasterNode extends ClientNode {
@@ -43,6 +44,10 @@ public class MasterNode extends ClientNode {
     public static String MASTER_HOLDER_ID = "00";
     
     private final ExecutorService handleVoteExecutor = Executors.newFixedThreadPool(10);
+
+    private final AtomicLong receivedVotes = new AtomicLong();
+    private final AtomicLong handledVotes = new AtomicLong();
+    private final AtomicLong incorrectVotes = new AtomicLong();
 
     public MasterNode(MessagesSerializer messagesSerializer, CryptoHelper cryptoProvider, Map<String, PublicKey> participantKeysById, PrivateKey privateKey) 
             throws InternalLogicException, GeneralSecurityException {
@@ -54,6 +59,7 @@ public class MasterNode extends ClientNode {
 
         @Override
         public NodeVoteReceipt acceptVote(String transactionId, String votingId, BigDecimal packetSize, String clientId, BigDecimal clientPacketResidual, String encryptedData, String voteDigest, String clientSignature) throws InternalLogicException {
+            receivedVotes.incrementAndGet();
             handleVoteExecutor.execute(() -> handleVote(transactionId, votingId, packetSize, clientId, clientPacketResidual, encryptedData, voteDigest));
             return null; 
         }
@@ -68,12 +74,15 @@ public class MasterNode extends ClientNode {
             log.error("handleVote failed: {}", e.getMessage());
         }
         if (status != VoteResultStatus.OK) {
+            incorrectVotes.incrementAndGet();
             try {
                 network.addVoteStatus(new VoteStatus(votingId, transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
             } catch (InternalLogicException e) {
                 log.error("handleVote. send vote failed: {}", e.getMessage());
             }
         }
+        if (handledVotes.incrementAndGet() % 10 == 0)
+            log.debug("handleVote. received {} handled {} errors {}", receivedVotes.get(), handledVotes.get(), incorrectVotes.get());
     }
     
     private VoteResultStatus handleVote(String transactionId, String votingId, String encryptedData, String voteDigest) throws InternalLogicException {
