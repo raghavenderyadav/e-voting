@@ -58,6 +58,8 @@ public class MessageHandler {
     private final ScheduledExecutorService handleMessagesService = Executors.newSingleThreadScheduledExecutor();
 
     private final ExecutorService messagesHandler = Executors.newFixedThreadPool(10);
+    
+    private long totalReceivedMessageCnt = 0;
 
     public MessageHandler(WalletManager walletManager, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById, MessageReceiver messageReceiver) {
         this.walletManager = walletManager;
@@ -113,7 +115,8 @@ public class MessageHandler {
                 messagesHandler.execute(() -> handleMessage(message));
             }
         }
-        log.debug("checkNewMessages ends allCnt={}, skippedCnt={}, errorsCnt={}", newMessages.size(), skippedCnt);
+        totalReceivedMessageCnt += newMessages.size();
+        log.debug("checkNewMessages ends allCnt={}, skippedCnt={}, totalReceivedMessageCnt={}", newMessages.size(), skippedCnt, totalReceivedMessageCnt);
     }
 
     private void handleMessage(Message message) {

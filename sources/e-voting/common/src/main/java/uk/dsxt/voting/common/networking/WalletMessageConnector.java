@@ -22,7 +22,6 @@
 package uk.dsxt.voting.common.networking;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.Instant;
 import uk.dsxt.voting.common.domain.dataModel.VoteResult;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +80,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final ScheduledExecutorService unconfirmedMessagesChecker = Executors.newSingleThreadScheduledExecutor();
 
+    private final ExecutorService messagesHandler = Executors.newFixedThreadPool(10);
+
     private static class MessageRecord {
         long timestamp;
         String uid;
@@ -90,9 +92,10 @@ public class WalletMessageConnector implements NetworkMessagesSender {
 
     private final long confirmTimeout;
 
-    private final AtomicLong sentMessages = new AtomicLong();
-    private final AtomicLong receivedMessages = new AtomicLong();
-    private final AtomicLong receivedSelfMessages = new AtomicLong();
+    private final AtomicLong sentMessageCount = new AtomicLong();
+    private final AtomicLong sentMessageTryCount = new AtomicLong();
+    private final AtomicLong receivedMessageCount = new AtomicLong();
+    private final AtomicLong receivedSelfMessageCount = new AtomicLong();
 
     public WalletMessageConnector(WalletManager walletManager, MessagesSerializer serializer, CryptoHelper cryptoHelper, Map<String, PublicKey> participantKeysById,
                                   PrivateKey privateKey, String holderId, String masterId, long confirmTimeout) {
@@ -156,7 +159,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         MessageRecord messageRecord = new MessageRecord();
         try {
             messageRecord.body = MessageContent.buildOutputMessage(messageType, holderId, privateKey, cryptoHelper, fields);
-            sentMessages.incrementAndGet();
+            sentMessageCount.incrementAndGet();
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             log.error("send {} fails: {}. holderId={}", messageType, e.getMessage(), holderId);
             return null;
@@ -171,6 +174,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
     
     private void send(MessageRecord messageRecord) {
         messageRecord.timestamp = System.currentTimeMillis();
+        sentMessageTryCount.incrementAndGet();
         String id = walletManager.sendMessage(messageRecord.body);
         if (id == null) {
             log.error("send fails. holderId={} messageId={}", holderId, messageRecord.uid);
@@ -195,8 +199,8 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         for(MessageRecord messageRecord : overdueMessages) {
             send(messageRecord);
         }
-        log.debug("checkUnconfirmedMessages. {} messages resent. Total sent {} received {}, self received {}", 
-            overdueMessages.size(), sentMessages.get(), receivedMessages.get(), receivedSelfMessages.get());
+        log.debug("checkUnconfirmedMessages. {} messages resent. Total sent {} received {}, self received {}, send try {}", 
+            overdueMessages.size(), sentMessageCount.get(), receivedMessageCount.get(), receivedSelfMessageCount.get(), sentMessageTryCount.get());
     }
 
     private void sendMessage(Consumer<NetworkMessagesReceiver> action) {
@@ -208,17 +212,17 @@ public class WalletMessageConnector implements NetworkMessagesSender {
             }
         }
     }
-
+    
     public void handleNewMessage(MessageContent messageContent, String msgId, boolean isCommitted, String authorId) {
+        receivedMessageCount.incrementAndGet();
         String body = messageContent.getField(FIELD_BODY);
         String type = messageContent.getType();
         boolean isSelf = holderId.equals(messageContent.getAuthor());
         String messageId = messageContent.getUID();
         log.debug("handleNewMessage. message type={}. holderId={} authorId={}  messageId={} tranId={}", type, holderId, authorId, messageId, msgId);
-        receivedMessages.incrementAndGet();
         synchronized (unconfirmedMessages) {
             if (unconfirmedMessages.remove(messageId) != null) {
-                receivedSelfMessages.incrementAndGet();
+                receivedSelfMessageCount.incrementAndGet();
             }
         }
         try {
