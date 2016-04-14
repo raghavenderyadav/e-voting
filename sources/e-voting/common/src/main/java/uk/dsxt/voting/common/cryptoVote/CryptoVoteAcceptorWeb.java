@@ -89,8 +89,10 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         if (!isNetworkOn)
             return;
         Map<String, String> parameters;
+        int queueSize;
         synchronized (unsentVoteMessages) {
             parameters = unsentVoteMessages.peek();
+            queueSize = unsentVoteMessages.size();
         }
         if (parameters == null)
             return;
@@ -122,7 +124,8 @@ public class CryptoVoteAcceptorWeb extends NetworkConnectorDemo implements VoteA
         }
         try {
             NodeVoteReceipt receipt = mapper.readValue(result, NodeVoteReceipt.class);
-            log.info("sendNextVote. Vote sent, receipt.status={} clientPacketResidual={} packetSize={}", receipt.getStatus(), parameters.get("clientPacketResidual"), parameters.get("packetSize"));
+            log.debug("sendNextVote. Vote sent, receipt.status={} clientPacketResidual={} packetSize={} queueSize={}",
+                receipt.getStatus(), parameters.get("clientPacketResidual"), parameters.get("packetSize"), queueSize);
         } catch (IOException e) {
             log.error("sendNextVote. can not read receipt {}. error={}", result, e.getMessage());
         }
