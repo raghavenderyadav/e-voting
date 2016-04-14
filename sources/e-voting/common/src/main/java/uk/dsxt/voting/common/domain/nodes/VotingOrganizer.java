@@ -96,7 +96,7 @@ public class VotingOrganizer implements NetworkClient {
         log.info("addNewVoting. Voting added. votingId={}", voting.getId());
     }
 
-    private synchronized void calculateResults(String votingId) {
+    private void calculateResults(String votingId) {
         log.info("calculateResults started. votingId={}", votingId);
         VotingRecord votingRecord;
         synchronized (votingsById) {
@@ -162,7 +162,7 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     @Override
-    public synchronized void addVoting(Voting voting) {
+    public void addVoting(Voting voting) {
         VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, voting.getId(), VotingRecord::new);
         synchronized (votingRecord) {
             votingRecord.voting = voting;
@@ -170,11 +170,11 @@ public class VotingOrganizer implements NetworkClient {
     }
 
     @Override
-    public synchronized void addVotingTotalResult(VoteResult result) {
+    public void addVotingTotalResult(VoteResult result) {
     }
 
     @Override
-    public synchronized void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf) {
+    public void addVoteStatus(VoteStatus status, String messageId, boolean isCommitted, boolean isSelf) {
         VotingRecord votingRecord = CollectionsHelper.synchronizedGetOrAdd(votingsById, status.getVotingId(), VotingRecord::new);
         synchronized (votingRecord) {
             MessageRecord messageRecord = CollectionsHelper.synchronizedGetOrAdd(votingRecord.resultsByMessageId, status.getMessageId(), MessageRecord::new);
