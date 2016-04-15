@@ -130,7 +130,8 @@ public class ClientApplication extends ResourceConfig {
         } else {
             votingOrganizer = null;
             StateFileSerializer stateFileSerializer = stateFilePath == null || stateFilePath.isEmpty() ? null : new StateFileSerializer(stateFilePath);
-            acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null);
+            int parentThreads = Integer.parseInt(properties.getProperty("parent.send.threads", "2"));
+            acceptorWeb = parentHolderUrl == null || parentHolderUrl.isEmpty() ? null : new CryptoVoteAcceptorWeb(parentHolderUrl, connectionTimeout, readTimeout, null, parentThreads);
             clientNode = new ClientNode(ownerId, messagesSerializer, cryptoHelper, participantKeysById, ownerPrivateKey, acceptorWeb,
                 stateFileSerializer == null ? null : stateFileSerializer.load(), stateFileSerializer == null ? null : stateFileSerializer::save);
         }
