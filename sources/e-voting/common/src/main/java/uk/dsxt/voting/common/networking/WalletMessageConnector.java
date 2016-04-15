@@ -38,10 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -122,7 +119,7 @@ public class WalletMessageConnector implements NetworkMessagesSender {
         this.masterId = masterId;
         this.confirmTimeout = confirmTimeout;
         this.masterKey = participantKeysById.get(masterId);
-        unconfirmedMessagesChecker.scheduleWithFixedDelay(this::checkUnconfirmedMessages, 1, 1, TimeUnit.MINUTES);
+        unconfirmedMessagesChecker.scheduleWithFixedDelay(this::checkUnconfirmedMessages, new Random().nextInt(120), 120, TimeUnit.SECONDS);
         messagesSender = Executors.newFixedThreadPool(sendMessagesThreads);
     }
 
