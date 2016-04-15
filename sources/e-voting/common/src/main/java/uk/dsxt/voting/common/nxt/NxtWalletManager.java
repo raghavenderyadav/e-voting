@@ -138,11 +138,7 @@ public class NxtWalletManager implements WalletManager {
             processBuilder.redirectOutput(new File(String.format("./logs/wallet_out_%s.log", name)));
             processBuilder.command(cmd);
             nxtProcess = processBuilder.start();
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    stop();
-                }
-            });
+            Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
             waitInitialize();
             log.info("connector started");
         } catch (Exception e) {
