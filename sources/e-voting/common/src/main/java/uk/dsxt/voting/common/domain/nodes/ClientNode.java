@@ -180,21 +180,20 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                 Map<BigDecimal, BigDecimal> ranges = CollectionsHelper.getOrAdd(votingRecord.clientVoteRangesByClientId, client.getParticipantId(), TreeMap<BigDecimal, BigDecimal>::new);
                 ranges.put(clientPacketResidual, clientPacketResidual.add(packetSize));
                 votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
-                if (parentHolder != null) {
-                    String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
-                    String sign = null;
-                    try {
-                        sign = cryptoHelper.createSignature(signed, privateKey);
-                    } catch (GeneralSecurityException | UnsupportedEncodingException  e) {
-                        log.error("addVote. sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
-                    }
-                    if (sign != null) {
-                        parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
-                    }
-                }
             }
         }
-        if (status != VoteResultStatus.OK) {
+        if (status == VoteResultStatus.OK && parentHolder != null) {
+            String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
+            String sign = null;
+            try {
+                sign = cryptoHelper.createSignature(signed, privateKey);
+            } catch (GeneralSecurityException | UnsupportedEncodingException  e) {
+                log.error("addVote. sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
+            }
+            if (sign != null) {
+                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
+            }
+        } else if (status != VoteResultStatus.OK) {
             network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
         } 
         return status;
