@@ -174,16 +174,17 @@ public class ClientNode implements AssetsHolder, NetworkClient {
             }
         }
         VoteResultStatus status;
+        BigDecimal totalResidual = null;
         synchronized (votingRecord) {
             status = checkVote(votingRecord, client, packetSize, clientPacketResidual, voteTimestamp);
             if (status == VoteResultStatus.OK) {
                 Map<BigDecimal, BigDecimal> ranges = CollectionsHelper.getOrAdd(votingRecord.clientVoteRangesByClientId, client.getParticipantId(), TreeMap<BigDecimal, BigDecimal>::new);
                 ranges.put(clientPacketResidual, clientPacketResidual.add(packetSize));
-                votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
+                totalResidual = votingRecord.totalResidual = votingRecord.totalResidual.subtract(packetSize);
             }
         }
         if (status == VoteResultStatus.OK && parentHolder != null) {
-            String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest);
+            String signed = buildMessage(transactionId, votingRecord.voting.getId(), packetSize, participantId, totalResidual, encrypted, voteDigest);
             String sign = null;
             try {
                 sign = cryptoHelper.createSignature(signed, privateKey);
@@ -191,7 +192,7 @@ public class ClientNode implements AssetsHolder, NetworkClient {
                 log.error("addVote. sign message to parent failed. voting={} client={} error={}", votingRecord.voting.getId(), client.getParticipantId(), e.getMessage());
             }
             if (sign != null) {
-                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, votingRecord.totalResidual, encrypted, voteDigest, sign);
+                parentHolder.acceptVote(transactionId, votingRecord.voting.getId(), packetSize, participantId, totalResidual, encrypted, voteDigest, sign);
             }
         } else if (status != VoteResultStatus.OK) {
             network.addVoteStatus(new VoteStatus(votingRecord.voting.getId(), transactionId, status, voteDigest, AssetsHolder.EMPTY_SIGNATURE));
