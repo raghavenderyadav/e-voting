@@ -24,14 +24,14 @@ cd /home/$(whoami)/e-voting/build/gui-public/;
 npm update;
 bower update;
 sed -i 's/base href=\"\/\"/base href=\"\/nsd\/\"/g' /home/$(whoami)/e-voting/build/gui-public/app/index.html
-sed -i 's/\/nxt?requestType=/\/nsd\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd/html/ui/js/nrs.server.js
+sed -i 's/\"\/nxt?requestType=/\"\/nsd\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd/html/ui/js/nrs.server.js
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"https://dsx.tech\", \"serverPort\": \"443\", \"pathToApi\": \"nsd/api\", \"readPortFromUrl\": true });" > /home/$(whoami)/e-voting/build/gui-public/app/server-properties.js;
 cp -r /home/$(whoami)/e-voting/build/gui-public/* /home/$(whoami)/e-voting/build/gui-public1/;
 sed -i 's/nsd/nd1/g' /home/$(whoami)/e-voting/build/gui-public1/app/index.html
-sed -i 's/\/nxt?requestType=/\/nd1\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd1/html/ui/js/nrs.server.js
+sed -i 's/\"\/nxt?requestType=/\"\/nd1\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd1/html/ui/js/nrs.server.js
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"https://dsx.tech\", \"serverPort\": \"443\", \"pathToApi\": \"nd1/api\", \"readPortFromUrl\": true });" > /home/$(whoami)/e-voting/build/gui-public1/app/server-properties.js;
 cp -r /home/$(whoami)/e-voting/build/gui-public/* /home/$(whoami)/e-voting/build/gui-public2/;
 sed -i 's/nsd/nd2/g' /home/$(whoami)/e-voting/build/gui-public2/app/index.html
-sed -i 's/\/nxt?requestType=/\/nd2\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd2/html/ui/js/nrs.server.js
+sed -i 's/\"\/nxt?requestType=/\"\/nd2\/nxt\/nxt?requestType=/g' /home/$(whoami)/e-voting/build/nsd2/html/ui/js/nrs.server.js
 echo "angular.module('e-voting.server-properties', []).constant('serverProperties', {\"serverUrl\": \"https://dsx.tech\", \"serverPort\": \"443\", \"pathToApi\": \"nd2/api\", \"readPortFromUrl\": true });" > /home/$(whoami)/e-voting/build/gui-public2/app/server-properties.js;
 echo Build process is finished successfully
