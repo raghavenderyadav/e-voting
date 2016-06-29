@@ -26,7 +26,8 @@ angular
   .constant('apiProperties',
     {
       "paths": {
-        "login": "/login"
+        "login": "/login",
+        "decodeMessage": "/decodeMessage"
       },
       "cookiePaths": {
         "votings": "/votings",

@@ -20,26 +20,24 @@
  ******************************************************************************/
 
 'use strict';
+angular
+  .module('e-voting.decodeTransaction', [
+    'e-voting.decodeTransaction.decode-transaction-model',
+    'e-voting.decodeTransaction.decode-transaction-view'
+  ]);
 
 angular
-  .module('e-voting', [
-    'e-voting.routing',
-    'e-voting.auth',
-    'e-voting.voting',
-    'e-voting.header',
-    'e-voting.server-properties',
-    'e-voting.api-requests',
-    'e-voting.role-management',
-    'e-voting.crypto',
-    'e-voting.notifications',
-    'e-voting.decodeTransaction'
-  ])
-  .run(['$rootScope', 'roleManager', 'userInfo', function ($rootScope, roleManager, userInfo) {
-    $rootScope.$on('$stateChangeStart',
-        function (event, toState) {
-          roleManager.checkPagePermission(event, toState);
-          userInfo.setTotalVotes(null);
-        }
-      );
+  .module('e-voting.decodeTransaction.decode-transaction-model', [])
+  .service('transactionInfo', ['$http', 'serverProperties',
+    function ($http, serverProperties) {
+      return {
+        getTransaction: getTransaction
+      };
+      function getTransaction(id, onSuccess) {
+        $http.post(serverProperties.serverUrl + "/nxt/nxt", {
+          requestType: 'getTransaction',
+          transaction: id
+        }).then(onSuccess, null);
+      }
     }
   ]);

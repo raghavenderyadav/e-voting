@@ -245,5 +245,12 @@ public class ClientManager {
         return new RequestResult<>(new VotingInfoWeb(results.toArray(new QuestionWeb[results.size()]), null, null), null);
     }
 
+    public RequestResult decodeMessage(String message, String privateKey) {
+        try {
+            return new RequestResult<>(cryptoHelper.decrypt(message, cryptoHelper.loadPrivateKey(privateKey)), null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

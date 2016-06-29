@@ -1,0 +1,49 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Transaction decoder</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <br>
+            <label class="col-xs-3 control-label" for="transactionId">Transaction id</label>
+            <div class="col-xs-9">
+                  <input type="text" class="form-control" name="transactionId" id="transactionId" ng-model="dtc.transactionId"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <br>
+            <button type="button" class="col-xs-3  btn btn-default btn-primary btn-spacing btn-80"
+                    ng-click="dtc.getMessage(dtc.transactionId)" ng-disabled="dtc.transactionId == null">
+              Get message
+            </button>
+            <div class="col-xs-9">
+                  <textarea class="form-control" name="message" id="message" ng-model="dtc.transaction.attachment.message"
+                            ng-attr-rows="{{dtc.transaction ? dtc.transaction.attachment.message.length / 50 : '1'}}" cols="50" readonly></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <br>
+            <label class="col-xs-3 control-label" for="privateKey">Key</label>
+            <div class="col-xs-9">
+              <input type="text" class="form-control" name="privateKey" id="privateKey" ng-model="dtc.privateKey"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <br>
+            <button type="button" class="col-xs-3  btn btn-default btn-primary btn-spacing btn-80"
+                    ng-click="dtc.decode(dtc.transaction, dtc.privateKey)" ng-disabled="dtc.transaction == null || dtc.privateKey == null">
+              Decode
+            </button>
+            <div class="col-xs-9">
+                  <textarea class="form-control" name="decodedMessage" id="decodedMessage" cols="50" ng-model="dtc.decoded"
+                            ng-attr-rows="{{dtc.decoded ? dtc.decoded.length / 50 : '1'}}"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

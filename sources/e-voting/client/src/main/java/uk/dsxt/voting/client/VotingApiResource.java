@@ -175,4 +175,11 @@ public class VotingApiResource implements VotingAPI {
     public RequestResult getAllClientVotes(@FormParam("cookie") String cookie, @FormParam("votingId") String votingId) {
         return executeClientWithRole(cookie, "getAllClientVotes", String.format("votingId=%s", votingId), UserRole.ADMIN, (clientId) -> manager.getAllClientVotes(votingId));
     }
+
+    @POST
+    @Path("/decodeMessage")
+    @Produces("application/json")
+    public RequestResult decodeMessage(@FormParam("privateKey") String privateKey, @FormParam("message") String message) {
+        return execute("decodeMessage", String.format("message=%s", message), () -> manager.decodeMessage(message, privateKey));
+    }
 }

@@ -68,6 +68,21 @@ angular
             loginRequired: true
           }
         })
+        .state('decodeTransaction', {
+          url: '/decodeTransaction/:locale/',
+          templateUrl: 'views/decodeTransaction/decodeTransaction.html',
+          controller: 'DecodeTransactionController',
+          controllerAs: 'dtc',
+          params: {
+            locale: {
+              value: 'en-gb',
+              squash: true
+            }
+          },
+          access: {
+            loginRequired: false
+          }
+        })
         .state('votingResult', {
           url: '/votingResult/:locale/?id',
           templateUrl: 'views/votingResult/votingResult.html',
