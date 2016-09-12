@@ -7,22 +7,23 @@
             <a class="brand" href="#">
               <img alt="logo" src="images/logo.png"></a>
           </div>
+          <lang-select></lang-select>
           <div class="col-xs-6" ng-if="hc.isLoggedIn">
             <div class="account clearfix">
               <div class="account-prefs">
-                <img src="images/account.png" alt="Прохоренко Сергей Никифорович" />
+                <img src="images/account.png" />
                 <a href="#" class="account-prefs-link">
-                  <span>Настройки профиля</span>
+                  <span>{{'header.PROFILE_SETTINGS' | i18n}}</span>
                 </a>
               </div>
               <div class="account-desc">
                 <p class="account-name">{{hc.userInfo.userName}}</p>
-                <p class="total-votes" ng-if="hc.userInfo.totalVotes !== null">Votes: <strong>{{hc.userInfo.totalVotes}}</strong></p>
+                <p class="total-votes" ng-if="hc.userInfo.totalVotes !== null">{{'header.VOTES' | i18n}}: <strong>{{hc.userInfo.totalVotes}}</strong></p>
               </div>
             </div>
           </div>
           <div class="col-xs-2 text-right" ng-if="hc.isLoggedIn">
-            <button type="button" class="btn btn-default" ng-click="hc.signOut()">Sign Out</button>
+            <button type="button" class="btn btn-default" ng-click="hc.signOut()">{{'header.SIGN_OUT' | i18n}}</button>
           </div>
         </div>
       </div>

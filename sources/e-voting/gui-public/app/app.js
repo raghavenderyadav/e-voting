@@ -25,6 +25,7 @@ angular
   .module('e-voting', [
     'e-voting.routing',
     'e-voting.auth',
+    'e-voting.locale',
     'e-voting.voting',
     'e-voting.header',
     'e-voting.server-properties',
@@ -35,6 +36,7 @@ angular
     'e-voting.decodeTransaction'
   ])
   .run(['$rootScope', 'roleManager', 'userInfo', function ($rootScope, roleManager, userInfo) {
+    $rootScope.lang = 'en-gb';
     $rootScope.$on('$stateChangeStart',
         function (event, toState) {
           roleManager.checkPagePermission(event, toState);

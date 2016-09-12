@@ -4,22 +4,22 @@
       <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title">Sign In</h3>
+            <h3 class="panel-title">{{'signIn.SIGN_IN' | i18n}}</h3>
           </div>
           <div class="panel-body form-horizontal">
             <div class="form-group">
-              <label for="login" class="col-xs-3 control-label text-left">Login:</label>
+              <label for="login" class="col-xs-3 control-label text-left">{{'signIn.LOGIN' | i18n}}:</label>
               <div class="col-xs-9">
                 <input type="text" class="form-control" id="login" name="login" ng-model="sic.login"></div>
             </div>
             <div class="form-group">
-              <label for="password" class="col-xs-3 control-label text-left">Password:</label>
+              <label for="password" class="col-xs-3 control-label text-left">{{'signIn.PASSWORD' | i18n}}:</label>
               <div class="col-xs-9">
                 <input type="password" class="form-control" id="password" name="password" ng-model="sic.password"></div>
             </div>
           </div>
           <div class="panel-footer text-center">
-            <button type="button" class="btn btn-primary" ng-click="sic.signIn(sic.login, sic.password)">Sign In</button>
+            <button type="button" class="btn btn-primary" ng-click="sic.signIn(sic.login, sic.password)">{{'signIn.SIGN_IN' | i18n}}</button>
           </div>
         </div>
       </div>

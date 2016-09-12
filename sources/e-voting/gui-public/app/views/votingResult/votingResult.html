@@ -4,11 +4,11 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">
-            Own vote
+            {{'votingResult.OWN_VOTE' | i18n}}
             |
-            Message ID: {{vrc.votingResult.messageId}}
+            {{'votingResult.MESSAGE_ID' | i18n}}: {{vrc.votingResult.messageId}}
             |
-            Status: {{vrc.votingResult.status}}</h3>
+            {{'votingResult.STATUS' | i18n}}: {{vrc.votingResult.status}}</h3>
         </div>
         <div class="panel-body">
           <div ng-repeat="question in vrc.votingResult.questions" class="voting-item" voting-result="question" total-votes="vrc.votingResult.amount">
@@ -16,14 +16,14 @@
           <div class="form-horizontal">
             <div class="form-group">
               <div class="col-xs-12">
-                <button type="button" class="btn btn-default" ng-hide="vrc.showReceipt" ng-click="vrc.showReceipt = true">Show receipt</button>
-                <button type="button" class="btn btn-default" ng-show="vrc.showReceipt" ng-click="vrc.showReceipt = false">Hide receipt</button>
+                <button type="button" class="btn btn-default" ng-hide="vrc.showReceipt" ng-click="vrc.showReceipt = true">{{'votingResult.SHOW' | i18n}}</button>
+                <button type="button" class="btn btn-default" ng-show="vrc.showReceipt" ng-click="vrc.showReceipt = false">{{'votingResult.HIDE' | i18n}}</button>
               </div>
             </div>
           </div>
           <div ng-show="vrc.showReceipt" class="form-horizontal">
             <div class="form-group">
-              <label class="col-xs-3 control-label">ID</label>
+              <label class="col-xs-3 control-label">{{'votingResult.ID' | i18n}}</label>
               <div class="col-xs-9">
                 <p class="form-control-static">
                   {{vrc.votingResult.messageId}}
@@ -31,7 +31,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="col-xs-3 control-label">Vote time</label>
+              <label class="col-xs-3 control-label">{{'votingResult.VOTE_TIME' | i18n}}</label>
               <div class="col-xs-9">
                 <p class="form-control-static">
                   {{vrc.votingResult.voteTime | date: 'shortDate'}} {{vrc.votingResult.timestamp | date: 'mediumTime'}}
@@ -39,14 +39,14 @@
               </div>
             </div>
             <div class="form-group">
-              <label class="col-xs-3 control-label" for="signContent">Signing content</label>
+              <label class="col-xs-3 control-label" for="signContent">{{'votingResult.CONTENT' | i18n}}</label>
               <div class="col-xs-9">
                 <textarea class="form-control" name="signContent" id="signContent" cols="30" rows="10" ng-model="vrc.votingResult.xmlBody"></textarea>
               </div>
             </div>
             <br>
             <div class="form-group">
-              <label class="col-xs-3 control-label" for="signature">Signature key</label>
+              <label class="col-xs-3 control-label" for="signature">{{'votingResult.KEY' | i18n}}</label>
               <div class="col-xs-9">
                 <textarea class="form-control" name="signKey" id="signature" cols="30" rows="10" ng-model="vrc.votingResult.signature"></textarea>
               </div>
@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="panel-footer text-center">
-          <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vrc.cancel()">Back</button>
+          <button type="button" class="btn btn-default btn-spacing btn-80" ng-click="vrc.cancel()">{{'votingResult.BACK' | i18n}}</button>
         </div>
       </div>
     </div>
