@@ -30,12 +30,14 @@ angular
         {
           locale: 'en-gb',
           flag: 'gb',
-          name: 'English'
+          name: 'English',
+          shortcut: 'eng'
         },
         {
           locale: 'ru',
           flag: 'ru',
-          name: 'Russian'
+          name: 'Russian',
+          shortcut: 'rus'
         }]
     };
     I18NProvider.config(i18nConfig);
@@ -44,16 +46,28 @@ angular
     return {
       restrict: 'E',
       replace: true,
-      template: '<ul class="language-select"><li ng-repeat="lang in LangSelectCtrl.languages" class="{{lang.locale}}" ng-click="LangSelectCtrl.changeLang(lang)">{{lang.name}}</li></ul>',
+      template: '<ul class="language-select"><li ng-repeat="lang in LangSelectCtrl.languages" class="{{lang.locale}} label" ng-click="LangSelectCtrl.changeLang(lang)" ng-class="LangSelectCtrl.current === lang ? \'label-info\' : \'label-default\'">{{lang.shortcut}}</li></ul>',
       controller: 'LangSelectController as LangSelectCtrl'
     };
   })
   .controller('LangSelectController', function LangSelectCtrl(I18N) {
     var langSelect = this;
     langSelect.languages = I18N.getLangs();
+    var currentLocale = I18N.getCurrent();
+    langSelect.current = langSelect.languages.filter(function(lang) {
+      return lang.locale === currentLocale;
+    })[0];
+
     langSelect.changeLang = function (lang) {
+      if (angular.equals(langSelect.current, lang)) {
+        console.log('oops');
+        return;
+      }
+      console.log('switch');
+      langSelect.current = lang;
       // we can pass a callback to setCurrent
       I18N.setCurrent(lang.locale, function () {
       });
+
     };
   });

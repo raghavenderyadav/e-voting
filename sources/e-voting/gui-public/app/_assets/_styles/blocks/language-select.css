@@ -1,0 +1,23 @@
+.language-select {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  line-height: 0;
+  margin: 0 10px;
+
+  li {
+    display: inline-block;
+    vertical-align: top;
+    white-space: nowrap;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  li + li {
+    margin-left: 8px;
+  }
+}
+
+.language-select .label.label-info {
+  cursor: default;
+}

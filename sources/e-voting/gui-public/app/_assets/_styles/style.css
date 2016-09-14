@@ -9,4 +9,5 @@
 @import 'blocks/table-custom.css';
 @import 'blocks/voting-item.css';
 @import 'blocks/voting.css';
-
+@import 'blocks/language-select.css';
+@import 'blocks/control-panel.css';
