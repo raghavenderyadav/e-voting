@@ -1,17 +1,17 @@
 #__locale__# = ru
 #__name__# = Russian
 
-404.PAGE_NOT_FOUND = Page not found
+404.PAGE_NOT_FOUND = Страница не найдена
 
-signIn.LOGIN = Login222
-signIn.PASSWORD = Password222
-signIn.SIGN_IN = Sign In
+signIn.LOGIN = Логин
+signIn.PASSWORD = Пароль
+signIn.SIGN_IN = Вход
 
 allVotingStatuses.VOTING_STATUSES = Voting statuses
-allVotingStatuses.MESSAGE_ID = Message Id
-allVotingStatuses.STATUS = Status
+allVotingStatuses.MESSAGE_ID = ID сообщения
+allVotingStatuses.STATUS = Статус
 allVotingStatuses.VOTE_SIGN = Vote sign
-allVotingStatuses.BACK = Back
+allVotingStatuses.BACK = Назад
 
 decodeTransaction.TRANSACTION_DECODER = Transaction decoder
 decodeTransaction.TRANSACTION_ID = Transaction id
@@ -19,55 +19,55 @@ decodeTransaction.GET_MESSAGE = Get message
 decodeTransaction.DECODE = Decode
 
 votesList.PRELIMINARY_VOTES = Preliminary votes
-votesList.VOTING = Voting
-votesList.CLIENT = Client
-votesList.PACKET_SIZE = Packet size
-votesList.STATUS = Status
-votesList.BACK = Back to Votings list
+votesList.VOTING = Голосование
+votesList.CLIENT = Клиент
+votesList.PACKET_SIZE = Кол-во голосов
+votesList.STATUS = Статус
+votesList.BACK = Назад к списку голосований
 
-voting.VOTING = Voting
-voting.SIGN_VOTE = Sign vote?
-voting.SHOW = Show signing content
-voting.HIDE = Hide signing content
-voting.CONTENT = Signing content
-voting.KEY = Signature key
-voting.ACCEPTED = Your vote has been accepted
-voting.CANCEL = Cancel
-voting.FINISH = Finish
-voting.VOTE = Vote
-voting.SIGN = Sign
+voting.VOTING = Голосование
+voting.SIGN_VOTE = Подписать голос
+voting.SHOW = Показать подпись
+voting.HIDE = Скрыть подпись
+voting.CONTENT = Цифровая подпись
+voting.KEY = Ключ подписи
+voting.ACCEPTED = Ваш голос принят
+voting.CANCEL = Отмена
+voting.FINISH = Завершить
+voting.VOTE = Голос
+voting.SIGN = Подпись
 
-votingList.ALL = All votings
-votingList.NAME = Name
-votingList.BEGIN = Begin
-votingList.END = End
-votingList.ACTIONS = Actions
-votingList.VOTE = Vote
+votingList.ALL = Все голосования
+votingList.NAME = Название
+votingList.BEGIN = Начало
+votingList.END = Окончание
+votingList.ACTIONS = Операции
+votingList.VOTE = Голос
 votingList.CLIENTS_VOTES = Client's votes
-votingList.OWN_VOTE = Own vote
-votingList.RESULTS = Voting results
-votingList.STATUSES = Vote statuses
+votingList.OWN_VOTE = Мой голос
+votingList.RESULTS = Результаты
+votingList.STATUSES = Сообщения
 
-votingResult.OWN_VOTE = Own vote
-votingResult.MESSAGE_ID = Message ID
-votingResult.STATUS = Status
+votingResult.OWN_VOTE = Мой голос
+votingResult.MESSAGE_ID = ID сообщения
+votingResult.STATUS = Статус
 votingResult.SHOW = Show receipt
 votingResult.ID = ID
-votingResult.VOTE_TIME = Vote time
+votingResult.VOTE_TIME = Время
 votingResult.CONTENT = Signing content
 votingResult.KEY = Signature key
-votingResult.BACK = Back
-votingResult.NO_ANSWERS = no answers
+votingResult.BACK = Назад
+votingResult.NO_ANSWERS = нет ответов
 
-votingTotalResult.RESULTS = Voting results
-votingTotalResult.BACK = Back
+votingTotalResult.RESULTS = Результаты голосования
+votingTotalResult.BACK = Назад
 
-header.PROFILE_SETTINGS = Profile settings
-header.VOTES = Votes
-header.SIGN_OUT = Sign Out
+header.PROFILE_SETTINGS = Настройки профиля
+header.VOTES = Голоса
+header.SIGN_OUT = Выход
 
-votingCountdown.REMAINING = Time remains
-votingCountdown.VOTING_OVER = Voting is over
+votingCountdown.REMAINING = Осталось
+votingCountdown.VOTING_OVER = Голосование завершено
 
-votingAnswer.VOTES = Votes
-votingAnswer.NO_ANSWERS = no answers
+votingAnswer.VOTES = Голоса
+votingAnswer.NO_ANSWERS = нет ответов
