@@ -39,8 +39,8 @@ voting.SIGN = Sign
 
 votingList.ALL = All votings
 votingList.NAME = Name
-votingList.BEGIN = Begin
-votingList.END = End
+votingList.BEGIN = Start
+votingList.END = Finish
 votingList.ACTIONS = Actions
 votingList.VOTE = Vote
 votingList.CLIENTS_VOTES = Client's votes
