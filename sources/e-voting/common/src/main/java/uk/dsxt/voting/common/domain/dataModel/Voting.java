@@ -30,16 +30,18 @@ import uk.dsxt.voting.common.utils.InternalLogicException;
 public class Voting {
     String id;
     String name;
+    String type;
     long beginTimestamp;
     long endTimestamp;
     Question[] questions;
     String security;
 
     @JsonCreator
-    public Voting(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("beginTimestamp") long beginTimestamp, @JsonProperty("endTimestamp") long endTimestamp,
+    public Voting(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("type") String type, @JsonProperty("beginTimestamp") long beginTimestamp, @JsonProperty("endTimestamp") long endTimestamp,
                   @JsonProperty("questions") Question[] questions, @JsonProperty("security") String security) {
         this.id = id;
         this.name = name;
+        this.type = type;
         this.beginTimestamp = beginTimestamp;
         this.endTimestamp = endTimestamp;
         this.questions = questions;
@@ -47,7 +49,7 @@ public class Voting {
     }
 
     public void validate() throws InternalLogicException {
-        if (id == null || id.isEmpty() || name == null || name.isEmpty() || questions == null || questions.length == 0)
+        if (id == null || id.isEmpty() || name == null || name.isEmpty() || type == null || type.isEmpty() ||  questions == null || questions.length == 0)
             throw new InternalLogicException(String.format("validateVotings failed. One of the voting fields are incorrect"));
 
         for (int j = 0; j < questions.length; j++) {

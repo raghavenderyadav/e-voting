@@ -63,7 +63,8 @@ public class XmlTest {
         assertNotNull(voting);
 
         assertEquals("123456", voting.getId());
-        assertNotNull(voting.getName());
+        assertEquals("GMET_123456", voting.getName());
+        assertEquals("GMET",voting.getType());
 
         assertEquals(4, voting.getQuestions().length);
         assertEquals("1.1", voting.getQuestions()[0].getId());
@@ -127,7 +128,8 @@ public class XmlTest {
         assertNotNull(voting);
 
         assertEquals("123456", voting.getId());
-        assertNotNull(voting.getName());
+        assertEquals("Тестовое голосование", voting.getName());
+        assertEquals("GMET", voting.getType());
 
         assertEquals(5, voting.getQuestions().length);
         assertEquals("1.1", voting.getQuestions()[0].getId());
@@ -191,7 +193,7 @@ public class XmlTest {
         final Answer[] answers = new Answer[1];
         answers[0] = new Answer("1", null);
         questions[0] = new Question("1", "question", answers);
-        Voting voting = new Voting("voting_id", "voting_name", 0, 0, questions, "security");
+        Voting voting = new Voting("voting_id", "voting_name", "GMET", 0, 0, questions, "security");
         MessagesSerializer serializer = new SimpleSerializer();
         String msg = serializer.serialize(voting);
         Voting loaded = serializer.deserializeVoting(msg);

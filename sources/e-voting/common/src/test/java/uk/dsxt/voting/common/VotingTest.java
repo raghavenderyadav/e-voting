@@ -31,53 +31,63 @@ public class VotingTest {
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsNullId() throws InternalLogicException {
-        new Voting(null, "name", 0, 0, new Question[1], "security").validate();
+        new Voting(null, "name", "GMET", 0, 0, new Question[1], "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsEmptyId() throws InternalLogicException {
-        new Voting("", "name", 0, 0, new Question[1], "security").validate();
+        new Voting("", "name", "GMET", 0, 0, new Question[1], "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsNullName() throws InternalLogicException {
-        new Voting("id", null, 0, 0, new Question[1], "security").validate();
+        new Voting("id", null, "GMET", 0, 0, new Question[1], "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsEmptyName() throws InternalLogicException {
-        new Voting("id", "", 0, 0, new Question[1], "security").validate();
+        new Voting("id", "", "GMET", 0, 0, new Question[1], "security").validate();
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateVotingsNullType() throws InternalLogicException {
+        new Voting("id", "voting_name", null , 0, 0, new Question[1], "security").validate();
+    }
+
+    @Test(expected=InternalLogicException.class)
+    public void testValidateVotingsEmptyType() throws InternalLogicException {
+        new Voting("id", "voting_name", "", 0, 0, new Question[1], "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsNullQuestions() throws InternalLogicException {
-        new Voting("voting_id", "voting_name", 0, 0, null, "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, null, "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsEmptyQuestions() throws InternalLogicException {
-        new Voting("voting_id", "voting_name", 0, 0, new Question[0], "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, new Question[0], "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsNullQuestion() throws InternalLogicException {
         final Question[] questions = new Question[1];
         questions[0] = new Question("1", null, new Answer[1]);
-        new Voting("voting_id", "voting_name", 0, 0, questions, "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, questions, "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsQuestionNullAnswers() throws InternalLogicException {
         final Question[] questions = new Question[1];
         questions[0] = new Question("1", "question", null);
-        new Voting("voting_id", "voting_name", 0, 0, questions, "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, questions, "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
     public void testValidateVotingsQuestionEmptyAnswers() throws InternalLogicException {
         final Question[] questions = new Question[1];
         questions[0] = new Question("1", "question", new Answer[0]);
-        new Voting("voting_id", "voting_name", 0, 0, questions, "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, questions, "security").validate();
     }
 
     @Test(expected=InternalLogicException.class)
@@ -86,7 +96,7 @@ public class VotingTest {
         final Answer[] answers = new Answer[1];
         answers[0] = new Answer("1", null);
         questions[0] = new Question("1", "question", answers);
-        new Voting("voting_id", "voting_name", 0, 0, questions, "security").validate();
+        new Voting("voting_id", "voting_name", "GMET", 0, 0, questions, "security").validate();
     }
 
 

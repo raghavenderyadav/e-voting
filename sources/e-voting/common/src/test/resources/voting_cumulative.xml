@@ -20,6 +20,7 @@
 			<Mtg>
 				<MtgId>123456</MtgId>
 				<Tp>GMET</Tp>
+        <IssrMtgId>Тестовое голосование</IssrMtgId>
 				<Clssfctn>
 					<Cd>AMET</Cd>
 				</Clssfctn>

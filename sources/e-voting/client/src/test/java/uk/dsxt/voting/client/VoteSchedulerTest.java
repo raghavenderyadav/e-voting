@@ -43,9 +43,9 @@ public class VoteSchedulerTest {
 
         Voting[] votings = new Voting[3];
         long now = System.currentTimeMillis();
-        votings[0] = new Voting("0", "name0", now + 600000, now + 700000, null, "security");
-        votings[1] = new Voting("1", "name1", now - 600000, now + 700000, null, "security");
-        votings[2] = new Voting("2", "name2", now - 600000, now - 100000, null, "security");
+        votings[0] = new Voting("0", "name0", "GMET", now + 600000, now + 700000, null, "security");
+        votings[1] = new Voting("1", "name1", "GMET", now - 600000, now + 700000, null, "security");
+        votings[2] = new Voting("2", "name2", "GMET", now - 600000, now - 100000, null, "security");
 
         String messages="10:0,1,1,1-1-1\r\n0:1,2,2,2-2-2\r\n #\r\n2:0,3,3,3-3-3;0:1,4,4,4-4-4:-\n20:1,5,10,5-5-5\n";
 

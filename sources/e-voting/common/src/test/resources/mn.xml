@@ -43,6 +43,7 @@
 			<Mtg>
 				<MtgId>123456</MtgId>
 				<Tp>GMET</Tp>
+        <IssrMtgId>Тестовое голосование</IssrMtgId>
 				<Clssfctn>
 					<Cd>AMET</Cd>
 				</Clssfctn>
@@ -232,11 +233,11 @@
 								<AddtlInf>1.2 Выбрать в Ревизионную комиссию Общества B</AddtlInf>
 								<AddtlInf>2 Избрать Совет директоров (наблюдательный совет) акционерного общества в следующем составе</AddtlInf>
 								<AddtlInf>2.1 Члены Совета директоров (наблюдательного совета)</AddtlInf>
-								<AddtlInf>2.1 
+								<AddtlInf>2.1
 								1 </AddtlInf>
 								<AddtlInf>2.1
 								2 </AddtlInf>
-								<AddtlInf>2.1 
+								<AddtlInf>2.1
 								3 </AddtlInf>
 								<AddtlInf>3 </AddtlInf>
 								<AddtlInf>3.1 </AddtlInf>

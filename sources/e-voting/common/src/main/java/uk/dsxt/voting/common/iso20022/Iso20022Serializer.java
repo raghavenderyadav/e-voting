@@ -66,7 +66,7 @@ public class Iso20022Serializer extends SimpleSerializer {
         miContext = iContext;
         mnContext = nContext;
     }
-    
+
     @Override
     public String serialize(Voting voting) {
         try {
@@ -97,7 +97,9 @@ public class Iso20022Serializer extends SimpleSerializer {
             xmlCalStart.setTimezone(Integer.MIN_VALUE);
             xmlCalStart.setTime(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
             mtg.setAnncmntDt(xmlCalStart);
-            mtg.setTp(MeetingType2Code.valueOf(voting.getName().split("_")[0]));
+            mtg.setTp(MeetingType2Code.valueOf(voting.getType()));
+            if (!voting.getName().contains("_") || voting.getName().split("_").length != 2)
+                mtg.setIssrMtgId(voting.getName());
 
             SecurityIdentification11Choice isin = new SecurityIdentification11Choice();
             isin.setISIN(voting.getSecurity());
@@ -147,12 +149,15 @@ public class Iso20022Serializer extends SimpleSerializer {
             : mn.getDocument().getMtgNtfctn().getVote().getVoteDdln().getDt();
         LocalDateTime endDate = LocalDateTime.parse(end.toString());
         long endTimestamp = endDate.toInstant(ZoneOffset.UTC).getEpochSecond() * 1000L;
-        String name = String.format("%s_%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId());
+        String name = mn.getDocument().getMtgNtfctn().getMtg().getIssrMtgId() == null
+            ? String.format("%s_%s", mn.getDocument().getMtgNtfctn().getMtg().getTp(), mn.getDocument().getMtgNtfctn().getMtg().getMtgId())
+            : mn.getDocument().getMtgNtfctn().getMtg().getIssrMtgId();
+        String type = mn.getDocument().getMtgNtfctn().getMtg().getTp().value();
         List<Question> questions = convertResolutions(mn.getDocument().getMtgNtfctn().getRsltn());
         log.debug("deserializeVoting id={} name={} begin={} end={} questionsLength={}", id, name, new Instant(beginTimestamp), new Instant(endTimestamp), questions.size());
-        return new Voting(id, name, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]), security);
+        return new Voting(id, name, type, beginTimestamp, endTimestamp, questions.toArray(new Question[questions.size()]), security);
     }
-    
+
     @Override
     public String serialize(VoteResult voteResult, Voting voting) throws InternalLogicException {
         voteResult = adaptVoteResultForXML(voteResult, voting);
@@ -238,7 +243,7 @@ public class Iso20022Serializer extends SimpleSerializer {
         } catch (JAXBException e) {
             throw new InternalLogicException(String.format("Couldn't deserialize message %s. Reason: %s", messages[0], e.getMessage()));
         }
-        
+
         String votingId = mi.getDocument().getMtgInstr().getMtgRef().getMtgId();
         Instruction2 instruction = mi.getDocument().getMtgInstr().getInstr().get(0); // for now we suggest that there is only one instruction (without aggregation from ND)
         String holderId = instruction.getAcctDtls().getAcctId();

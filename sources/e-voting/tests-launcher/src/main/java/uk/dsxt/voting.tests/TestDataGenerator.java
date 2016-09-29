@@ -221,7 +221,7 @@ public class TestDataGenerator {
         answers[1] = new Answer("2", "Нет");
         answers[2] = new Answer("3", "Воздержался");
         questions[4] = new Question("3.1", "Утвердить  Годовой  отчет  Общества  за  2016 год, годовой бухгалтерский  баланс и счет прибылей и убытков Общества за 2016 год.", answers);
-        return new Voting("1", "GMET_Ежегодное голосование", startTime, endTime, questions, SECURITY);
+        return new Voting("1", "Ежегодное голосование", "GMET", startTime, endTime, questions, SECURITY);
     }
 
     private static Voting generateVotingEn(long startTime, long endTime) throws Exception {
@@ -251,7 +251,7 @@ public class TestDataGenerator {
         answers[1] = new Answer("2", "Against");
         answers[2] = new Answer("3", "Abstain");
         questions[4] = new Question("3.1", "Approve annual document", answers);
-        return new Voting("1", "GMET_Annual voting", startTime, endTime, questions, SECURITY);
+        return new Voting("1", "Annual voting", "GMET", startTime, endTime, questions, SECURITY);
     }
 
     private void saveData(ClientFullInfo[] clients, Participant[] participants, String name, Voting voting,

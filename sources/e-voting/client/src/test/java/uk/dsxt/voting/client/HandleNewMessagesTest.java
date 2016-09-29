@@ -63,7 +63,7 @@ public class HandleNewMessagesTest {
             participantKeysById, privateKey, "00", MasterNode.MASTER_HOLDER_ID, 10000000, 10);
         VotingOrganizer votingOrganizer = new VotingOrganizer(messagesSerializer, cryptoHelper, participantKeysById, privateKey, 10000000);
         walletMessageConnector.addClient(votingOrganizer);
-        Voting voting = new Voting("v0", "v0", System.currentTimeMillis(), System.currentTimeMillis() + 10000000, new Question[0], "sec");
+        Voting voting = new Voting("v0", "v0", "GMET", System.currentTimeMillis(), System.currentTimeMillis() + 10000000, new Question[0], "sec");
         votingOrganizer.addVoting(voting);
         VoteResult result = new VoteResult("vo", "00", BigDecimal.TEN);
         String serializedVote = messagesSerializer.serialize(result, voting);
