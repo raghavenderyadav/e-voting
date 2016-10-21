@@ -17,4 +17,10 @@ dependencies {
 
     compile "org.glassfish.jersey.containers:jersey-container-jetty-servlet:$jerseyVersion"
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion"
+
+    compile "commons-logging:commons-logging:1.2"
+    compile group: 'io.grpc', name: 'grpc-all', version: '1.0.1'
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.55'
+
+    compile files("../libs/fabric-java-sdk.jar")
 }
