@@ -24,6 +24,7 @@ package uk.dsxt.voting.common.fabric;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 
+import java.io.*;
 import java.util.List;
 
 public class FabricManager implements WalletManager{
@@ -31,8 +32,48 @@ public class FabricManager implements WalletManager{
     @Override
     public void start() {
         
+        Runtime rt = Runtime.getRuntime();
+        FabricManager fabricManager = new FabricManager();
+        printOutput errorReported, outputMessage;
+        
+        try {
+            Process fabricProcess = rt.exec("docker-compose up");
+
+            errorReported = fabricManager.getStreamWrapper(fabricProcess.getErrorStream(), "ERROR");
+            outputMessage = fabricManager.getStreamWrapper(fabricProcess.getInputStream(), "OUTPUT");
+            
+            errorReported.start();
+            outputMessage.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    private class printOutput extends Thread {
+        InputStream is = null;
+
+        printOutput(InputStream is, String type) {
+            this.is = is;
+        }
+
+        public void run() {
+            String s = null;
+            try {
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(is));
+                while ((s = br.readLine()) != null) {
+                    System.out.println(s);
+                }
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    private printOutput getStreamWrapper(InputStream is, String type) {
+        return new printOutput(is, type);
+    }
+    
     @Override
     public void stop() {
 
@@ -46,5 +87,10 @@ public class FabricManager implements WalletManager{
     @Override
     public List<Message> getNewMessages(long timestamp) {
         return null;
+    }
+
+    public static void main(String[] args) {
+        FabricManager fabricManager = new FabricManager();
+        fabricManager.start();
     }
 }
