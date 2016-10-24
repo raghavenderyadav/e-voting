@@ -21,16 +21,64 @@
 
 package uk.dsxt.voting.common.fabric;
 
+import org.hyperledger.fabric.sdk.Member;
+import org.hyperledger.fabric.sdk.exception.EnrollmentException;
+import org.hyperledger.fabric.sdk.Chain;
+import org.hyperledger.fabric.sdk.FileKeyValStore;
+
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.io.*;
+import java.security.cert.CertificateException;
+import java.util.Collections;
 import java.util.List;
 
 public class FabricManager implements WalletManager {
 
-    private Process fabricProcess; 
+    private final String chainName;
+    private final String admin;
+    private final String passphrase;
+    private final List<String> peers;
+    private final String memberServiceUrl;
+    private final String keyValStore;
+    
+    private Process fabricProcess;
+    private Chain chain;
     private boolean isInitialized = false;
+
+    // for testing purposes
+    private FabricManager() {
+        chainName = null;
+        admin = null;
+        passphrase = null;
+        peers = null;
+        memberServiceUrl = null;
+        keyValStore = null;
+    }
+    
+    public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore, 
+                         List<String> peers) {
+        this.chainName = chainName;
+        this.admin = admin;
+        this.passphrase = passphrase;
+        this.memberServiceUrl = memberServiceUrl;
+        this.keyValStore = keyValStore;
+        this.peers = peers;
+        chain = new Chain(chainName);
+        try {
+            chain.setMemberServicesUrl(memberServiceUrl, null);
+            chain.setKeyValStore(new FileKeyValStore(System.getProperty("user.home") + keyValStore));
+            peers.forEach(peer -> chain.addPeer(peer, null));
+            Member registrar = chain.getMember(admin);
+            if (!registrar.isEnrolled()) {
+                registrar = chain.enroll(admin, passphrase);
+            }
+            chain.setRegistrar(registrar);
+        } catch (CertificateException | EnrollmentException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void start() {
@@ -94,17 +142,20 @@ public class FabricManager implements WalletManager {
     public String sendMessage(byte[] body) {
         return null;
     }
-
+    
     @Override
     public List<Message> getNewMessages(long timestamp) {
         return null;
     }
 
     public static void main(String[] args) {
-        FabricManager fabricManager = new FabricManager();
+        List<String> peers = Collections.singletonList("grpc://172.17.0.2:7051");
+        FabricManager fabricManager = new FabricManager("chain", "admin", "Xurw3yU9zI0l", "grpc://172.17.0.2:7054", 
+            "/test2.properties", peers);
+        
         fabricManager.start();
         try {
-            Thread.sleep(100000);
+            Thread.sleep(10000);
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
