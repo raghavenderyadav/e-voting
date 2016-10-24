@@ -27,7 +27,10 @@ import uk.dsxt.voting.common.networking.WalletManager;
 import java.io.*;
 import java.util.List;
 
-public class FabricManager implements WalletManager{
+public class FabricManager implements WalletManager {
+
+    private Process fabricProcess; 
+    private boolean isInitialized = false;
 
     @Override
     public void start() {
@@ -37,8 +40,10 @@ public class FabricManager implements WalletManager{
         printOutput errorReported, outputMessage;
         
         try {
-            Process fabricProcess = rt.exec("docker-compose up");
-
+            fabricProcess = rt.exec("docker-compose up");
+            
+            isInitialized = true;
+            
             errorReported = fabricManager.getStreamWrapper(fabricProcess.getErrorStream(), "ERROR");
             outputMessage = fabricManager.getStreamWrapper(fabricProcess.getInputStream(), "OUTPUT");
             
@@ -57,7 +62,7 @@ public class FabricManager implements WalletManager{
         }
 
         public void run() {
-            String s = null;
+            String s;
             try {
                 BufferedReader br = new BufferedReader(
                     new InputStreamReader(is));
@@ -76,7 +81,13 @@ public class FabricManager implements WalletManager{
     
     @Override
     public void stop() {
-
+        isInitialized = false;
+        try {
+            if (fabricProcess.isAlive())
+                fabricProcess.destroyForcibly();
+        } catch (Exception e) {
+            System.err.println("stop method failed");
+        }
     }
 
     @Override
@@ -92,5 +103,11 @@ public class FabricManager implements WalletManager{
     public static void main(String[] args) {
         FabricManager fabricManager = new FabricManager();
         fabricManager.start();
+        try {
+            Thread.sleep(100000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        fabricManager.stop();
     }
 }
