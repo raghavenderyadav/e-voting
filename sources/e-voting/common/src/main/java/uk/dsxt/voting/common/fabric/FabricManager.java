@@ -21,16 +21,18 @@
 
 package uk.dsxt.voting.common.fabric;
 
-import org.hyperledger.fabric.sdk.Member;
+import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.exception.EnrollmentException;
-import org.hyperledger.fabric.sdk.Chain;
-import org.hyperledger.fabric.sdk.FileKeyValStore;
+import org.hyperledger.fabric.sdk.exception.RegistrationException;
 
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class FabricManager implements WalletManager {
     private Process fabricProcess;
     private Chain chain;
     private boolean isInitialized = false;
+    private int id = 0;
 
     // for testing purposes
     private FabricManager() {
@@ -137,28 +140,122 @@ public class FabricManager implements WalletManager {
             System.err.println("stop method failed");
         }
     }
-
+    
+    
     @Override
     public String sendMessage(byte[] body) {
+        InvokeRequest request = new InvokeRequest();
+        DeployRequest request1 = new DeployRequest();
+        //request.setChaincodePath("github.com/hyperledger/fabric/examples/chaincode/java/Example");
+        //request.setChaincodePath("github.com/hyperledger/fabric/examples/chaincode/go/passthru");
+        request1.setChaincodePath("github.com/hyperledger/fabric/examples/chaincode/go/passthru");
+
+        
+        request1.setArgs(new ArrayList<>(Arrays.asList("init" , "hello")));
+        request.setArgs(new ArrayList<>(Arrays.asList("write", new String(body, StandardCharsets.UTF_8))));
+        Member member = null;
+        try {
+            member = getMember("admin", "chain");
+        } catch (RegistrationException | EnrollmentException e) {
+            e.printStackTrace();
+        }
+
+        assert member != null;
+        member.deploy(request1);
+        //member.invoke(request);
         return null;
+//        DeployRequest request = new DeployRequest();
+//        request.setChaincodePath("github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02");
+//        request.setArgs(new ArrayList<>(Arrays.asList("init", "a", "100", "b", "20000")));
+//
+//        Member member = null;
+//        try {
+//            member = getMember("User1", "chain");
+//        } catch (RegistrationException e) {
+//            e.printStackTrace();
+//        } catch (EnrollmentException e) {
+//            e.printStackTrace();
+//        }
+//        member.deploy(request);
+//        return null;
     }
     
     @Override
     public List<Message> getNewMessages(long timestamp) {
+        QueryRequest request = new QueryRequest();
+        //request.setArgs(new ArrayList<>(Arrays.asList("get", Integer.toString(id))));
+        request.setArgs(new ArrayList<>(Arrays.asList("read", "hello_world")));
+        Member member = null;
+        try {
+            member = getMember("admin", "chain");
+        } catch (RegistrationException | EnrollmentException e) {
+            e.printStackTrace();
+        }
+        assert member != null;
+        member.query(request);
         return null;
+//        QueryRequest request = new QueryRequest();
+//        request.setArgs(new ArrayList<>(Arrays.asList("query", "a")));
+//        Member member = null;
+//
+//        try {
+//            member = getMember("User1", "chain");
+//        } catch (RegistrationException | EnrollmentException e) {
+//            e.printStackTrace();
+//        }
+//        member.query(request);
+//        return null;
     }
 
-    public static void main(String[] args) {
-        List<String> peers = Collections.singletonList("grpc://172.17.0.2:7051");
-        FabricManager fabricManager = new FabricManager("chain", "admin", "Xurw3yU9zI0l", "grpc://172.17.0.2:7054", 
+
+    private Member getMember(String enrollmentId, String affiliation) throws RegistrationException, EnrollmentException {
+        Member member = chain.getMember(enrollmentId);
+        if (!member.isRegistered()) {
+            RegistrationRequest registrationRequest = new RegistrationRequest();
+            registrationRequest.setEnrollmentID(enrollmentId);
+            registrationRequest.setAffiliation(affiliation);
+            member = chain.registerAndEnroll(registrationRequest);
+        } else if (!member.isEnrolled()) {
+            member = chain.enroll(enrollmentId, member.getEnrollmentSecret());
+        }
+        return member;
+    }
+    
+    public static void main(String[] args)  {
+        List<String> peers = Collections.singletonList("grpc://172.17.0.1:7051");
+        FabricManager fabricManager = new FabricManager("chain", "admin", "Xurw3yU9zI0l", "grpc://172.17.0.1:7054", 
             "/test2.properties", peers);
         
-        fabricManager.start();
+        fabricManager.start();  
         try {
             Thread.sleep(10000);
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-        fabricManager.stop();
+        fabricManager.sendMessage("Hello".getBytes());
+//        fabricManager.sendMessage("How are you?.".getBytes());
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+//        fabricManager.sendMessage("How are you?.".getBytes());
+//
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+        
+        fabricManager.getNewMessages(10);
+        
+        try {
+            Thread.sleep(10000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        //fabricManager.stop();
     }
 }
