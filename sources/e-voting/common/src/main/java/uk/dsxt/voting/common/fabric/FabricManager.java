@@ -88,11 +88,8 @@ public class FabricManager implements WalletManager {
             
             chain = new Chain(chainName);
             
-            try {
-                chain.setMemberServicesUrl(memberServiceUrl, null);
-            } catch (CertificateException e) {
-                e.printStackTrace();
-            }
+            chain.setMemberServicesUrl(memberServiceUrl, null);
+
             chain.setKeyValStore(new FileKeyValStore(System.getProperty("user.home") + keyValStore));
             peers.forEach(peer -> chain.addPeer(peer, null));
             
@@ -110,10 +107,8 @@ public class FabricManager implements WalletManager {
             sleep(10);
             
             deployResponse = initChaincode();
-            
-            
 
-        } catch (IOException | EnrollmentException | RegistrationException  e) {
+        } catch (IOException | EnrollmentException | RegistrationException | CertificateException e) {
             e.printStackTrace();
         }
     }
@@ -160,7 +155,7 @@ public class FabricManager implements WalletManager {
         
         request.setArgs(new ArrayList<>(Collections.singletonList("init")));
         
-        Member member = getMember("User1", "chain");
+        Member member = getMember("admin", "chain");
         request.setChaincodeName("mycc");
         return member.deploy(request);
     }
@@ -174,7 +169,7 @@ public class FabricManager implements WalletManager {
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
         
-        Member member = getMember("User1", "chain");
+        Member member = getMember("admin", "chain");
 
         try {
             member.invoke(request);
@@ -216,7 +211,7 @@ public class FabricManager implements WalletManager {
         request.setArgs(new ArrayList<>(Arrays.asList("read", Integer.toString(id))));
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
-        Member member = getMember("User1", "chain");
+        Member member = getMember("admin", "chain");
         
         sleep(10);
 
@@ -261,8 +256,9 @@ public class FabricManager implements WalletManager {
 
         List<String> peers = Collections.singletonList("grpc://172.17.0.1:7051");
         FabricManager fabricManager = new FabricManager("chain", "admin", "Xurw3yU9zI0l", "grpc://172.17.0.1:7054", 
-            "/test2.properties", peers);
+            "/test4.properties", peers);
         
+        sleep(5);
         fabricManager.start();
         
         sleep(10);
@@ -276,6 +272,6 @@ public class FabricManager implements WalletManager {
 
         sleep(10);
         
-        //fabricManager.stop();
+        fabricManager.stop();
     }
 }
