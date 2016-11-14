@@ -32,10 +32,7 @@ import uk.dsxt.voting.common.networking.WalletManager;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class FabricManager implements WalletManager {
@@ -51,9 +48,7 @@ public class FabricManager implements WalletManager {
     
     private Process fabricProcess;
     private Chain chain;
-    private boolean isInitialized;
-    private int id;
-
+    private HashSet<String> users = new HashSet<>();
     
     public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore, 
                          List<String> peers) {
@@ -75,8 +70,6 @@ public class FabricManager implements WalletManager {
         try {
 
             fabricProcess = rt.exec("docker-compose up");
-            
-            isInitialized = true;
             
             errorReported = fabricManager.getStreamWrapper(fabricProcess.getErrorStream(), "ERROR");
             outputMessage = fabricManager.getStreamWrapper(fabricProcess.getInputStream(), "OUTPUT");
@@ -101,7 +94,6 @@ public class FabricManager implements WalletManager {
                     e.printStackTrace();
                 }
             }
-            
             chain.setRegistrar(registrar);
             
             sleep(10);
@@ -140,7 +132,6 @@ public class FabricManager implements WalletManager {
     
     @Override
     public void stop() {
-        isInitialized = false;
         try {
             if (fabricProcess.isAlive())
                 fabricProcess.destroyForcibly();
@@ -155,45 +146,46 @@ public class FabricManager implements WalletManager {
         
         request.setArgs(new ArrayList<>(Collections.singletonList("init")));
         
-        Member member = getMember("admin", "chain");
+        Member member = getMember(admin, "bank_a");
         request.setChaincodeName("mycc");
+        users.add(admin);
         return member.deploy(request);
     }
     
     @Override
     public String sendMessage(byte[] body) {
+        return sendMessage(admin, body);
+    }
+    
+    private String sendMessage(String recipient, byte[] body) {
+        
+        users.add(recipient);
         
         InvokeRequest request = new InvokeRequest();
 
-        request.setArgs(new ArrayList<>(Arrays.asList("write" , Integer.toString(id), new String(body, StandardCharsets.UTF_8))));
+        request.setArgs(new ArrayList<>(Arrays.asList("write" , recipient, new String(body, StandardCharsets.UTF_8))));
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
-        
-        Member member = getMember("admin", "chain");
 
+        Member member = getMember(recipient, "bank_a");
+
+        String transactionID = null;
         try {
-            member.invoke(request);
+            transactionID = member.invoke(request).getTransactionID();
         } catch (ChainCodeException e) {
             e.printStackTrace();
         }
+        
         sleep(10);
         
-        id++;
-        
-        return null;
+        return transactionID;
     }
     
     @Override
     public List<Message> getNewMessages(long timestamp) {
         
         List<Message> result = new ArrayList<>();
-        
-        for (int i = 0; i <= id; i++) {
-            Message message = new Message(Integer.toString(id), 
-                                getNewMessage(i).getMessage().getBytes(), 
-                                true);
-            result.add(message);
-        }
+        users.forEach(user -> result.add(new Message(user, getNewMessage(user).getMessage().getBytes(), true)));
         
         result.forEach(message -> {
             try {
@@ -206,13 +198,13 @@ public class FabricManager implements WalletManager {
         return result;
     }
 
-    private ChainCodeResponse getNewMessage(int id) {
+    public ChainCodeResponse getNewMessage(String user) {
         QueryRequest request = new QueryRequest();
-        request.setArgs(new ArrayList<>(Arrays.asList("read", Integer.toString(id))));
+        request.setArgs(new ArrayList<>(Arrays.asList("read", user)));
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
-        Member member = getMember("admin", "chain");
-        
+        Member member = getMember("admin", "bank_a");
+
         sleep(10);
 
         try {
@@ -222,7 +214,7 @@ public class FabricManager implements WalletManager {
         }
         return null;
     }
-
+    
     private Member getMember(String enrollmentId, String affiliation) {
         Member member = chain.getMember(enrollmentId);
         if (!member.isRegistered()) {
@@ -263,12 +255,15 @@ public class FabricManager implements WalletManager {
         
         sleep(10);
         
-        fabricManager.sendMessage("Hello".getBytes());
+        fabricManager.sendMessage("user01", "Hello".getBytes());
+        fabricManager.sendMessage("user01", "Hi!".getBytes());
         
-        fabricManager.sendMessage("How are you?.".getBytes());
+        fabricManager.sendMessage("user02", "How are you?".getBytes());
         
         fabricManager.sendMessage("I'm fine".getBytes());
-        fabricManager.getNewMessages(10);
+        
+        System.out.println(fabricManager.getNewMessage("user01").getMessage());
+        fabricManager.getNewMessages(0);
 
         sleep(10);
         
