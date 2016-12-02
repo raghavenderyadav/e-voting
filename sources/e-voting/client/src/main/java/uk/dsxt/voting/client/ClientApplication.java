@@ -71,7 +71,7 @@ public class ClientApplication extends ResourceConfig {
     private final MessageHandler messageHandler;
     private final WalletManager walletManager;
 
-    public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
+    public ClientApplication(String blockchain, Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
                              String mainAddress, String passphrase, String nxtPropertiesPath,
                              String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit,
                              String chainName, String admin, String passphraseFabric, String memberServiceUrl, String keyValStore,
@@ -86,9 +86,16 @@ public class ClientApplication extends ResourceConfig {
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout", "15000"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout", "60000"));
 
-        final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-        //walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase, connectionTimeout, readTimeout);
-        walletManager = new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl, keyValStore, peer, isInit, validatingPeerID, peerToConnect);
+        switch (blockchain) {
+            case "fabric": walletManager= new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl,
+                             keyValStore, peer, isInit, validatingPeerID, peerToConnect);
+                           break;
+            case "nxt":    walletManager = new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress,
+                             passphrase, connectionTimeout, readTimeout);
+                           break;
+            default:       walletManager = new MockWalletManager();
+                           break;
+        }
         final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
         RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
 

@@ -47,34 +47,34 @@ public class VotingClientMain {
             
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             args = args == null || args.length == 0 ? null : args;
-
-            String nxtPropertiesPath = args == null ? properties.getProperty("nxt.properties.path") : args[0];
-            String mainAddress = args == null ? properties.getProperty("nxt.main.address") : args[1];
-            String passphrase = args == null ? properties.getProperty("nxt.account.passphrase") : args[2];
-            String ownerId = args == null ? properties.getProperty("owner.id") : args[3];
-            String privateKey = args == null ? properties.getProperty("owner.private_key") : args[4];
-            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[5];
-            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[6];
-            int jettyPort = Integer.valueOf(args == null ? properties.getProperty("client.web.port") : args[7]);
-            boolean isMain = Boolean.valueOf(args == null ? properties.getProperty("client.isMain", "false") : args[8]);
-            boolean copyWebDir = Boolean.valueOf(args == null ? properties.getProperty("client.web.copyWebDir", "true") : args[9]);
-            String webDir = args == null ? properties.getProperty("client.web.webDir", "./gui-public/app") : args[10];
-            String parentHolderUrl = args == null ? properties.getProperty("parent.holder.url") : args[11];
-            String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[12];
-            String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[13];
-            String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[14];
+            String blockchain = args == null ? "mock" : args[0];
+            String nxtPropertiesPath = args == null ? properties.getProperty("nxt.properties.path") : args[1];
+            String mainAddress = args == null ? properties.getProperty("nxt.main.address") : args[2];
+            String passphrase = args == null ? properties.getProperty("nxt.account.passphrase") : args[3];
+            String ownerId = args == null ? properties.getProperty("owner.id") : args[4];
+            String privateKey = args == null ? properties.getProperty("owner.private_key") : args[5];
+            String messagesFileContent = args == null ? PropertiesHelper.getResourceString(properties.getProperty("scheduled_messages.file_path")) : args[6];
+            String walletOffSchedule = args == null ? PropertiesHelper.getResourceString(properties.getProperty("walletoff_schedule.file_path")) : args[7];
+            int jettyPort = Integer.valueOf(args == null ? properties.getProperty("client.web.port") : args[8]);
+            boolean isMain = Boolean.valueOf(args == null ? properties.getProperty("client.isMain", "false") : args[9]);
+            boolean copyWebDir = Boolean.valueOf(args == null ? properties.getProperty("client.web.copyWebDir", "true") : args[10]);
+            String webDir = args == null ? properties.getProperty("client.web.webDir", "./gui-public/app") : args[11];
+            String parentHolderUrl = args == null ? properties.getProperty("parent.holder.url") : args[12];
+            String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[13];
+            String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[14];
+            String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[15];
             assert args != null;
-            String chainName = args[15];
-            String admin = args[16];
-            String passphraseFabric = args[17];
-            String memberServiceUrl = args[18];
-            String keyValStore = args[19];
-            String peer = args[20];
-            boolean isInit = Boolean.valueOf(args[21]);
-            int validatingPeerID = Integer.valueOf(args[22]);
-            String peerToConnect = args[23];
+            String chainName = args[16];
+            String admin = args[17];
+            String passphraseFabric = args[18];
+            String memberServiceUrl = args[19];
+            String keyValStore = args[20];
+            String peer = args[21];
+            boolean isInit = Boolean.valueOf(args[22]);
+            int validatingPeerID = Integer.valueOf(args[23]);
+            String peerToConnect = args[24];
 
-            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent,
+            application = new ClientApplication(blockchain, properties, isMain, ownerId, privateKey, messagesFileContent,
                 walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath, parentHolderUrl, credentialsFilePath,
                 clientsFilePath, stateFilePath, audit, chainName, admin, passphraseFabric, memberServiceUrl,
                 keyValStore, peer, isInit, validatingPeerID, peerToConnect);
