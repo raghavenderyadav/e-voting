@@ -35,6 +35,7 @@ import uk.dsxt.voting.common.domain.dataModel.Voting;
 import uk.dsxt.voting.common.domain.nodes.ClientNode;
 import uk.dsxt.voting.common.domain.nodes.MasterNode;
 import uk.dsxt.voting.common.domain.nodes.VotingOrganizer;
+import uk.dsxt.voting.common.fabric.FabricManager;
 import uk.dsxt.voting.common.iso20022.Iso20022Serializer;
 import uk.dsxt.voting.common.messaging.MessagesSerializer;
 import uk.dsxt.voting.common.messaging.SimpleSerializer;
@@ -57,10 +58,7 @@ import javax.ws.rs.ApplicationPath;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,9 +71,11 @@ public class ClientApplication extends ResourceConfig {
     private final MessageHandler messageHandler;
     private final WalletManager walletManager;
 
-    public ClientApplication(Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
+    public ClientApplication(String blockchain, Properties properties, boolean isMain, String ownerId, String privateKey, String messagesFileContent, String walletOffSchedule,
                              String mainAddress, String passphrase, String nxtPropertiesPath,
-                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit) throws Exception {
+                             String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit,
+                             String chainName, String admin, String passphraseFabric, String memberServiceUrl, String keyValStore,
+                             String peer, boolean isInit, int validatingPeerID, String peerToConnect) throws Exception {
         final boolean useMockCryptoHelper = Boolean.valueOf(properties.getProperty("mock.cryptoHelper", Boolean.TRUE.toString()));
         CryptoHelper cryptoHelper = useMockCryptoHelper ? new MockCryptoHelper() : CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
@@ -86,9 +86,16 @@ public class ClientApplication extends ResourceConfig {
         int connectionTimeout = Integer.parseInt(properties.getProperty("http.connection.timeout", "15000"));
         int readTimeout = Integer.parseInt(properties.getProperty("http.read.timeout", "60000"));
 
-        final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
-        walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase, connectionTimeout, readTimeout);
-
+        switch (blockchain) {
+            case "fabric": walletManager= new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl,
+                             keyValStore, peer, isInit, validatingPeerID, peerToConnect);
+                           break;
+            case "nxt":    walletManager = new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress,
+                             passphrase, connectionTimeout, readTimeout);
+                           break;
+            default:       walletManager = new MockWalletManager();
+                           break;
+        }
         final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
         RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
 
@@ -144,7 +151,10 @@ public class ClientApplication extends ResourceConfig {
             walletMessageConnector.addClient(new ResultBilderDecorator(resultsBuilder, clientNode, ownerId));
         }
 
-        messageHandler = new MessageHandler(walletManager, cryptoHelper, participantKeysById, walletMessageConnector::handleNewMessage);
+        messageHandler = new MessageHandler(walletManager, cryptoHelper, participantKeysById, (a,b,c,d) -> {
+            log.info(String.format("receive message %s by client %s", b, ownerId));
+             walletMessageConnector.handleNewMessage(a,b,c,d);
+        });
 
         messageHandler.run(newMessagesRequestInterval);
 

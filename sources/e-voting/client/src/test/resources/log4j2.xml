@@ -25,11 +25,14 @@
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d [%p] %m%n"/>
         </Console>
-
+        <File name="FILE" fileName="logs/test.log">
+          <PatternLayout pattern="%d [%p] %m%n"/>
+        </File>
     </Appenders>
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE" />
         </Root>
       <Logger name="uk.dsxt.voting.common.networking.MessageHandler" level="info"/>
     </Loggers>

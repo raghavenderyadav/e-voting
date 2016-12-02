@@ -27,9 +27,12 @@ import org.junit.Test;
 @Ignore
 public class NodeCommunicationTest {
     //1.1-2-5,1.2-1-23,2.1-1-7,2.1.multi-2.1.1-2,2.1.multi-2.1.2-2,3.1-1-2
+    //123456,,33,1.1-2-8,1.2-1-15,2.1-1-7
+    private static final String BLOCKCHAIN = "fabric";
     @Test
     public void test() throws Exception {
         VotingClientMain.main(new String[]{
+            BLOCKCHAIN,
             "./conf/nxt-default.properties",
             "NXT-9PHW-CVXU-2TDY-H4878",
             "client_password",
@@ -45,8 +48,18 @@ public class NodeCommunicationTest {
             "credentials00.json",
             "clients00.json",
             "state00.txt",
+            "chain1",
+            "admin",
+            "Xurw3yU9zI0l",
+            "grpc://172.17.0.1:7054",
+            "/test4.properties",
+            "grpc://172.17.0.3:7051",
+            "false",
+            "0",
+            ""
         });
         VotingClientMain.main(new String[]{
+            BLOCKCHAIN,
             "./conf/nxt-default.properties",
             "NXT-9PHW-CVXU-2TDY-H4878",
             "client_password1",
@@ -62,8 +75,18 @@ public class NodeCommunicationTest {
             "credentials5.json",
             "clients5.json",
             "", //"state5.txt",
+            "chain1",
+            "admin",
+            "Xurw3yU9zI0l",
+            "grpc://172.17.0.1:7054",
+            "/test4.properties",
+            "grpc://172.17.0.4:7051",
+            "true",
+            "1",
+            "172.17.0.3:7051"
         });
         VotingClientMain.main(new String[]{
+            BLOCKCHAIN,
             "./conf/nxt-default.properties",
             "NXT-9PHW-CVXU-2TDY-H4878",
             "client_password1",
@@ -79,6 +102,15 @@ public class NodeCommunicationTest {
             "credentials6.json",
             "clients6.json",
             "", //"state5.txt",
+            "chain1",
+            "admin",
+            "Xurw3yU9zI0l",
+            "grpc://172.17.0.1:7054",
+            "/test4.properties",
+            "grpc://172.17.0.5:7051",
+            "true",
+            "2",
+            "172.17.0.4:7051"
         });
         Thread.sleep(1300 * 1000);
     }
