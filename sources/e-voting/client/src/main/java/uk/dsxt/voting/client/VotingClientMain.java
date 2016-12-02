@@ -72,13 +72,12 @@ public class VotingClientMain {
             String peer = args[20];
             boolean isInit = Boolean.valueOf(args[21]);
             int validatingPeerID = Integer.valueOf(args[22]);
-            String enrollSecret = args[23];
-            String enrollID = args[24];
+            String peerToConnect = args[23];
 
             application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent,
                 walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath, parentHolderUrl, credentialsFilePath,
                 clientsFilePath, stateFilePath, audit, chainName, admin, passphraseFabric, memberServiceUrl,
-                keyValStore, peer, isInit, validatingPeerID, enrollSecret, enrollID);
+                keyValStore, peer, isInit, validatingPeerID, peerToConnect);
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

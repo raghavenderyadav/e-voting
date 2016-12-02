@@ -75,7 +75,7 @@ public class ClientApplication extends ResourceConfig {
                              String mainAddress, String passphrase, String nxtPropertiesPath,
                              String parentHolderUrl, String credentialsFilePath, String clientsFilePath, String stateFilePath, Logger audit,
                              String chainName, String admin, String passphraseFabric, String memberServiceUrl, String keyValStore,
-                             String peer, boolean isInit, int validatingPeerID, String enrollSecret, String enrollID) throws Exception {
+                             String peer, boolean isInit, int validatingPeerID, String peerToConnect) throws Exception {
         final boolean useMockCryptoHelper = Boolean.valueOf(properties.getProperty("mock.cryptoHelper", Boolean.TRUE.toString()));
         CryptoHelper cryptoHelper = useMockCryptoHelper ? new MockCryptoHelper() : CryptoHelperImpl.DEFAULT_CRYPTO_HELPER;
 
@@ -88,7 +88,7 @@ public class ClientApplication extends ResourceConfig {
 
         final boolean useMockWallet = Boolean.valueOf(properties.getProperty("mock.wallet", Boolean.TRUE.toString()));
         //walletManager = useMockWallet ? new MockWalletManager() : new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress, passphrase, connectionTimeout, readTimeout);
-        walletManager = new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl, keyValStore, peer, isInit, validatingPeerID, enrollSecret, enrollID);
+        walletManager = new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl, keyValStore, peer, isInit, validatingPeerID, peerToConnect);
         final boolean useMockRegistriesServer = Boolean.valueOf(properties.getProperty("mock.registries", Boolean.TRUE.toString()));
         RegistriesServer registriesServer = useMockRegistriesServer ? new FileRegisterServer(properties, null) : new RegistriesServerWeb(registriesServerUrl, connectionTimeout, readTimeout);
 
