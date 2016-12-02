@@ -231,7 +231,10 @@ public class FabricManager implements WalletManager {
         int amount = Integer.parseInt(amountOfMessages);
         
         for (int i = 1; i <= amount; i++) {
-            result.add(new Message(Integer.toString(i), getNewMessage(Integer.toString(i)).getMessage().getBytes(), true));
+            chainCodeResponse  = getNewMessage(Integer.toString(i));
+            if (chainCodeResponse != null) {
+                result.add(new Message(Integer.toString(i), chainCodeResponse.getMessage().getBytes(), true));
+            }
         }
         
         log.info("getting messages started");
@@ -272,10 +275,8 @@ public class FabricManager implements WalletManager {
                 registrationRequest.setEnrollmentID(enrollmentId);
                 registrationRequest.setAffiliation(affiliation);
                     member = chain.registerAndEnroll(registrationRequest);
-
             } else if (!member.isEnrolled()) {
                 member = chain.enroll(enrollmentId, member.getEnrollmentSecret());
-
             }
         } catch (RegistrationException | EnrollmentException e) {
             log.error("Failed to register or enroll member", e);
