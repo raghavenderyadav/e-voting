@@ -63,9 +63,22 @@ public class VotingClientMain {
             String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[12];
             String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[13];
             String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[14];
+            assert args != null;
+            String chainName = args[15];
+            String admin = args[16];
+            String passphraseFabric = args[17];
+            String memberServiceUrl = args[18];
+            String keyValStore = args[19];
+            String peer = args[20];
+            boolean isInit = Boolean.valueOf(args[21]);
+            int validatingPeerID = Integer.valueOf(args[22]);
+            String enrollSecret = args[23];
+            String enrollID = args[24];
 
-            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent, walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath,
-                parentHolderUrl, credentialsFilePath, clientsFilePath, stateFilePath, audit);
+            application = new ClientApplication(properties, isMain, ownerId, privateKey, messagesFileContent,
+                walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath, parentHolderUrl, credentialsFilePath,
+                clientsFilePath, stateFilePath, audit, chainName, admin, passphraseFabric, memberServiceUrl,
+                keyValStore, peer, isInit, validatingPeerID, enrollSecret, enrollID);
             jettyServer = JettyRunner.run(application, properties, jettyPort, webDir, "/{1}(api|holderAPI){1}/{1}.*", copyWebDir);
             log.info("{} module is successfully started", MODULE_NAME);
         } catch (Exception e) {

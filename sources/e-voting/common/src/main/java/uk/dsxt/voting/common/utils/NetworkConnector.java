@@ -21,6 +21,8 @@
 
 package uk.dsxt.voting.common.utils;
 
+import java.io.IOException;
+
 public interface NetworkConnector {
     
     void start();
