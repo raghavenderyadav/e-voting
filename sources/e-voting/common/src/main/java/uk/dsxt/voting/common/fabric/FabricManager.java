@@ -114,7 +114,6 @@ public class FabricManager implements WalletManager {
                     DOCKER_PEER_DISCOVERY_ROOTNODE.concat(peerToConnect), DOCKER_PEER_NODE_START);
                 fabricProcess = rt.exec(startAnotherPeer);
             }
-            start();
 
             chain = new Chain(chainName);
 
