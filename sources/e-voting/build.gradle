@@ -10,7 +10,7 @@ ext.jacksonVersion = "2.5.3"
 ext.jerseyVersion = "2.22.1"
 
 ext.log4jVersion = "2.5"
-ext.lombookVersion = "1.16.10"
+ext.lombokVersion = "1.16.8"
 
 repositories {
     mavenCentral()
@@ -34,7 +34,6 @@ subprojects {
 
         compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
         compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
-
-        compile "org.projectlombok:lombok:$lombookVersion"
+        compile "org.projectlombok:lombok:$lombokVersion"
     }
 }

@@ -18,4 +18,6 @@ dependencies {
     compile(project(":client"))
     compile(project(":registries-server"))
     compile(project(":results-builder"))
+
+    compileOnly "org.projectlombok:lombok:1.16.10"
 }
