@@ -89,6 +89,7 @@ public class ClientApplication extends ResourceConfig {
         switch (blockchain) {
             case "fabric": walletManager= new FabricManager(chainName, admin, passphraseFabric, memberServiceUrl,
                              keyValStore, peer, isInit, validatingPeerID, peerToConnect);
+                            
                            break;
             case "nxt":    walletManager = new NxtWalletManager(properties, nxtPropertiesPath, ownerId, mainAddress,
                              passphrase, connectionTimeout, readTimeout);

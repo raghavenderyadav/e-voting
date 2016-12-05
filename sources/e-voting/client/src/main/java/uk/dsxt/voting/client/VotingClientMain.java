@@ -74,6 +74,7 @@ public class VotingClientMain {
             int validatingPeerID = Integer.valueOf(args[23]);
             String peerToConnect = args[24];
 
+            log.info(String.format("We set up blockchain: %s", blockchain));
             application = new ClientApplication(blockchain, properties, isMain, ownerId, privateKey, messagesFileContent,
                 walletOffSchedule, mainAddress, passphrase, nxtPropertiesPath, parentHolderUrl, credentialsFilePath,
                 clientsFilePath, stateFilePath, audit, chainName, admin, passphraseFabric, memberServiceUrl,
