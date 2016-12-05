@@ -63,15 +63,15 @@ public class VotingClientMain {
             String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[13];
             String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[14];
             String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[15];
-            String chainName = args[16];
-            String admin = args[17];
-            String passphraseFabric = args[18];
-            String memberServiceUrl = args[19];
-            String keyValStore = args[20];
-            String peer = args[21];
-            boolean isInit = Boolean.valueOf(args[22]);
-            int validatingPeerID = Integer.valueOf(args[23]);
-            String peerToConnect = args[24];
+            String chainName = args == null ? properties.getProperty("fabric.chainName") : args[16];
+            String admin = args == null ? properties.getProperty("fabric.admin") : args[17];
+            String passphraseFabric = args == null ? properties.getProperty("fabric.passphrase") : args[18];
+            String memberServiceUrl = args == null ? properties.getProperty("fabric.memberServiceUrl") : args[19];
+            String keyValStore = args == null ? properties.getProperty("fabric.keyValStore") : args[20];
+            String peer = args == null ? properties.getProperty("fabric.peer") : args[21];
+            boolean isInit = args == null ? Boolean.valueOf(properties.getProperty("fabric.isInit")) : Boolean.valueOf(args[22]);
+            int validatingPeerID = args == null ? Integer.valueOf(properties.getProperty("fabric.validatingPeerID")) : Integer.valueOf(args[23]);
+            String peerToConnect = args == null ? properties.getProperty("fabric.peerToConnect") : args[24];
 
             log.info(String.format("We set up blockchain: %s", blockchain));
             application = new ClientApplication(blockchain, properties, isMain, ownerId, privateKey, messagesFileContent,
