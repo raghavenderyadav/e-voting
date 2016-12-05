@@ -10,7 +10,7 @@ ext.jacksonVersion = "2.5.3"
 ext.jerseyVersion = "2.22.1"
 
 ext.log4jVersion = "2.5"
-ext.lombookVersion = "1.16.6"
+ext.lombookVersion = "1.16.10"
 
 repositories {
     mavenCentral()
