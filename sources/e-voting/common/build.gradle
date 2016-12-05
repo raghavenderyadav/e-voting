@@ -29,5 +29,4 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-api:$log4jVersion"
     compile "org.apache.logging.log4j:log4j-core:$log4jVersion"
     compile "org.hyperledger.fabric-sdk-java:fabric-sdk-java:0.6"
-    //compile files("../libs/fabric-java-sdk.jar")
 }
