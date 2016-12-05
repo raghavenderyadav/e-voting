@@ -63,7 +63,6 @@ public class VotingClientMain {
             String credentialsFilePath = args == null ? properties.getProperty("credentials.filepath") : args[13];
             String clientsFilePath = args == null ? properties.getProperty("clients.filepath") : args[14];
             String stateFilePath = args == null ? properties.getProperty("state.file_path") : args[15];
-            assert args != null;
             String chainName = args[16];
             String admin = args[17];
             String passphraseFabric = args[18];
