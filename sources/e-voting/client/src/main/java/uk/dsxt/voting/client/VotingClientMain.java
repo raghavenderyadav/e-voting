@@ -47,7 +47,7 @@ public class VotingClientMain {
             
             Properties properties = PropertiesHelper.loadProperties(MODULE_NAME);
             args = args == null || args.length == 0 ? null : args;
-            String blockchain = args == null ? "mock" : args[0];
+            String blockchain = args == null ? properties.getProperty("blockchain.type") : args[0];
             String nxtPropertiesPath = args == null ? properties.getProperty("nxt.properties.path") : args[1];
             String mainAddress = args == null ? properties.getProperty("nxt.main.address") : args[2];
             String passphrase = args == null ? properties.getProperty("nxt.account.passphrase") : args[3];
