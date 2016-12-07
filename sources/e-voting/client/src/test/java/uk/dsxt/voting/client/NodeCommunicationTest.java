@@ -28,7 +28,7 @@ import org.junit.Test;
 public class NodeCommunicationTest {
     //1.1-2-5,1.2-1-23,2.1-1-7,2.1.multi-2.1.1-2,2.1.multi-2.1.2-2,3.1-1-2
     //123456,,33,1.1-2-8,1.2-1-15,2.1-1-7
-    private static final String BLOCKCHAIN = "mock";
+    private static final String BLOCKCHAIN = "fabric";
     @Test
     public void test() throws Exception {
         VotingClientMain.main(new String[]{

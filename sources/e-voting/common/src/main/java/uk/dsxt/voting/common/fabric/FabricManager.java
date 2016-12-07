@@ -159,7 +159,7 @@ public class FabricManager implements WalletManager {
                 BufferedReader br = new BufferedReader(
                     new InputStreamReader(is));
                 while ((s = br.readLine()) != null) {
-                    System.out.println(s);
+                    log.info(s);
                 }
             } catch (IOException ioe) {
                 log.error("Failed to run PrintOutput class");
