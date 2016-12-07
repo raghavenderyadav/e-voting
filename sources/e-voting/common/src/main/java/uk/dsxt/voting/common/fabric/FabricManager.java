@@ -28,7 +28,6 @@ import org.hyperledger.fabric.sdk.exception.ChainCodeException;
 import org.hyperledger.fabric.sdk.exception.EnrollmentException;
 import org.hyperledger.fabric.sdk.exception.RegistrationException;
 
-import sun.plugin2.util.SystemUtil;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 
