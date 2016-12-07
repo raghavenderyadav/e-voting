@@ -26,7 +26,7 @@
       <PatternLayout pattern="%d [%p] %m%n"/>
     </Console>
 
-    <File name="File" fileName="logs/e-voting-client.log">
+    <File name="CLIENT" fileName="logs/e-voting-client.log">
       <PatternLayout>
         <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
       </PatternLayout>
@@ -51,12 +51,12 @@
     </AsyncLogger>
     <Root level="debug">
       <AppenderRef ref="STDOUT"/>
-      <AppenderRef ref="File"/>
+      <AppenderRef ref="CLIENT"/>
     </Root>
     <Logger name="uk.dsxt.voting.common.networking.MessageHandler" level="debug"/>
     <Logger name="uk.dsxt.voting.common.domain.nodes.VotingOrganizer" level="info"/>
     <Logger name="uk.dsxt.voting.client.VoteScheduler" level="info"/>
     <Logger name="uk.dsxt.voting.common.nxt.NxtWalletManager" level="info"/>
-
+    <Logger name="uk.dsxt.voting.common.fabric.FabricManager" level="debug" />
   </Loggers>
 </Configuration>
