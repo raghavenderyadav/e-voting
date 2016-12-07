@@ -36,6 +36,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class FabricManager implements WalletManager {
 
@@ -94,7 +95,7 @@ public class FabricManager implements WalletManager {
     private static final String START_FIRST_PEER = String.join(" ", START_PEER, DOCKER_FIRST_PEER_PORT, DOCKER_PEER_NODE_START);
 
     public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore, 
-                         String peer, boolean isInit, int validatingPeerID, String peerToConnect) {
+                         String peer, boolean isInit, int validatingPeerID, String peerToConnect) throws InterruptedException {
         this.chainName = chainName;
         this.admin = admin;
         this.passphrase = passphrase;
@@ -116,6 +117,7 @@ public class FabricManager implements WalletManager {
                 fabricProcess = rt.exec(startAnotherPeer);
             }
             start();
+            TimeUnit.SECONDS.sleep(5);
             chain = new Chain(chainName);
 
             chain.setMemberServicesUrl(memberServiceUrl, null);
@@ -125,11 +127,7 @@ public class FabricManager implements WalletManager {
 
             Member registrar = chain.getMember(admin);
             if (!registrar.isEnrolled()) {
-                try {
-                    registrar = chain.enroll(admin, passphrase);
-                } catch (EnrollmentException e) {
-                    log.error("Cannot registrar admin", e);
-                }
+                registrar = chain.enroll(admin, passphrase);
             }
             chain.setRegistrar(registrar);
             deployResponse = initChaincode();
@@ -287,7 +285,7 @@ public class FabricManager implements WalletManager {
                 RegistrationRequest registrationRequest = new RegistrationRequest();
                 registrationRequest.setEnrollmentID(enrollmentId);
                 registrationRequest.setAffiliation(affiliation);
-                    member = chain.registerAndEnroll(registrationRequest);
+                member = chain.registerAndEnroll(registrationRequest);
             } else if (!member.isEnrolled()) {
                 member = chain.enroll(enrollmentId, member.getEnrollmentSecret());
             }
