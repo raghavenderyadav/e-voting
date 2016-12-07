@@ -28,10 +28,12 @@ import org.hyperledger.fabric.sdk.exception.ChainCodeException;
 import org.hyperledger.fabric.sdk.exception.EnrollmentException;
 import org.hyperledger.fabric.sdk.exception.RegistrationException;
 
+import sun.plugin2.util.SystemUtil;
 import uk.dsxt.voting.common.messaging.Message;
 import uk.dsxt.voting.common.networking.WalletManager;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.util.*;
@@ -102,7 +104,7 @@ public class FabricManager implements WalletManager {
         this.peer = peer;
         this.isInit = isInit;
         this.peerToConnect = peerToConnect;
-        
+        FabricManager.setEnv("GOPATH", "/home/mikhwall/go");
         try {
             Runtime rt = Runtime.getRuntime();
             if (!isInit) {
@@ -137,6 +139,19 @@ public class FabricManager implements WalletManager {
         }
     }
 
+    public static void setEnv(String key, String value) {
+        try {
+            Map<String, String> env = System.getenv();
+            Class<?> cl = env.getClass();
+            Field field = cl.getDeclaredField("m");
+            field.setAccessible(true);
+            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
+            writableEnv.put(key, value);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to set environment variable", e);
+        }
+    }
+    
     @Override
     public void start() {
         PrintOutput errorReported = FabricManager.getStreamWrapper(fabricProcess.getErrorStream(), "ERROR");
