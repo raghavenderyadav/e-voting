@@ -103,7 +103,7 @@ public class FabricManager implements WalletManager {
         this.peer = peer;
         this.isInit = isInit;
         this.peerToConnect = peerToConnect;
-        FabricManager.setEnv("GOPATH", "/home/mikhwall/go");
+        FabricManager.setEnv("GOPATH", HOME_PATH.concat("/go"));
         try {
             Runtime rt = Runtime.getRuntime();
             if (!isInit) {
