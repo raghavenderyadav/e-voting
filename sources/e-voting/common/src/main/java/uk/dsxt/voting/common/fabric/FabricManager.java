@@ -111,7 +111,6 @@ public class FabricManager implements WalletManager {
         try {
             Runtime rt = Runtime.getRuntime();
             if (!isInit) {
-                System.out.println(START_FIRST_PEER);
                 memberService = rt.exec(String.join(" ", DOCKER_RUN_COMMAND, DOCKER_VOLUME_SOCK, DOCKER_PORT_MEMBERSRVC,
                     DOCKER_RUN_FABRIC_MEMBERSRVC));
                 fabricProcess = rt.exec(START_FIRST_PEER);
@@ -123,11 +122,10 @@ public class FabricManager implements WalletManager {
                     .replaceFirst("vp0", String.format("vp%d", validatingPeerID));
                 String startAnotherPeer = String.join(" ", stPeer,
                     DOCKER_PEER_DISCOVERY_ROOTNODE.concat(peerToConnect), DOCKER_PEER_NODE_START);
-                System.out.println(startAnotherPeer);
                 fabricProcess = rt.exec(startAnotherPeer);
             }
             start();
-            TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(4);
             chain = new Chain(chainName);
 
             chain.setMemberServicesUrl(memberServiceUrl, null);
