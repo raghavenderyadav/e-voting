@@ -75,7 +75,8 @@ public class FabricManager implements WalletManager {
         "fabric/examples/chaincode:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode", HOME_PATH);
     private static final String DOCKER_CORE_LOGGING_LEVEL = "-e CORE_LOGGING_LEVEL=DEBUG";
     private static final String DOCKER_CORE_PEER_ID = "-e CORE_PEER_ID=vp0";
-    private static final String DOCKER_CORE_PEER_ADDRESSAUTODETECT = "-e CORE_PEER_ADDRESSAUTODETECT=true";
+    private static final String DOCKER_CORE_PEER_ADDRESSAUTODETECT = "-e CORE_PEER_ADDRESSAUTODETECT=false";
+    private static final String DOCKER_CORE_PEER_ADDRESS = "-e CORE_PEER_ADDRESS=";
     private static final String DOCKER_CORE_PBFT_GENERAL_N = "-e CORE_PBFT_GENERAL_N=4";
     private static final String DOCKER_CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN = "-e CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN=pbft";
     private static final String DOCKER_CORE_PBFT_GENERAL_MODE = "-e CORE_PBFT_GENERAL_MODE=batch";
@@ -88,11 +89,13 @@ public class FabricManager implements WalletManager {
 
     private static final String START_PEER = String.join(" ", DOCKER_RUN_COMMAND, DOCKER_VOLUME_SOCK,
         DOCKER_VOLUME_PATH_TO_CHAINCODE, DOCKER_CORE_LOGGING_LEVEL, DOCKER_CORE_PEER_ID, DOCKER_CORE_PEER_ADDRESSAUTODETECT,
+        DOCKER_CORE_PEER_ADDRESS + "172.17.0.3:7051",
         DOCKER_CORE_PBFT_GENERAL_N, DOCKER_CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN, DOCKER_CORE_PBFT_GENERAL_MODE,
         DOCKER_CORE_GENERAL_TIMEOUT_REQUEST, DOCKER_CORE_PBFT_GENERAL_BATCHSIZE, DOCKER_CORE_PBFT_GENERAL_VIEWCHANGEPERIOD,
         DOCKER_CORE_PBFT_GENERAL_TIMEOUT_NULLREQUEST );
 
-    private static final String START_FIRST_PEER = String.join(" ", START_PEER, DOCKER_FIRST_PEER_PORT, DOCKER_PEER_NODE_START);
+    private static final String START_FIRST_PEER = String.join(" ", START_PEER,
+        DOCKER_FIRST_PEER_PORT, DOCKER_PEER_NODE_START);
 
     public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore, 
                          String peer, boolean isInit, int validatingPeerID, String peerToConnect) throws InterruptedException {
@@ -108,12 +111,18 @@ public class FabricManager implements WalletManager {
         try {
             Runtime rt = Runtime.getRuntime();
             if (!isInit) {
+                System.out.println(START_FIRST_PEER);
                 memberService = rt.exec(String.join(" ", DOCKER_RUN_COMMAND, DOCKER_VOLUME_SOCK, DOCKER_PORT_MEMBERSRVC,
                     DOCKER_RUN_FABRIC_MEMBERSRVC));
                 fabricProcess = rt.exec(START_FIRST_PEER);
             } else {
-                String startAnotherPeer = String.join(" ", START_PEER.replaceFirst("vp0", String.format("vp%d", validatingPeerID)),
+                int peerID = validatingPeerID + 3;
+                String stPeer = START_PEER.replaceAll("CORE_PEER_ADDRESS=172.17.0.3:7051", 
+                    String.format("CORE_PEER_ADDRESS=172.17.0.%d:7051", peerID))
+                    .replaceFirst("vp0", String.format("vp%d", validatingPeerID));
+                String startAnotherPeer = String.join(" ", stPeer,
                     DOCKER_PEER_DISCOVERY_ROOTNODE.concat(peerToConnect), DOCKER_PEER_NODE_START);
+                System.out.println(startAnotherPeer);
                 fabricProcess = rt.exec(startAnotherPeer);
             }
             start();
