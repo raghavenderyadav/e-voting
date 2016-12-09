@@ -117,6 +117,7 @@ public class FabricManager implements WalletManager {
                 fabricProcess = rt.exec(START_FIRST_PEER);
             } else {
                 int peerID = validatingPeerID + 3;
+                TimeUnit.SECONDS.sleep(peerID);
                 String stPeer = START_PEER.replaceAll("CORE_PEER_ADDRESS=172.17.0.3:7051", 
                     String.format("CORE_PEER_ADDRESS=172.17.0.%d:7051", peerID))
                     .replaceFirst("vp0", String.format("vp%d", validatingPeerID));
