@@ -51,18 +51,16 @@ public class FabricManager implements WalletManager {
     private int validatingPeerID;
 
     private ChainCodeResponse deployResponse;
-    
+
     private Process fabricProcess;
     private Process memberService;
     private Chain chain;
-
-    private Runtime rt;
 
     enum ChaincodeFunction {INIT, READ, WRITE}
 
     private static final Logger log =  LogManager.getLogger(FabricManager.class.getName());
     private static final String HOME_PATH = System.getProperty("user.home");
-    
+
     private static final String CHAINCODE_PATH = "github.com/hyperledger/fabric/examples/chaincode/go/evoting";
     private static final String CHAINCODE_NAME = "mycc";
     private static final String AFFILIATION = "bank_a";
@@ -99,7 +97,7 @@ public class FabricManager implements WalletManager {
     private static final String START_FIRST_PEER = String.join(" ", START_PEER,
         DOCKER_FIRST_PEER_PORT, DOCKER_PEER_NODE_START);
 
-    public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore, 
+    public FabricManager(String chainName, String admin, String passphrase, String memberServiceUrl, String keyValStore,
                          String peer, boolean isInit, int validatingPeerID, String peerToConnect) throws InterruptedException {
         this.chainName = chainName;
         this.admin = admin;
@@ -111,7 +109,7 @@ public class FabricManager implements WalletManager {
         this.peerToConnect = peerToConnect;
         FabricManager.setEnv("GOPATH", HOME_PATH.concat("/go"));
         try {
-            rt = Runtime.getRuntime();
+            Runtime rt = Runtime.getRuntime();
             if (!isInit) {
                 memberService = rt.exec(String.join(" ", DOCKER_RUN_COMMAND, DOCKER_VOLUME_SOCK, DOCKER_PORT_MEMBERSRVC,
                     DOCKER_RUN_FABRIC_MEMBERSRVC));
@@ -119,7 +117,7 @@ public class FabricManager implements WalletManager {
             } else {
                 int peerID = validatingPeerID + 3;
                 TimeUnit.SECONDS.sleep(validatingPeerID);
-                String stPeer = START_PEER.replaceAll("CORE_PEER_ADDRESS=172.17.0.3:7051", 
+                String stPeer = START_PEER.replaceAll("CORE_PEER_ADDRESS=172.17.0.3:7051",
                     String.format("CORE_PEER_ADDRESS=172.17.0.%d:7051", peerID))
                     .replaceFirst("vp0", String.format("vp%d", validatingPeerID));
                 String startAnotherPeer = String.join(" ", stPeer,
@@ -158,7 +156,7 @@ public class FabricManager implements WalletManager {
             throw new IllegalStateException("Failed to set environment variable", e);
         }
     }
-    
+
     @Override
     public void start() {
         PrintOutput errorReported = FabricManager.getStreamWrapper(fabricProcess.getErrorStream(), "ERROR");
@@ -192,24 +190,23 @@ public class FabricManager implements WalletManager {
     private static PrintOutput getStreamWrapper(InputStream is, String type) {
         return new PrintOutput(is, type);
     }
-    
+
     @Override
     public void stop() {
         try {
             if (fabricProcess.isAlive())
                 fabricProcess.destroyForcibly();
-            rt.exec("docker rm $(docker ps -a -q) -f");
         } catch (Exception e) {
             log.error("stop method failed");
         }
     }
-    
+
     private ChainCodeResponse initChaincode() throws EnrollmentException, RegistrationException {
         DeployRequest request = new DeployRequest();
         request.setChaincodePath(CHAINCODE_PATH);
-                
+
         request.setArgs(new ArrayList<>(Collections.singletonList(ChaincodeFunction.INIT.name().toLowerCase())));
-        
+
         Member member = getMember(admin, AFFILIATION);
         request.setChaincodeName(CHAINCODE_NAME);
         return member.deploy(request);
@@ -221,8 +218,8 @@ public class FabricManager implements WalletManager {
         InvokeRequest request = new InvokeRequest();
 
         log.info("Sending message ".concat(new String(body, StandardCharsets.UTF_8)));
-        
-        request.setArgs(new ArrayList<>(Arrays.asList(ChaincodeFunction.WRITE.name().toLowerCase(), 
+
+        request.setArgs(new ArrayList<>(Arrays.asList(ChaincodeFunction.WRITE.name().toLowerCase(),
             new String(body, StandardCharsets.UTF_8))));
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
@@ -237,7 +234,7 @@ public class FabricManager implements WalletManager {
 
         return transactionID;
     }
-    
+
     @Override
     public List<Message> getNewMessages(long timestamp) {
 
@@ -251,14 +248,14 @@ public class FabricManager implements WalletManager {
         }
 
         int amount = Integer.parseInt(amountOfMessages);
-        
+
         for (int i = 1; i <= amount; i++) {
             chainCodeResponse  = getNewMessage(Integer.toString(i));
             if (chainCodeResponse != null) {
                 result.add(new Message(Integer.toString(i), chainCodeResponse.getMessage().getBytes(), true));
             }
         }
-        
+
         log.info("getting messages started");
 
         result.forEach(message -> {
@@ -272,14 +269,14 @@ public class FabricManager implements WalletManager {
         log.info("getting messages ended");
         return result;
     }
-    
+
     private ChainCodeResponse getNewMessage(String id) {
         QueryRequest request = new QueryRequest();
         request.setArgs(new ArrayList<>(Arrays.asList(ChaincodeFunction.READ.name().toLowerCase(), id)));
         request.setChaincodeID(deployResponse.getChainCodeID());
         request.setChaincodeName(deployResponse.getChainCodeID());
         Member member = getMember(admin, AFFILIATION);
-        
+
         try {
             return member.query(request);
         } catch (ChainCodeException e) {
@@ -287,7 +284,7 @@ public class FabricManager implements WalletManager {
         }
         return null;
     }
-    
+
     private Member getMember(String enrollmentId, String affiliation) {
         Member member = chain.getMember(enrollmentId);
         try {
