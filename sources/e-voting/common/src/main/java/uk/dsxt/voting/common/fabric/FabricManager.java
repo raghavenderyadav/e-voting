@@ -56,6 +56,8 @@ public class FabricManager implements WalletManager {
     private Process memberService;
     private Chain chain;
 
+    private Runtime rt;
+
     enum ChaincodeFunction {INIT, READ, WRITE}
 
     private static final Logger log =  LogManager.getLogger(FabricManager.class.getName());
@@ -109,7 +111,7 @@ public class FabricManager implements WalletManager {
         this.peerToConnect = peerToConnect;
         FabricManager.setEnv("GOPATH", HOME_PATH.concat("/go"));
         try {
-            Runtime rt = Runtime.getRuntime();
+            rt = Runtime.getRuntime();
             if (!isInit) {
                 memberService = rt.exec(String.join(" ", DOCKER_RUN_COMMAND, DOCKER_VOLUME_SOCK, DOCKER_PORT_MEMBERSRVC,
                     DOCKER_RUN_FABRIC_MEMBERSRVC));
@@ -196,6 +198,7 @@ public class FabricManager implements WalletManager {
         try {
             if (fabricProcess.isAlive())
                 fabricProcess.destroyForcibly();
+            rt.exec("docker rm $(docker ps -a -q) -f");
         } catch (Exception e) {
             log.error("stop method failed");
         }
