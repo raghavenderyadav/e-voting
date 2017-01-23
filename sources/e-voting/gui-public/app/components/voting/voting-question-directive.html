@@ -6,7 +6,7 @@
     <label
       for="question-{{question.id}}-answer-{{answer.id}}"
       class="col-xs-3 control-label text-left">
-      {{answer.name}}
+      {{'voting.' + answer.name | i18n}}
     </label>
     <div class="col-xs-9">
       <input
@@ -27,7 +27,7 @@
         id="question-{{question.id}}-answer-{{answer.id}}"
         ng-model="votingChoice[question.id]"
         ng-value="answer.id"/>
-      {{answer.name}}
+      {{'voting.' + answer.name | i18n}}
     </label>
   </div>
 </div>

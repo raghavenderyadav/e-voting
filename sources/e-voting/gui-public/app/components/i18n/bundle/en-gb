@@ -36,6 +36,9 @@ voting.CANCEL = Cancel
 voting.FINISH = Finish
 voting.VOTE = Vote
 voting.SIGN = Sign
+voting.For = For
+voting.Against = Against
+voting.Abstain = Abstain
 
 votingList.ALL = All votings
 votingList.NAME = Name

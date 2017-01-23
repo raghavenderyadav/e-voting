@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-xs-3">
       <br>
-      {{answer.name}}
+      {{ 'voting.' + answer.name | i18n }}
     </div>
     <div class="col-xs-9">
       <small>{{'votingAnswer.VOTES' | i18n}}: {{answer.votes}} / {{totalVotes}}</small>

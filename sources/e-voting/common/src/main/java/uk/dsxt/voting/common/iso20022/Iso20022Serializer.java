@@ -351,15 +351,15 @@ public class Iso20022Serializer extends SimpleSerializer {
                 for (VoteInstruction2Code code : resolution.getVoteInstrTp()) {
                     switch (code) {
                         case CFOR: {
-                            answers.add(new Answer(AnswerType.FOR.getCode(), "За"));
+                            answers.add(new Answer(AnswerType.FOR.getCode(), "For"));
                             break;
                         }
                         case CAGS: {
-                            answers.add(new Answer(AnswerType.AGAINST.getCode(), "Против"));
+                            answers.add(new Answer(AnswerType.AGAINST.getCode(), "Against"));
                             break;
                         }
                         case ABST: {
-                            answers.add(new Answer(AnswerType.ABSTAIN.getCode(), "Воздержался"));
+                            answers.add(new Answer(AnswerType.ABSTAIN.getCode(), "Abstain"));
                             break;
                         }
                     }

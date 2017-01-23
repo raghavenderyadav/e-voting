@@ -36,6 +36,9 @@ voting.CANCEL = Отмена
 voting.FINISH = Завершить
 voting.VOTE = Голос
 voting.SIGN = Подпись
+voting.For = За
+voting.Against = Против
+voting.Abstain = Воздержался
 
 votingList.ALL = Все голосования
 votingList.NAME = Название
